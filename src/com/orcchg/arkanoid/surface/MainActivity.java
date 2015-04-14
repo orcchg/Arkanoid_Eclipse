@@ -27,9 +27,9 @@ public class MainActivity extends FragmentActivity {
   protected void onResume() {
     mAsyncContext.start();
     mSurface.setAsyncContext(mAsyncContext);
-    mAsyncContext.loadLevel(new String[] {"S B",
-                                          " S ",
-                                          "B S"});
+    mAsyncContext.loadLevel(new String[] {"S B SS B S",
+                                          " S BBBS S ",
+                                          "B S SS B S"});
     super.onResume();
   }
   
