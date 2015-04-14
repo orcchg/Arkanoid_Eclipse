@@ -19,6 +19,9 @@ public class GameSurface extends SurfaceView implements SurfaceHolder.Callback {
   private int mWidth;
   private int mHeight;
   
+  private float touchOrigin = 0.0f;
+  private float touchCurrent = 0.0f;
+  
   private WeakReference<AsyncContext> mAsyncContextRef;
   
   public GameSurface(Context context) {
@@ -67,8 +70,6 @@ public class GameSurface extends SurfaceView implements SurfaceHolder.Callback {
 
   @Override
   public boolean onTouchEvent(MotionEvent event) {
-    float touchOrigin = 0.0f;
-    float touchCurrent = 0.0f;
     switch (event.getAction()) {
       case MotionEvent.ACTION_DOWN:
         touchOrigin = event.getX() * event.getXPrecision();
@@ -78,6 +79,12 @@ public class GameSurface extends SurfaceView implements SurfaceHolder.Callback {
         touchCurrent = event.getX() * event.getXPrecision();
         float distance = touchCurrent - touchOrigin;
         // TODO: convert distance according to screen density and pass to native
+        if (mAsyncContextRef != null) {
+          AsyncContext acontext = mAsyncContextRef.get();
+          if (acontext != null) {
+            acontext.shiftGamepad(distance * 0.0005f);
+          }
+        }
         break;
       case MotionEvent.ACTION_UP:
         performClick();

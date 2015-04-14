@@ -115,6 +115,7 @@ private:
    * @{
    */
   float m_distance;  //!< Last received distance value of user's motion gesture.
+  GLfloat m_bite_location;  //!< Last recorder bite location along horizontal axis.
   GLfloat* m_bite_vertex_buffer;  //!< Re-usable buffer for vertices of bite.
   GLfloat* m_bite_color_buffer;   //!< Re-usable buffer for colors of bite.
   GLushort* m_bite_index_buffer;  //!< Re-usable buffer for indices of bite.
@@ -193,8 +194,10 @@ private:
    */
   /// @brief Initialize game state.
   void initGame();
-  /// @brief Sets the bite into it's  initial state.
-  void initBite();
+  /// @brief Sets the bite into shifted state.
+  /// @param distance Normalized distance the bite should move.
+  /// @note Distance should be within [-1, 1] segment.
+  void moveBite(float distance);
   /** @} */  // end of LogicFunc group
 
 private:

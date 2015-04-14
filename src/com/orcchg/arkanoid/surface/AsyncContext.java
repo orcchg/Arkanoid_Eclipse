@@ -18,6 +18,10 @@ class AsyncContext {
   void destroy() { destroy(descriptor); }
   void setSurface(Surface surface) { setSurface(descriptor, surface); }
   
+  /* User actions */
+  void shiftGamepad(float distance) { shiftGamepad(descriptor, distance); }
+
+  /* Tools */
   void loadLevel(final String[] level) { loadLevel(descriptor, level); }
   
   /* Private methods */

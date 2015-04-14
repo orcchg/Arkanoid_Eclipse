@@ -20,6 +20,7 @@ AsyncContext::AsyncContext(JavaVM* jvm)
   , m_config(nullptr)
   , m_num_configs(0), m_format(0)
   , m_distance(0.0f)
+  , m_bite_location(0.0f)
   , m_bite_vertex_buffer(new GLfloat[16])
   , m_bite_color_buffer(new GLfloat[16])
   , m_bite_index_buffer(new GLushort[6]{0, 3, 2, 0, 1, 3})
@@ -172,12 +173,12 @@ void AsyncContext::process_setWindow() {
 
 void AsyncContext::process_shiftGamepad() {
   std::unique_lock<std::mutex> lock(m_shift_gamepad_mutex);
-  //
+  moveBite(m_distance);
 }
 
 void AsyncContext::process_throwBall() {
   std::unique_lock<std::mutex> lock(m_throw_ball_mutex);
-  //
+  // TODO: impl
 }
 
 void AsyncContext::process_loadLevel() {
@@ -199,12 +200,25 @@ void AsyncContext::process_loadLevel() {
 /* LogicFunc group */
 // ----------------------------------------------------------------------------
 void AsyncContext::initGame() {
-  initBite();
+  moveBite(0.0f);
 }
 
-void AsyncContext::initBite() {
+void AsyncContext::moveBite(float distance) {
+  MSG("Distance: %lf", distance);
+  GLfloat bite_W = 0.5f;
   GLfloat bite_H = 0.08f * m_aspect;
-  util::setRectangleVertices(&m_bite_vertex_buffer[0], 0.5f, bite_H, -0.25f, -0.8f + bite_H, 1, 1);
+  m_bite_location += distance;
+  if (m_bite_location > 0.75f) {
+    m_bite_location = 0.75f;
+  } else if (m_bite_location < -0.75f) {
+    m_bite_location = -0.75f;
+  }
+  util::setRectangleVertices(
+      &m_bite_vertex_buffer[0],
+      bite_W, bite_H,
+      -0.25f + m_bite_location,
+      -0.8f + bite_H,
+      1, 1);
 }
 
 /* GraphicsContext group */
