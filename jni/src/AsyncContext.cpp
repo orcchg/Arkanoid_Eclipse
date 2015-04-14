@@ -23,6 +23,7 @@ AsyncContext::AsyncContext(JavaVM* jvm)
   , m_level(nullptr)
   , m_level_vertex_buffer(nullptr)
   , m_level_color_buffer(nullptr)
+  , m_level_index_buffer(nullptr)
   , m_level_shader(nullptr) {
 
   DBG("enter AsyncContext ctor");
@@ -44,6 +45,8 @@ AsyncContext::~AsyncContext() {
   m_level_vertex_buffer = nullptr;
   delete [] m_level_color_buffer;
   m_level_color_buffer = nullptr;
+  delete [] m_level_index_buffer;
+  m_level_index_buffer = nullptr;
   DBG("exit AsyncContext ~dtor");
 }
 
@@ -155,7 +158,7 @@ void AsyncContext::process_setWindow() {
   }
   glOptionsConfig();
   m_window_set = true;
-  render();  // TODO: remove ? already called in eventHandler()
+//  render();  // TODO: remove ? already called in eventHandler()
   DBG("exit AsyncContext::process_setWindow()");
 }
 
@@ -175,13 +178,14 @@ void AsyncContext::process_loadLevel() {
   // release memory allocated for previous level if any
   delete [] m_level_vertex_buffer;
   delete [] m_level_color_buffer;
-  m_level_vertex_buffer = new GLfloat[m_level->size() * 8];
+  delete [] m_level_index_buffer;
+  m_level_vertex_buffer = new GLfloat[m_level->size() * 16];
   m_level_color_buffer = new GLfloat[m_level->size() * 16];
-  m_level->toVertexArray2D(0.2f, 0.1f, 0.f, 0.f, m_level_vertex_buffer);
+  m_level_index_buffer = new GLushort[m_level->size() * 6];
+  m_level->toVertexArray(0.2f, 0.1f, -0.2f, 0.f, m_level_vertex_buffer);
   m_level->fillColorArray(m_level_color_buffer);
+  util::rectangleIndices(m_level_index_buffer, m_level->size() * 6);
   DBG("exit AsyncContext::process_loadLevel()");
-  util::printBuffer2D(m_level_vertex_buffer, 8 * m_level->size());
-  util::printBuffer4D(m_level_color_buffer, 16 * m_level->size());
 }
 
 /* GraphicsContext group */
@@ -310,13 +314,14 @@ void AsyncContext::drawLevel() {
   GLuint a_position = m_level_shader->getVertexAttribLocation();
   GLuint a_color = m_level_shader->getColorAttribLocation();
 
-  glVertexAttribPointer(a_position, 2, GL_FLOAT, GL_FALSE, 0, m_level_vertex_buffer);
-  glVertexAttribPointer(a_color, 4, GL_FLOAT, GL_FALSE, 0, m_level_color_buffer);
+  glVertexAttribPointer(a_position, 4, GL_FLOAT, GL_FALSE, 0, &m_level_vertex_buffer[0]);
+  glVertexAttribPointer(a_color, 4, GL_FLOAT, GL_FALSE, 0, &m_level_color_buffer[0]);
 
   glEnableVertexAttribArray(a_position);
   glEnableVertexAttribArray(a_color);
 
-  glDrawArrays(GL_TRIANGLES, 0, 4 * m_level->size());
+  glDrawElements(GL_TRIANGLES, m_level->size() * 6, GL_UNSIGNED_SHORT, &m_level_index_buffer[0]);
+//  glDrawArrays(GL_TRIANGLES, 0, m_level->size() * 16);
 
   glDisableVertexAttribArray(a_position);
   glDisableVertexAttribArray(a_color);

@@ -9,12 +9,25 @@ template <typename T>
 struct BGRA {
   T b, g, r, a;
 
+  BGRA()
+    : b(0), g(0), r(0), a(0) {
+  }
+
   BGRA(const T* const bgra)
     : b(bgra[0]), g(bgra[1]), r(bgra[2]), a(bgra[3]) {
   }
 
   BGRA(T b, T g, T r, T a)
     : b(b), g(g), r(r), a(a) {
+  }
+
+  BGRA(const BGRA& obj)
+    : b(obj.b), g(obj.g), r(obj.r), a(obj.a) {
+  }
+
+  BGRA& operator = (const BGRA& obj) {
+    b = obj.b; g = obj.g; r = obj.r; a = obj.a;
+    return *this;
   }
 };
 

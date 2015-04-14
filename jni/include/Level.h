@@ -17,8 +17,9 @@
 namespace game {
 
 enum class Block : int {
-  NONE = 0,   // ' '
-  SIMPLE = 1  // 'O'
+  NONE = 0,    // ' '
+  SIMPLE = 1,  // 'S'
+  BRICK = 2    // 'B'
 };
 
 Block charToBlock(char ch);
@@ -58,20 +59,9 @@ public:
   /// @param array Output vertex array.
   /// @return Size of output array.
   /// @details Memory for output array should be allocated manually
-  /// by Client, required size for allocation is 8 * cols * rows.
-  /// @note Each vertex has 2 coordinates (x, y).
-  void toVertexArray2D(
-      GLfloat width,
-      GLfloat height,
-      GLfloat x_offset,
-      GLfloat y_offset,
-      GLfloat* const array) const;
-
-  /// @brief Converts this Level instance to vertex array.
-  /// @details Memory for output array should be allocated manually
-  /// by Client, required size for allocation is 12 * cols * rows.
-  /// @note Each vertex has 3 coordinates (x, y, 0). Z is always zero.
-  void toVertexArray3D(
+  /// by Client, required size for allocation is 16 * cols * rows.
+  /// @note Each vertex has 2 coordinates (x, y, z=0, w=1).
+  void toVertexArray(
       GLfloat width,
       GLfloat height,
       GLfloat x_offset,
@@ -83,9 +73,8 @@ public:
   /// blocks in this Level instance.
   /// @param array Output color array.
   /// @details Memory for output array should be allocated manually
-  /// by Client, required size for allocation is 4 * cols * rows.
-  template <typename T>
-  void fillColorArray(T* const array) const;
+  /// by Client, required size for allocation is 16 * cols * rows.
+  void fillColorArray(GLfloat* const array) const;
 
   /// @brief Returns height of level.
   inline size_t numRows() const { return rows; }

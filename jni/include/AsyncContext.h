@@ -117,6 +117,7 @@ private:
   Level::Ptr m_level;  //!< Last loaded game level.
   GLfloat* m_level_vertex_buffer;  //!< Re-usable buffer for vertices of level.
   GLfloat* m_level_color_buffer;  //!< Re-usable buffer for colors of level.
+  GLushort* m_level_index_buffer;  //!< Re-usable buffer for indices of level's blocks.
   /** @} */  // end of LogicData group
 
   /** @defgroup Shaders Shaders for rendering game components.

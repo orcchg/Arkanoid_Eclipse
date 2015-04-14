@@ -17,8 +17,10 @@ namespace game {
 
 Block charToBlock(char ch) {
   switch (ch) {
-  case 'O':
+  case 'S':
     return Block::SIMPLE;
+  case 'B':
+    return Block::BRICK;
   default:
     return Block::NONE;
   }
@@ -27,7 +29,9 @@ Block charToBlock(char ch) {
 char blockToChar(Block block) {
   switch (block) {
   case Block::SIMPLE:
-    return 'O';
+    return 'S';
+  case Block::BRICK:
+    return 'B';
   case Block::NONE:
   default:
     return ' ';
@@ -71,103 +75,64 @@ size_t Level::toStringArray(std::vector<std::string>* array) const {
   return rows;
 }
 
-void Level::toVertexArray2D(
+void Level::toVertexArray(
     GLfloat width,
     GLfloat height,
     GLfloat x_offset,
     GLfloat y_offset,
     GLfloat* const array) const {
 
+  int cols16 = cols * 16;
   for (size_t r = 0; r < rows; ++r) {
     for (size_t c = 0; c < cols; ++c) {
-      int index = (c * 8) + (r * cols * 8);
+      int index = (c * 16) + (r * cols16);
       // upper left corner
       array[index + 0] = x_offset + width * c;
-      array[index + 1] = y_offset + height * r;
-      // upper right corner
-      array[index + 2] = x_offset + width * (c + 1);
-      array[index + 3] = y_offset + height * r;
-      // lower left corner
-      array[index + 4] = x_offset + width * c;
-      array[index + 5] = y_offset + height * (r + 1);
-      // lower right corner
-      array[index + 6] = x_offset + width * (c + 1);
-      array[index + 7] = y_offset + height * (r + 1);
-    }
-  }
-}
-
-void Level::toVertexArray3D(
-    GLfloat width,
-    GLfloat height,
-    GLfloat x_offset,
-    GLfloat y_offset,
-    GLfloat* const array) const {
-
-  for (size_t r = 0; r < rows; ++r) {
-    for (size_t c = 0; c < cols; ++c) {
-      int index = (c * 12) + (r * cols * 12);
-      // upper left corner
-      array[index + 0] = x_offset + width * c;
-      array[index + 1] = y_offset + height * r;
+      array[index + 1] = y_offset - height * r;
       array[index + 2] = 0.0f;
+      array[index + 3] = 1.0f;
       // upper right corner
-      array[index + 3] = x_offset + width * (c + 1);
-      array[index + 4] = y_offset + height * r;
-      array[index + 5] = 0.0f;
+      array[index + 4] = x_offset + width * (c + 1);
+      array[index + 5] = y_offset - height * r;
+      array[index + 6] = 0.0f;
+      array[index + 7] = 1.0f;
       // lower left corner
-      array[index + 6] = x_offset + width * c;
-      array[index + 7] = y_offset + height * (r + 1);
-      array[index + 8] = 0.0f;
+      array[index + 8] = x_offset + width * c;
+      array[index + 9] = y_offset - height * (r + 1);
+      array[index + 10] = 0.0f;
+      array[index + 11] = 1.0f;
       // lower right corner
-      array[index + 9] = x_offset + width * (c + 1);
-      array[index + 10] = y_offset + height * (r + 1);
-      array[index + 11] = 0.0f;
+      array[index + 12] = x_offset + width * (c + 1);
+      array[index + 13] = y_offset - height * (r + 1);
+      array[index + 14] = 0.0f;
+      array[index + 15] = 1.0f;
     }
   }
 }
 
-//template <>
-//void Level::fillColorArray<GLshort>(GLshort* const array) const {
-//  for (size_t r = 0; r < rows; ++r) {
-//    for (size_t c = 0; c < cols; ++c) {
-//      int index = (c * 4) + (r * cols * 4);
-//      switch (blocks[r][c]) {
-//        default:
-//        case Block::NONE:
-//          util::setColor<GLshort>(util::glshort::TRANSPARENT, &array[index]);
-//          break;
-//        case Block::SIMPLE:
-//          util::setColor<GLshort>(util::glshort::GREEN, &array[index]);
-//          break;
-//      }
-//    }
-//  }
-//}
-
-template <>
-void Level::fillColorArray<GLfloat>(GLfloat* const array) const {
+void Level::fillColorArray(GLfloat* const array) const {
   for (size_t r = 0; r < rows; ++r) {
     for (size_t c = 0; c < cols; ++c) {
       int upper_left_i  = 0  + 16 * (r * cols + c);
       int upper_right_i = 4  + 16 * (r * cols + c);
       int lower_left_i  = 8  + 16 * (r * cols + c);
       int lower_right_i = 12 + 16 * (r * cols + c);
+      util::BGRA<GLfloat> bgra;
       switch (blocks[r][c]) {
         default:
         case Block::NONE:
-          util::setColor<GLfloat>(util::TRANSPARENT, &array[upper_left_i]);
-          util::setColor<GLfloat>(util::TRANSPARENT, &array[upper_right_i]);
-          util::setColor<GLfloat>(util::TRANSPARENT, &array[lower_left_i]);
-          util::setColor<GLfloat>(util::TRANSPARENT, &array[lower_right_i]);
+          bgra = util::BGRA<GLfloat>(util::TRANSPARENT);
           break;
         case Block::SIMPLE:
-          util::setColor<GLfloat>(util::GREEN, &array[upper_left_i]);
-          util::setColor<GLfloat>(util::GREEN, &array[upper_right_i]);
-          util::setColor<GLfloat>(util::GREEN, &array[lower_left_i]);
-          util::setColor<GLfloat>(util::GREEN, &array[lower_right_i]);
+          bgra = util::BGRA<GLfloat>(util::GREEN);
           break;
+        case Block::BRICK:
+          bgra = util::BGRA<GLfloat>(util::RED);
       }
+      util::setColor(bgra, &array[upper_left_i]);
+      util::setColor(bgra, &array[upper_right_i]);
+      util::setColor(bgra, &array[lower_left_i]);
+      util::setColor(bgra, &array[lower_right_i]);
     }
   }
 }
