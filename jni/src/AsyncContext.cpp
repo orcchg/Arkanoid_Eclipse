@@ -1,3 +1,5 @@
+#include <cmath>
+
 #include <GLES2/gl2.h>
 
 #include "AsyncContext.h"
@@ -204,17 +206,22 @@ void AsyncContext::initGame() {
 }
 
 void AsyncContext::moveBite(float position) {
-  GLfloat bite_W = 0.5f;
-  GLfloat bite_H = 0.08f * m_aspect;
+  if (std::fabs(position - m_bite_location) >= 0.15f) {
+    // finger position is out of bite's borders
+    return;
+  }
+
   m_bite_location = position;
   if (m_bite_location > 0.75f) {
     m_bite_location = 0.75f;
   } else if (m_bite_location < -0.75f) {
     m_bite_location = -0.75f;
   }
+
+  GLfloat bite_H = 0.08f * m_aspect;
   util::setRectangleVertices(
       &m_bite_vertex_buffer[0],
-      bite_W, bite_H,
+      0.5f, bite_H,
       -0.25f + m_bite_location,
       -0.8f + bite_H,
       1, 1);
