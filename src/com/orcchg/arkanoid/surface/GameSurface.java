@@ -18,6 +18,7 @@ public class GameSurface extends SurfaceView implements SurfaceHolder.Callback {
   private static int mDesiredHeight = 512;  // in dp
   private int mWidth;
   private int mHeight;
+  private float mHalfWidth;
   
   private float touchOrigin = 0.0f;
   private float touchCurrent = 0.0f;
@@ -78,11 +79,11 @@ public class GameSurface extends SurfaceView implements SurfaceHolder.Callback {
       case MotionEvent.ACTION_MOVE:
         touchCurrent = event.getX() * event.getXPrecision();
         float distance = touchCurrent - touchOrigin;
-        // TODO: convert distance according to screen density and pass to native
+        float position = touchCurrent - mHalfWidth;
         if (mAsyncContextRef != null) {
           AsyncContext acontext = mAsyncContextRef.get();
           if (acontext != null) {
-            acontext.shiftGamepad(distance * 0.0005f);
+            acontext.shiftGamepad(position / mHalfWidth);
           }
         }
         break;
@@ -126,6 +127,7 @@ public class GameSurface extends SurfaceView implements SurfaceHolder.Callback {
     } else {
       mWidth = mDesiredWidth;
     }
+    mHalfWidth = mWidth * 0.5f;
 
     if (heightMode == MeasureSpec.EXACTLY) {
       mHeight = heightSize;

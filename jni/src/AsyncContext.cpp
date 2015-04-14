@@ -207,7 +207,7 @@ void AsyncContext::moveBite(float distance) {
   MSG("Distance: %lf", distance);
   GLfloat bite_W = 0.5f;
   GLfloat bite_H = 0.08f * m_aspect;
-  m_bite_location += distance;
+  m_bite_location = distance;
   if (m_bite_location > 0.75f) {
     m_bite_location = 0.75f;
   } else if (m_bite_location < -0.75f) {
