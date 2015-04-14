@@ -82,32 +82,7 @@ void Level::toVertexArray(
     GLfloat y_offset,
     GLfloat* const array) const {
 
-  int cols16 = cols * 16;
-  for (size_t r = 0; r < rows; ++r) {
-    for (size_t c = 0; c < cols; ++c) {
-      int index = (c * 16) + (r * cols16);
-      // upper left corner
-      array[index + 0] = x_offset + width * c;
-      array[index + 1] = y_offset - height * r;
-      array[index + 2] = 0.0f;
-      array[index + 3] = 1.0f;
-      // upper right corner
-      array[index + 4] = x_offset + width * (c + 1);
-      array[index + 5] = y_offset - height * r;
-      array[index + 6] = 0.0f;
-      array[index + 7] = 1.0f;
-      // lower left corner
-      array[index + 8] = x_offset + width * c;
-      array[index + 9] = y_offset - height * (r + 1);
-      array[index + 10] = 0.0f;
-      array[index + 11] = 1.0f;
-      // lower right corner
-      array[index + 12] = x_offset + width * (c + 1);
-      array[index + 13] = y_offset - height * (r + 1);
-      array[index + 14] = 0.0f;
-      array[index + 15] = 1.0f;
-    }
-  }
+  util::setRectangleVertices(array, width, height, x_offset, y_offset, cols, rows);
 }
 
 void Level::fillColorArray(GLfloat* const array) const {
@@ -129,10 +104,10 @@ void Level::fillColorArray(GLfloat* const array) const {
         case Block::BRICK:
           bgra = util::BGRA<GLfloat>(util::RED);
       }
-      util::setColor(bgra, &array[upper_left_i]);
-      util::setColor(bgra, &array[upper_right_i]);
-      util::setColor(bgra, &array[lower_left_i]);
-      util::setColor(bgra, &array[lower_right_i]);
+      util::setColor(bgra, &array[upper_left_i], 4);
+      util::setColor(bgra, &array[upper_right_i], 4);
+      util::setColor(bgra, &array[lower_left_i], 4);
+      util::setColor(bgra, &array[lower_right_i], 4);
     }
   }
 }

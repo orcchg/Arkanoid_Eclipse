@@ -7,12 +7,25 @@
 namespace util {
 
 template <typename T>
-void setColor(const BGRA<T>& bgra, T* const color_buffer) {
-  color_buffer[0] = bgra.b;
-  color_buffer[1] = bgra.g;
-  color_buffer[2] = bgra.r;
-  color_buffer[3] = bgra.a;
+void setColor(const BGRA<T>& bgra, T* const color_buffer, size_t size) {
+  for (size_t i = 0; i < size; i += 4) {
+    color_buffer[i + 0] = bgra.b;
+    color_buffer[i + 1] = bgra.g;
+    color_buffer[i + 2] = bgra.r;
+    color_buffer[i + 3] = bgra.a;
+  }
 }
+
+void setColor(const GLfloat* const bgra, GLfloat* const color_buffer, size_t size);
+
+void setRectangleVertices(
+    GLfloat* const vertices,
+    GLfloat width,
+    GLfloat height,
+    GLfloat x_offset,
+    GLfloat y_offset,
+    size_t cols,
+    size_t rows);
 
 void rectangleIndices(GLushort* const indices, size_t size);
 

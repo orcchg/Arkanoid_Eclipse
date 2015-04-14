@@ -115,9 +115,13 @@ private:
    * @{
    */
   float m_distance;  //!< Last received distance value of user's motion gesture.
+  GLfloat* m_bite_vertex_buffer;  //!< Re-usable buffer for vertices of bite.
+  GLfloat* m_bite_color_buffer;   //!< Re-usable buffer for colors of bite.
+  GLushort* m_bite_index_buffer;  //!< Re-usable buffer for indices of bite.
+
   Level::Ptr m_level;  //!< Last loaded game level.
   GLfloat* m_level_vertex_buffer;  //!< Re-usable buffer for vertices of level.
-  GLfloat* m_level_color_buffer;  //!< Re-usable buffer for colors of level.
+  GLfloat* m_level_color_buffer;   //!< Re-usable buffer for colors of level.
   GLushort* m_level_index_buffer;  //!< Re-usable buffer for indices of level's blocks.
   /** @} */  // end of LogicData group
 
@@ -125,6 +129,7 @@ private:
    * @{
    */
   shader::ShaderHelper::Ptr m_level_shader;
+  shader::ShaderHelper::Ptr m_bite_shader;
   /** @} */  // end of Shaders group
 
   /** @defgroup Mutex Thread-safety variables
@@ -154,7 +159,7 @@ private:
    * @{
    */
   void onStart() override final;  //!< Right after thread has been launched.
-  void onStop() override final;  //!< Right before thread has been stopped.
+  void onStop() override final;   //!< Right before thread has been stopped.
   /// @brief Automatic check whether this thread should continue to operate.
   /// @return Whether this thread should continue sleeping (false)
   /// or working (true).
@@ -183,6 +188,16 @@ private:
   /** @} */  // end of Processors group
 
 private:
+  /** @defgroup LogicFunc Game logic related member functions.
+   * @{
+   */
+  /// @brief Initialize game state.
+  void initGame();
+  /// @brief Sets the bite into it's  initial state.
+  void initBite();
+  /** @} */  // end of LogicFunc group
+
+private:
   /** @defgroup GraphicsContext Low-layers functions to setup graphics.
    * @{
    */
@@ -206,6 +221,8 @@ private:
    */
   /// @brief Draws current level's state.
   void drawLevel();
+  /// @brief Draws bite at it's current position.
+  void drawBite();
   /** @} */  // end of Drawings group
 };
 

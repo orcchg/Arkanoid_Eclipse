@@ -88,7 +88,7 @@ public:
 private:
   Level(size_t rows, size_t cols);
 
-  int rows, cols;
+  size_t rows, cols;
   Block** blocks;
 };
 

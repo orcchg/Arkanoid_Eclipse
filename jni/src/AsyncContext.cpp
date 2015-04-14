@@ -20,6 +20,9 @@ AsyncContext::AsyncContext(JavaVM* jvm)
   , m_config(nullptr)
   , m_num_configs(0), m_format(0)
   , m_distance(0.0f)
+  , m_bite_vertex_buffer(new GLfloat[16])
+  , m_bite_color_buffer(new GLfloat[16])
+  , m_bite_index_buffer(new GLushort[6]{0, 3, 2, 0, 1, 3})
   , m_level(nullptr)
   , m_level_vertex_buffer(nullptr)
   , m_level_color_buffer(nullptr)
@@ -32,6 +35,8 @@ AsyncContext::AsyncContext(JavaVM* jvm)
   m_throw_ball_received.store(false);
   m_load_level_received.store(false);
   m_window_set = false;
+
+  util::setColor(util::MAGENTA, &m_bite_color_buffer[0], 16);
   DBG("exit AsyncContext ctor");
 }
 
@@ -40,13 +45,16 @@ AsyncContext::~AsyncContext() {
   m_jvm = nullptr;  m_jenv = nullptr;
   m_window = nullptr;
   destroyDisplay();
+
+  delete [] m_bite_vertex_buffer; m_bite_vertex_buffer = nullptr;
+  delete [] m_bite_color_buffer; m_bite_color_buffer = nullptr;
+  delete [] m_bite_index_buffer; m_bite_index_buffer = nullptr;
+
   m_level = nullptr;
-  delete [] m_level_vertex_buffer;
-  m_level_vertex_buffer = nullptr;
-  delete [] m_level_color_buffer;
-  m_level_color_buffer = nullptr;
-  delete [] m_level_index_buffer;
-  m_level_index_buffer = nullptr;
+  delete [] m_level_vertex_buffer; m_level_vertex_buffer = nullptr;
+  delete [] m_level_color_buffer; m_level_color_buffer = nullptr;
+  delete [] m_level_index_buffer; m_level_index_buffer = nullptr;
+
   DBG("exit AsyncContext ~dtor");
 }
 
@@ -158,7 +166,7 @@ void AsyncContext::process_setWindow() {
   }
   glOptionsConfig();
   m_window_set = true;
-//  render();  // TODO: remove ? already called in eventHandler()
+  initGame();  // TODO: remove from there, attach to event
   DBG("exit AsyncContext::process_setWindow()");
 }
 
@@ -182,10 +190,21 @@ void AsyncContext::process_loadLevel() {
   m_level_vertex_buffer = new GLfloat[m_level->size() * 16];
   m_level_color_buffer = new GLfloat[m_level->size() * 16];
   m_level_index_buffer = new GLushort[m_level->size() * 6];
-  m_level->toVertexArray(0.2f, 0.1f * m_aspect, -1.0f, 1.0f, m_level_vertex_buffer);
-  m_level->fillColorArray(m_level_color_buffer);
-  util::rectangleIndices(m_level_index_buffer, m_level->size() * 6);
+  m_level->toVertexArray(0.2f, 0.1f * m_aspect, -1.0f, 1.0f, &m_level_vertex_buffer[0]);
+  m_level->fillColorArray(&m_level_color_buffer[0]);
+  util::rectangleIndices(&m_level_index_buffer[0], m_level->size() * 6);
   DBG("exit AsyncContext::process_loadLevel()");
+}
+
+/* LogicFunc group */
+// ----------------------------------------------------------------------------
+void AsyncContext::initGame() {
+  initBite();
+}
+
+void AsyncContext::initBite() {
+  GLfloat bite_H = 0.08f * m_aspect;
+  util::setRectangleVertices(&m_bite_vertex_buffer[0], 0.5f, bite_H, -0.25f, -0.8f + bite_H, 1, 1);
 }
 
 /* GraphicsContext group */
@@ -261,6 +280,7 @@ void AsyncContext::glOptionsConfig() {
   glViewport(-4, -4, m_width + 4, m_height + 4);
 
   m_level_shader = std::make_shared<shader::ShaderHelper>(shader::SimpleShader());
+  m_bite_shader = std::make_shared<shader::ShaderHelper>(shader::SimpleShader());
 
   /* Rendering options */
   // TODO: not need depth (and display config should exclude that) for 2D game
@@ -301,7 +321,7 @@ void AsyncContext::render() {
   if (m_egl_display != EGL_NO_DISPLAY) {
     glClear(GL_COLOR_BUFFER_BIT);
     drawLevel();
-    // TODO: draw scene
+    drawBite();
     eglSwapInterval(m_egl_display, 0);
     eglSwapBuffers(m_egl_display, m_egl_surface);
   }
@@ -322,7 +342,24 @@ void AsyncContext::drawLevel() {
   glEnableVertexAttribArray(a_color);
 
   glDrawElements(GL_TRIANGLES, m_level->size() * 6, GL_UNSIGNED_SHORT, &m_level_index_buffer[0]);
-//  glDrawArrays(GL_TRIANGLES, 0, m_level->size() * 16);
+
+  glDisableVertexAttribArray(a_position);
+  glDisableVertexAttribArray(a_color);
+}
+
+void AsyncContext::drawBite() {
+  m_bite_shader->useProgram();
+
+  GLuint a_position = m_bite_shader->getVertexAttribLocation();
+  GLuint a_color = m_bite_shader->getColorAttribLocation();
+
+  glVertexAttribPointer(a_position, 4, GL_FLOAT, GL_FALSE, 0, &m_bite_vertex_buffer[0]);
+  glVertexAttribPointer(a_color, 4, GL_FLOAT, GL_FALSE, 0, &m_bite_color_buffer[0]);
+
+  glEnableVertexAttribArray(a_position);
+  glEnableVertexAttribArray(a_color);
+
+  glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, &m_bite_index_buffer[0]);
 
   glDisableVertexAttribArray(a_position);
   glDisableVertexAttribArray(a_color);
