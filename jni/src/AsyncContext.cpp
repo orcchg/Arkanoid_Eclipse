@@ -310,17 +310,17 @@ void AsyncContext::drawLevel() {
   GLuint a_position = m_level_shader->getVertexAttribLocation();
   GLuint a_color = m_level_shader->getColorAttribLocation();
 
-  GLfloat vVertices[] = {0.0f, 0.5f,
-                        -0.5f, -0.5f,
-                        0.5f, -0.5f};
+//  GLfloat vVertices[] = {0.0f, 0.5f,
+//                        -0.5f, -0.5f,
+//                        0.5f, -0.5f};
 
-  glVertexAttribPointer(a_position, 2, GL_FLOAT, GL_FALSE, 0, /*m_level_vertex_buffer*/vVertices);
+  glVertexAttribPointer(a_position, 2, GL_FLOAT, GL_FALSE, 0, m_level_vertex_buffer);
   glVertexAttribPointer(a_color, 4, GL_FLOAT, GL_FALSE, 0, m_level_color_buffer);
 
   glEnableVertexAttribArray(a_position);
   glEnableVertexAttribArray(a_color);
 
-  glDrawArrays(GL_TRIANGLES, 0, 3/*4 * m_level->size()*/);
+  glDrawArrays(GL_TRIANGLES, 0, 4 * m_level->size());
 
   glDisableVertexAttribArray(a_position);
   glDisableVertexAttribArray(a_color);
