@@ -114,11 +114,26 @@ private:
   /** @defgroup LogicData Game logic related data members.
    * @{
    */
+  constexpr static float biteWidth = 0.5f;  //!< Normalized width of bite.
+  constexpr static float biteHalfWidth = 0.25f;  //!< Normalized half-width of bite.
+  constexpr static float biteHeight = 0.08f;  //!< Normalized height of bite.
+  constexpr static float neg_biteHalfWidth = 0.75f;  //!< One minus bite half-width.
+  constexpr static float biteTouchArea = 0.15f;  //!< Radius of touch area to affect bite.
+  /// @brief Elevation of bite above the lower boundary of the playground.
+  constexpr static float biteElevation = 0.2f;
+  constexpr static float neg_biteElevation = 0.8f;  //!< One minus bite elevation.
+  constexpr static float ballSize = 0.05f;  //!< Size of any of 4 sides of ball.
+  constexpr static float ballHalfSize = 0.025f;  //!< Half-size of any of 4 sides of ball.
+
+  GLfloat m_bite_height;  //!< Normalized height of bite multiplied on aspect ratio.
   float m_position;  //!< Last received position value of user's motion gesture.
+  bool m_ball_is_flying;  //!< Whether the ball is flying now or not.
   GLfloat m_bite_location;  //!< Last recorder bite location along horizontal axis.
   GLfloat* m_bite_vertex_buffer;  //!< Re-usable buffer for vertices of bite.
   GLfloat* m_bite_color_buffer;   //!< Re-usable buffer for colors of bite.
-  GLushort* m_bite_index_buffer;  //!< Re-usable buffer for indices of bite.
+  GLfloat* m_ball_vertex_buffer;  //!< Re-usable buffer for vertices of ball.
+  GLfloat* m_ball_color_buffer;   //!< Re-usable buffer for color of ball.
+  GLushort* m_rectangle_index_buffer;  //!< Re-usable buffer for indices of rectangle.
 
   Level::Ptr m_level;  //!< Last loaded game level.
   GLfloat* m_level_vertex_buffer;  //!< Re-usable buffer for vertices of level.
@@ -131,6 +146,7 @@ private:
    */
   shader::ShaderHelper::Ptr m_level_shader;
   shader::ShaderHelper::Ptr m_bite_shader;
+  shader::ShaderHelper::Ptr m_ball_shader;
   /** @} */  // end of Shaders group
 
   /** @defgroup Mutex Thread-safety variables
@@ -198,6 +214,11 @@ private:
   /// @param position Normalized position the bite should move at.
   /// @note Position should be within [-1, 1] segment.
   void moveBite(float position);
+  /// @brief Sets the ball into shifted state.
+  /// @param x_position Normalized position along X axis the ball should move at.
+  /// @param y_position Normalized position along Y axis the ball should move at.
+  /// @note Positions should both be within [-1, 1] segment.
+  void moveBall(float x_position, float y_position);
   /** @} */  // end of LogicFunc group
 
 private:
@@ -226,6 +247,8 @@ private:
   void drawLevel();
   /// @brief Draws bite at it's current position.
   void drawBite();
+  /// @brief Draw ball at it's current position.
+  void drawBall();
   /** @} */  // end of Drawings group
 };
 
