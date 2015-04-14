@@ -4,6 +4,7 @@
 #include "EGLConfigChooser.h"
 #include "Exceptions.h"
 #include "logger.h"
+#include "utils.h"
 
 namespace game {
 
@@ -175,10 +176,12 @@ void AsyncContext::process_loadLevel() {
   delete [] m_level_vertex_buffer;
   delete [] m_level_color_buffer;
   m_level_vertex_buffer = new GLfloat[m_level->size() * 8];
-  m_level_color_buffer = new GLfloat[m_level->size() * 4];
-  m_level->toVertexArray(0.2f, 0.1f, 0.f, 0.f, m_level_vertex_buffer);
+  m_level_color_buffer = new GLfloat[m_level->size() * 16];
+  m_level->toVertexArray2D(0.2f, 0.1f, 0.f, 0.f, m_level_vertex_buffer);
   m_level->fillColorArray(m_level_color_buffer);
   DBG("exit AsyncContext::process_loadLevel()");
+  util::printBuffer2D(m_level_vertex_buffer, 8 * m_level->size());
+  util::printBuffer4D(m_level_color_buffer, 16 * m_level->size());
 }
 
 /* GraphicsContext group */
@@ -243,7 +246,7 @@ bool AsyncContext::displayConfig() {
   DBG("Surface width = %i, height = %i", m_width, m_height);
 
   /// @see http://android-developers.blogspot.kr/2013_09_01_archive.html
-  ANativeWindow_setBuffersGeometry(m_window, 1280, 720, m_format);
+  ANativeWindow_setBuffersGeometry(m_window, 0, 0, m_format);
   DBG("exit AsyncContext::displayConfig()");
   return true;
 }
@@ -307,13 +310,17 @@ void AsyncContext::drawLevel() {
   GLuint a_position = m_level_shader->getVertexAttribLocation();
   GLuint a_color = m_level_shader->getColorAttribLocation();
 
-  glVertexAttribPointer(a_position, 2, GL_FLOAT, GL_FALSE, 0, m_level_vertex_buffer);
+  GLfloat vVertices[] = {0.0f, 0.5f, 0.0f,
+                        -0.5f, -0.5f, 0.0f,
+                        0.5f, -0.5f, 0.0f};
+
+  glVertexAttribPointer(a_position, 3, GL_FLOAT, GL_FALSE, 0, /*m_level_vertex_buffer*/vVertices);
   glVertexAttribPointer(a_color, 4, GL_FLOAT, GL_FALSE, 0, m_level_color_buffer);
 
   glEnableVertexAttribArray(a_position);
   glEnableVertexAttribArray(a_color);
 
-  glDrawArrays(GL_TRIANGLES, 0, 4 * m_level->size());
+  glDrawArrays(GL_TRIANGLES, 0, 3/*4 * m_level->size()*/);
 
   glDisableVertexAttribArray(a_position);
   glDisableVertexAttribArray(a_color);

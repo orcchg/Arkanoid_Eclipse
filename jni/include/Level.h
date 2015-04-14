@@ -59,7 +59,19 @@ public:
   /// @return Size of output array.
   /// @details Memory for output array should be allocated manually
   /// by Client, required size for allocation is 8 * cols * rows.
-  void toVertexArray(
+  /// @note Each vertex has 2 coordinates (x, y).
+  void toVertexArray2D(
+      GLfloat width,
+      GLfloat height,
+      GLfloat x_offset,
+      GLfloat y_offset,
+      GLfloat* const array) const;
+
+  /// @brief Converts this Level instance to vertex array.
+  /// @details Memory for output array should be allocated manually
+  /// by Client, required size for allocation is 12 * cols * rows.
+  /// @note Each vertex has 3 coordinates (x, y, 0). Z is always zero.
+  void toVertexArray3D(
       GLfloat width,
       GLfloat height,
       GLfloat x_offset,

@@ -71,7 +71,7 @@ size_t Level::toStringArray(std::vector<std::string>* array) const {
   return rows;
 }
 
-void Level::toVertexArray(
+void Level::toVertexArray2D(
     GLfloat width,
     GLfloat height,
     GLfloat x_offset,
@@ -97,36 +97,75 @@ void Level::toVertexArray(
   }
 }
 
-template <>
-void Level::fillColorArray<GLshort>(GLshort* const array) const {
+void Level::toVertexArray3D(
+    GLfloat width,
+    GLfloat height,
+    GLfloat x_offset,
+    GLfloat y_offset,
+    GLfloat* const array) const {
+
   for (size_t r = 0; r < rows; ++r) {
     for (size_t c = 0; c < cols; ++c) {
-      int index = (c * 4) + (r * cols * 4);
-      switch (blocks[r][c]) {
-        default:
-        case Block::NONE:
-          util::setColor<GLshort>(util::glshort::TRANSPARENT, &array[index]);
-          break;
-        case Block::SIMPLE:
-          util::setColor<GLshort>(util::glshort::GREEN, &array[index]);
-          break;
-      }
+      int index = (c * 12) + (r * cols * 12);
+      // upper left corner
+      array[index + 0] = x_offset + width * c;
+      array[index + 1] = y_offset + height * r;
+      array[index + 2] = 0.0f;
+      // upper right corner
+      array[index + 3] = x_offset + width * (c + 1);
+      array[index + 4] = y_offset + height * r;
+      array[index + 5] = 0.0f;
+      // lower left corner
+      array[index + 6] = x_offset + width * c;
+      array[index + 7] = y_offset + height * (r + 1);
+      array[index + 8] = 0.0f;
+      // lower right corner
+      array[index + 9] = x_offset + width * (c + 1);
+      array[index + 10] = y_offset + height * (r + 1);
+      array[index + 11] = 0.0f;
     }
   }
 }
+
+//template <>
+//void Level::fillColorArray<GLshort>(GLshort* const array) const {
+//  for (size_t r = 0; r < rows; ++r) {
+//    for (size_t c = 0; c < cols; ++c) {
+//      int index = (c * 4) + (r * cols * 4);
+//      switch (blocks[r][c]) {
+//        default:
+//        case Block::NONE:
+//          util::setColor<GLshort>(util::glshort::TRANSPARENT, &array[index]);
+//          break;
+//        case Block::SIMPLE:
+//          util::setColor<GLshort>(util::glshort::GREEN, &array[index]);
+//          break;
+//      }
+//    }
+//  }
+//}
 
 template <>
 void Level::fillColorArray<GLfloat>(GLfloat* const array) const {
   for (size_t r = 0; r < rows; ++r) {
     for (size_t c = 0; c < cols; ++c) {
-      int index = (c * 4) + (r * cols * 4);
+      int upper_left_i  = 0  + 16 * (r * cols + c);
+      int upper_right_i = 4  + 16 * (r * cols + c);
+      int lower_left_i  = 8  + 16 * (r * cols + c);
+      int lower_right_i = 12 + 16 * (r * cols + c);
       switch (blocks[r][c]) {
         default:
         case Block::NONE:
-          util::setColor<GLfloat>(util::glfloat::TRANSPARENT, &array[index]);
+          util::setColor<GLfloat>(util::TRANSPARENT, &array[upper_left_i]);
+          util::setColor<GLfloat>(util::TRANSPARENT, &array[upper_right_i]);
+          util::setColor<GLfloat>(util::TRANSPARENT, &array[lower_left_i]);
+          util::setColor<GLfloat>(util::TRANSPARENT, &array[lower_right_i]);
           break;
         case Block::SIMPLE:
-          util::setColor<GLfloat>(util::glfloat::GREEN, &array[index]);
+          util::setColor<GLfloat>(util::GREEN, &array[upper_left_i]);
+          util::setColor<GLfloat>(util::GREEN, &array[upper_right_i]);
+          util::setColor<GLfloat>(util::GREEN, &array[lower_left_i]);
+          util::setColor<GLfloat>(util::GREEN, &array[lower_right_i]);
           break;
       }
     }
