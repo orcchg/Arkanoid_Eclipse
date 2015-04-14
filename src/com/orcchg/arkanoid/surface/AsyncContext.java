@@ -19,7 +19,7 @@ class AsyncContext {
   void setSurface(Surface surface) { setSurface(descriptor, surface); }
   
   /* User actions */
-  void shiftGamepad(float distance) { shiftGamepad(descriptor, distance); }
+  void shiftGamepad(float position) { shiftGamepad(descriptor, position); }
 
   /* Tools */
   void loadLevel(final String[] level) { loadLevel(descriptor, level); }
@@ -33,7 +33,7 @@ class AsyncContext {
   private native void setSurface(long descriptor, Surface surface);
   
   /* User actions */
-  private native void shiftGamepad(long descriptor, float distance);
+  private native void shiftGamepad(long descriptor, float position);
   private native void throwBall(long descriptor);
   
   /* Tools */

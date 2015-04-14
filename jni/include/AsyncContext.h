@@ -114,7 +114,7 @@ private:
   /** @defgroup LogicData Game logic related data members.
    * @{
    */
-  float m_distance;  //!< Last received distance value of user's motion gesture.
+  float m_position;  //!< Last received position value of user's motion gesture.
   GLfloat m_bite_location;  //!< Last recorder bite location along horizontal axis.
   GLfloat* m_bite_vertex_buffer;  //!< Re-usable buffer for vertices of bite.
   GLfloat* m_bite_color_buffer;   //!< Re-usable buffer for colors of bite.
@@ -195,9 +195,9 @@ private:
   /// @brief Initialize game state.
   void initGame();
   /// @brief Sets the bite into shifted state.
-  /// @param distance Normalized distance the bite should move.
-  /// @note Distance should be within [-1, 1] segment.
-  void moveBite(float distance);
+  /// @param position Normalized position the bite should move at.
+  /// @note Position should be within [-1, 1] segment.
+  void moveBite(float position);
   /** @} */  // end of LogicFunc group
 
 private:

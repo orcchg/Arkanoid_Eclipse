@@ -67,9 +67,9 @@ JNIEXPORT void JNICALL Java_com_orcchg_arkanoid_surface_AsyncContext_setSurface
 /* User actions */
 // ----------------------------------------------------------------------------
 JNIEXPORT void JNICALL Java_com_orcchg_arkanoid_surface_AsyncContext_shiftGamepad
-  (JNIEnv *jenv, jobject, jlong descriptor, jfloat distance) {
+  (JNIEnv *jenv, jobject, jlong descriptor, jfloat position) {
   AsyncContextHelper* ptr = (AsyncContextHelper*) descriptor;
-  ptr->shift_gesture_event.notifyListeners(distance);
+  ptr->shift_gesture_event.notifyListeners(position);
 }
 
 JNIEXPORT void JNICALL Java_com_orcchg_arkanoid_surface_AsyncContext_throwBall

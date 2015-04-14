@@ -19,8 +19,6 @@ public class GameSurface extends SurfaceView implements SurfaceHolder.Callback {
   private int mWidth;
   private int mHeight;
   private float mHalfWidth;
-  
-  private float touchOrigin = 0.0f;
   private float touchCurrent = 0.0f;
   
   private WeakReference<AsyncContext> mAsyncContextRef;
@@ -73,12 +71,10 @@ public class GameSurface extends SurfaceView implements SurfaceHolder.Callback {
   public boolean onTouchEvent(MotionEvent event) {
     switch (event.getAction()) {
       case MotionEvent.ACTION_DOWN:
-        touchOrigin = event.getX() * event.getXPrecision();
-        touchCurrent = touchOrigin;
+        touchCurrent = event.getX() * event.getXPrecision();
         break;
       case MotionEvent.ACTION_MOVE:
         touchCurrent = event.getX() * event.getXPrecision();
-        float distance = touchCurrent - touchOrigin;
         float position = touchCurrent - mHalfWidth;
         if (mAsyncContextRef != null) {
           AsyncContext acontext = mAsyncContextRef.get();
@@ -90,7 +86,6 @@ public class GameSurface extends SurfaceView implements SurfaceHolder.Callback {
       case MotionEvent.ACTION_UP:
         performClick();
       case MotionEvent.ACTION_CANCEL:
-        touchOrigin = 0.0f;
         touchCurrent = 0.0f;
         break;
     }

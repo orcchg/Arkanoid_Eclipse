@@ -19,7 +19,7 @@ AsyncContext::AsyncContext(JavaVM* jvm)
   , m_width(0), m_height(0)
   , m_config(nullptr)
   , m_num_configs(0), m_format(0)
-  , m_distance(0.0f)
+  , m_position(0.0f)
   , m_bite_location(0.0f)
   , m_bite_vertex_buffer(new GLfloat[16])
   , m_bite_color_buffer(new GLfloat[16])
@@ -68,10 +68,10 @@ void AsyncContext::callback_setWindow(ANativeWindow* window) {
   interrupt();
 }
 
-void AsyncContext::callback_shiftGamepad(float distance) {
+void AsyncContext::callback_shiftGamepad(float position) {
   std::unique_lock<std::mutex> lock(m_shift_gamepad_mutex);
   m_shift_gamepad_received.store(true);
-  m_distance = distance;
+  m_position = position;
   interrupt();
 }
 
@@ -173,7 +173,7 @@ void AsyncContext::process_setWindow() {
 
 void AsyncContext::process_shiftGamepad() {
   std::unique_lock<std::mutex> lock(m_shift_gamepad_mutex);
-  moveBite(m_distance);
+  moveBite(m_position);
 }
 
 void AsyncContext::process_throwBall() {
@@ -203,11 +203,10 @@ void AsyncContext::initGame() {
   moveBite(0.0f);
 }
 
-void AsyncContext::moveBite(float distance) {
-  MSG("Distance: %lf", distance);
+void AsyncContext::moveBite(float position) {
   GLfloat bite_W = 0.5f;
   GLfloat bite_H = 0.08f * m_aspect;
-  m_bite_location = distance;
+  m_bite_location = position;
   if (m_bite_location > 0.75f) {
     m_bite_location = 0.75f;
   } else if (m_bite_location < -0.75f) {
