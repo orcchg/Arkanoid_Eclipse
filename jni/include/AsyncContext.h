@@ -101,13 +101,14 @@ private:
    */
   /// Pointer to a window associated with the rendering surface.
   ANativeWindow* m_window;
-  EGLDisplay m_egl_display;  //<! Connection between EGL API and native display.
-  EGLSurface m_egl_surface;  //<! Native window extension with auxiliary buffers.
-  EGLContext m_egl_context;  //<! Bind client API rendering to an EGL surface.
-  EGLint m_width, m_height;  //<! Surface sizes.
-  EGLConfig m_config;  //<! Selected frame buffer configuration, best one.
-  EGLint m_num_configs;  //<! Number of available frame buffer configurations.
-  EGLint m_format;  //<! Frame buffer native visual type (actual configuration).
+  EGLDisplay m_egl_display;  //!< Connection between EGL API and native display.
+  EGLSurface m_egl_surface;  //!< Native window extension with auxiliary buffers.
+  EGLContext m_egl_context;  //!< Bind client API rendering to an EGL surface.
+  EGLint m_width, m_height;  //!< Surface sizes.
+  GLfloat m_aspect;  //!< Surface aspect ratio.
+  EGLConfig m_config;  //!< Selected frame buffer configuration, best one.
+  EGLint m_num_configs;  //!< Number of available frame buffer configurations.
+  EGLint m_format;  //!< Frame buffer native visual type (actual configuration).
   /** @} */  // end of WindowSurface group
 
   /** @defgroup LogicData Game logic related data members.
@@ -134,10 +135,10 @@ private:
   std::mutex m_shift_gamepad_mutex;  //!< Sentinel for shifting gesture event.
   std::mutex m_throw_ball_mutex;  //!< Sentinel for throw ball user command.
   std::mutex m_load_level_mutex;  //!< Sentinel for load level user request.
-  std::atomic_bool m_surface_received;  //<! Window has been set.
-  std::atomic_bool m_shift_gamepad_received;  //<! Shift gesture has occurred.
-  std::atomic_bool m_throw_ball_received;  //<! Throw ball command has been received.
-  std::atomic_bool m_load_level_received;  //<! Load level request has been received.
+  std::atomic_bool m_surface_received;  //!< Window has been set.
+  std::atomic_bool m_shift_gamepad_received;  //!< Shift gesture has occurred.
+  std::atomic_bool m_throw_ball_received;  //!< Throw ball command has been received.
+  std::atomic_bool m_load_level_received;  //!< Load level request has been received.
   /** @} */  // end of Mutex group
 
   /** @defgroup SafetyFlag Logic-safety variables

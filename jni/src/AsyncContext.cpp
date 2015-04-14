@@ -182,7 +182,7 @@ void AsyncContext::process_loadLevel() {
   m_level_vertex_buffer = new GLfloat[m_level->size() * 16];
   m_level_color_buffer = new GLfloat[m_level->size() * 16];
   m_level_index_buffer = new GLushort[m_level->size() * 6];
-  m_level->toVertexArray(0.2f, 0.2f, -1.0f, 1.0f, m_level_vertex_buffer);
+  m_level->toVertexArray(0.2f, 0.1f * m_aspect, -1.0f, 1.0f, m_level_vertex_buffer);
   m_level->fillColorArray(m_level_color_buffer);
   util::rectangleIndices(m_level_index_buffer, m_level->size() * 6);
   DBG("exit AsyncContext::process_loadLevel()");
@@ -247,7 +247,8 @@ bool AsyncContext::displayConfig() {
     destroyDisplay();
     return false;
   }
-  DBG("Surface width = %i, height = %i", m_width, m_height);
+  m_aspect = (GLfloat) m_width / m_height;
+  DBG("Surface width = %i, height = %i, aspect = %lf", m_width, m_height, m_aspect);
 
   /// @see http://android-developers.blogspot.kr/2013_09_01_archive.html
   ANativeWindow_setBuffersGeometry(m_window, 0, 0, m_format);
