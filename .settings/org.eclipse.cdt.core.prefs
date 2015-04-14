@@ -1,0 +1,6 @@
+eclipse.preferences.version=1
+environment/project/com.android.toolchain.gcc.224307705/PATH/delimiter=\:
+environment/project/com.android.toolchain.gcc.224307705/PATH/operation=append
+environment/project/com.android.toolchain.gcc.224307705/PATH/value=/home/srr/Adevelopment/android-ndk-r10d
+environment/project/com.android.toolchain.gcc.224307705/append=true
+environment/project/com.android.toolchain.gcc.224307705/appendContributed=true
