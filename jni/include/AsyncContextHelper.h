@@ -113,6 +113,7 @@ JNIEXPORT jint JNICALL Java_com_orcchg_arkanoid_surface_AsyncContext_getScore
 /* Core */
 // ----------------------------------------------------------------------------
 #include "AsyncContext.h"
+#include "GameProcessor.h"
 
 /**
  * @class AsyncContextHelper AsyncContext.h "include/AsyncContext.h"
@@ -124,6 +125,9 @@ struct AsyncContextHelper {
 
   /// @brief Shared pointer to an instance of render thread.
   game::AsyncContext::Ptr acontext;
+
+  /// @brief Shared pointer to an instance of game logic processor thread.
+  game::GameProcessor::Ptr processor;
 
   /** @defgroup AsyncContextEvent Events coming to render thread from outside.
    * @{

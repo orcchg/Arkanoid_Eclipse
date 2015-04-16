@@ -4,6 +4,7 @@
 #include <atomic>
 #include <memory>
 #include <mutex>
+#include <utility>
 
 #include <android/native_window.h>
 #include <android/native_window_jni.h>
@@ -126,9 +127,11 @@ private:
   constexpr static float ballHalfSize = 0.025f;  //!< Half-size of any of 4 sides of ball.
 
   GLfloat m_bite_height;  //!< Normalized height of bite multiplied on aspect ratio.
-  float m_position;  //!< Last received position value of user's motion gesture.
+  GLfloat m_position;  //!< Last received position value of user's motion gesture.
   bool m_ball_is_flying;  //!< Whether the ball is flying now or not.
-  GLfloat m_bite_location;  //!< Last recorder bite location along horizontal axis.
+  GLfloat m_bite_location;  //!< Location of bite's center along horizontal axis.
+  GLfloat m_ball_x_location;  //!< Location of ball's center along horizontal axis.
+  GLfloat m_ball_y_location;  //!< Location of ball's center along vertical axis.
   GLfloat* m_bite_vertex_buffer;  //!< Re-usable buffer for vertices of bite.
   GLfloat* m_bite_color_buffer;   //!< Re-usable buffer for colors of bite.
   GLfloat* m_ball_vertex_buffer;  //!< Re-usable buffer for vertices of ball.

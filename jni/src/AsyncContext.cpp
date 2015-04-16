@@ -11,7 +11,7 @@
 namespace game {
 
 /* Public API */
-// ----------------------------------------------
+// ----------------------------------------------------------------------------
 AsyncContext::AsyncContext(JavaVM* jvm)
   : m_jvm(jvm), m_jenv(nullptr)
   , m_window(nullptr)
@@ -25,6 +25,8 @@ AsyncContext::AsyncContext(JavaVM* jvm)
   , m_position(0.0f)
   , m_ball_is_flying(false)
   , m_bite_location(0.0f)
+  , m_ball_x_location(0.0f)
+  , m_ball_y_location(0.0f)
   , m_bite_vertex_buffer(new GLfloat[16])
   , m_bite_color_buffer(new GLfloat[16])
   , m_ball_vertex_buffer(new GLfloat[16])
@@ -212,15 +214,18 @@ void AsyncContext::process_loadLevel() {
 /* LogicFunc group */
 // ----------------------------------------------------------------------------
 void AsyncContext::initGame() {
-  m_bite_location = 0.0f;  // ensure correct initial location
+  // ensure correct initial location
+  m_bite_location = 0.0f;
+  m_ball_x_location = m_bite_location;
+  m_ball_y_location = -neg_biteElevation + m_bite_height;
   moveBite(0.0f);
 
   // move ball to it's initial position - at the center of the bite
   util::setRectangleVertices(
       &m_ball_vertex_buffer[0],
       ballSize, ballSize * m_aspect,
-      -ballHalfSize + m_bite_location,
-      -neg_biteElevation + m_bite_height + ballSize * m_aspect,
+      -ballHalfSize + m_ball_x_location,
+      m_ball_y_location + ballSize * m_aspect,
       1, 1);
 }
 
@@ -246,6 +251,9 @@ void AsyncContext::moveBite(float position) {
 }
 
 void AsyncContext::moveBall(float x_position, float y_position) {
+  m_ball_x_location = x_position;
+  m_ball_y_location = y_position;
+
   util::setRectangleVertices(
       &m_ball_vertex_buffer[0],
       ballSize, ballSize * m_aspect,

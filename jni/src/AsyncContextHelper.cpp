@@ -26,6 +26,8 @@ JNIEXPORT jlong JNICALL Java_com_orcchg_arkanoid_surface_AsyncContext_init
   ptr->acontext->throw_ball_listener = ptr->throw_ball_event.createListener(&game::AsyncContext::callback_throwBall, ptr->acontext);
   ptr->acontext->load_level_listener = ptr->load_level_event.createListener(&game::AsyncContext::callback_loadLevel, ptr->acontext);
 
+  ptr->processor->throw_ball_listener = ptr->throw_ball_event.createListener(&game::GameProcessor::callback_throwBall, ptr->processor);
+
   return descriptor;
 }
 
@@ -135,11 +137,15 @@ JNIEXPORT jint JNICALL Java_com_orcchg_arkanoid_surface_AsyncContext_getScore
 
 /* Core */
 // ----------------------------------------------------------------------------
-AsyncContextHelper::AsyncContextHelper() {
+AsyncContextHelper::AsyncContextHelper()
+  : window(nullptr) {
   acontext = std::make_shared<game::AsyncContext>(jvm);
+  processor = std::make_shared<game::GameProcessor>(jvm);
 }
 
 AsyncContextHelper::~AsyncContextHelper() {
   acontext.reset();
   acontext = nullptr;
+  processor.reset();
+  processor = nullptr;
 }
