@@ -52,7 +52,7 @@ constexpr static GLfloat CYAN[4]    = { 0.f,     1.f,  1.f,  1.f };
 constexpr static GLfloat MAGENTA[4] = { 0.5961f, 0.f,  1.f,  1.f };
 constexpr static GLfloat PURPLE[4]  = { 0.5961f, 0.f,  0.4f, 1.f };
 constexpr static GLfloat YELLOW[4]  = { 0.f,     1.f,  1.f,  1.f };
-constexpr static GLfloat ORANGE[4]  = { 0.f,     0.4f, 1.f,  1.f };
+constexpr static GLfloat ORANGE[4]  = { 1.f,     0.4f, 0.f,  1.f };
 constexpr static GLfloat MESHLAB[4] = { 0.8118f, 0.4f, 0.4f, 1.f };
 constexpr static GLfloat TRANSPARENT[4] = { 0.f, 0.f, 0.f,   0.f};
 

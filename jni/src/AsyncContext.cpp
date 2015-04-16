@@ -25,8 +25,7 @@ AsyncContext::AsyncContext(JavaVM* jvm)
   , m_position(0.0f)
   , m_ball_is_flying(false)
   , m_bite_location(0.0f)
-  , m_ball_x_location(0.0f)
-  , m_ball_y_location(0.0f)
+  , m_ball_location()
   , m_bite_vertex_buffer(new GLfloat[16])
   , m_bite_color_buffer(new GLfloat[16])
   , m_ball_vertex_buffer(new GLfloat[16])
@@ -43,6 +42,7 @@ AsyncContext::AsyncContext(JavaVM* jvm)
   m_shift_gamepad_received.store(false);
   m_throw_ball_received.store(false);
   m_load_level_received.store(false);
+  m_move_ball_received.store(false);
   m_window_set = false;
 
   util::setColor(util::MAGENTA, &m_bite_color_buffer[0], 16);
@@ -99,6 +99,14 @@ void AsyncContext::callback_loadLevel(Level::Ptr level) {
   interrupt();
 }
 
+void AsyncContext::callback_moveBall(BallPosition new_position) {
+  std::unique_lock<std::mutex> lock(m_move_ball_mutex);
+  m_move_ball_received.store(true);
+  m_ball_location = new_position;
+  interrupt();
+}
+
+// ----------------------------------------------
 Level::Ptr AsyncContext::getCurrentLevelState() {
   std::unique_lock<std::mutex> lock(m_load_level_mutex);
   return m_level;
@@ -135,7 +143,8 @@ bool AsyncContext::checkForWakeUp() {
   return m_surface_received.load() ||
       m_shift_gamepad_received.load() ||
       m_throw_ball_received.load() ||
-      m_load_level_received.load();
+      m_load_level_received.load() ||
+      m_move_ball_received.load();
 }
 
 void AsyncContext::eventHandler() {
@@ -155,6 +164,10 @@ void AsyncContext::eventHandler() {
     if (m_load_level_received.load()) {
       m_load_level_received.store(false);
       process_loadLevel();
+    }
+    if (m_move_ball_received.load()) {
+      m_move_ball_received.store(false);
+      process_moveBall();
     }
     render();  // render frame to reflect changes occurred
   } else {
@@ -211,22 +224,29 @@ void AsyncContext::process_loadLevel() {
   DBG("exit AsyncContext::process_loadLevel()");
 }
 
+void AsyncContext::process_moveBall() {
+  std::unique_lock<std::mutex> lock(m_move_ball_mutex);
+  moveBall(m_ball_location.x, m_ball_location.y);
+}
+
 /* LogicFunc group */
 // ----------------------------------------------------------------------------
 void AsyncContext::initGame() {
   // ensure correct initial location
   m_bite_location = 0.0f;
-  m_ball_x_location = m_bite_location;
-  m_ball_y_location = -neg_biteElevation + m_bite_height;
+  m_ball_location.x = m_bite_location;
+  m_ball_location.y = -neg_biteElevation + m_bite_height;
   moveBite(0.0f);
 
   // move ball to it's initial position - at the center of the bite
   util::setRectangleVertices(
       &m_ball_vertex_buffer[0],
       ballSize, ballSize * m_aspect,
-      -ballHalfSize + m_ball_x_location,
-      m_ball_y_location + ballSize * m_aspect,
+      -ballHalfSize + m_ball_location.x,
+      m_ball_location.y + ballSize * m_aspect,
       1, 1);
+
+  init_ball_position_event.notifyListeners(m_ball_location);
 }
 
 void AsyncContext::moveBite(float position) {
@@ -251,9 +271,6 @@ void AsyncContext::moveBite(float position) {
 }
 
 void AsyncContext::moveBall(float x_position, float y_position) {
-  m_ball_x_location = x_position;
-  m_ball_y_location = y_position;
-
   util::setRectangleVertices(
       &m_ball_vertex_buffer[0],
       ballSize, ballSize * m_aspect,

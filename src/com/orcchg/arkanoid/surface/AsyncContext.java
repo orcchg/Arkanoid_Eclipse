@@ -20,6 +20,7 @@ class AsyncContext {
   
   /* User actions */
   void shiftGamepad(float position) { shiftGamepad(descriptor, position); }
+  void throwBall() { throwBall(descriptor); }
 
   /* Tools */
   void loadLevel(final String[] level) { loadLevel(descriptor, level); }

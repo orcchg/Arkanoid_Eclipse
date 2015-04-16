@@ -13,6 +13,7 @@
 #include <GLES/gl.h>
 
 #include "ActiveObject.h"
+#include "BallPosition.h"
 #include "Level.h"
 #include "Shader.h"
 
@@ -38,16 +39,15 @@ public:
   /// and hence corresponding event has occurred.
   /// @param window Pointer to a window associated with the rendering surface.
   void callback_setWindow(ANativeWindow* window);
-
   /// @brief Called when user makes a motion gesture within the surface.
   /// @param distance Distance the user's pointer has passed.
   void callback_shiftGamepad(float distance);
-
   /// @brief Called when user sends a command to throw a ball.
   void callback_throwBall(bool /* dummy */);
-
   /// @brief Called when user requests a level to be loaded
   void callback_loadLevel(Level::Ptr level);
+  /// @brief Called when ball has moved to a new position.
+  void callback_moveBall(BallPosition new_position);
   /** @} */  // end of Callbacks group
 
   /** @defgroup GameStat Get game statistics
@@ -84,6 +84,11 @@ public:
   EventListener<bool> throw_ball_listener;
   /// @brief Listens for event which occurs when user requests a level to be loaded.
   EventListener<Level::Ptr> load_level_listener;
+  /// @brief Listens for event which occurs when ball has moved to a new position.
+  EventListener<BallPosition> move_ball_listener;
+
+  /// @brief Notifies ball has been placed to it's initial position.
+  Event<BallPosition> init_ball_position_event;
   /** @} */  // end of Event group
 
 // ----------------------------------------------
@@ -130,8 +135,8 @@ private:
   GLfloat m_position;  //!< Last received position value of user's motion gesture.
   bool m_ball_is_flying;  //!< Whether the ball is flying now or not.
   GLfloat m_bite_location;  //!< Location of bite's center along horizontal axis.
-  GLfloat m_ball_x_location;  //!< Location of ball's center along horizontal axis.
-  GLfloat m_ball_y_location;  //!< Location of ball's center along vertical axis.
+  BallPosition m_ball_location;  //!< Location of ball's center.
+
   GLfloat* m_bite_vertex_buffer;  //!< Re-usable buffer for vertices of bite.
   GLfloat* m_bite_color_buffer;   //!< Re-usable buffer for colors of bite.
   GLfloat* m_ball_vertex_buffer;  //!< Re-usable buffer for vertices of ball.
@@ -160,10 +165,12 @@ private:
   std::mutex m_shift_gamepad_mutex;  //!< Sentinel for shifting gesture event.
   std::mutex m_throw_ball_mutex;  //!< Sentinel for throw ball user command.
   std::mutex m_load_level_mutex;  //!< Sentinel for load level user request.
+  std::mutex m_move_ball_mutex;  //!< Sentinel for move ball to a new position.
   std::atomic_bool m_surface_received;  //!< Window has been set.
   std::atomic_bool m_shift_gamepad_received;  //!< Shift gesture has occurred.
   std::atomic_bool m_throw_ball_received;  //!< Throw ball command has been received.
   std::atomic_bool m_load_level_received;  //!< Load level request has been received.
+  std::atomic_bool m_move_ball_received;  //!< Move ball event has been received.
   /** @} */  // end of Mutex group
 
   /** @defgroup SafetyFlag Logic-safety variables
@@ -196,15 +203,14 @@ private:
   /// @brief Given a rendering surface in Java, performs setting of native
   /// window to interact with during actual rendering.
   void process_setWindow();
-
   /// @brief Performs visual translation of the gamepad by given distance.
   void process_shiftGamepad();
-
   /// @brief Performs visual ball throwing.
   void process_throwBall();
-
   /// @brief Performs visual refreshing of current level.
   void process_loadLevel();
+  /// @brief Performs visual displacement of the ball to a new position.
+  void process_moveBall();
   /** @} */  // end of Processors group
 
 private:
@@ -231,14 +237,11 @@ private:
   /// @brief Configures rendering surface, context and display.
   /// @return false in case of error, true in case of success.
   bool displayConfig();
-
   /// @brief Sets gl options for already prepared context.
   /// @note Different contexts could have different gl options.
   void glOptionsConfig();
-
   /// @brief Releases surface, context and display resources.
   void destroyDisplay();
-
   /// @brief Render a frame.
   void render();
   /** @} */  // end of GraphicsContext group

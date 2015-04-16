@@ -4,6 +4,7 @@ import com.orcchg.arkanoid.R;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.view.MenuItem;
 
 public class MainActivity extends FragmentActivity {
   private static final String TAG = "Arkanoid_MainActivity";
@@ -43,6 +44,22 @@ public class MainActivity extends FragmentActivity {
   protected void onDestroy() {
     mAsyncContext.destroy();
     super.onDestroy();
+  }
+  
+  @Override
+  public boolean onCreateOptionsMenu(android.view.Menu menu) {
+    getMenuInflater().inflate(R.menu.arkanoid_menu, menu);
+    return true;
+  };
+  
+  @Override
+  public boolean onOptionsItemSelected(MenuItem item) {
+    switch (item.getItemId()) {
+      case R.id.throwBall:
+        mAsyncContext.throwBall();
+        break;
+    }
+    return true;
   }
   
   AsyncContext getAsyncContext() { return mAsyncContext; }

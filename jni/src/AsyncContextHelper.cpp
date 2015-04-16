@@ -25,8 +25,10 @@ JNIEXPORT jlong JNICALL Java_com_orcchg_arkanoid_surface_AsyncContext_init
   ptr->acontext->shift_gesture_listener = ptr->shift_gesture_event.createListener(&game::AsyncContext::callback_shiftGamepad, ptr->acontext);
   ptr->acontext->throw_ball_listener = ptr->throw_ball_event.createListener(&game::AsyncContext::callback_throwBall, ptr->acontext);
   ptr->acontext->load_level_listener = ptr->load_level_event.createListener(&game::AsyncContext::callback_loadLevel, ptr->acontext);
+  ptr->acontext->move_ball_listener = ptr->processor->move_ball_event.createListener(&game::AsyncContext::callback_moveBall, ptr->acontext);
 
   ptr->processor->throw_ball_listener = ptr->throw_ball_event.createListener(&game::GameProcessor::callback_throwBall, ptr->processor);
+  ptr->processor->init_ball_position_listener = ptr->acontext->init_ball_position_event.createListener(&game::GameProcessor::callback_initBall, ptr->processor);
 
   return descriptor;
 }
@@ -35,12 +37,14 @@ JNIEXPORT void JNICALL Java_com_orcchg_arkanoid_surface_AsyncContext_start
   (JNIEnv *jenv, jobject, jlong descriptor) {
   AsyncContextHelper* ptr = (AsyncContextHelper*) descriptor;
   ptr->acontext->launch();
+  ptr->processor->launch();
 }
 
 JNIEXPORT void JNICALL Java_com_orcchg_arkanoid_surface_AsyncContext_stop
   (JNIEnv *jenv, jobject, jlong descriptor) {
   AsyncContextHelper* ptr = (AsyncContextHelper*) descriptor;
   ptr->acontext->stop();
+  ptr->processor->stop();
 }
 
 JNIEXPORT void JNICALL Java_com_orcchg_arkanoid_surface_AsyncContext_destroy

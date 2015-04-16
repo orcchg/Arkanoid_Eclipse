@@ -1,5 +1,5 @@
-#ifndef INCLUDE_GAMEPROCESSOR_H_
-#define INCLUDE_GAMEPROCESSOR_H_
+#ifndef __ARKANOID_GAMEPROCESSOR__H__
+#define __ARKANOID_GAMEPROCESSOR__H__
 
 #include <atomic>
 #include <memory>
@@ -8,6 +8,8 @@
 #include <jni.h>
 
 #include "ActiveObject.h"
+#include "BallPosition.h"
+#include "utils.h"
 
 namespace game {
 
@@ -26,6 +28,8 @@ public:
    */
   /// @brief Called when user sends a command to throw a ball.
   void callback_throwBall(bool /* dummy */);
+  /// @brief Called when ball has been set to it's initial position.
+  void callback_initBall(BallPosition init_position);
   /** @} */  // end of Callbacks group
 
 // ----------------------------------------------
@@ -49,6 +53,11 @@ public:
    */
   /// @brief Listens for event which occurs when user sends throw ball command.
   EventListener<bool> throw_ball_listener;
+  /// @brief Listens for event which occurs when ball is placed to some initial position.
+  EventListener<BallPosition> init_ball_position_listener;
+
+  /// @brief Notifies ball has moved to a new position.
+  Event<BallPosition> move_ball_event;
   /** @} */  // end of Event group
 
 // ----------------------------------------------
@@ -61,12 +70,27 @@ private:
   JNIEnv* m_jenv;  //!< Pointer to environment local within this thread.
   /** @} */  // end of JNIEnvironment group
 
+  /** @defgroup LogicData Game logic related data members.
+   * @{
+   */
+  constexpr static float ballAngle = util::PI4;  //!< Initial angle at game start
+  constexpr static float ballSpeed = 0.1f;   //!< Initial speed at game start
+
+  bool m_ball_is_flying;  //!< Whether the ball is flying now or not.
+  BallPosition m_ball_location;  //!< Last recorded ball's location.
+  /// @brief Angle between ball's velocity and positive X axis, in radians.
+  GLfloat m_ball_angle;
+  GLfloat m_ball_speed;  //!< Value of ball's velocity, pixels per frame.
+  /** @} */  // end of LogicData group
+
   /** @defgroup Mutex Thread-safety variables
    * @{
    */
   std::mutex m_jnienvironment_mutex;  //!< Sentinel for thread attach to JVM.
   std::mutex m_throw_ball_mutex;  //!< Sentinel for throw ball user command.
+  std::mutex m_init_ball_position_mutex;  //!< Sentinel for init ball position setting.
   std::atomic_bool m_throw_ball_received;  //!< Throw ball command has been received.
+  std::atomic_bool m_init_ball_position_received;  //!< Setting ball into init position received.
   /** @} */  // end of Mutex group
 
 // ----------------------------------------------
@@ -92,9 +116,20 @@ private:
    */
   /// @brief Throws the ball, setting it's initial speed and direction.
   void process_throwBall();
+  /// @brief Sets the ball's initial position values.
+  void process_initBall();
   /** @} */  // end of Processors group
+
+  /** @defgroup LogicFunc Game logic related member functions.
+   * @{
+   */
+  /// @brief Calculates new position of ball according to it's velocity
+  /// and then notifies listeners that event 'move_ball_event' occurs.
+  /// @details Calculated position is the ball's position in the next frame.
+  void moveBall();
+  /** @} */  // end of LogicFunc group
 };
 
 }
 
-#endif /* INCLUDE_GAMEPROCESSOR_H_ */
+#endif /* __ARKANOID_GAMEPROCESSOR__H__ */
