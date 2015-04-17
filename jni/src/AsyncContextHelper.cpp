@@ -28,10 +28,11 @@ JNIEXPORT jlong JNICALL Java_com_orcchg_arkanoid_surface_AsyncContext_init
   ptr->acontext->move_ball_listener = ptr->processor->move_ball_event.createListener(&game::AsyncContext::callback_moveBall, ptr->acontext);
   ptr->acontext->lost_ball_listener = ptr->processor->lost_ball_event.createListener(&game::AsyncContext::callback_lostBall, ptr->acontext);
 
+  ptr->processor->load_level_listener = ptr->load_level_event.createListener(&game::GameProcessor::callback_loadLevel, ptr->processor);
   ptr->processor->throw_ball_listener = ptr->throw_ball_event.createListener(&game::GameProcessor::callback_throwBall, ptr->processor);
   ptr->processor->init_ball_position_listener = ptr->acontext->init_ball_position_event.createListener(&game::GameProcessor::callback_initBall, ptr->processor);
   ptr->processor->init_bite_listener = ptr->acontext->init_bite_event.createListener(&game::GameProcessor::callback_initBite, ptr->processor);
-  ptr->processor->level_lower_border_listener = ptr->acontext->level_lower_border_event.createListener(&game::GameProcessor::callback_loadLevel, ptr->processor);
+  ptr->processor->level_dimens_listener = ptr->acontext->level_dimens_event.createListener(&game::GameProcessor::callback_levelDimens, ptr->processor);
   ptr->processor->bite_location_listener = ptr->acontext->bite_location_event.createListener(&game::GameProcessor::callback_biteMoved, ptr->processor);
 
   return descriptor;

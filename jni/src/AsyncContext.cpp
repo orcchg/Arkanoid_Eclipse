@@ -219,6 +219,7 @@ void AsyncContext::process_throwBall() {
 void AsyncContext::process_loadLevel() {
   std::unique_lock<std::mutex> lock(m_load_level_mutex);
   DBG("enter AsyncContext::process_loadLevel()");
+
   // release memory allocated for previous level if any
   delete [] m_level_vertex_buffer;
   delete [] m_level_color_buffer;
@@ -226,10 +227,17 @@ void AsyncContext::process_loadLevel() {
   m_level_vertex_buffer = new GLfloat[m_level->size() * 16];
   m_level_color_buffer = new GLfloat[m_level->size() * 16];
   m_level_index_buffer = new GLushort[m_level->size() * 6];
-  m_level->toVertexArray(0.2f, 0.1f * m_aspect, -1.0f, 1.0f, &m_level_vertex_buffer[0]);
+
+  LevelDimens dimens(
+      m_level->numCols() * LevelDimens::blockWidth,
+      m_level->numRows() * LevelDimens::blockHeight * m_aspect,
+      LevelDimens::blockWidth,
+      LevelDimens::blockHeight * m_aspect);
+
+  m_level->toVertexArray(dimens.block_width, dimens.block_height, -1.0f, 1.0f, &m_level_vertex_buffer[0]);
   m_level->fillColorArray(&m_level_color_buffer[0]);
   util::rectangleIndices(&m_level_index_buffer[0], m_level->size() * 6);
-  level_lower_border_event.notifyListeners(0.1f * m_aspect * m_level->numRows());
+  level_dimens_event.notifyListeners(dimens);
   DBG("exit AsyncContext::process_loadLevel()");
 }
 

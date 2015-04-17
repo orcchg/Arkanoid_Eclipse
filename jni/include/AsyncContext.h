@@ -16,6 +16,7 @@
 #include "Ball.h"
 #include "Bite.h"
 #include "Level.h"
+#include "LevelDimens.h"
 #include "Shader.h"
 
 namespace game {
@@ -96,8 +97,8 @@ public:
   Event<Ball> init_ball_position_event;
   /// @brief Notifies bite's dimensions have been measured.
   Event<Bite> init_bite_event;
-  /// @brief Notifies about lower border of loaded level.
-  Event<float> level_lower_border_event;
+  /// @brief Notifies about measured dimensions of loaded level.
+  Event<LevelDimens> level_dimens_event;
   /// @brief Notifies bite location has changed.
   Event<Bite> bite_location_event;
   /** @} */  // end of Event group

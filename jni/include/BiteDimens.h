@@ -7,6 +7,7 @@
 
 namespace game {
 
+/// @brief Measured bite dimensions.
 struct BiteDimens {
   GLfloat width, height;
 

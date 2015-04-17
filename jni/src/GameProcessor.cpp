@@ -16,15 +16,16 @@ GameProcessor::GameProcessor(JavaVM* jvm)
   , m_ball()
   , m_bite()
   , m_bite_upper_border(-BiteParams::neg_biteElevation)
-  , m_level_lower_border(0.0f)
+  , m_level_dimens(0.0f, 0.0f)
   , m_generator()
   , m_angle_distribution(util::PI4, util::PI16)
   , m_direction_distribution(0.5f) {
 
+  m_load_level_received.store(false);
   m_throw_ball_received.store(false);
   m_init_ball_position_received.store(false);
   m_init_bite_received.store(false);
-  m_level_lower_border_received.store(false);
+  m_level_dimens_received.store(false);
   m_bite_location_received.store(false);
 }
 
@@ -34,6 +35,13 @@ GameProcessor::~GameProcessor() {
 
 /* Callbacks group */
 // ----------------------------------------------------------------------------
+void GameProcessor::callback_loadLevel(Level::Ptr level) {
+  std::unique_lock<std::mutex> lock(m_load_level_mutex);
+  m_load_level_received.store(true);
+  // XXX:
+  interrupt();
+}
+
 void GameProcessor::callback_throwBall(bool /* dummy */) {
   std::unique_lock<std::mutex> lock(m_throw_ball_mutex);
   m_throw_ball_received.store(true);
@@ -54,10 +62,10 @@ void GameProcessor::callback_initBite(Bite bite) {
   interrupt();
 }
 
-void GameProcessor::callback_loadLevel(float lower_border) {
-  std::unique_lock<std::mutex> lock(m_level_lower_border_mutex);
-  m_level_lower_border_received.store(true);
-  m_level_lower_border = lower_border;
+void GameProcessor::callback_levelDimens(LevelDimens level_dimens) {
+  std::unique_lock<std::mutex> lock(m_level_dimens_mutex);
+  m_level_dimens_received.store(true);
+  m_level_dimens = level_dimens;
   interrupt();
 }
 
@@ -97,14 +105,19 @@ void GameProcessor::onStop() {
 
 bool GameProcessor::checkForWakeUp() {
   return m_ball_is_flying ||
+      m_load_level_received.load() ||
       m_throw_ball_received.load() ||
       m_init_ball_position_received.load() ||
       m_init_bite_received.load() ||
-      m_level_lower_border_received.load() ||
+      m_level_dimens_received.load() ||
       m_bite_location_received.load();
 }
 
 void GameProcessor::eventHandler() {
+  if (m_load_level_received.load()) {
+    m_load_level_received.store(false);
+    process_loadLevel();
+  }
   if (m_throw_ball_received.load()) {
     m_throw_ball_received.store(false);
     process_throwBall();
@@ -117,8 +130,8 @@ void GameProcessor::eventHandler() {
     m_init_bite_received.store(false);
     process_initBite();
   }
-  if (m_level_lower_border_received.load()) {
-    m_level_lower_border_received.store(false);
+  if (m_level_dimens_received.load()) {
+    m_level_dimens_received.store(false);
     process_loadLevel();
   }
   if (m_bite_location_received.load()) {
@@ -132,6 +145,11 @@ void GameProcessor::eventHandler() {
 
 /* Processors group */
 // ----------------------------------------------------------------------------
+void GameProcessor::process_loadLevel() {
+  std::unique_lock<std::mutex> lock(m_load_level_mutex);
+  // XXX:
+}
+
 void GameProcessor::process_throwBall() {
   std::unique_lock<std::mutex> lock(m_throw_ball_mutex);
   m_ball_is_flying = true;
@@ -151,8 +169,8 @@ void GameProcessor::process_initBite() {
   m_bite_upper_border = -BiteParams::neg_biteElevation + 2 * m_bite.dimens.height;
 }
 
-void GameProcessor::process_loadLevel() {
-  std::unique_lock<std::mutex> lock(m_level_lower_border_mutex);
+void GameProcessor::process_levelDimens() {
+  std::unique_lock<std::mutex> lock(m_level_dimens_mutex);
   // no-op
 }
 
@@ -181,7 +199,7 @@ void GameProcessor::moveBall() {
       m_is_ball_lost = !collideBite(new_x);
     }
   } else {
-    if (new_y >= 1.0f - m_level_lower_border) {
+    if (new_y >= 1.0f - m_level_dimens.height) {
       m_ball.angle = util::_2PI - m_ball.angle;
     }
     GLfloat sign = m_ball.angle >= 0.0f ? 1.0f : -1.0f;
