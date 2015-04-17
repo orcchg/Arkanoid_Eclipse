@@ -171,7 +171,6 @@ void GameProcessor::moveBall() {
   // ball's position in the next frame
   GLfloat new_x = m_ball_location.x + m_ball_speed * cos(m_ball_angle);
   GLfloat new_y = m_ball_location.y + m_ball_speed * sin(m_ball_angle);
-  GLfloat sign = 1.0f;
 
   if (m_is_ball_lost && new_y <= -1.0f) {
     lost_ball_event.notifyListeners(true);
@@ -179,21 +178,12 @@ void GameProcessor::moveBall() {
     return;
   }
 
-  // Ball faces left / right border or level's lower border
+  // Ball faces left / right border
   collideLeftRightBorder(new_x);
 
   // Ball faces bite's plane
   if (new_y <= m_bite_upper_border) {
-    if (new_x >= -BiteParams::biteHalfWidth + m_bite_location &&
-        new_x <= BiteParams::biteHalfWidth + m_bite_location) {
-      if (m_ball_angle >= util::PI) {
-        m_ball_angle = util::_2PI - m_ball_angle;
-      }
-      sign = m_ball_angle >= 0.0f ? 1.0f : -1.0f;
-      m_ball_angle = sign * std::fmod(std::fabs(m_ball_angle), util::_2PI);
-    } else {
-      m_is_ball_lost = true;  // lost ball
-    }
+    m_is_ball_lost = collideBite(new_x);
   } else {
     // Ball faces level's border
     if (new_y >= 1.0f - m_level_lower_border) {
@@ -203,7 +193,7 @@ void GameProcessor::moveBall() {
         m_ball_angle += util::_3PI2;
       }
     }
-    sign = m_ball_angle >= 0.0f ? 1.0f : -1.0f;
+    GLfloat sign = m_ball_angle >= 0.0f ? 1.0f : -1.0f;
     m_ball_angle = sign * std::fmod(std::fabs(m_ball_angle), util::_2PI);
   }
 
@@ -234,6 +224,21 @@ void GameProcessor::collideLeftRightBorder(GLfloat new_x) {
   }
   GLfloat sign = m_ball_angle >= 0.0f ? 1.0f : -1.0f;
   m_ball_angle = sign * std::fmod(std::fabs(m_ball_angle), util::_2PI);
+}
+
+// http://stackoverflow.com/questions/8063696/arkanoid-physics-projectile-physics-simulation
+bool GameProcessor::collideBite(GLfloat new_x) {
+  if (new_x >= -BiteParams::biteHalfWidth + m_bite_location &&
+      new_x <= BiteParams::biteHalfWidth + m_bite_location) {
+    if (m_ball_angle >= util::PI) {
+      m_ball_angle = util::_2PI - m_ball_angle;
+    }
+    GLfloat sign = m_ball_angle >= 0.0f ? 1.0f : -1.0f;
+    m_ball_angle = sign * std::fmod(std::fabs(m_ball_angle), util::_2PI);
+  } else {
+    return false;  // ball missed the bite
+  }
+  return true;
 }
 
 }
