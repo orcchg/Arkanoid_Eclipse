@@ -14,7 +14,8 @@ struct Ball {
 
   Ball()
     : pose()
-    , x_velocity(0.0f), y_velocity(0.0f)
+    , x_velocity(BallParams::ballSpeed)
+    , y_velocity(BallParams::ballSpeed)
     , spin(0.0f)
     , mass(BallParams::ballMass) {
   }

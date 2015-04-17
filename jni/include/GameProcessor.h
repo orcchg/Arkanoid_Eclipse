@@ -96,7 +96,6 @@ private:
   GLfloat m_bite_upper_border;  //!< Upper border of bite.
   /// @brief Angle between ball's velocity and positive X axis, in radians.
   GLfloat m_ball_angle;
-  GLfloat m_ball_speed;  //!< Value of ball's velocity, pixels per frame.
   GLfloat m_level_lower_border;  //!< Lower border of loaded level in it's current state.
   /** @} */  // end of LogicData group
 

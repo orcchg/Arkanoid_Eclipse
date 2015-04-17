@@ -17,7 +17,6 @@ GameProcessor::GameProcessor(JavaVM* jvm)
   , m_bite()
   , m_bite_upper_border(-BiteParams::neg_biteElevation)
   , m_ball_angle(BallParams::ballAngle)
-  , m_ball_speed(BallParams::ballSpeed)
   , m_level_lower_border(0.0f)
   , m_generator()
   , m_angle_distribution(util::PI4, util::PI16)
@@ -146,7 +145,6 @@ void GameProcessor::process_initBall() {
   m_ball_angle = m_angle_distribution(m_generator);  // BallParams::ballAngle;
   m_ball_angle += m_direction_distribution(m_generator) ? util::PI2 : 0.0f;
   m_ball_angle = std::fmod(m_ball_angle, util::_2PI);
-  m_ball_speed = BallParams::ballSpeed;
 }
 
 void GameProcessor::process_initBite() {
@@ -168,8 +166,8 @@ void GameProcessor::process_biteMoved() {
 // ----------------------------------------------------------------------------
 void GameProcessor::moveBall() {
   // ball's position in the next frame
-  GLfloat new_x = m_ball.pose.x + m_ball_speed * cos(m_ball_angle);
-  GLfloat new_y = m_ball.pose.y + m_ball_speed * sin(m_ball_angle);
+  GLfloat new_x = m_ball.pose.x + m_ball.x_velocity * cos(m_ball_angle);
+  GLfloat new_y = m_ball.pose.y + m_ball.y_velocity * sin(m_ball_angle);
 
   if (m_is_ball_lost && new_y <= -1.0f) {
     lost_ball_event.notifyListeners(true);
@@ -191,8 +189,8 @@ void GameProcessor::moveBall() {
     m_ball_angle = sign * std::fmod(std::fabs(m_ball_angle), util::_2PI);
   }
 
-  new_x = m_ball.pose.x + m_ball_speed * cos(m_ball_angle);
-  new_y = m_ball.pose.y + m_ball_speed * sin(m_ball_angle);
+  new_x = m_ball.pose.x + m_ball.x_velocity * cos(m_ball_angle);
+  new_y = m_ball.pose.y + m_ball.y_velocity * sin(m_ball_angle);
   m_ball.pose.x = new_x;
   m_ball.pose.y = new_y;
 
