@@ -178,22 +178,18 @@ void GameProcessor::moveBall() {
     return;
   }
 
-  GLfloat angle_before = m_ball_angle;
-  // Ball faces left / right border
   collideLeftRightBorder(new_x);
 
-  // Ball faces bite's plane
-  if (new_y <= m_bite_upper_border) {
-    m_is_ball_lost = collideBite(new_x);
+  if (new_y < m_bite_upper_border) {
+    if (!m_is_ball_lost) {
+      m_is_ball_lost = !collideBite(new_x);
+    }
   } else {
-    // Ball faces level's border
-//    INF("LEVEL before: %lf", m_ball_angle);
     if (new_y >= 1.0f - m_level_lower_border) {
       m_ball_angle = util::_2PI - m_ball_angle;
     }
     GLfloat sign = m_ball_angle >= 0.0f ? 1.0f : -1.0f;
     m_ball_angle = sign * std::fmod(std::fabs(m_ball_angle), util::_2PI);
-//    INF("LEVEL after: %lf", m_ball_angle);
   }
 
   new_x = m_ball.pose.x + m_ball_speed * cos(m_ball_angle);
@@ -208,7 +204,6 @@ void GameProcessor::moveBall() {
 /* Maths group */
 // ----------------------------------------------------------------------------
 void GameProcessor::collideLeftRightBorder(GLfloat new_x) {
-//  WRN("SURF before: %lf", m_ball_angle);
   if (new_x >= BallParams::neg_ballHalfSize) {
     if (m_ball_angle <= util::PI2) {
       m_ball_angle = util::PI - m_ball_angle;
@@ -224,12 +219,10 @@ void GameProcessor::collideLeftRightBorder(GLfloat new_x) {
   }
   GLfloat sign = m_ball_angle >= 0.0f ? 1.0f : -1.0f;
   m_ball_angle = sign * std::fmod(std::fabs(m_ball_angle), util::_2PI);
-//  WRN("SURF after: %lf", m_ball_angle);
 }
 
 // http://stackoverflow.com/questions/8063696/arkanoid-physics-projectile-physics-simulation
 bool GameProcessor::collideBite(GLfloat new_x) {
-//  ERR("BITE before: %lf", m_ball_angle);
   if (new_x >= -BiteParams::biteHalfWidth + m_bite.x_pose &&
       new_x <= BiteParams::biteHalfWidth + m_bite.x_pose) {
     if (m_ball_angle >= util::PI) {
@@ -240,7 +233,6 @@ bool GameProcessor::collideBite(GLfloat new_x) {
   } else {
     return false;  // ball missed the bite
   }
-//  ERR("BITE after: %lf", m_ball_angle);
   return true;
 }
 
