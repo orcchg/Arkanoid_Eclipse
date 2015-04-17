@@ -23,7 +23,6 @@ AsyncContext::AsyncContext(JavaVM* jvm)
   , m_config(nullptr)
   , m_num_configs(0), m_format(0)
   , m_position(0.0f)
-  , m_ball_is_flying(false)
   , m_bite()
   , m_ball()
   , m_bite_vertex_buffer(new GLfloat[16])
@@ -214,9 +213,7 @@ void AsyncContext::process_shiftGamepad() {
 
 void AsyncContext::process_throwBall() {
   std::unique_lock<std::mutex> lock(m_throw_ball_mutex);
-  if (!m_ball_is_flying) {
-    m_ball_is_flying = true;
-  }
+  // no-op
 }
 
 void AsyncContext::process_loadLevel() {

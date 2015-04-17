@@ -132,7 +132,6 @@ private:
    * @{
    */
   GLfloat m_position;  //!< Last received position value of user's motion gesture.
-  bool m_ball_is_flying;  //!< Whether the ball is flying now or not.
   Bite m_bite;  //!< Physical bite's representation.
   Ball m_ball;  //!< Physical ball's representation.
 
