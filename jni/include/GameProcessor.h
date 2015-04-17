@@ -95,12 +95,13 @@ private:
   /** @defgroup LogicData Game logic related data members.
    * @{
    */
+  Level::Ptr m_level;  //!< Game level at it's current state.
   bool m_ball_is_flying;  //!< Whether the ball is flying now or not.
   bool m_is_ball_lost;  //!< Whether the ball has been lost or not.
   Ball m_ball;  //!< Physical ball's representation.
   Bite m_bite;  //!< Physical bite's representation.
   GLfloat m_bite_upper_border;  //!< Upper border of bite.
-  LevelDimens m_level_dimens;  //!< Measured level's dimenstions.
+  LevelDimens m_level_dimens;  //!< Measured level's dimensions.
   /** @} */  // end of LogicData group
 
   /** @defgroup Maths Maths auxiliary members.
@@ -183,6 +184,11 @@ private:
   /// @param new_x Position of ball's center along X axis in the next frame.
   /// @return TRUE in case ball collides bite, FALSE if ball misses the bite.
   bool collideBite(GLfloat new_x);
+  /// @brief Processing of collision between ball and level's blocks.
+  /// @param new_y Position of ball's center along Y axis in the next frame.
+  /// @return TRUE in case ball collides level's lower border,
+  /// FALSE if ball misses such border.
+  bool collideBlocks(GLfloat new_y);
   /** @} */  // end of Maths group
 };
 

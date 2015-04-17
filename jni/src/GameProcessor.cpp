@@ -11,6 +11,7 @@ namespace game {
 // ----------------------------------------------
 GameProcessor::GameProcessor(JavaVM* jvm)
   : m_jvm(jvm), m_jenv(nullptr)
+  , m_level(nullptr)
   , m_ball_is_flying(false)
   , m_is_ball_lost(false)
   , m_ball()
@@ -38,7 +39,7 @@ GameProcessor::~GameProcessor() {
 void GameProcessor::callback_loadLevel(Level::Ptr level) {
   std::unique_lock<std::mutex> lock(m_load_level_mutex);
   m_load_level_received.store(true);
-  // XXX:
+  m_level = level;
   interrupt();
 }
 
@@ -199,11 +200,7 @@ void GameProcessor::moveBall() {
       m_is_ball_lost = !collideBite(new_x);
     }
   } else {
-    if (new_y >= 1.0f - m_level_dimens.height) {
-      m_ball.angle = util::_2PI - m_ball.angle;
-    }
-    GLfloat sign = m_ball.angle >= 0.0f ? 1.0f : -1.0f;
-    m_ball.angle = sign * std::fmod(std::fabs(m_ball.angle), util::_2PI);
+    collideBlocks(new_y);
   }
 
   new_x = m_ball.pose.x + m_ball.x_velocity * cos(m_ball.angle);
@@ -248,6 +245,16 @@ bool GameProcessor::collideBite(GLfloat new_x) {
     return false;  // ball missed the bite
   }
   return true;
+}
+
+bool GameProcessor::collideBlocks(GLfloat new_y) {
+  if (new_y >= 1.0f - m_level_dimens.height) {
+    m_ball.angle = util::_2PI - m_ball.angle;
+    GLfloat sign = m_ball.angle >= 0.0f ? 1.0f : -1.0f;
+    m_ball.angle = sign * std::fmod(std::fabs(m_ball.angle), util::_2PI);
+    return true;
+  }
+  return false;
 }
 
 }

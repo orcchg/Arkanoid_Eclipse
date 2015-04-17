@@ -58,7 +58,7 @@ public:
    * @{
    */
   /// @brief Gets current state of last loaded level.
-  Level::Ptr getCurrentLevelState();
+  Level::Ptr getCurrentLevelState();  // TODO: remove
   /** @} */  // end of GameStat group
 
 // ----------------------------------------------
