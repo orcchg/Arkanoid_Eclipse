@@ -12,6 +12,7 @@ namespace game {
 GameProcessor::GameProcessor(JavaVM* jvm)
   : m_jvm(jvm), m_jenv(nullptr)
   , m_ball_is_flying(false)
+  , m_is_ball_lost(false)
   , m_ball_location()
   , m_bite_dimens()
   , m_bite_upper_border(-BiteParams::neg_biteElevation)
@@ -137,6 +138,7 @@ void GameProcessor::eventHandler() {
 void GameProcessor::process_throwBall() {
   std::unique_lock<std::mutex> lock(m_throw_ball_mutex);
   m_ball_is_flying = true;
+  m_is_ball_lost = false;
 }
 
 void GameProcessor::process_initBall() {
@@ -171,41 +173,31 @@ void GameProcessor::moveBall() {
   GLfloat new_y = m_ball_location.y + m_ball_speed * sin(m_ball_angle);
   GLfloat sign = 1.0f;
 
+  if (m_is_ball_lost && new_y <= -1.0f) {
+    lost_ball_event.notifyListeners(true);
+    m_ball_is_flying = false;
+    return;
+  }
+
+  // Ball faces left / right border or level's lower border
+  collideLeftRightBorder(new_x);
+
   // Ball faces bite's plane
   if (new_y <= m_bite_upper_border) {
     if (new_x >= -BiteParams::biteHalfWidth + m_bite_location &&
         new_x <= BiteParams::biteHalfWidth + m_bite_location) {
       if (m_ball_angle >= util::_3PI2) {
-        m_ball_angle -= util::_3PI2;
+        m_ball_angle = util::_2PI - m_ball_angle;
       } else if (m_ball_angle >= util::PI) {
-        m_ball_angle -= util::PI2;
+        m_ball_angle = util::_2PI - m_ball_angle;
       }
       sign = m_ball_angle >= 0.0f ? 1.0f : -1.0f;
       m_ball_angle = sign * std::fmod(std::fabs(m_ball_angle), util::_2PI);
     } else {
-      // lost ball
-      // XXX: animate ball flew behind the bite
-      lost_ball_event.notifyListeners(true);
-      m_ball_is_flying = false;
-      return;
+      m_is_ball_lost = true;  // lost ball
     }
   } else {
-    // Ball faces left / right border or level's lower border
-    if (new_x >= BallParams::neg_ballHalfSize) {
-      if (m_ball_angle <= util::PI2) {
-        m_ball_angle += util::PI2;
-      } else if (m_ball_angle >= util::_3PI2) {
-        m_ball_angle -= util::PI2;
-      }
-    } else if (new_x <= -BallParams::neg_ballHalfSize) {
-      if (m_ball_angle >= util::PI) {
-        m_ball_angle += util::PI2;
-      } else if (m_ball_angle >= util::PI2) {
-        m_ball_angle -= util::PI2;
-      }
-    }
-    sign = m_ball_angle >= 0.0f ? 1.0f : -1.0f;
-    m_ball_angle = sign * std::fmod(std::fabs(m_ball_angle), util::_2PI);
+    // Ball faces level's border
     if (new_y >= 1.0f - m_level_lower_border) {
       if (m_ball_angle >= util::PI2) {
         m_ball_angle += util::PI2;
@@ -215,14 +207,6 @@ void GameProcessor::moveBall() {
     }
     sign = m_ball_angle >= 0.0f ? 1.0f : -1.0f;
     m_ball_angle = sign * std::fmod(std::fabs(m_ball_angle), util::_2PI);
-//    if (new_x >= 1.0f ||
-//        new_x <= -1.0f ||
-//        new_y >= 1.0f - m_level_lower_border /*||
-//        new_y <= -1.0f*/) {
-//      m_ball_angle += util::PI2;
-//    } else {
-//      // regular flight
-//    }
   }
 
   new_x = m_ball_location.x + m_ball_speed * cos(m_ball_angle);
@@ -231,7 +215,27 @@ void GameProcessor::moveBall() {
   m_ball_location.y = new_y;
 
   move_ball_event.notifyListeners(m_ball_location);
-  std::this_thread::sleep_for (std::chrono::milliseconds(150));
+  std::this_thread::sleep_for (std::chrono::milliseconds(50));
+}
+
+/* Maths group */
+// ----------------------------------------------------------------------------
+void GameProcessor::collideLeftRightBorder(GLfloat new_x) {
+  if (new_x >= BallParams::neg_ballHalfSize) {
+    if (m_ball_angle <= util::PI2) {
+      m_ball_angle += util::PI2;
+    } else if (m_ball_angle >= util::_3PI2) {
+      m_ball_angle -= util::PI2;
+    }
+  } else if (new_x <= -BallParams::neg_ballHalfSize) {
+    if (m_ball_angle >= util::PI) {
+      m_ball_angle += util::PI2;
+    } else if (m_ball_angle >= util::PI2) {
+      m_ball_angle -= util::PI2;
+    }
+  }
+  GLfloat sign = m_ball_angle >= 0.0f ? 1.0f : -1.0f;
+  m_ball_angle = sign * std::fmod(std::fabs(m_ball_angle), util::_2PI);
 }
 
 }

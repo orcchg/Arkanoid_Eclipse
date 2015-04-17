@@ -90,6 +90,7 @@ private:
    * @{
    */
   bool m_ball_is_flying;  //!< Whether the ball is flying now or not.
+  bool m_is_ball_lost;  //!< Whether the ball has been lost or not.
   BallPosition m_ball_location;  //!< Last recorded ball's location.
   BiteDimens m_bite_dimens;  //!< Measured dimensions of the bite.
   GLfloat m_bite_upper_border;  //!< Upper border of bite.
@@ -165,6 +166,14 @@ private:
   /// @details Calculated position is the ball's position in the next frame.
   void moveBall();
   /** @} */  // end of LogicFunc group
+
+  /** @addtogroup Maths
+   * @{
+   */
+  /// @brief Recalculates ball's angle when it faces left or right border.
+  /// @param new_x Position of ball's center along X axis in the next frame.
+  void collideLeftRightBorder(GLfloat new_x);
+  /** @} */  // end of Maths group
 };
 
 }
