@@ -9,8 +9,8 @@
 #include <jni.h>
 
 #include "ActiveObject.h"
-#include "BallPosition.h"
-#include "BiteDimens.h"
+#include "Ball.h"
+#include "Bite.h"
 #include "utils.h"
 
 namespace game {
@@ -33,7 +33,7 @@ public:
   /// @brief Called when ball has been set to it's initial position.
   void callback_initBall(BallPosition init_position);
   /// @brief Called when bite's dimensions have been measured.
-  void callback_initBite(BiteDimens bite_dimens);
+  void callback_initBite(Bite bite);
   /// @brief Called when new level has been loaded and it's lower border passed.
   void callback_loadLevel(float lower_border);
   /// @brief Called when bite's location has changed.
@@ -64,7 +64,7 @@ public:
   /// @brief Listens for event which occurs when ball is placed to some initial position.
   EventListener<BallPosition> init_ball_position_listener;
   /// @brief Listens for bite's measured dimensions.
-  EventListener<BiteDimens> init_bite_listener;
+  EventListener<Bite> init_bite_listener;
   /// @brief Listens for the value of lower border of last loaded level.
   EventListener<float> level_lower_border_listener;
   /// @brief Listens for bite location changes.
@@ -92,7 +92,7 @@ private:
   bool m_ball_is_flying;  //!< Whether the ball is flying now or not.
   bool m_is_ball_lost;  //!< Whether the ball has been lost or not.
   BallPosition m_ball_location;  //!< Last recorded ball's location.
-  BiteDimens m_bite_dimens;  //!< Measured dimensions of the bite.
+  Bite m_bite;  //!< Physical bite's representation.
   GLfloat m_bite_upper_border;  //!< Upper border of bite.
   /// @brief Angle between ball's velocity and positive X axis, in radians.
   GLfloat m_ball_angle;

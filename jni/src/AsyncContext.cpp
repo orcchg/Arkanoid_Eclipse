@@ -22,10 +22,9 @@ AsyncContext::AsyncContext(JavaVM* jvm)
   , m_width(0), m_height(0)
   , m_config(nullptr)
   , m_num_configs(0), m_format(0)
-  , m_bite_height(BiteParams::biteHeight)
   , m_position(0.0f)
   , m_ball_is_flying(false)
-  , m_bite_location(0.0f)
+  , m_bite()
   , m_ball_location()
   , m_bite_vertex_buffer(new GLfloat[16])
   , m_bite_color_buffer(new GLfloat[16])
@@ -251,9 +250,10 @@ void AsyncContext::process_lostBall() {
 // ----------------------------------------------------------------------------
 void AsyncContext::initGame() {
   // ensure correct initial location
-  m_bite_location = 0.0f;
-  m_ball_location.x = m_bite_location;
-  m_ball_location.y = -BiteParams::neg_biteElevation + m_bite_height;
+  m_bite = Bite();
+  m_bite.dimens.height = BiteParams::biteHeight * m_aspect;
+  m_ball_location.x = m_bite.x_pose;
+  m_ball_location.y = -BiteParams::neg_biteElevation + m_bite.dimens.height;
   moveBite(0.0f);
 
   // move ball to it's initial position - at the center of the bite
@@ -265,30 +265,30 @@ void AsyncContext::initGame() {
       1, 1);
 
   init_ball_position_event.notifyListeners(m_ball_location);
-  init_bite_event.notifyListeners(BiteDimens(BiteParams::biteWidth, m_bite_height));
+  init_bite_event.notifyListeners(m_bite);
 }
 
 void AsyncContext::moveBite(float position) {
-  if (std::fabs(position - m_bite_location) >= BiteParams::biteTouchArea) {
+  if (std::fabs(position - m_bite.x_pose) >= BiteParams::biteTouchArea) {
     // finger position is out of bite's borders
     return;
   }
 
-  m_bite_location = position;
-  if (m_bite_location > BiteParams::neg_biteHalfWidth) {
-    m_bite_location = BiteParams::neg_biteHalfWidth;
-  } else if (m_bite_location < -BiteParams::neg_biteHalfWidth) {
-    m_bite_location = -BiteParams::neg_biteHalfWidth;
+  m_bite.x_pose = position;
+  if (m_bite.x_pose > BiteParams::neg_biteHalfWidth) {
+    m_bite.x_pose = BiteParams::neg_biteHalfWidth;
+  } else if (m_bite.x_pose < -BiteParams::neg_biteHalfWidth) {
+    m_bite.x_pose = -BiteParams::neg_biteHalfWidth;
   }
 
   util::setRectangleVertices(
       &m_bite_vertex_buffer[0],
-      BiteParams::biteWidth, m_bite_height,
-      -BiteParams::biteHalfWidth + m_bite_location,
-      -BiteParams::neg_biteElevation + m_bite_height,
+      BiteParams::biteWidth, m_bite.dimens.height,
+      -BiteParams::biteHalfWidth + m_bite.x_pose,
+      -BiteParams::neg_biteElevation + m_bite.dimens.height,
       1, 1);
 
-  bite_location_event.notifyListeners(m_bite_location);
+  bite_location_event.notifyListeners(m_bite.x_pose);
 }
 
 void AsyncContext::moveBall(float x_position, float y_position) {
@@ -360,7 +360,6 @@ bool AsyncContext::displayConfig() {
     return false;
   }
   m_aspect = (GLfloat) m_width / m_height;
-  m_bite_height = BiteParams::biteHeight * m_aspect;
   DBG("Surface width = %i, height = %i, aspect = %lf", m_width, m_height, m_aspect);
 
   /// @see http://android-developers.blogspot.kr/2013_09_01_archive.html

@@ -14,6 +14,7 @@ struct BiteParams {
   /// @brief Elevation of bite above the lower boundary of the playground.
   constexpr static float biteElevation = 0.2f;
   constexpr static float neg_biteElevation = 0.8f;  //!< One minus bite elevation.
+  constexpr static float biteMass = 2.0f;  //!< Constant mass of bite.
 };
 
 struct BallParams {
@@ -22,6 +23,7 @@ struct BallParams {
   constexpr static float neg_ballHalfSize = 0.975f;  //!< One minus ball half-size.
   constexpr static float ballAngle = util::PI4;  //!< Initial angle at game start
   constexpr static float ballSpeed = 0.05f;   //!< Initial speed at game start
+  constexpr static float ballMass = 1.0f;  //!< Constant mass of ball.
 };
 
 }

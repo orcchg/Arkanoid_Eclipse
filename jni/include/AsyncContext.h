@@ -13,8 +13,8 @@
 #include <GLES/gl.h>
 
 #include "ActiveObject.h"
-#include "BallPosition.h"
-#include "BiteDimens.h"
+#include "Ball.h"
+#include "Bite.h"
 #include "Level.h"
 #include "Shader.h"
 
@@ -95,7 +95,7 @@ public:
   /// @brief Notifies ball has been placed to it's initial position.
   Event<BallPosition> init_ball_position_event;
   /// @brief Notifies bite's dimensions have been measured.
-  Event<BiteDimens> init_bite_event;
+  Event<Bite> init_bite_event;
   /// @brief Notifies about lower border of loaded level.
   Event<float> level_lower_border_event;
   /// @brief Notifies bite location has changed.
@@ -131,10 +131,9 @@ private:
   /** @defgroup LogicData Game logic related data members.
    * @{
    */
-  GLfloat m_bite_height;  //!< Normalized height of bite multiplied on aspect ratio.
   GLfloat m_position;  //!< Last received position value of user's motion gesture.
   bool m_ball_is_flying;  //!< Whether the ball is flying now or not.
-  GLfloat m_bite_location;  //!< Location of bite's center along horizontal axis.
+  Bite m_bite;  //!< Physical bite's representation.
   BallPosition m_ball_location;  //!< Location of ball's center.
 
   GLfloat* m_bite_vertex_buffer;  //!< Re-usable buffer for vertices of bite.

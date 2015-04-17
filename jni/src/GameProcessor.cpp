@@ -14,7 +14,7 @@ GameProcessor::GameProcessor(JavaVM* jvm)
   , m_ball_is_flying(false)
   , m_is_ball_lost(false)
   , m_ball_location()
-  , m_bite_dimens()
+  , m_bite()
   , m_bite_upper_border(-BiteParams::neg_biteElevation)
   , m_ball_angle(BallParams::ballAngle)
   , m_ball_speed(BallParams::ballSpeed)
@@ -50,10 +50,10 @@ void GameProcessor::callback_initBall(BallPosition init_position) {
   interrupt();
 }
 
-void GameProcessor::callback_initBite(BiteDimens bite_dimens) {
+void GameProcessor::callback_initBite(Bite bite) {
   std::unique_lock<std::mutex> lock(m_init_bite_mutex);
   m_init_bite_received.store(true);
-  m_bite_dimens = bite_dimens;
+  m_bite = bite;
   interrupt();
 }
 
@@ -152,7 +152,7 @@ void GameProcessor::process_initBall() {
 
 void GameProcessor::process_initBite() {
   std::unique_lock<std::mutex> lock(m_init_bite_mutex);
-  m_bite_upper_border = -BiteParams::neg_biteElevation + 2 * m_bite_dimens.height;
+  m_bite_upper_border = -BiteParams::neg_biteElevation + 2 * m_bite.dimens.height;
 }
 
 void GameProcessor::process_loadLevel() {
@@ -186,15 +186,13 @@ void GameProcessor::moveBall() {
     m_is_ball_lost = collideBite(new_x);
   } else {
     // Ball faces level's border
+//    INF("LEVEL before: %lf", m_ball_angle);
     if (new_y >= 1.0f - m_level_lower_border) {
-      if (m_ball_angle >= util::PI2) {
-        m_ball_angle += util::PI2;
-      } else if (m_ball_angle <= util::PI2) {
-        m_ball_angle += util::_3PI2;
-      }
+      m_ball_angle = util::_2PI - m_ball_angle;
     }
     GLfloat sign = m_ball_angle >= 0.0f ? 1.0f : -1.0f;
     m_ball_angle = sign * std::fmod(std::fabs(m_ball_angle), util::_2PI);
+//    INF("LEVEL after: %lf", m_ball_angle);
   }
 
   new_x = m_ball_location.x + m_ball_speed * cos(m_ball_angle);
@@ -209,6 +207,7 @@ void GameProcessor::moveBall() {
 /* Maths group */
 // ----------------------------------------------------------------------------
 void GameProcessor::collideLeftRightBorder(GLfloat new_x) {
+//  WRN("SURF before: %lf", m_ball_angle);
   if (new_x >= BallParams::neg_ballHalfSize) {
     if (m_ball_angle <= util::PI2) {
       m_ball_angle += util::PI2;
@@ -224,10 +223,12 @@ void GameProcessor::collideLeftRightBorder(GLfloat new_x) {
   }
   GLfloat sign = m_ball_angle >= 0.0f ? 1.0f : -1.0f;
   m_ball_angle = sign * std::fmod(std::fabs(m_ball_angle), util::_2PI);
+//  WRN("SURF after: %lf", m_ball_angle);
 }
 
 // http://stackoverflow.com/questions/8063696/arkanoid-physics-projectile-physics-simulation
 bool GameProcessor::collideBite(GLfloat new_x) {
+//  ERR("BITE before: %lf", m_ball_angle);
   if (new_x >= -BiteParams::biteHalfWidth + m_bite_location &&
       new_x <= BiteParams::biteHalfWidth + m_bite_location) {
     if (m_ball_angle >= util::PI) {
@@ -238,6 +239,7 @@ bool GameProcessor::collideBite(GLfloat new_x) {
   } else {
     return false;  // ball missed the bite
   }
+//  ERR("BITE after: %lf", m_ball_angle);
   return true;
 }
 
