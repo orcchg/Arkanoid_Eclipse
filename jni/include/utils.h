@@ -7,6 +7,7 @@
 namespace util {
 
 // http://habrahabr.ru/company/abbyy/blog/252871/
+constexpr float _3PI = 9.4250778f;
 constexpr float _2PI = 6.2831852f;
 constexpr float _3PI2 = 4.7123889f;
 constexpr float PI = 3.1415926f;

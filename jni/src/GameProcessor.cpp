@@ -211,15 +211,15 @@ void GameProcessor::collideLeftRightBorder(GLfloat new_x) {
 //  WRN("SURF before: %lf", m_ball_angle);
   if (new_x >= BallParams::neg_ballHalfSize) {
     if (m_ball_angle <= util::PI2) {
-      m_ball_angle += util::PI2;
+      m_ball_angle = util::PI - m_ball_angle;
     } else if (m_ball_angle >= util::_3PI2) {
-      m_ball_angle -= util::PI2;
+      m_ball_angle = util::_3PI - m_ball_angle;
     }
   } else if (new_x <= -BallParams::neg_ballHalfSize) {
     if (m_ball_angle >= util::PI) {
-      m_ball_angle += util::PI2;
+      m_ball_angle = util::_3PI - m_ball_angle;
     } else if (m_ball_angle >= util::PI2) {
-      m_ball_angle -= util::PI2;
+      m_ball_angle = util::PI - m_ball_angle;
     }
   }
   GLfloat sign = m_ball_angle >= 0.0f ? 1.0f : -1.0f;
