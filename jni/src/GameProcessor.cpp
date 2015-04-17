@@ -181,16 +181,10 @@ void GameProcessor::moveBall() {
   GLfloat angle_before = m_ball_angle;
   // Ball faces left / right border
   collideLeftRightBorder(new_x);
-  assert("Surface collide" &&
-         std::fmod(std::fabs(m_ball_angle), util::PI2) ==
-         std::fmod(std::fabs(angle_before), util::PI2));
 
   // Ball faces bite's plane
   if (new_y <= m_bite_upper_border) {
     m_is_ball_lost = collideBite(new_x);
-    assert("Paddle collide" &&
-           std::fmod(std::fabs(m_ball_angle), util::PI2) ==
-           std::fmod(std::fabs(angle_before), util::PI2));
   } else {
     // Ball faces level's border
 //    INF("LEVEL before: %lf", m_ball_angle);
@@ -200,9 +194,6 @@ void GameProcessor::moveBall() {
     GLfloat sign = m_ball_angle >= 0.0f ? 1.0f : -1.0f;
     m_ball_angle = sign * std::fmod(std::fabs(m_ball_angle), util::_2PI);
 //    INF("LEVEL after: %lf", m_ball_angle);
-    assert("Level collide" &&
-           std::fmod(std::fabs(m_ball_angle), util::PI2) ==
-           std::fmod(std::fabs(angle_before), util::PI2));
   }
 
   new_x = m_ball.pose.x + m_ball_speed * cos(m_ball_angle);
