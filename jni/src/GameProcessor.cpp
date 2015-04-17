@@ -150,7 +150,7 @@ void GameProcessor::process_initBall() {
 
 void GameProcessor::process_initBite() {
   std::unique_lock<std::mutex> lock(m_init_bite_mutex);
-  m_bite_upper_border = -BiteParams::neg_biteElevation + m_bite_dimens.height;
+  m_bite_upper_border = -BiteParams::neg_biteElevation + 2 * m_bite_dimens.height;
 }
 
 void GameProcessor::process_loadLevel() {
@@ -191,13 +191,13 @@ void GameProcessor::moveBall() {
     }
   } else {
     // Ball faces left / right border or level's lower border
-    if (new_x >= 1.0f) {
+    if (new_x >= BallParams::neg_ballHalfSize) {
       if (m_ball_angle <= util::PI2) {
         m_ball_angle += util::PI2;
       } else if (m_ball_angle >= util::_3PI2) {
         m_ball_angle -= util::PI2;
       }
-    } else if (new_x <= -1.0f) {
+    } else if (new_x <= -BallParams::neg_ballHalfSize) {
       if (m_ball_angle >= util::PI) {
         m_ball_angle += util::PI2;
       } else if (m_ball_angle >= util::PI2) {
@@ -231,7 +231,7 @@ void GameProcessor::moveBall() {
   m_ball_location.y = new_y;
 
   move_ball_event.notifyListeners(m_ball_location);
-  std::this_thread::sleep_for (std::chrono::milliseconds(50));
+  std::this_thread::sleep_for (std::chrono::milliseconds(150));
 }
 
 }
