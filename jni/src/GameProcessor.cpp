@@ -186,9 +186,7 @@ void GameProcessor::moveBall() {
   if (new_y <= m_bite_upper_border) {
     if (new_x >= -BiteParams::biteHalfWidth + m_bite_location &&
         new_x <= BiteParams::biteHalfWidth + m_bite_location) {
-      if (m_ball_angle >= util::_3PI2) {
-        m_ball_angle = util::_2PI - m_ball_angle;
-      } else if (m_ball_angle >= util::PI) {
+      if (m_ball_angle >= util::PI) {
         m_ball_angle = util::_2PI - m_ball_angle;
       }
       sign = m_ball_angle >= 0.0f ? 1.0f : -1.0f;
