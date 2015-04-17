@@ -164,7 +164,6 @@ void GameProcessor::process_biteMoved() {
   // no-op
 }
 
-#include <cassert>
 /* LogicFunc group */
 // ----------------------------------------------------------------------------
 void GameProcessor::moveBall() {
