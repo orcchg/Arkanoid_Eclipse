@@ -4,11 +4,13 @@
 #include <atomic>
 #include <memory>
 #include <mutex>
+#include <random>
 
 #include <jni.h>
 
 #include "ActiveObject.h"
 #include "BallPosition.h"
+#include "BiteDimens.h"
 #include "utils.h"
 
 namespace game {
@@ -30,6 +32,12 @@ public:
   void callback_throwBall(bool /* dummy */);
   /// @brief Called when ball has been set to it's initial position.
   void callback_initBall(BallPosition init_position);
+  /// @brief Called when bite's dimensions have been measured.
+  void callback_initBite(BiteDimens bite_dimens);
+  /// @brief Called when new level has been loaded and it's lower border passed.
+  void callback_loadLevel(float lower_border);
+  /// @brief Called when bite's location has changed.
+  void callback_biteMoved(float new_bite_location);
   /** @} */  // end of Callbacks group
 
 // ----------------------------------------------
@@ -55,9 +63,17 @@ public:
   EventListener<bool> throw_ball_listener;
   /// @brief Listens for event which occurs when ball is placed to some initial position.
   EventListener<BallPosition> init_ball_position_listener;
+  /// @brief Listens for bite's measured dimensions.
+  EventListener<BiteDimens> init_bite_listener;
+  /// @brief Listens for the value of lower border of last loaded level.
+  EventListener<float> level_lower_border_listener;
+  /// @brief Listens for bite location changes.
+  EventListener<float> bite_location_listener;
 
   /// @brief Notifies ball has moved to a new position.
   Event<BallPosition> move_ball_event;
+  /// @brief Notifies whether the ball has been lost.
+  Event<bool> lost_ball_event;
   /** @} */  // end of Event group
 
 // ----------------------------------------------
@@ -73,15 +89,24 @@ private:
   /** @defgroup LogicData Game logic related data members.
    * @{
    */
-  constexpr static float ballAngle = util::PI4;  //!< Initial angle at game start
-  constexpr static float ballSpeed = 0.1f;   //!< Initial speed at game start
-
   bool m_ball_is_flying;  //!< Whether the ball is flying now or not.
   BallPosition m_ball_location;  //!< Last recorded ball's location.
+  BiteDimens m_bite_dimens;  //!< Measured dimensions of the bite.
+  GLfloat m_bite_upper_border;  //!< Upper border of bite.
   /// @brief Angle between ball's velocity and positive X axis, in radians.
   GLfloat m_ball_angle;
   GLfloat m_ball_speed;  //!< Value of ball's velocity, pixels per frame.
+  GLfloat m_level_lower_border;  //!< Lower border of loaded level in it's current state.
+  GLfloat m_bite_location;  //!< Last recorded bite's  center location along X axis.
   /** @} */  // end of LogicData group
+
+  /** @defgroup Maths Maths auxiliary members.
+   * @{
+   */
+  std::default_random_engine m_generator;
+  std::normal_distribution<float> m_angle_distribution;
+  std::bernoulli_distribution m_direction_distribution;
+  /** @} */  // Maths
 
   /** @defgroup Mutex Thread-safety variables
    * @{
@@ -89,8 +114,14 @@ private:
   std::mutex m_jnienvironment_mutex;  //!< Sentinel for thread attach to JVM.
   std::mutex m_throw_ball_mutex;  //!< Sentinel for throw ball user command.
   std::mutex m_init_ball_position_mutex;  //!< Sentinel for init ball position setting.
+  std::mutex m_init_bite_mutex;  //!< Sentinel for initial bite dimensions.
+  std::mutex m_level_lower_border_mutex;  //!< Sentinel for loaded level lower border.
+  std::mutex m_bite_location_mutex;  //!< Sentinel for bite's center location changes.
   std::atomic_bool m_throw_ball_received;  //!< Throw ball command has been received.
   std::atomic_bool m_init_ball_position_received;  //!< Setting ball into init position received.
+  std::atomic_bool m_init_bite_received;  //!< Initial bite dimensions have been received.
+  std::atomic_bool m_level_lower_border_received;  //!< Level has been loaded and it's lower border received.
+  std::atomic_bool m_bite_location_received;  //!< New bite's center location has been received.
   /** @} */  // end of Mutex group
 
 // ----------------------------------------------
@@ -118,6 +149,12 @@ private:
   void process_throwBall();
   /// @brief Sets the ball's initial position values.
   void process_initBall();
+  /// @brief Set's the bite's measured dimensions.
+  void process_initBite();
+  /// @brief Processing when new level loaded and it's lower border received.
+  void process_loadLevel();
+  /// @brief Processing when bite's location has changed.
+  void process_biteMoved();
   /** @} */  // end of Processors group
 
   /** @defgroup LogicFunc Game logic related member functions.

@@ -3,6 +3,7 @@
 
 #include "Exceptions.h"
 #include "GameProcessor.h"
+#include "Params.h"
 
 namespace game {
 
@@ -12,11 +13,21 @@ GameProcessor::GameProcessor(JavaVM* jvm)
   : m_jvm(jvm), m_jenv(nullptr)
   , m_ball_is_flying(false)
   , m_ball_location()
-  , m_ball_angle(ballAngle)
-  , m_ball_speed(ballSpeed) {
+  , m_bite_dimens()
+  , m_bite_upper_border(-BiteParams::neg_biteElevation)
+  , m_ball_angle(BallParams::ballAngle)
+  , m_ball_speed(BallParams::ballSpeed)
+  , m_level_lower_border(0.0f)
+  , m_bite_location(0.0f)
+  , m_generator()
+  , m_angle_distribution(util::PI4, util::PI16)
+  , m_direction_distribution(0.5f) {
 
   m_throw_ball_received.store(false);
   m_init_ball_position_received.store(false);
+  m_init_bite_received.store(false);
+  m_level_lower_border_received.store(false);
+  m_bite_location_received.store(false);
 }
 
 GameProcessor::~GameProcessor() {
@@ -35,6 +46,27 @@ void GameProcessor::callback_initBall(BallPosition init_position) {
   std::unique_lock<std::mutex> lock(m_init_ball_position_mutex);
   m_init_ball_position_received.store(true);
   m_ball_location = init_position;
+  interrupt();
+}
+
+void GameProcessor::callback_initBite(BiteDimens bite_dimens) {
+  std::unique_lock<std::mutex> lock(m_init_bite_mutex);
+  m_init_bite_received.store(true);
+  m_bite_dimens = bite_dimens;
+  interrupt();
+}
+
+void GameProcessor::callback_loadLevel(float lower_border) {
+  std::unique_lock<std::mutex> lock(m_level_lower_border_mutex);
+  m_level_lower_border_received.store(true);
+  m_level_lower_border = lower_border;
+  interrupt();
+}
+
+void GameProcessor::callback_biteMoved(float new_bite_location) {
+  std::unique_lock<std::mutex> lock(m_bite_location_mutex);
+  m_bite_location_received.store(true);
+  m_bite_location = new_bite_location;
   interrupt();
 }
 
@@ -68,7 +100,10 @@ void GameProcessor::onStop() {
 bool GameProcessor::checkForWakeUp() {
   return m_ball_is_flying ||
       m_throw_ball_received.load() ||
-      m_init_ball_position_received.load();
+      m_init_ball_position_received.load() ||
+      m_init_bite_received.load() ||
+      m_level_lower_border_received.load() ||
+      m_bite_location_received.load();
 }
 
 void GameProcessor::eventHandler() {
@@ -79,6 +114,18 @@ void GameProcessor::eventHandler() {
   if (m_init_ball_position_received.load()) {
     m_init_ball_position_received.store(false);
     process_initBall();
+  }
+  if (m_init_bite_received.load()) {
+    m_init_bite_received.store(false);
+    process_initBite();
+  }
+  if (m_level_lower_border_received.load()) {
+    m_level_lower_border_received.store(false);
+    process_loadLevel();
+  }
+  if (m_bite_location_received.load()) {
+    m_bite_location_received.store(false);
+    process_biteMoved();
   }
   if (m_ball_is_flying) {
     moveBall();
@@ -95,21 +142,87 @@ void GameProcessor::process_throwBall() {
 void GameProcessor::process_initBall() {
   std::unique_lock<std::mutex> lock(m_init_ball_position_mutex);
   // restore ball's initial velocity
-  m_ball_angle = ballAngle;
-  m_ball_speed = ballSpeed;
+  m_ball_angle = m_angle_distribution(m_generator);  // BallParams::ballAngle;
+  m_ball_angle += m_direction_distribution(m_generator) ? util::PI2 : 0.0f;
+  m_ball_angle = std::fmod(m_ball_angle, util::_2PI);
+  m_ball_speed = BallParams::ballSpeed;
+}
+
+void GameProcessor::process_initBite() {
+  std::unique_lock<std::mutex> lock(m_init_bite_mutex);
+  m_bite_upper_border = -BiteParams::neg_biteElevation + m_bite_dimens.height;
+}
+
+void GameProcessor::process_loadLevel() {
+  std::unique_lock<std::mutex> lock(m_level_lower_border_mutex);
+  // no-op
+}
+
+void GameProcessor::process_biteMoved() {
+  std::unique_lock<std::mutex> lock(m_bite_location_mutex);
+  // no-op
 }
 
 /* LogicFunc group */
 // ----------------------------------------------------------------------------
 void GameProcessor::moveBall() {
+  // ball's position in the next frame
   GLfloat new_x = m_ball_location.x + m_ball_speed * cos(m_ball_angle);
   GLfloat new_y = m_ball_location.y + m_ball_speed * sin(m_ball_angle);
+  GLfloat sign = 1.0f;
 
-  if (new_x >= 1.0f ||
-      new_x <= -1.0f ||
-      new_y >= 1.0f ||
-      new_y <= -1.0f) {
-    m_ball_angle += util::PI2;
+  // Ball faces bite's plane
+  if (new_y <= m_bite_upper_border) {
+    if (new_x >= -BiteParams::biteHalfWidth + m_bite_location &&
+        new_x <= BiteParams::biteHalfWidth + m_bite_location) {
+      if (m_ball_angle >= util::_3PI2) {
+        m_ball_angle -= util::_3PI2;
+      } else if (m_ball_angle >= util::PI) {
+        m_ball_angle -= util::PI2;
+      }
+      sign = m_ball_angle >= 0.0f ? 1.0f : -1.0f;
+      m_ball_angle = sign * std::fmod(std::fabs(m_ball_angle), util::_2PI);
+    } else {
+      // lost ball
+      // XXX: animate ball flew behind the bite
+      lost_ball_event.notifyListeners(true);
+      m_ball_is_flying = false;
+      return;
+    }
+  } else {
+    // Ball faces left / right border or level's lower border
+    if (new_x >= 1.0f) {
+      if (m_ball_angle <= util::PI2) {
+        m_ball_angle += util::PI2;
+      } else if (m_ball_angle >= util::_3PI2) {
+        m_ball_angle -= util::PI2;
+      }
+    } else if (new_x <= -1.0f) {
+      if (m_ball_angle >= util::PI) {
+        m_ball_angle += util::PI2;
+      } else if (m_ball_angle >= util::PI2) {
+        m_ball_angle -= util::PI2;
+      }
+    }
+    sign = m_ball_angle >= 0.0f ? 1.0f : -1.0f;
+    m_ball_angle = sign * std::fmod(std::fabs(m_ball_angle), util::_2PI);
+    if (new_y >= 1.0f - m_level_lower_border) {
+      if (m_ball_angle >= util::PI2) {
+        m_ball_angle += util::PI2;
+      } else if (m_ball_angle <= util::PI2) {
+        m_ball_angle += util::_3PI2;
+      }
+    }
+    sign = m_ball_angle >= 0.0f ? 1.0f : -1.0f;
+    m_ball_angle = sign * std::fmod(std::fabs(m_ball_angle), util::_2PI);
+//    if (new_x >= 1.0f ||
+//        new_x <= -1.0f ||
+//        new_y >= 1.0f - m_level_lower_border /*||
+//        new_y <= -1.0f*/) {
+//      m_ball_angle += util::PI2;
+//    } else {
+//      // regular flight
+//    }
   }
 
   new_x = m_ball_location.x + m_ball_speed * cos(m_ball_angle);

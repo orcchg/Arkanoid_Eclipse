@@ -6,9 +6,13 @@
 
 namespace util {
 
-constexpr float PI = 3.1415926f;  // http://habrahabr.ru/company/abbyy/blog/252871/
+// http://habrahabr.ru/company/abbyy/blog/252871/
+constexpr float _2PI = 6.2831852f;
+constexpr float _3PI2 = 4.7123889f;
+constexpr float PI = 3.1415926f;
 constexpr float PI2 = 1.5707963f;
 constexpr float PI4 = 0.78539815f;
+constexpr float PI16 = 0.1963495375f;
 
 template <typename T>
 void setColor(const BGRA<T>& bgra, T* const color_buffer, size_t size) {

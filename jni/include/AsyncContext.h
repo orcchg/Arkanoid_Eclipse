@@ -14,6 +14,7 @@
 
 #include "ActiveObject.h"
 #include "BallPosition.h"
+#include "BiteDimens.h"
 #include "Level.h"
 #include "Shader.h"
 
@@ -48,6 +49,8 @@ public:
   void callback_loadLevel(Level::Ptr level);
   /// @brief Called when ball has moved to a new position.
   void callback_moveBall(BallPosition new_position);
+  /// @brief Called when ball has been lost.
+  void callback_lostBall(float is_lost);
   /** @} */  // end of Callbacks group
 
   /** @defgroup GameStat Get game statistics
@@ -86,9 +89,17 @@ public:
   EventListener<Level::Ptr> load_level_listener;
   /// @brief Listens for event which occurs when ball has moved to a new position.
   EventListener<BallPosition> move_ball_listener;
+  /// @brief Listens for event which occurs when ball has been lost.
+  EventListener<bool> lost_ball_listener;
 
   /// @brief Notifies ball has been placed to it's initial position.
   Event<BallPosition> init_ball_position_event;
+  /// @brief Notifies bite's dimensions have been measured.
+  Event<BiteDimens> init_bite_event;
+  /// @brief Notifies about lower border of loaded level.
+  Event<float> level_lower_border_event;
+  /// @brief Notifies bite location has changed.
+  Event<float> bite_location_event;
   /** @} */  // end of Event group
 
 // ----------------------------------------------
@@ -120,17 +131,6 @@ private:
   /** @defgroup LogicData Game logic related data members.
    * @{
    */
-  constexpr static float biteWidth = 0.5f;  //!< Normalized width of bite.
-  constexpr static float biteHalfWidth = 0.25f;  //!< Normalized half-width of bite.
-  constexpr static float biteHeight = 0.08f;  //!< Normalized height of bite.
-  constexpr static float neg_biteHalfWidth = 0.75f;  //!< One minus bite half-width.
-  constexpr static float biteTouchArea = 0.15f;  //!< Radius of touch area to affect bite.
-  /// @brief Elevation of bite above the lower boundary of the playground.
-  constexpr static float biteElevation = 0.2f;
-  constexpr static float neg_biteElevation = 0.8f;  //!< One minus bite elevation.
-  constexpr static float ballSize = 0.05f;  //!< Size of any of 4 sides of ball.
-  constexpr static float ballHalfSize = 0.025f;  //!< Half-size of any of 4 sides of ball.
-
   GLfloat m_bite_height;  //!< Normalized height of bite multiplied on aspect ratio.
   GLfloat m_position;  //!< Last received position value of user's motion gesture.
   bool m_ball_is_flying;  //!< Whether the ball is flying now or not.
@@ -166,11 +166,13 @@ private:
   std::mutex m_throw_ball_mutex;  //!< Sentinel for throw ball user command.
   std::mutex m_load_level_mutex;  //!< Sentinel for load level user request.
   std::mutex m_move_ball_mutex;  //!< Sentinel for move ball to a new position.
+  std::mutex m_lost_ball_mutex;  //!< Sentinel for lost ball flag.
   std::atomic_bool m_surface_received;  //!< Window has been set.
   std::atomic_bool m_shift_gamepad_received;  //!< Shift gesture has occurred.
   std::atomic_bool m_throw_ball_received;  //!< Throw ball command has been received.
   std::atomic_bool m_load_level_received;  //!< Load level request has been received.
   std::atomic_bool m_move_ball_received;  //!< Move ball event has been received.
+  std::atomic_bool m_lost_ball_received;  //!< Ball has been lost received.
   /** @} */  // end of Mutex group
 
   /** @defgroup SafetyFlag Logic-safety variables
@@ -211,6 +213,8 @@ private:
   void process_loadLevel();
   /// @brief Performs visual displacement of the ball to a new position.
   void process_moveBall();
+  /// @brief Processing when ball has been lost.
+  void process_lostBall();
   /** @} */  // end of Processors group
 
 private:

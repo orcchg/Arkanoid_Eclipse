@@ -6,6 +6,7 @@
 #include "EGLConfigChooser.h"
 #include "Exceptions.h"
 #include "logger.h"
+#include "Params.h"
 #include "utils.h"
 
 namespace game {
@@ -21,7 +22,7 @@ AsyncContext::AsyncContext(JavaVM* jvm)
   , m_width(0), m_height(0)
   , m_config(nullptr)
   , m_num_configs(0), m_format(0)
-  , m_bite_height(biteHeight)
+  , m_bite_height(BiteParams::biteHeight)
   , m_position(0.0f)
   , m_ball_is_flying(false)
   , m_bite_location(0.0f)
@@ -43,6 +44,7 @@ AsyncContext::AsyncContext(JavaVM* jvm)
   m_throw_ball_received.store(false);
   m_load_level_received.store(false);
   m_move_ball_received.store(false);
+  m_lost_ball_received.store(false);
   m_window_set = false;
 
   util::setColor(util::MAGENTA, &m_bite_color_buffer[0], 16);
@@ -106,6 +108,12 @@ void AsyncContext::callback_moveBall(BallPosition new_position) {
   interrupt();
 }
 
+void AsyncContext::callback_lostBall(float is_lost) {
+  std::unique_lock<std::mutex> lock(m_lost_ball_mutex);
+  m_lost_ball_received.store(true);
+  interrupt();
+}
+
 // ----------------------------------------------
 Level::Ptr AsyncContext::getCurrentLevelState() {
   std::unique_lock<std::mutex> lock(m_load_level_mutex);
@@ -144,7 +152,8 @@ bool AsyncContext::checkForWakeUp() {
       m_shift_gamepad_received.load() ||
       m_throw_ball_received.load() ||
       m_load_level_received.load() ||
-      m_move_ball_received.load();
+      m_move_ball_received.load() ||
+      m_lost_ball_received.load();
 }
 
 void AsyncContext::eventHandler() {
@@ -168,6 +177,10 @@ void AsyncContext::eventHandler() {
     if (m_move_ball_received.load()) {
       m_move_ball_received.store(false);
       process_moveBall();
+    }
+    if (m_lost_ball_received.load()) {
+      m_lost_ball_received.store(false);
+      process_lostBall();
     }
     render();  // render frame to reflect changes occurred
   } else {
@@ -204,7 +217,6 @@ void AsyncContext::process_throwBall() {
   std::unique_lock<std::mutex> lock(m_throw_ball_mutex);
   if (!m_ball_is_flying) {
     m_ball_is_flying = true;
-    // TODO: throw ball
   }
 }
 
@@ -221,6 +233,7 @@ void AsyncContext::process_loadLevel() {
   m_level->toVertexArray(0.2f, 0.1f * m_aspect, -1.0f, 1.0f, &m_level_vertex_buffer[0]);
   m_level->fillColorArray(&m_level_color_buffer[0]);
   util::rectangleIndices(&m_level_index_buffer[0], m_level->size() * 6);
+  level_lower_border_event.notifyListeners(0.1f * m_aspect * m_level->numRows());
   DBG("exit AsyncContext::process_loadLevel()");
 }
 
@@ -229,53 +242,61 @@ void AsyncContext::process_moveBall() {
   moveBall(m_ball_location.x, m_ball_location.y);
 }
 
+void AsyncContext::process_lostBall() {
+  std::unique_lock<std::mutex> lock(m_lost_ball_mutex);
+  initGame();
+}
+
 /* LogicFunc group */
 // ----------------------------------------------------------------------------
 void AsyncContext::initGame() {
   // ensure correct initial location
   m_bite_location = 0.0f;
   m_ball_location.x = m_bite_location;
-  m_ball_location.y = -neg_biteElevation + m_bite_height;
+  m_ball_location.y = -BiteParams::neg_biteElevation + m_bite_height;
   moveBite(0.0f);
 
   // move ball to it's initial position - at the center of the bite
   util::setRectangleVertices(
       &m_ball_vertex_buffer[0],
-      ballSize, ballSize * m_aspect,
-      -ballHalfSize + m_ball_location.x,
-      m_ball_location.y + ballSize * m_aspect,
+      BallParams::ballSize, BallParams::ballSize * m_aspect,
+      -BallParams::ballHalfSize + m_ball_location.x,
+      m_ball_location.y + BallParams::ballSize * m_aspect,
       1, 1);
 
   init_ball_position_event.notifyListeners(m_ball_location);
+  init_bite_event.notifyListeners(BiteDimens(BiteParams::biteWidth, m_bite_height));
 }
 
 void AsyncContext::moveBite(float position) {
-  if (std::fabs(position - m_bite_location) >= biteTouchArea) {
+  if (std::fabs(position - m_bite_location) >= BiteParams::biteTouchArea) {
     // finger position is out of bite's borders
     return;
   }
 
   m_bite_location = position;
-  if (m_bite_location > neg_biteHalfWidth) {
-    m_bite_location = neg_biteHalfWidth;
-  } else if (m_bite_location < -neg_biteHalfWidth) {
-    m_bite_location = -neg_biteHalfWidth;
+  if (m_bite_location > BiteParams::neg_biteHalfWidth) {
+    m_bite_location = BiteParams::neg_biteHalfWidth;
+  } else if (m_bite_location < -BiteParams::neg_biteHalfWidth) {
+    m_bite_location = -BiteParams::neg_biteHalfWidth;
   }
 
   util::setRectangleVertices(
       &m_bite_vertex_buffer[0],
-      biteWidth, m_bite_height,
-      -biteHalfWidth + m_bite_location,
-      -neg_biteElevation + m_bite_height,
+      BiteParams::biteWidth, m_bite_height,
+      -BiteParams::biteHalfWidth + m_bite_location,
+      -BiteParams::neg_biteElevation + m_bite_height,
       1, 1);
+
+  bite_location_event.notifyListeners(m_bite_location);
 }
 
 void AsyncContext::moveBall(float x_position, float y_position) {
   util::setRectangleVertices(
       &m_ball_vertex_buffer[0],
-      ballSize, ballSize * m_aspect,
-      -ballHalfSize + x_position,
-      -ballHalfSize * m_aspect + y_position,
+      BallParams::ballSize, BallParams::ballSize * m_aspect,
+      -BallParams::ballHalfSize + x_position,
+      -BallParams::ballHalfSize * m_aspect + y_position,
       1, 1);
 }
 
@@ -339,7 +360,7 @@ bool AsyncContext::displayConfig() {
     return false;
   }
   m_aspect = (GLfloat) m_width / m_height;
-  m_bite_height = biteHeight * m_aspect;
+  m_bite_height = BiteParams::biteHeight * m_aspect;
   DBG("Surface width = %i, height = %i, aspect = %lf", m_width, m_height, m_aspect);
 
   /// @see http://android-developers.blogspot.kr/2013_09_01_archive.html
@@ -364,15 +385,6 @@ void AsyncContext::glOptionsConfig() {
 //  glDepthMask(GL_TRUE);
 //  glEnable(GL_DEPTH_TEST);
 //  glEnable(GL_NORMALIZE);
-
-//  /* Model transformations */
-  // TODO: switch to OpenGLES 2+ and use Shaders
-//  GLfloat ratio = (GLfloat) m_width / m_height;
-//  glMatrixMode(GL_PROJECTION);
-//  glLoadIdentity();
-//  glFrustumf(-ratio, ratio, 1.0f, -1.0f, 1.0f, 10.0f);
-//  glMatrixMode(GL_MODELVIEW);
-//  glLoadIdentity();
 }
 
 void AsyncContext::destroyDisplay() {
