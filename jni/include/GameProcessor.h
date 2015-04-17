@@ -31,13 +31,13 @@ public:
   /// @brief Called when user sends a command to throw a ball.
   void callback_throwBall(bool /* dummy */);
   /// @brief Called when ball has been set to it's initial position.
-  void callback_initBall(BallPosition init_position);
+  void callback_initBall(Ball init_ball);
   /// @brief Called when bite's dimensions have been measured.
   void callback_initBite(Bite bite);
   /// @brief Called when new level has been loaded and it's lower border passed.
   void callback_loadLevel(float lower_border);
   /// @brief Called when bite's location has changed.
-  void callback_biteMoved(float new_bite_location);
+  void callback_biteMoved(Bite moved_bite);
   /** @} */  // end of Callbacks group
 
 // ----------------------------------------------
@@ -62,16 +62,16 @@ public:
   /// @brief Listens for event which occurs when user sends throw ball command.
   EventListener<bool> throw_ball_listener;
   /// @brief Listens for event which occurs when ball is placed to some initial position.
-  EventListener<BallPosition> init_ball_position_listener;
+  EventListener<Ball> init_ball_position_listener;
   /// @brief Listens for bite's measured dimensions.
   EventListener<Bite> init_bite_listener;
   /// @brief Listens for the value of lower border of last loaded level.
   EventListener<float> level_lower_border_listener;
   /// @brief Listens for bite location changes.
-  EventListener<float> bite_location_listener;
+  EventListener<Bite> bite_location_listener;
 
   /// @brief Notifies ball has moved to a new position.
-  Event<BallPosition> move_ball_event;
+  Event<Ball> move_ball_event;
   /// @brief Notifies whether the ball has been lost.
   Event<bool> lost_ball_event;
   /** @} */  // end of Event group
@@ -91,14 +91,13 @@ private:
    */
   bool m_ball_is_flying;  //!< Whether the ball is flying now or not.
   bool m_is_ball_lost;  //!< Whether the ball has been lost or not.
-  BallPosition m_ball_location;  //!< Last recorded ball's location.
+  Ball m_ball;  //!< Physical ball's representation.
   Bite m_bite;  //!< Physical bite's representation.
   GLfloat m_bite_upper_border;  //!< Upper border of bite.
   /// @brief Angle between ball's velocity and positive X axis, in radians.
   GLfloat m_ball_angle;
   GLfloat m_ball_speed;  //!< Value of ball's velocity, pixels per frame.
   GLfloat m_level_lower_border;  //!< Lower border of loaded level in it's current state.
-  GLfloat m_bite_location;  //!< Last recorded bite's  center location along X axis.
   /** @} */  // end of LogicData group
 
   /** @defgroup Maths Maths auxiliary members.

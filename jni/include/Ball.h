@@ -7,7 +7,7 @@
 namespace game {
 
 struct Ball {
-  BallPosition pose;
+  BallPosition pose;  //!< Location of ball's center.
   GLfloat x_velocity, y_velocity;
   GLfloat spin;
   GLfloat mass;

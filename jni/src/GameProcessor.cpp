@@ -13,13 +13,12 @@ GameProcessor::GameProcessor(JavaVM* jvm)
   : m_jvm(jvm), m_jenv(nullptr)
   , m_ball_is_flying(false)
   , m_is_ball_lost(false)
-  , m_ball_location()
+  , m_ball()
   , m_bite()
   , m_bite_upper_border(-BiteParams::neg_biteElevation)
   , m_ball_angle(BallParams::ballAngle)
   , m_ball_speed(BallParams::ballSpeed)
   , m_level_lower_border(0.0f)
-  , m_bite_location(0.0f)
   , m_generator()
   , m_angle_distribution(util::PI4, util::PI16)
   , m_direction_distribution(0.5f) {
@@ -43,10 +42,10 @@ void GameProcessor::callback_throwBall(bool /* dummy */) {
   interrupt();
 }
 
-void GameProcessor::callback_initBall(BallPosition init_position) {
+void GameProcessor::callback_initBall(Ball init_ball) {
   std::unique_lock<std::mutex> lock(m_init_ball_position_mutex);
   m_init_ball_position_received.store(true);
-  m_ball_location = init_position;
+  m_ball = init_ball;
   interrupt();
 }
 
@@ -64,10 +63,10 @@ void GameProcessor::callback_loadLevel(float lower_border) {
   interrupt();
 }
 
-void GameProcessor::callback_biteMoved(float new_bite_location) {
+void GameProcessor::callback_biteMoved(Bite moved_bite) {
   std::unique_lock<std::mutex> lock(m_bite_location_mutex);
   m_bite_location_received.store(true);
-  m_bite_location = new_bite_location;
+  m_bite = moved_bite;
   interrupt();
 }
 
@@ -170,8 +169,8 @@ void GameProcessor::process_biteMoved() {
 // ----------------------------------------------------------------------------
 void GameProcessor::moveBall() {
   // ball's position in the next frame
-  GLfloat new_x = m_ball_location.x + m_ball_speed * cos(m_ball_angle);
-  GLfloat new_y = m_ball_location.y + m_ball_speed * sin(m_ball_angle);
+  GLfloat new_x = m_ball.pose.x + m_ball_speed * cos(m_ball_angle);
+  GLfloat new_y = m_ball.pose.y + m_ball_speed * sin(m_ball_angle);
 
   if (m_is_ball_lost && new_y <= -1.0f) {
     lost_ball_event.notifyListeners(true);
@@ -206,12 +205,12 @@ void GameProcessor::moveBall() {
            std::fmod(std::fabs(angle_before), util::PI2));
   }
 
-  new_x = m_ball_location.x + m_ball_speed * cos(m_ball_angle);
-  new_y = m_ball_location.y + m_ball_speed * sin(m_ball_angle);
-  m_ball_location.x = new_x;
-  m_ball_location.y = new_y;
+  new_x = m_ball.pose.x + m_ball_speed * cos(m_ball_angle);
+  new_y = m_ball.pose.y + m_ball_speed * sin(m_ball_angle);
+  m_ball.pose.x = new_x;
+  m_ball.pose.y = new_y;
 
-  move_ball_event.notifyListeners(m_ball_location);
+  move_ball_event.notifyListeners(m_ball);
   std::this_thread::sleep_for (std::chrono::milliseconds(50));
 }
 
@@ -240,8 +239,8 @@ void GameProcessor::collideLeftRightBorder(GLfloat new_x) {
 // http://stackoverflow.com/questions/8063696/arkanoid-physics-projectile-physics-simulation
 bool GameProcessor::collideBite(GLfloat new_x) {
 //  ERR("BITE before: %lf", m_ball_angle);
-  if (new_x >= -BiteParams::biteHalfWidth + m_bite_location &&
-      new_x <= BiteParams::biteHalfWidth + m_bite_location) {
+  if (new_x >= -BiteParams::biteHalfWidth + m_bite.x_pose &&
+      new_x <= BiteParams::biteHalfWidth + m_bite.x_pose) {
     if (m_ball_angle >= util::PI) {
       m_ball_angle = util::_2PI - m_ball_angle;
     }

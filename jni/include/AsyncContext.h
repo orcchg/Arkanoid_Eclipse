@@ -48,7 +48,7 @@ public:
   /// @brief Called when user requests a level to be loaded
   void callback_loadLevel(Level::Ptr level);
   /// @brief Called when ball has moved to a new position.
-  void callback_moveBall(BallPosition new_position);
+  void callback_moveBall(Ball moved_ball);
   /// @brief Called when ball has been lost.
   void callback_lostBall(float is_lost);
   /** @} */  // end of Callbacks group
@@ -88,18 +88,18 @@ public:
   /// @brief Listens for event which occurs when user requests a level to be loaded.
   EventListener<Level::Ptr> load_level_listener;
   /// @brief Listens for event which occurs when ball has moved to a new position.
-  EventListener<BallPosition> move_ball_listener;
+  EventListener<Ball> move_ball_listener;
   /// @brief Listens for event which occurs when ball has been lost.
   EventListener<bool> lost_ball_listener;
 
   /// @brief Notifies ball has been placed to it's initial position.
-  Event<BallPosition> init_ball_position_event;
+  Event<Ball> init_ball_position_event;
   /// @brief Notifies bite's dimensions have been measured.
   Event<Bite> init_bite_event;
   /// @brief Notifies about lower border of loaded level.
   Event<float> level_lower_border_event;
   /// @brief Notifies bite location has changed.
-  Event<float> bite_location_event;
+  Event<Bite> bite_location_event;
   /** @} */  // end of Event group
 
 // ----------------------------------------------
@@ -134,7 +134,7 @@ private:
   GLfloat m_position;  //!< Last received position value of user's motion gesture.
   bool m_ball_is_flying;  //!< Whether the ball is flying now or not.
   Bite m_bite;  //!< Physical bite's representation.
-  BallPosition m_ball_location;  //!< Location of ball's center.
+  Ball m_ball;  //!< Physical ball's representation.
 
   GLfloat* m_bite_vertex_buffer;  //!< Re-usable buffer for vertices of bite.
   GLfloat* m_bite_color_buffer;   //!< Re-usable buffer for colors of bite.

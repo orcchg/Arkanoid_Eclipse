@@ -25,7 +25,7 @@ AsyncContext::AsyncContext(JavaVM* jvm)
   , m_position(0.0f)
   , m_ball_is_flying(false)
   , m_bite()
-  , m_ball_location()
+  , m_ball()
   , m_bite_vertex_buffer(new GLfloat[16])
   , m_bite_color_buffer(new GLfloat[16])
   , m_ball_vertex_buffer(new GLfloat[16])
@@ -100,10 +100,10 @@ void AsyncContext::callback_loadLevel(Level::Ptr level) {
   interrupt();
 }
 
-void AsyncContext::callback_moveBall(BallPosition new_position) {
+void AsyncContext::callback_moveBall(Ball moved_ball) {
   std::unique_lock<std::mutex> lock(m_move_ball_mutex);
   m_move_ball_received.store(true);
-  m_ball_location = new_position;
+  m_ball = moved_ball;
   interrupt();
 }
 
@@ -238,7 +238,7 @@ void AsyncContext::process_loadLevel() {
 
 void AsyncContext::process_moveBall() {
   std::unique_lock<std::mutex> lock(m_move_ball_mutex);
-  moveBall(m_ball_location.x, m_ball_location.y);
+  moveBall(m_ball.pose.x, m_ball.pose.y);
 }
 
 void AsyncContext::process_lostBall() {
@@ -252,19 +252,19 @@ void AsyncContext::initGame() {
   // ensure correct initial location
   m_bite = Bite();
   m_bite.dimens.height = BiteParams::biteHeight * m_aspect;
-  m_ball_location.x = m_bite.x_pose;
-  m_ball_location.y = -BiteParams::neg_biteElevation + m_bite.dimens.height;
+  m_ball.pose.x = m_bite.x_pose;
+  m_ball.pose.y = -BiteParams::neg_biteElevation + m_bite.dimens.height;
   moveBite(0.0f);
 
   // move ball to it's initial position - at the center of the bite
   util::setRectangleVertices(
       &m_ball_vertex_buffer[0],
       BallParams::ballSize, BallParams::ballSize * m_aspect,
-      -BallParams::ballHalfSize + m_ball_location.x,
-      m_ball_location.y + BallParams::ballSize * m_aspect,
+      -BallParams::ballHalfSize + m_ball.pose.x,
+      m_ball.pose.y + BallParams::ballSize * m_aspect,
       1, 1);
 
-  init_ball_position_event.notifyListeners(m_ball_location);
+  init_ball_position_event.notifyListeners(m_ball);
   init_bite_event.notifyListeners(m_bite);
 }
 
@@ -288,7 +288,7 @@ void AsyncContext::moveBite(float position) {
       -BiteParams::neg_biteElevation + m_bite.dimens.height,
       1, 1);
 
-  bite_location_event.notifyListeners(m_bite.x_pose);
+  bite_location_event.notifyListeners(m_bite);
 }
 
 void AsyncContext::moveBall(float x_position, float y_position) {
