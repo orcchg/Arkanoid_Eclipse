@@ -16,7 +16,6 @@ GameProcessor::GameProcessor(JavaVM* jvm)
   , m_ball()
   , m_bite()
   , m_bite_upper_border(-BiteParams::neg_biteElevation)
-  , m_ball_angle(BallParams::ballAngle)
   , m_level_lower_border(0.0f)
   , m_generator()
   , m_angle_distribution(util::PI4, util::PI16)
@@ -142,9 +141,9 @@ void GameProcessor::process_throwBall() {
 void GameProcessor::process_initBall() {
   std::unique_lock<std::mutex> lock(m_init_ball_position_mutex);
   // restore ball's initial velocity
-  m_ball_angle = m_angle_distribution(m_generator);  // BallParams::ballAngle;
-  m_ball_angle += m_direction_distribution(m_generator) ? util::PI2 : 0.0f;
-  m_ball_angle = std::fmod(m_ball_angle, util::_2PI);
+  m_ball.angle = m_angle_distribution(m_generator);  // BallParams::ballAngle;
+  m_ball.angle += m_direction_distribution(m_generator) ? util::PI2 : 0.0f;
+  m_ball.angle = std::fmod(m_ball.angle, util::_2PI);
 }
 
 void GameProcessor::process_initBite() {
@@ -166,8 +165,8 @@ void GameProcessor::process_biteMoved() {
 // ----------------------------------------------------------------------------
 void GameProcessor::moveBall() {
   // ball's position in the next frame
-  GLfloat new_x = m_ball.pose.x + m_ball.x_velocity * cos(m_ball_angle);
-  GLfloat new_y = m_ball.pose.y + m_ball.y_velocity * sin(m_ball_angle);
+  GLfloat new_x = m_ball.pose.x + m_ball.x_velocity * cos(m_ball.angle);
+  GLfloat new_y = m_ball.pose.y + m_ball.y_velocity * sin(m_ball.angle);
 
   if (m_is_ball_lost && new_y <= -1.0f) {
     lost_ball_event.notifyListeners(true);
@@ -183,14 +182,14 @@ void GameProcessor::moveBall() {
     }
   } else {
     if (new_y >= 1.0f - m_level_lower_border) {
-      m_ball_angle = util::_2PI - m_ball_angle;
+      m_ball.angle = util::_2PI - m_ball.angle;
     }
-    GLfloat sign = m_ball_angle >= 0.0f ? 1.0f : -1.0f;
-    m_ball_angle = sign * std::fmod(std::fabs(m_ball_angle), util::_2PI);
+    GLfloat sign = m_ball.angle >= 0.0f ? 1.0f : -1.0f;
+    m_ball.angle = sign * std::fmod(std::fabs(m_ball.angle), util::_2PI);
   }
 
-  new_x = m_ball.pose.x + m_ball.x_velocity * cos(m_ball_angle);
-  new_y = m_ball.pose.y + m_ball.y_velocity * sin(m_ball_angle);
+  new_x = m_ball.pose.x + m_ball.x_velocity * cos(m_ball.angle);
+  new_y = m_ball.pose.y + m_ball.y_velocity * sin(m_ball.angle);
   m_ball.pose.x = new_x;
   m_ball.pose.y = new_y;
 
@@ -202,31 +201,31 @@ void GameProcessor::moveBall() {
 // ----------------------------------------------------------------------------
 void GameProcessor::collideLeftRightBorder(GLfloat new_x) {
   if (new_x >= BallParams::neg_ballHalfSize) {
-    if (m_ball_angle <= util::PI2) {
-      m_ball_angle = util::PI - m_ball_angle;
-    } else if (m_ball_angle >= util::_3PI2) {
-      m_ball_angle = util::_3PI - m_ball_angle;
+    if (m_ball.angle <= util::PI2) {
+      m_ball.angle = util::PI - m_ball.angle;
+    } else if (m_ball.angle >= util::_3PI2) {
+      m_ball.angle = util::_3PI - m_ball.angle;
     }
   } else if (new_x <= -BallParams::neg_ballHalfSize) {
-    if (m_ball_angle >= util::PI) {
-      m_ball_angle = util::_3PI - m_ball_angle;
-    } else if (m_ball_angle >= util::PI2) {
-      m_ball_angle = util::PI - m_ball_angle;
+    if (m_ball.angle >= util::PI) {
+      m_ball.angle = util::_3PI - m_ball.angle;
+    } else if (m_ball.angle >= util::PI2) {
+      m_ball.angle = util::PI - m_ball.angle;
     }
   }
-  GLfloat sign = m_ball_angle >= 0.0f ? 1.0f : -1.0f;
-  m_ball_angle = sign * std::fmod(std::fabs(m_ball_angle), util::_2PI);
+  GLfloat sign = m_ball.angle >= 0.0f ? 1.0f : -1.0f;
+  m_ball.angle = sign * std::fmod(std::fabs(m_ball.angle), util::_2PI);
 }
 
 // http://stackoverflow.com/questions/8063696/arkanoid-physics-projectile-physics-simulation
 bool GameProcessor::collideBite(GLfloat new_x) {
   if (new_x >= -BiteParams::biteHalfWidth + m_bite.x_pose &&
       new_x <= BiteParams::biteHalfWidth + m_bite.x_pose) {
-    if (m_ball_angle >= util::PI) {
-      m_ball_angle = util::_2PI - m_ball_angle;
+    if (m_ball.angle >= util::PI) {
+      m_ball.angle = util::_2PI - m_ball.angle;
     }
-    GLfloat sign = m_ball_angle >= 0.0f ? 1.0f : -1.0f;
-    m_ball_angle = sign * std::fmod(std::fabs(m_ball_angle), util::_2PI);
+    GLfloat sign = m_ball.angle >= 0.0f ? 1.0f : -1.0f;
+    m_ball.angle = sign * std::fmod(std::fabs(m_ball.angle), util::_2PI);
   } else {
     return false;  // ball missed the bite
   }

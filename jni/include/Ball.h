@@ -8,6 +8,7 @@ namespace game {
 
 struct Ball {
   BallPosition pose;  //!< Location of ball's center.
+  GLfloat angle;  //!< Angle (radian) between velocity and positive X axis.
   GLfloat x_velocity, y_velocity;
   GLfloat spin;
   GLfloat mass;

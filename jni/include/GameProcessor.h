@@ -94,8 +94,6 @@ private:
   Ball m_ball;  //!< Physical ball's representation.
   Bite m_bite;  //!< Physical bite's representation.
   GLfloat m_bite_upper_border;  //!< Upper border of bite.
-  /// @brief Angle between ball's velocity and positive X axis, in radians.
-  GLfloat m_ball_angle;
   GLfloat m_level_lower_border;  //!< Lower border of loaded level in it's current state.
   /** @} */  // end of LogicData group
 
