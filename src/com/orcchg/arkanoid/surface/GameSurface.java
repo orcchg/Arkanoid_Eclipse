@@ -32,13 +32,15 @@ public class GameSurface extends SurfaceView implements SurfaceHolder.Callback {
   }
   
   public GameSurface(Context context, AttributeSet attrs, int defStyleAttr) {
-    this(context, attrs, defStyleAttr, 0);
-  }
-  
-  public GameSurface(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-    super(context, attrs, defStyleAttr, defStyleRes);
+//    this(context, attrs, defStyleAttr, 0);
+    super(context, attrs, defStyleAttr);
     getHolder().addCallback(this);
   }
+  
+//  public GameSurface(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+//    super(context, attrs, defStyleAttr, defStyleRes);
+//    getHolder().addCallback(this);
+//  }
 
   @Override
   public void surfaceCreated(SurfaceHolder holder) {
