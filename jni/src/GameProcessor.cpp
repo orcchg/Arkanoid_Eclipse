@@ -258,7 +258,6 @@ bool GameProcessor::collideBlocks(GLfloat new_x, GLfloat new_y) {
       new_y <= 1.0f) {
     size_t row = 0, col = 0;
     getImpactedBlock(new_x, new_y, &row, &col);
-    ERR("BLOCK: %zu %zu", row, col);
     Block block = m_level->getBlock(row, col);
     switch (block) {
       case Block::NONE:
