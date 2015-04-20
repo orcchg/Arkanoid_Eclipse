@@ -25,6 +25,8 @@ AsyncContext::AsyncContext(JavaVM* jvm)
   , m_position(0.0f)
   , m_bite()
   , m_ball()
+  , m_impact_row(0)
+  , m_impact_col(0)
   , m_bite_vertex_buffer(new GLfloat[16])
   , m_bite_color_buffer(new GLfloat[16])
   , m_ball_vertex_buffer(new GLfloat[16])
@@ -43,6 +45,7 @@ AsyncContext::AsyncContext(JavaVM* jvm)
   m_load_level_received.store(false);
   m_move_ball_received.store(false);
   m_lost_ball_received.store(false);
+  m_block_impact_received.store(false);
   m_window_set = false;
 
   util::setColor(util::MAGENTA, &m_bite_color_buffer[0], 16);
@@ -112,6 +115,14 @@ void AsyncContext::callback_lostBall(float is_lost) {
   interrupt();
 }
 
+void AsyncContext::callback_blockImpact(std::pair<size_t, size_t> block) {
+  std::unique_lock<std::mutex> lock(m_block_impact_mutex);
+  m_block_impact_received.store(true);
+  m_impact_row = block.first;
+  m_impact_col = block.second;
+  interrupt();
+}
+
 // ----------------------------------------------
 Level::Ptr AsyncContext::getCurrentLevelState() {
   std::unique_lock<std::mutex> lock(m_load_level_mutex);
@@ -151,7 +162,8 @@ bool AsyncContext::checkForWakeUp() {
       m_throw_ball_received.load() ||
       m_load_level_received.load() ||
       m_move_ball_received.load() ||
-      m_lost_ball_received.load();
+      m_lost_ball_received.load() ||
+      m_block_impact_received.load();
 }
 
 void AsyncContext::eventHandler() {
@@ -179,6 +191,10 @@ void AsyncContext::eventHandler() {
     if (m_lost_ball_received.load()) {
       m_lost_ball_received.store(false);
       process_lostBall();
+    }
+    if (m_block_impact_received.load()) {
+      m_block_impact_received.store(false);
+      process_blockImpact();
     }
     render();  // render frame to reflect changes occurred
   } else {
@@ -229,6 +245,8 @@ void AsyncContext::process_loadLevel() {
   m_level_index_buffer = new GLushort[m_level->size() * 6];
 
   LevelDimens dimens(
+      m_level->numRows(),
+      m_level->numCols(),
       m_level->numCols() * LevelDimens::blockWidth,
       m_level->numRows() * LevelDimens::blockHeight * m_aspect,
       LevelDimens::blockWidth,
@@ -249,6 +267,24 @@ void AsyncContext::process_moveBall() {
 void AsyncContext::process_lostBall() {
   std::unique_lock<std::mutex> lock(m_lost_ball_mutex);
   initGame();
+}
+
+void AsyncContext::process_blockImpact() {
+  std::unique_lock<std::mutex> lock(m_block_impact_mutex);
+  Block block = m_level->getBlock(m_impact_row, m_impact_col);
+  switch (block) {
+    case Block::SIMPLE:
+      m_level->setBlock(m_impact_row, m_impact_col, Block::NONE);
+      break;
+    case Block::BRICK:
+      m_level->setBlock(m_impact_row, m_impact_col, Block::SIMPLE);
+      break;
+    case Block::NONE:
+    default:
+      // no-op
+      break;
+  }
+  m_level->fillColorArray(&m_level_color_buffer[0]);  // TODO: optimize
 }
 
 /* LogicFunc group */

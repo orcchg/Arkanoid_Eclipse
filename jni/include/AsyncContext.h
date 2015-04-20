@@ -52,6 +52,8 @@ public:
   void callback_moveBall(Ball moved_ball);
   /// @brief Called when ball has been lost.
   void callback_lostBall(float is_lost);
+  /// @brief Called when block has been impacted.
+  void callback_blockImpact(std::pair<size_t, size_t> block);
   /** @} */  // end of Callbacks group
 
   /** @defgroup GameStat Get game statistics
@@ -92,6 +94,8 @@ public:
   EventListener<Ball> move_ball_listener;
   /// @brief Listens for event which occurs when ball has been lost.
   EventListener<bool> lost_ball_listener;
+  /// @brief Listens for event which occurs when block has been impacted.
+  EventListener<std::pair<size_t, size_t>> block_impact_listener;
 
   /// @brief Notifies ball has been placed to it's initial position.
   Event<Ball> init_ball_position_event;
@@ -135,6 +139,8 @@ private:
   GLfloat m_position;  //!< Last received position value of user's motion gesture.
   Bite m_bite;  //!< Physical bite's representation.
   Ball m_ball;  //!< Physical ball's representation.
+  size_t m_impact_row;  //!< Row index of last impacted block.
+  size_t m_impact_col;  //!< Column index of last impacted block.
 
   GLfloat* m_bite_vertex_buffer;  //!< Re-usable buffer for vertices of bite.
   GLfloat* m_bite_color_buffer;   //!< Re-usable buffer for colors of bite.
@@ -166,12 +172,14 @@ private:
   std::mutex m_load_level_mutex;  //!< Sentinel for load level user request.
   std::mutex m_move_ball_mutex;  //!< Sentinel for move ball to a new position.
   std::mutex m_lost_ball_mutex;  //!< Sentinel for lost ball flag.
+  std::mutex m_block_impact_mutex;  //!< Sentinel for block impact event.
   std::atomic_bool m_surface_received;  //!< Window has been set.
   std::atomic_bool m_shift_gamepad_received;  //!< Shift gesture has occurred.
   std::atomic_bool m_throw_ball_received;  //!< Throw ball command has been received.
   std::atomic_bool m_load_level_received;  //!< Load level request has been received.
   std::atomic_bool m_move_ball_received;  //!< Move ball event has been received.
   std::atomic_bool m_lost_ball_received;  //!< Ball has been lost received.
+  std::atomic_bool m_block_impact_received;  //!< Block impact has been received.
   /** @} */  // end of Mutex group
 
   /** @defgroup SafetyFlag Logic-safety variables
@@ -214,6 +222,8 @@ private:
   void process_moveBall();
   /// @brief Processing when ball has been lost.
   void process_lostBall();
+  /// @brief Performs visual block impact.
+  void process_blockImpact();
   /** @} */  // end of Processors group
 
 private:

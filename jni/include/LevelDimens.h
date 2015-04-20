@@ -10,14 +10,19 @@ struct LevelDimens {
   constexpr static float blockWidth = 0.2f;
   constexpr static float blockHeight = 0.1f;
 
+  size_t rows, cols;
   GLfloat width, height, block_width, block_height;
 
   LevelDimens(
+      size_t rows,
+      size_t cols,
       GLfloat w,
       GLfloat h,
       GLfloat bw = blockWidth,
       GLfloat bh = blockHeight)
-    : width(w)
+    : rows(rows)
+    , cols(cols)
+    , width(w)
     , height(h)
     , block_width(bw)
     , block_height(bh) {

@@ -1,3 +1,4 @@
+#include <cassert>
 #include <chrono>
 #include <cmath>
 
@@ -17,7 +18,7 @@ GameProcessor::GameProcessor(JavaVM* jvm)
   , m_ball()
   , m_bite()
   , m_bite_upper_border(-BiteParams::neg_biteElevation)
-  , m_level_dimens(0.0f, 0.0f)
+  , m_level_dimens(0, 0, 0.0f, 0.0f)
   , m_generator()
   , m_angle_distribution(util::PI4, util::PI16)
   , m_direction_distribution(0.5f) {
@@ -200,7 +201,7 @@ void GameProcessor::moveBall() {
       m_is_ball_lost = !collideBite(new_x);
     }
   } else {
-    collideBlocks(new_y);
+    collideBlocks(new_x, new_y);
   }
 
   new_x = m_ball.pose.x + m_ball.x_velocity * cos(m_ball.angle);
@@ -215,13 +216,13 @@ void GameProcessor::moveBall() {
 /* Maths group */
 // ----------------------------------------------------------------------------
 void GameProcessor::collideLeftRightBorder(GLfloat new_x) {
-  if (new_x >= BallParams::neg_ballHalfSize) {
+  if (new_x >= BallParams::neg_ballHalfSize) {  // right border
     if (m_ball.angle <= util::PI2) {
       m_ball.angle = util::PI - m_ball.angle;
     } else if (m_ball.angle >= util::_3PI2) {
       m_ball.angle = util::_3PI - m_ball.angle;
     }
-  } else if (new_x <= -BallParams::neg_ballHalfSize) {
+  } else if (new_x <= -BallParams::neg_ballHalfSize) {  // left border
     if (m_ball.angle >= util::PI) {
       m_ball.angle = util::_3PI - m_ball.angle;
     } else if (m_ball.angle >= util::PI2) {
@@ -236,25 +237,58 @@ void GameProcessor::collideLeftRightBorder(GLfloat new_x) {
 bool GameProcessor::collideBite(GLfloat new_x) {
   if (new_x >= -BiteParams::biteHalfWidth + m_bite.x_pose &&
       new_x <= BiteParams::biteHalfWidth + m_bite.x_pose) {
+
+//    GLfloat mass_factor = m_bite.mass / m_ball.mass;
+//    m_ball.x_velocity += BiteParams::neg_angularFactor * m_bite.x_velocity * mass_factor * m_bite.friction;
+//    m_ball.y_velocity = -m_ball.y_velocity;
+//    m_ball.spin += BiteParams::angularFactor * m_bite.x_velocity  * mass_factor * m_bite.friction;;
     if (m_ball.angle >= util::PI) {
       m_ball.angle = util::_2PI - m_ball.angle;
+      GLfloat sign = m_ball.angle >= 0.0f ? 1.0f : -1.0f;
+      m_ball.angle = sign * std::fmod(std::fabs(m_ball.angle), util::_2PI);
     }
-    GLfloat sign = m_ball.angle >= 0.0f ? 1.0f : -1.0f;
-    m_ball.angle = sign * std::fmod(std::fabs(m_ball.angle), util::_2PI);
   } else {
     return false;  // ball missed the bite
   }
   return true;
 }
 
-bool GameProcessor::collideBlocks(GLfloat new_y) {
-  if (new_y >= 1.0f - m_level_dimens.height) {
+bool GameProcessor::collideBlocks(GLfloat new_x, GLfloat new_y) {
+  if (new_y >= 1.0f - m_level_dimens.height &&
+      new_y <= 1.0f) {
+    size_t row = 0, col = 0;
+    getImpactedBlock(new_x, new_y, &row, &col);
+    ERR("BLOCK: %zu %zu", row, col);
+    Block block = m_level->getBlock(row, col);
+    switch (block) {
+      case Block::NONE:
+        // fly without disturbance
+        break;
+      default:
+        m_ball.angle = util::_2PI - m_ball.angle;
+        GLfloat sign = m_ball.angle >= 0.0f ? 1.0f : -1.0f;
+        m_ball.angle = sign * std::fmod(std::fabs(m_ball.angle), util::_2PI);
+        break;
+    }
+    block_impact_event.notifyListeners(std::make_pair(row, col));
+    return true;
+  } else if (new_y > 1.0f) {
     m_ball.angle = util::_2PI - m_ball.angle;
     GLfloat sign = m_ball.angle >= 0.0f ? 1.0f : -1.0f;
     m_ball.angle = sign * std::fmod(std::fabs(m_ball.angle), util::_2PI);
-    return true;
   }
   return false;
+}
+
+void GameProcessor::getImpactedBlock(
+    GLfloat ball_x,
+    GLfloat ball_y,
+    size_t* row,
+    size_t* col) {
+
+  *col = static_cast<size_t>(std::floor((ball_x + 1.0f) / m_level_dimens.block_width));
+  *row = static_cast<size_t>(std::floor((1.0f - ball_y) / m_level_dimens.block_height));
+//  *row = m_level_dimens.rows - *row - 1;
 }
 
 }

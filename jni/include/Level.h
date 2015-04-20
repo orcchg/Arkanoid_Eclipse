@@ -82,6 +82,10 @@ public:
   inline size_t numCols() const { return cols; }
   /// @brief Returns total blocks of level.
   inline size_t size() const { return rows * cols; }
+  /// @brief Gets block by row and column indices.
+  inline Block getBlock(size_t row, size_t col) const { return blocks[row][col]; }
+  /// @brief Sets the block by row and column indices.
+  inline void setBlock(size_t row, size_t col, Block value) { blocks[row][col] = value; }
 
   void print() const;
 

@@ -15,6 +15,9 @@ struct BiteParams {
   constexpr static float biteElevation = 0.2f;
   constexpr static float neg_biteElevation = 0.8f;  //!< One minus bite elevation.
   constexpr static float biteMass = 2.0f;  //!< Constant mass of bite.
+  /// @brief Amount of the bite's movement which will go into the ball's spin.
+  constexpr static float angularFactor = 0.3f;
+  constexpr static float neg_angularFactor = 0.7f;  //!< One minus angular factor.
 };
 
 struct BallParams {

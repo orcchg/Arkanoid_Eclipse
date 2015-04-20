@@ -5,6 +5,7 @@
 #include <memory>
 #include <mutex>
 #include <random>
+#include <utility>
 
 #include <jni.h>
 
@@ -80,6 +81,8 @@ public:
   Event<Ball> move_ball_event;
   /// @brief Notifies whether the ball has been lost.
   Event<bool> lost_ball_event;
+  /// @brief Notifies block has been impacted.
+  Event<std::pair<size_t, size_t>> block_impact_event;
   /** @} */  // end of Event group
 
 // ----------------------------------------------
@@ -185,10 +188,18 @@ private:
   /// @return TRUE in case ball collides bite, FALSE if ball misses the bite.
   bool collideBite(GLfloat new_x);
   /// @brief Processing of collision between ball and level's blocks.
+  /// @param new_x Position of ball's center along X axis in the next frame.
   /// @param new_y Position of ball's center along Y axis in the next frame.
   /// @return TRUE in case ball collides level's lower border,
   /// FALSE if ball misses such border.
-  bool collideBlocks(GLfloat new_y);
+  bool collideBlocks(GLfloat new_x, GLfloat new_y);
+  /// @brief Calculates row- and column- index of block which is impacted
+  /// with the ball at given location.
+  /// @param ball_x Position of ball's center along X axis.
+  /// @param ball_y Position of ball's center along Y axis.
+  /// @param row Output row index of impacted block of current level.
+  /// @param col Output column index of impacted block of current level.
+  void getImpactedBlock(GLfloat ball_x, GLfloat ball_y, size_t* row, size_t* col);
   /** @} */  // end of Maths group
 };
 

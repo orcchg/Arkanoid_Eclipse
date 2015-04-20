@@ -11,12 +11,14 @@ struct Bite {
   GLfloat x_pose;
   GLfloat x_velocity;
   GLfloat mass;
+  GLfloat friction;
 
   Bite()
     : dimens()
     , x_pose(0.0f)
     , x_velocity(0.0f)
-    , mass(BiteParams::biteMass) {
+    , mass(BiteParams::biteMass)
+    , friction(1.0f) {
   }
 };
 

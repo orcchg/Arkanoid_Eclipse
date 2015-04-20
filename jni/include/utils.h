@@ -15,6 +15,8 @@ constexpr float PI2 = 1.5707963f;
 constexpr float PI4 = 0.78539815f;
 constexpr float PI16 = 0.1963495375f;
 
+constexpr float epsilon = 1e-4;
+
 template <typename T>
 void setColor(const BGRA<T>& bgra, T* const color_buffer, size_t size) {
   for (size_t i = 0; i < size; i += 4) {
