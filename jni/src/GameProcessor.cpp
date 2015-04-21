@@ -194,7 +194,11 @@ void GameProcessor::moveBall() {
     return;
   }
 
-  collideLeftRightBorder(new_x);
+  if (new_x >= BallParams::neg_ballHalfSize) {  // right border
+    collideRightBorder();
+  } else if (new_x <= -BallParams::neg_ballHalfSize) {  // left border
+    collideLeftBorder();
+  }
 
   if (new_y < m_bite_upper_border) {
     if (!m_is_ball_lost) {
@@ -215,19 +219,21 @@ void GameProcessor::moveBall() {
 
 /* Maths group */
 // ----------------------------------------------------------------------------
-void GameProcessor::collideLeftRightBorder(GLfloat new_x) {
-  if (new_x >= BallParams::neg_ballHalfSize) {  // right border
-    if (m_ball.angle <= util::PI2) {
-      m_ball.angle = util::PI - m_ball.angle;
-    } else if (m_ball.angle >= util::_3PI2) {
-      m_ball.angle = util::_3PI - m_ball.angle;
-    }
-  } else if (new_x <= -BallParams::neg_ballHalfSize) {  // left border
-    if (m_ball.angle >= util::PI) {
-      m_ball.angle = util::_3PI - m_ball.angle;
-    } else if (m_ball.angle >= util::PI2) {
-      m_ball.angle = util::PI - m_ball.angle;
-    }
+void GameProcessor::collideLeftBorder() {
+  if (m_ball.angle >= util::PI) {
+    m_ball.angle = util::_3PI - m_ball.angle;
+  } else if (m_ball.angle >= util::PI2) {
+    m_ball.angle = util::PI - m_ball.angle;
+  }
+  GLfloat sign = m_ball.angle >= 0.0f ? 1.0f : -1.0f;
+  m_ball.angle = sign * std::fmod(std::fabs(m_ball.angle), util::_2PI);
+}
+
+void GameProcessor::collideRightBorder() {
+  if (m_ball.angle <= util::PI2) {
+    m_ball.angle = util::PI - m_ball.angle;
+  } else if (m_ball.angle >= util::_3PI2) {
+    m_ball.angle = util::_3PI - m_ball.angle;
   }
   GLfloat sign = m_ball.angle >= 0.0f ? 1.0f : -1.0f;
   m_ball.angle = sign * std::fmod(std::fabs(m_ball.angle), util::_2PI);

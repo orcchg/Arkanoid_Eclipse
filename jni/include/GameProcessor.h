@@ -180,9 +180,10 @@ private:
   /** @addtogroup Maths
    * @{
    */
-  /// @brief Recalculates ball's angle when it faces left or right border.
-  /// @param new_x Position of ball's center along X axis in the next frame.
-  void collideLeftRightBorder(GLfloat new_x);
+  /// @brief Recalculates ball's angle when it faces left border of any object.
+  void collideLeftBorder();
+  /// @brief Recalculates ball's angle when it faces right border of any object.
+  void collideRightBorder();
   /// @brief Recalculates ball's angle when it faces the bite.
   /// @param new_x Position of ball's center along X axis in the next frame.
   /// @return TRUE in case ball collides bite, FALSE if ball misses the bite.
