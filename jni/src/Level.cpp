@@ -88,26 +88,6 @@ void Level::toVertexArray(
 void Level::fillColorArray(GLfloat* const array) const {
   for (size_t r = 0; r < rows; ++r) {
     for (size_t c = 0; c < cols; ++c) {
-//      int upper_left_i  = 0  + 16 * (r * cols + c);
-//      int upper_right_i = 4  + 16 * (r * cols + c);
-//      int lower_left_i  = 8  + 16 * (r * cols + c);
-//      int lower_right_i = 12 + 16 * (r * cols + c);
-//      util::BGRA<GLfloat> bgra;
-//      switch (blocks[r][c]) {
-//        default:
-//        case Block::NONE:
-//          bgra = util::BGRA<GLfloat>(util::TRANSPARENT);
-//          break;
-//        case Block::SIMPLE:
-//          bgra = util::BGRA<GLfloat>(util::GREEN);
-//          break;
-//        case Block::BRICK:
-//          bgra = util::BGRA<GLfloat>(util::RED);
-//      }
-//      util::setColor(bgra, &array[upper_left_i], 4);
-//      util::setColor(bgra, &array[upper_right_i], 4);
-//      util::setColor(bgra, &array[lower_left_i], 4);
-//      util::setColor(bgra, &array[lower_right_i], 4);
       fillColorArrayAtBlock(array, r, c);
     }
   }
