@@ -206,7 +206,7 @@ void GameProcessor::moveBall() {
     collideLeftBorder();
   }
 
-  if (new_y < m_bite_upper_border) {
+  if (new_y < m_bite_upper_border - BallParams::ballHalfSize) {
     if (!m_is_ball_lost) {
       m_is_ball_lost = !collideBite(new_x);
     }
@@ -226,7 +226,7 @@ void GameProcessor::moveBall() {
   m_ball.pose.y = new_y;
 
   move_ball_event.notifyListeners(m_ball);
-  std::this_thread::sleep_for (std::chrono::milliseconds(50));
+  std::this_thread::sleep_for (std::chrono::milliseconds(150));
 }
 
 void GameProcessor::onLostBall(bool /* dummy */) {
@@ -267,8 +267,8 @@ void GameProcessor::collideHorizontalSurface() {
 
 // http://stackoverflow.com/questions/8063696/arkanoid-physics-projectile-physics-simulation
 bool GameProcessor::collideBite(GLfloat new_x) {
-  if (new_x >= -BiteParams::biteHalfWidth + m_bite.x_pose &&
-      new_x <= BiteParams::biteHalfWidth + m_bite.x_pose) {
+  if (new_x >= -(BiteParams::biteHalfWidth + BallParams::ballHalfSize) + m_bite.x_pose &&
+      new_x <= (BiteParams::biteHalfWidth + BallParams::ballHalfSize) + m_bite.x_pose) {
 //    GLfloat mass_factor = m_bite.mass / m_ball.mass;
 //    m_ball.x_velocity += BiteParams::neg_angularFactor * m_bite.x_velocity * mass_factor * m_bite.friction;
 //    m_ball.y_velocity = -m_ball.y_velocity;
@@ -283,7 +283,7 @@ bool GameProcessor::collideBite(GLfloat new_x) {
 }
 
 bool GameProcessor::collideBlocks(GLfloat new_x, GLfloat new_y) {
-  if (new_y >= 1.0f - m_level_dimens.height && new_y <= 1.0f) {
+  if (new_y >= BallParams::neg_ballHalfSize - m_level_dimens.height && new_y < BallParams::neg_ballHalfSize) {
     size_t row = 0, col = 0;
     getImpactedBlock(new_x, new_y, &row, &col);
 
@@ -308,7 +308,7 @@ bool GameProcessor::collideBlocks(GLfloat new_x, GLfloat new_y) {
     block_impact_event.notifyListeners(std::make_pair(row, col));
     return true;
 
-  } else if (new_y > 1.0f) {
+  } else if (new_y >= BallParams::neg_ballHalfSize) {
     collideHorizontalSurface();
   }
   return false;
@@ -320,8 +320,8 @@ void GameProcessor::getImpactedBlock(
     size_t* row,
     size_t* col) {
 
-  *col = static_cast<size_t>(std::floor((ball_x + 1.0f) / m_level_dimens.block_width));
-  *row = static_cast<size_t>(std::floor((1.0f - ball_y) / m_level_dimens.block_height));
+  *col = static_cast<size_t>(std::floor((ball_x + BallParams::neg_ballHalfSize) / m_level_dimens.block_width));
+  *row = static_cast<size_t>(std::floor((BallParams::neg_ballHalfSize - ball_y) / m_level_dimens.block_height));
 }
 
 }
