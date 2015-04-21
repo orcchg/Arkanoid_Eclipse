@@ -211,7 +211,13 @@ void GameProcessor::moveBall() {
       m_is_ball_lost = !collideBite(new_x);
     }
   } else {
-    collideBlocks(new_x, new_y);
+    if (collideBlocks(new_x, new_y)) {
+      if (m_level->blockImpact() == 0) {
+        level_finished_event.notifyListeners(true);
+        m_ball_is_flying = false;  // stop flying
+        onLevelFinished(true);
+      }
+    }
   }
 
   new_x = m_ball.pose.x + m_ball.x_velocity * cos(m_ball.angle);
@@ -288,7 +294,7 @@ bool GameProcessor::collideBlocks(GLfloat new_x, GLfloat new_y) {
     switch (block) {
       case Block::NONE:
         // fly without disturbance
-        break;
+        return false;
       default:
         if (m_ball.pose.x + 1.0f >= left_border && m_ball.pose.x + 1.0f <= right_border) {
           collideHorizontalSurface();
@@ -297,15 +303,11 @@ bool GameProcessor::collideBlocks(GLfloat new_x, GLfloat new_y) {
         } else if (m_ball.pose.x + 1.0f > right_border) {
           collideLeftBorder();
         }
-        if (m_level->blockImpact() == 0) {
-          level_finished_event.notifyListeners(true);
-          m_ball_is_flying = false;  // stop flying
-          onLevelFinished(true);
-        }
         break;
     }
     block_impact_event.notifyListeners(std::make_pair(row, col));
     return true;
+
   } else if (new_y > 1.0f) {
     collideHorizontalSurface();
   }

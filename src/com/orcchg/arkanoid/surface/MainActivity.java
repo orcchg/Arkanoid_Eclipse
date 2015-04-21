@@ -32,43 +32,7 @@ public class MainActivity extends FragmentActivity {
   protected void onResume() {
     mAsyncContext.start();
     mSurface.setAsyncContext(mAsyncContext);
-//    mAsyncContext.loadLevel(new String[] {"S B SS B S",
-//                                          " S BBBS S ",
-//                                          "B S SS B S"});
-    mAsyncContext.loadLevel(new String[] {"          ",
-                                          "          ",
-                                          "          ",
-                                          "          ",
-                                          "          ",
-                                          "          ",
-                                          "          ",
-                                          "          ",
-                                          "          ",
-                                          "          ",
-                                          "          ",
-                                          "  BSSSSS  ",
-                                          "  BSSBSS  ",
-                                          "  BSSSSS  ",
-                                          "          ",
-                                          "          "});
-//    mAsyncContext.loadLevel(new String[] {"          ",
-//                                          "          ",
-//                                          "S        S",
-//                                          "B        B",
-//                                          "S        S",
-//                                          "B        S",
-//                                          "S        B",
-//                                          "S        S",
-//                                          "S        S",
-//                                          "B        B",
-//                                          "S        S",
-//                                          "B        S",
-//                                          "S        B",
-//                                          "S        S",
-//                                          "B        B",
-//                                          "S        S",
-//                                          "B        S",
-//                                          "S        B"});
+    mAsyncContext.loadLevel(Levels.get(-1));
     super.onResume();
   }
   
@@ -107,6 +71,7 @@ public class MainActivity extends FragmentActivity {
   private static class CoreEventHandler implements AsyncContext.CoreEventListener {
     private static final String TAG = "CoreEvent";
     private WeakReference<MainActivity> activityRef;
+    private int currentLevel = -1;
     
     CoreEventHandler(final MainActivity activity) {
       activityRef = new WeakReference<MainActivity>(activity);
@@ -120,6 +85,10 @@ public class MainActivity extends FragmentActivity {
     @Override
     public void onLevelFinished() {
       Log.i(TAG, "Level finished !");
+      MainActivity activity = activityRef.get();
+      if (activity != null) {
+        activity.mAsyncContext.loadLevel(Levels.get(++currentLevel));
+      }
     }
   }
 }
