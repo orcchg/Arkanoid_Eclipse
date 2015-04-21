@@ -239,19 +239,22 @@ void GameProcessor::collideRightBorder() {
   m_ball.angle = sign * std::fmod(std::fabs(m_ball.angle), util::_2PI);
 }
 
+void GameProcessor::collideHorizontalSurface() {
+  m_ball.angle = util::_2PI - m_ball.angle;
+  GLfloat sign = m_ball.angle >= 0.0f ? 1.0f : -1.0f;
+  m_ball.angle = sign * std::fmod(std::fabs(m_ball.angle), util::_2PI);
+}
+
 // http://stackoverflow.com/questions/8063696/arkanoid-physics-projectile-physics-simulation
 bool GameProcessor::collideBite(GLfloat new_x) {
   if (new_x >= -BiteParams::biteHalfWidth + m_bite.x_pose &&
       new_x <= BiteParams::biteHalfWidth + m_bite.x_pose) {
-
 //    GLfloat mass_factor = m_bite.mass / m_ball.mass;
 //    m_ball.x_velocity += BiteParams::neg_angularFactor * m_bite.x_velocity * mass_factor * m_bite.friction;
 //    m_ball.y_velocity = -m_ball.y_velocity;
 //    m_ball.spin += BiteParams::angularFactor * m_bite.x_velocity  * mass_factor * m_bite.friction;;
     if (m_ball.angle >= util::PI) {
-      m_ball.angle = util::_2PI - m_ball.angle;
-      GLfloat sign = m_ball.angle >= 0.0f ? 1.0f : -1.0f;
-      m_ball.angle = sign * std::fmod(std::fabs(m_ball.angle), util::_2PI);
+      collideHorizontalSurface();
     }
   } else {
     return false;  // ball missed the bite
@@ -270,17 +273,13 @@ bool GameProcessor::collideBlocks(GLfloat new_x, GLfloat new_y) {
         // fly without disturbance
         break;
       default:
-        m_ball.angle = util::_2PI - m_ball.angle;
-        GLfloat sign = m_ball.angle >= 0.0f ? 1.0f : -1.0f;
-        m_ball.angle = sign * std::fmod(std::fabs(m_ball.angle), util::_2PI);
+        collideHorizontalSurface();
         break;
     }
     block_impact_event.notifyListeners(std::make_pair(row, col));
     return true;
   } else if (new_y > 1.0f) {
-    m_ball.angle = util::_2PI - m_ball.angle;
-    GLfloat sign = m_ball.angle >= 0.0f ? 1.0f : -1.0f;
-    m_ball.angle = sign * std::fmod(std::fabs(m_ball.angle), util::_2PI);
+    collideHorizontalSurface();
   }
   return false;
 }
