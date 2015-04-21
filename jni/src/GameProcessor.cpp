@@ -285,6 +285,7 @@ bool GameProcessor::collideBlocks(GLfloat new_x, GLfloat new_y) {
         }
         if (m_level->blockImpact() == 0) {
           level_finished_event.notifyListeners(true);
+          m_ball_is_flying = false;  // stop flying
         }
         break;
     }
