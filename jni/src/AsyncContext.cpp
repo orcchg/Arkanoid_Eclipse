@@ -234,8 +234,6 @@ void AsyncContext::process_throwBall() {
 
 void AsyncContext::process_loadLevel() {
   std::unique_lock<std::mutex> lock(m_load_level_mutex);
-  DBG("enter AsyncContext::process_loadLevel()");
-
   // release memory allocated for previous level if any
   delete [] m_level_vertex_buffer;
   delete [] m_level_color_buffer;
@@ -255,8 +253,8 @@ void AsyncContext::process_loadLevel() {
   m_level->toVertexArray(dimens.block_width, dimens.block_height, -1.0f, 1.0f, &m_level_vertex_buffer[0]);
   m_level->fillColorArray(&m_level_color_buffer[0]);
   util::rectangleIndices(&m_level_index_buffer[0], m_level->size() * 6);
+
   level_dimens_event.notifyListeners(dimens);
-  DBG("exit AsyncContext::process_loadLevel()");
 }
 
 void AsyncContext::process_moveBall() {
@@ -284,7 +282,7 @@ void AsyncContext::process_blockImpact() {
       // no-op
       break;
   }
-  m_level->fillColorArray(&m_level_color_buffer[0]);  // TODO: optimize
+  m_level->fillColorArrayAtBlock(&m_level_color_buffer[0], m_impact_row, m_impact_col);
 }
 
 /* LogicFunc group */
@@ -469,6 +467,25 @@ void AsyncContext::drawLevel() {
   glEnableVertexAttribArray(a_color);
 
   glDrawElements(GL_TRIANGLES, m_level->size() * 6, GL_UNSIGNED_SHORT, &m_level_index_buffer[0]);
+
+  glDisableVertexAttribArray(a_position);
+  glDisableVertexAttribArray(a_color);
+}
+
+void AsyncContext::drawBlock(size_t row, size_t col) {
+  m_level_shader->useProgram();
+
+  GLuint a_position = m_level_shader->getVertexAttribLocation();
+  GLuint a_color = m_level_shader->getColorAttribLocation();
+
+  int rci = col * 16 + row * m_level->numCols() * 16;
+  glVertexAttribPointer(a_position, 4, GL_FLOAT, GL_FALSE, 0, &m_level_vertex_buffer[rci]);
+  glVertexAttribPointer(a_color, 4, GL_FLOAT, GL_FALSE, 0, &m_level_color_buffer[rci]);
+
+  glEnableVertexAttribArray(a_position);
+  glEnableVertexAttribArray(a_color);
+
+  glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, &m_rectangle_index_buffer[0]);
 
   glDisableVertexAttribArray(a_position);
   glDisableVertexAttribArray(a_color);

@@ -264,6 +264,8 @@ private:
    */
   /// @brief Draws current level's state.
   void drawLevel();
+  /// @brief Draws block of current level.
+  void drawBlock(size_t row, size_t col);
   /// @brief Draws bite at it's current position.
   void drawBite();
   /// @brief Draw ball at it's current position.

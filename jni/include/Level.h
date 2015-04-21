@@ -75,6 +75,14 @@ public:
   /// @details Memory for output array should be allocated manually
   /// by Client, required size for allocation is 16 * cols * rows.
   void fillColorArray(GLfloat* const array) const;
+  /// @brief Fills input array with color values at position corresponding
+  /// to the specified block in this Level instance.
+  /// @param array Output color array.
+  /// @param row Row index of specified block.
+  /// @param col Column index of specified block.
+  /// @details Memory for output array should be allocated manually
+  /// by Client, required size for allocation is 16 * cols * rows.
+  void fillColorArrayAtBlock(GLfloat* const array, size_t row, size_t col) const;
 
   /// @brief Returns height of level.
   inline size_t numRows() const { return rows; }

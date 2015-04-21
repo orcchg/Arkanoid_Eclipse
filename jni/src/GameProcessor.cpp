@@ -149,7 +149,7 @@ void GameProcessor::eventHandler() {
 // ----------------------------------------------------------------------------
 void GameProcessor::process_loadLevel() {
   std::unique_lock<std::mutex> lock(m_load_level_mutex);
-  // XXX:
+  // no-op
 }
 
 void GameProcessor::process_throwBall() {
@@ -301,7 +301,6 @@ void GameProcessor::getImpactedBlock(
 
   *col = static_cast<size_t>(std::floor((ball_x + 1.0f) / m_level_dimens.block_width));
   *row = static_cast<size_t>(std::floor((1.0f - ball_y) / m_level_dimens.block_height));
-//  *row = m_level_dimens.rows - *row - 1;
 }
 
 }
