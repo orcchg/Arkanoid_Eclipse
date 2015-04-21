@@ -57,6 +57,7 @@ Level::Ptr Level::fromStringArray(const std::vector<std::string>& array, size_t 
       }
     }
   }
+  level->initial_cardinality = level->getCardinality();
 
   delete [] widths;
   widths = nullptr;
@@ -116,6 +117,26 @@ void Level::fillColorArrayAtBlock(GLfloat* const array, size_t row, size_t col) 
   util::setColor(bgra, &array[lower_right_i], 4);
 }
 
+size_t Level::calculateCardinality() const {
+  size_t cardinality = 0;
+  for (size_t r = 0; r < rows; ++r) {
+    for (size_t c = 0; c < cols; ++c) {
+      switch (blocks[r][c]) {
+        default:
+        case Block::NONE:
+          break;
+        case Block::SIMPLE:
+          ++cardinality;
+          break;
+        case Block::BRICK:
+          cardinality += 2;
+          break;
+      }
+    }
+  }
+  return cardinality;
+}
+
 void Level::print() const {
   std::vector<std::string> array;
   array.reserve(rows);
@@ -127,11 +148,13 @@ void Level::print() const {
 }
 
 Level::Level(size_t rows, size_t cols)
-  : rows(rows), cols(cols), blocks(new Block*[rows]) {
+  : rows(rows)
+  , cols(cols)
+  , initial_cardinality(0)
+  , blocks(new Block*[rows]) {
   for (size_t r = 0; r < rows; ++r) {
     blocks[r] = new Block[cols];
   }
-  DBG("Level::ctor(), size: %i", size());
 }
 
 Level::~Level() {

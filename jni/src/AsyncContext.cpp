@@ -46,6 +46,7 @@ AsyncContext::AsyncContext(JavaVM* jvm)
   m_move_ball_received.store(false);
   m_lost_ball_received.store(false);
   m_block_impact_received.store(false);
+  m_level_finished_received.store(false);
   m_window_set = false;
 
   util::setColor(util::MAGENTA, &m_bite_color_buffer[0], 16);
@@ -123,6 +124,12 @@ void AsyncContext::callback_blockImpact(std::pair<size_t, size_t> block) {
   interrupt();
 }
 
+void AsyncContext::callback_levelFinished(bool is_finished) {
+  std::unique_lock<std::mutex> lock(m_level_finished_mutex);
+  m_level_finished_received.store(true);
+  interrupt();
+}
+
 // ----------------------------------------------
 Level::Ptr AsyncContext::getCurrentLevelState() {
   std::unique_lock<std::mutex> lock(m_load_level_mutex);
@@ -163,7 +170,8 @@ bool AsyncContext::checkForWakeUp() {
       m_load_level_received.load() ||
       m_move_ball_received.load() ||
       m_lost_ball_received.load() ||
-      m_block_impact_received.load();
+      m_block_impact_received.load() ||
+      m_level_finished_received.load();
 }
 
 void AsyncContext::eventHandler() {
@@ -195,6 +203,10 @@ void AsyncContext::eventHandler() {
     if (m_block_impact_received.load()) {
       m_block_impact_received.store(false);
       process_blockImpact();
+    }
+    if (m_level_finished_received.load()) {
+      m_level_finished_received.store(false);
+      process_levelFinished();
     }
     render();  // render frame to reflect changes occurred
   } else {
@@ -283,6 +295,11 @@ void AsyncContext::process_blockImpact() {
       break;
   }
   m_level->fillColorArrayAtBlock(&m_level_color_buffer[0], m_impact_row, m_impact_col);
+}
+
+void AsyncContext::process_levelFinished() {
+  std::unique_lock<std::mutex> lock(m_level_finished_mutex);
+  // XXX:
 }
 
 /* LogicFunc group */

@@ -205,7 +205,11 @@ void GameProcessor::moveBall() {
       m_is_ball_lost = !collideBite(new_x);
     }
   } else {
-    collideBlocks(new_x, new_y);
+    if (collideBlocks(new_x, new_y)) {
+      if (m_level->blockImpact() == 0) {
+        level_finished_event.notifyListeners(true);
+      }
+    }
   }
 
   new_x = m_ball.pose.x + m_ball.x_velocity * cos(m_ball.angle);

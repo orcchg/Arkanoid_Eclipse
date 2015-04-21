@@ -54,6 +54,8 @@ public:
   void callback_lostBall(float is_lost);
   /// @brief Called when block has been impacted.
   void callback_blockImpact(std::pair<size_t, size_t> block);
+  /// @brief Called when level has been successfully finished.
+  void callback_levelFinished(bool is_finished);
   /** @} */  // end of Callbacks group
 
   /** @defgroup GameStat Get game statistics
@@ -96,6 +98,8 @@ public:
   EventListener<bool> lost_ball_listener;
   /// @brief Listens for event which occurs when block has been impacted.
   EventListener<std::pair<size_t, size_t>> block_impact_listener;
+  /// @brief Listens for event which occurs when level has been successfully finished.
+  EventListener<bool> level_finished_listener;
 
   /// @brief Notifies ball has been placed to it's initial position.
   Event<Ball> init_ball_position_event;
@@ -173,6 +177,7 @@ private:
   std::mutex m_move_ball_mutex;  //!< Sentinel for move ball to a new position.
   std::mutex m_lost_ball_mutex;  //!< Sentinel for lost ball flag.
   std::mutex m_block_impact_mutex;  //!< Sentinel for block impact event.
+  std::mutex m_level_finished_mutex;  //!< Sentinel for level has been successfully finished.
   std::atomic_bool m_surface_received;  //!< Window has been set.
   std::atomic_bool m_shift_gamepad_received;  //!< Shift gesture has occurred.
   std::atomic_bool m_throw_ball_received;  //!< Throw ball command has been received.
@@ -180,6 +185,7 @@ private:
   std::atomic_bool m_move_ball_received;  //!< Move ball event has been received.
   std::atomic_bool m_lost_ball_received;  //!< Ball has been lost received.
   std::atomic_bool m_block_impact_received;  //!< Block impact has been received.
+  std::atomic_bool m_level_finished_received;  //!< Level has been successfully finished.
   /** @} */  // end of Mutex group
 
   /** @defgroup SafetyFlag Logic-safety variables
@@ -224,6 +230,8 @@ private:
   void process_lostBall();
   /// @brief Performs visual block impact.
   void process_blockImpact();
+  /// @brief Performs visual level finalization.
+  void process_levelFinished();
   /** @} */  // end of Processors group
 
 private:
