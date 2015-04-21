@@ -28,9 +28,43 @@ public class MainActivity extends FragmentActivity {
   protected void onResume() {
     mAsyncContext.start();
     mSurface.setAsyncContext(mAsyncContext);
-    mAsyncContext.loadLevel(new String[] {"S B SS B S",
-                                          " S BBBS S ",
-                                          "B S SS B S"});
+//    mAsyncContext.loadLevel(new String[] {"S B SS B S",
+//                                          " S BBBS S ",
+//                                          "B S SS B S"});
+    mAsyncContext.loadLevel(new String[] {"          ",
+                                          "          ",
+                                          "          ",
+                                          "          ",
+                                          "          ",
+                                          "          ",
+                                          "          ",
+                                          "          ",
+                                          "          ",
+                                          "          ",
+                                          "          ",
+                                          "  BSSSSS  ",
+                                          "  BSSBSS  ",
+                                          "  BSSSSS  ",
+                                          "          ",
+                                          "          "});
+//    mAsyncContext.loadLevel(new String[] {"          ",
+//                                          "          ",
+//                                          "S        S",
+//                                          "B        B",
+//                                          "S        S",
+//                                          "B        S",
+//                                          "S        B",
+//                                          "S        S",
+//                                          "S        S",
+//                                          "B        B",
+//                                          "S        S",
+//                                          "B        S",
+//                                          "S        B",
+//                                          "S        S",
+//                                          "B        B",
+//                                          "S        S",
+//                                          "B        S",
+//                                          "S        B"});
     super.onResume();
   }
   
