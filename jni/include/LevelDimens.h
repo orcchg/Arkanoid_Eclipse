@@ -27,6 +27,14 @@ struct LevelDimens {
     , block_width(bw)
     , block_height(bh) {
   }
+
+  void getBlockDimens(
+      size_t row,
+      size_t col,
+      GLfloat* top_border,
+      GLfloat* bottom_border,
+      GLfloat* left_border,
+      GLfloat* right_border);
 };
 
 }

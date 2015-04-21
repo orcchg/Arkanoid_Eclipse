@@ -263,17 +263,26 @@ bool GameProcessor::collideBite(GLfloat new_x) {
 }
 
 bool GameProcessor::collideBlocks(GLfloat new_x, GLfloat new_y) {
-  if (new_y >= 1.0f - m_level_dimens.height &&
-      new_y <= 1.0f) {
+  if (new_y >= 1.0f - m_level_dimens.height && new_y <= 1.0f) {
     size_t row = 0, col = 0;
     getImpactedBlock(new_x, new_y, &row, &col);
+
+    GLfloat top_border = 0.0f, bottom_border = 0.0f, left_border = 0.0f, right_border = 0.0f;
+    m_level_dimens.getBlockDimens(row, col, &top_border, &bottom_border, &left_border, &right_border);
+
     Block block = m_level->getBlock(row, col);
     switch (block) {
       case Block::NONE:
         // fly without disturbance
         break;
       default:
-        collideHorizontalSurface();
+        if (m_ball.pose.x + 1.0f >= left_border && m_ball.pose.x + 1.0f <= right_border) {
+          collideHorizontalSurface();
+        } else if (m_ball.pose.x + 1.0f < left_border) {
+          collideRightBorder();
+        } else if (m_ball.pose.x + 1.0f > right_border) {
+          collideLeftBorder();
+        }
         break;
     }
     block_impact_event.notifyListeners(std::make_pair(row, col));
