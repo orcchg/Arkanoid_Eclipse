@@ -1,9 +1,12 @@
 package com.orcchg.arkanoid.surface;
 
+import java.lang.ref.WeakReference;
+
 import com.orcchg.arkanoid.R;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.MenuItem;
 
 public class MainActivity extends FragmentActivity {
@@ -21,6 +24,7 @@ public class MainActivity extends FragmentActivity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
     mAsyncContext = new AsyncContext();
+    mAsyncContext.setCoreEventListener(new CoreEventHandler(this));
     mSurface = (GameSurface) findViewById(R.id.surface_view);
   }
   
@@ -97,4 +101,25 @@ public class MainActivity extends FragmentActivity {
   }
   
   AsyncContext getAsyncContext() { return mAsyncContext; }
+  
+  /* Core event listeners */
+  // --------------------------------------------------------------------------
+  private static class CoreEventHandler implements AsyncContext.CoreEventListener {
+    private static final String TAG = "CoreEvent";
+    private WeakReference<MainActivity> activityRef;
+    
+    CoreEventHandler(final MainActivity activity) {
+      activityRef = new WeakReference<MainActivity>(activity);
+    }
+    
+    @Override
+    public void onLostBall() {
+      Log.i(TAG, "Ball has been lost !");
+    }
+
+    @Override
+    public void onLevelFinished() {
+      Log.i(TAG, "Level finished !");
+    }
+  }
 }

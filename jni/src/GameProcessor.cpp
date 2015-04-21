@@ -10,8 +10,11 @@ namespace game {
 
 /* Public API */
 // ----------------------------------------------
-GameProcessor::GameProcessor(JavaVM* jvm)
+GameProcessor::GameProcessor(JavaVM* jvm, jobject master_object)
   : m_jvm(jvm), m_jenv(nullptr)
+  , master_object(master_object)
+  , fireJavaEvent_lostBall_id(nullptr)
+  , fireJavaEvent_levelFinished_id(nullptr)
   , m_level(nullptr)
   , m_ball_is_flying(false)
   , m_is_ball_lost(false)
@@ -23,12 +26,14 @@ GameProcessor::GameProcessor(JavaVM* jvm)
   , m_angle_distribution(util::PI4, util::PI16)
   , m_direction_distribution(0.5f) {
 
+  DBG("enter GameProcessor ctor");
   m_load_level_received.store(false);
   m_throw_ball_received.store(false);
   m_init_ball_position_received.store(false);
   m_init_bite_received.store(false);
   m_level_dimens_received.store(false);
   m_bite_location_received.store(false);
+  DBG("exit GameProcessor ctor");
 }
 
 GameProcessor::~GameProcessor() {
@@ -191,6 +196,7 @@ void GameProcessor::moveBall() {
   if (m_is_ball_lost && new_y <= -1.0f) {
     lost_ball_event.notifyListeners(true);
     m_ball_is_flying = false;
+    onLostBall(true);
     return;
   }
 
@@ -215,6 +221,14 @@ void GameProcessor::moveBall() {
 
   move_ball_event.notifyListeners(m_ball);
   std::this_thread::sleep_for (std::chrono::milliseconds(50));
+}
+
+void GameProcessor::onLostBall(bool /* dummy */) {
+  m_jenv->CallVoidMethod(master_object, fireJavaEvent_lostBall_id);
+}
+
+void GameProcessor::onLevelFinished(bool /* dummy */) {
+  m_jenv->CallVoidMethod(master_object, fireJavaEvent_levelFinished_id);
 }
 
 /* Maths group */
@@ -286,6 +300,7 @@ bool GameProcessor::collideBlocks(GLfloat new_x, GLfloat new_y) {
         if (m_level->blockImpact() == 0) {
           level_finished_event.notifyListeners(true);
           m_ball_is_flying = false;  // stop flying
+          onLevelFinished(true);
         }
         break;
     }

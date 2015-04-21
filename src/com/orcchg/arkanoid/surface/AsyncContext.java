@@ -7,6 +7,13 @@ class AsyncContext {
   
   private final long descriptor;
   
+  interface CoreEventListener {
+    void onLostBall();
+    void onLevelFinished();
+  }
+  
+  private CoreEventListener mListener;
+  
   AsyncContext() {
     descriptor = init();
   }
@@ -24,6 +31,23 @@ class AsyncContext {
 
   /* Tools */
   void loadLevel(final String[] level) { loadLevel(descriptor, level); }
+  
+  /* Events coming from native Core */
+  void setCoreEventListener(CoreEventListener listener) {
+    mListener = listener;
+  }
+  
+  void fireJavaEvent_lostBall() {
+    if (mListener != null) {
+      mListener.onLostBall();
+    }
+  }
+  
+  void fireJavaEvent_levelFinished() {
+    if (mListener != null) {
+      mListener.onLevelFinished();
+    }
+  }
   
   /* Private methods */
   // --------------------------------------------------------------------------

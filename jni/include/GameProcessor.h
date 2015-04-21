@@ -24,7 +24,7 @@ class GameProcessor : public ActiveObject {
 public:
   typedef std::shared_ptr<GameProcessor> Ptr;
 
-  GameProcessor(JavaVM* jvm);
+  GameProcessor(JavaVM* jvm, jobject master_object);
   virtual ~GameProcessor() noexcept;
 
   /** @defgroup Callbacks These methods are responses of incoming events
@@ -56,6 +56,15 @@ private:
   /// @brief Detaches this thread from an existing JVM it had been
   /// previously attached.
   void detachFromJVM();
+  /** @} */  // end of JNIEnvironment group
+
+public:
+  /** @addtogroup JNIEnvironment
+   * @{
+   */
+  inline void setMasterObject(jobject object) { master_object = object; }
+  inline void setOnLostBallMethodID(jmethodID id) { fireJavaEvent_lostBall_id = id; }
+  inline void setOnLevelFinishedMethodID(jmethodID id) { fireJavaEvent_levelFinished_id = id; }
   /** @} */  // end of JNIEnvironment group
 
 // ----------------------------------------------
@@ -95,6 +104,9 @@ private:
    */
   JavaVM* m_jvm;  //!< Pointer to Java Virtual Machine in current session.
   JNIEnv* m_jenv;  //!< Pointer to environment local within this thread.
+  jobject master_object;
+  jmethodID fireJavaEvent_lostBall_id;
+  jmethodID fireJavaEvent_levelFinished_id;
   /** @} */  // end of JNIEnvironment group
 
   /** @defgroup LogicData Game logic related data members.
@@ -177,6 +189,10 @@ private:
   /// and then notifies listeners that event 'move_ball_event' occurs.
   /// @details Calculated position is the ball's position in the next frame.
   void moveBall();
+  /// @brief Notifies Java layer the ball has been lost.
+  void onLostBall(bool /* dummy */);
+  /// @brief Notifies Java layer level has been successfully finished.
+  void onLevelFinished(bool /* dummy */);
   /** @} */  // end of LogicFunc group
 
   /** @addtogroup Maths

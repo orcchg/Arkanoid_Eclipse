@@ -120,7 +120,12 @@ JNIEXPORT jint JNICALL Java_com_orcchg_arkanoid_surface_AsyncContext_getScore
  * @brief Helper structure to wrap render thread and outer incoming events.
  */
 struct AsyncContextHelper {
-  /// Pointer to a windows associated with the rendering surface.
+  /// @brief Pointer to environment for UI thread.
+  JNIEnv* jenv;
+  /// @brief Pointer to current object.
+  jobject global_object;
+
+  /// @brief Pointer to a windows associated with the rendering surface.
   ANativeWindow* window;
 
   /// @brief Shared pointer to an instance of render thread.
@@ -138,7 +143,10 @@ struct AsyncContextHelper {
   Event<game::Level::Ptr> load_level_event;  //<! When user's requested to load level.
   /** @} */  // end of AsyncContextEvent group
 
-  AsyncContextHelper();
+  jmethodID fireJavaEvent_lostBall_id;
+  jmethodID fireJavaEvent_levelFinished_id;
+
+  AsyncContextHelper(JNIEnv* jenv, jobject master_object);
   virtual ~AsyncContextHelper();
 };
 
