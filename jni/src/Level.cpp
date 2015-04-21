@@ -57,7 +57,7 @@ Level::Ptr Level::fromStringArray(const std::vector<std::string>& array, size_t 
       }
     }
   }
-  level->initial_cardinality = level->getCardinality();
+  level->initial_cardinality = level->calculateCardinality();
 
   delete [] widths;
   widths = nullptr;

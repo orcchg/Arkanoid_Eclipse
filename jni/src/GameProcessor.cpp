@@ -205,11 +205,7 @@ void GameProcessor::moveBall() {
       m_is_ball_lost = !collideBite(new_x);
     }
   } else {
-    if (collideBlocks(new_x, new_y)) {
-      if (m_level->blockImpact() == 0) {
-        level_finished_event.notifyListeners(true);
-      }
-    }
+    collideBlocks(new_x, new_y);
   }
 
   new_x = m_ball.pose.x + m_ball.x_velocity * cos(m_ball.angle);
@@ -286,6 +282,9 @@ bool GameProcessor::collideBlocks(GLfloat new_x, GLfloat new_y) {
           collideRightBorder();
         } else if (m_ball.pose.x + 1.0f > right_border) {
           collideLeftBorder();
+        }
+        if (m_level->blockImpact() == 0) {
+          level_finished_event.notifyListeners(true);
         }
         break;
     }
