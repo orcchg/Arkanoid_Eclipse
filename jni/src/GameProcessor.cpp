@@ -199,8 +199,10 @@ void GameProcessor::moveBall() {
   }
 
   // ball's position in the next frame
-  GLfloat new_x = m_ball.pose.x + m_ball.x_velocity * cos(m_ball.angle);
-  GLfloat new_y = m_ball.pose.y + m_ball.y_velocity * sin(m_ball.angle);
+  GLfloat x_velocity = m_ball.x_velocity * cos(m_ball.angle);
+  GLfloat y_velocity = m_ball.y_velocity * sin(m_ball.angle);
+  GLfloat new_x = m_ball.pose.x + x_velocity;
+  GLfloat new_y = m_ball.pose.y + y_velocity;
 
   if (m_is_ball_lost && new_y <= -1.0f) {
     m_ball_is_flying = false;  // stop flying before notify to avoid bugs
@@ -209,9 +211,9 @@ void GameProcessor::moveBall() {
     return;
   }
 
-  if (new_x >= BallParams::neg_ballHalfSize) {  // right border
+  if (new_x >= BallParams::neg_ballHalfSize + std::fabs(x_velocity)) {  // right border
     collideRightBorder();
-  } else if (new_x <= -BallParams::neg_ballHalfSize) {  // left border
+  } else if (new_x <= -BallParams::neg_ballHalfSize - std::fabs(x_velocity)) {  // left border
     collideLeftBorder();
   }
 
@@ -219,10 +221,8 @@ void GameProcessor::moveBall() {
     if (!m_is_ball_lost) {
       m_is_ball_lost = !collideBite(new_x);
     }
-  } else {
-    if (collideBlocks(new_x, new_y)) {
-      m_level_finished = (m_level->blockImpact() == 0);
-    }
+  } else if (collideBlocks(new_x, new_y)) {
+    m_level_finished = (m_level->blockImpact() == 0);
   }
 
   new_x = m_ball.pose.x + m_ball.x_velocity * cos(m_ball.angle);
@@ -231,7 +231,7 @@ void GameProcessor::moveBall() {
   m_ball.pose.y = new_y;
 
   move_ball_event.notifyListeners(m_ball);
-  std::this_thread::sleep_for (std::chrono::nanoseconds(1));
+  std::this_thread::sleep_for (std::chrono::nanoseconds(100000));
 }
 
 void GameProcessor::onLostBall(bool /* dummy */) {
