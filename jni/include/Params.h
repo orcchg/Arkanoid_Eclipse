@@ -22,9 +22,7 @@ struct BiteParams {
 
 struct BallParams {
   constexpr static float ballSize = 0.1f;  //!< Size of any of 4 sides of ball.
-  constexpr static float neg_ballSize = 1.0f - ballSize;
   constexpr static float ballHalfSize = ballSize * 0.5f;
-  constexpr static float neg_ballHalfSize = 1.0f - ballHalfSize;
   constexpr static float ballAngle = util::PI4;  //!< Initial angle at game start
   constexpr static float ballSpeed = 0.0001f;   //!< Initial speed at game start
   constexpr static float ballMass = 1.0f;  //!< Constant mass of ball.

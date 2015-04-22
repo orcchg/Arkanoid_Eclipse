@@ -70,7 +70,6 @@ void GameProcessor::callback_initBall(Ball init_ball) {
   std::unique_lock<std::mutex> lock(m_init_ball_position_mutex);
   m_init_ball_position_received.store(true);
   m_ball = init_ball;
-  ERR("COOO: BALL: %lf %lf", m_ball.pose.x, m_ball.pose.y);
   interrupt();
 }
 
@@ -235,21 +234,18 @@ void GameProcessor::moveBall() {
     return;
   }
 
-  if (new_x >= BallParams::neg_ballHalfSize) {  // right border
+  if (new_x >= 1.0f - m_ball.dimens.halfWidth()) {  // right border
     collideRightBorder();
-    m_ball_pose_corrected = correctBallPosition(BallParams::neg_ballHalfSize, new_y);
-  } else if (new_x <= -BallParams::neg_ballHalfSize) {  // left border
+    m_ball_pose_corrected = correctBallPosition(1.0f - m_ball.dimens.halfWidth(), new_y);
+  } else if (new_x <= -1.0f + m_ball.dimens.halfWidth()) {  // left border
     collideLeftBorder();
-    m_ball_pose_corrected = correctBallPosition(-BallParams::neg_ballHalfSize, new_y);
+    m_ball_pose_corrected = correctBallPosition(-1.0f + m_ball.dimens.halfWidth(), new_y);
   }
 
   if (new_y <= m_bite_upper_border + m_ball.dimens.halfHeight()) {
     if (!m_is_ball_lost) {
       m_is_ball_lost = !collideBite(new_x);
-      ERR("COOO:  ox=%lf oy=%lf bx=%lf by=%lf nx=%lf ny=%lf b=%lf",
-          old_x, old_y, m_ball.pose.x, m_ball.pose.y, new_x, new_y, m_bite_upper_border);
       m_ball_pose_corrected = correctBallPosition(new_x, m_bite_upper_border + m_ball.dimens.halfHeight());
-      return;
     }
   } else if (collideBlocks(new_x, new_y)) {
     m_level_finished = (m_level->blockImpact() == 0);
@@ -320,7 +316,8 @@ bool GameProcessor::collideBite(GLfloat new_x) {
 }
 
 bool GameProcessor::collideBlocks(GLfloat new_x, GLfloat new_y) {
-  if (new_y >= BallParams::neg_ballHalfSize - m_level_dimens.height && new_y < BallParams::neg_ballHalfSize) {
+  if (new_y >= 1.0f - m_ball.dimens.halfHeight() - m_level_dimens.height &&
+      new_y < 1.0f - m_ball.dimens.halfHeight()) {
     size_t row = 0, col = 0;
     getImpactedBlock(new_x, new_y, &row, &col);
 
@@ -345,9 +342,9 @@ bool GameProcessor::collideBlocks(GLfloat new_x, GLfloat new_y) {
     block_impact_event.notifyListeners(std::make_pair(row, col));
     return true;
 
-  } else if (new_y >= BallParams::neg_ballHalfSize) {
+  } else if (new_y >= 1.0f - m_ball.dimens.halfHeight()) {
     collideHorizontalSurface();
-    m_ball_pose_corrected = correctBallPosition(new_x, BallParams::neg_ballHalfSize);
+    m_ball_pose_corrected = correctBallPosition(new_x, 1.0f - m_ball.dimens.halfHeight());
   }
   return false;
 }
@@ -358,8 +355,8 @@ void GameProcessor::getImpactedBlock(
     size_t* row,
     size_t* col) {
 
-  *col = static_cast<size_t>(std::floor((ball_x + BallParams::neg_ballHalfSize) / m_level_dimens.block_width));
-  *row = static_cast<size_t>(std::floor((BallParams::neg_ballHalfSize - ball_y) / m_level_dimens.block_height));
+  *col = static_cast<size_t>(std::floor((ball_x + m_ball.dimens.halfWidth()) / m_level_dimens.block_width));
+  *row = static_cast<size_t>(std::floor((1.0f - m_ball.dimens.halfHeight() - ball_y) / m_level_dimens.block_height));
 }
 
 bool GameProcessor::correctBallPosition(GLfloat new_x, GLfloat new_y) {
