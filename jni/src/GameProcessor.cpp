@@ -16,9 +16,11 @@ GameProcessor::GameProcessor(JavaVM* jvm, jobject master_object)
   , fireJavaEvent_lostBall_id(nullptr)
   , fireJavaEvent_levelFinished_id(nullptr)
   , m_level(nullptr)
+  , m_aspect(1.0f)
   , m_level_finished(false)
   , m_ball_is_flying(false)
   , m_is_ball_lost(false)
+  , m_ball_pose_corrected(false)
   , m_ball()
   , m_bite()
   , m_bite_upper_border(-BiteParams::neg_biteElevation)
@@ -28,6 +30,7 @@ GameProcessor::GameProcessor(JavaVM* jvm, jobject master_object)
   , m_direction_distribution(0.5f) {
 
   DBG("enter GameProcessor ctor");
+  m_aspect_ratio_received.store(false);
   m_load_level_received.store(false);
   m_throw_ball_received.store(false);
   m_init_ball_position_received.store(false);
@@ -43,6 +46,13 @@ GameProcessor::~GameProcessor() {
 
 /* Callbacks group */
 // ----------------------------------------------------------------------------
+void GameProcessor::callback_aspectMeasured(float aspect) {
+  std::unique_lock<std::mutex> lock(m_aspect_ratio_mutex);
+  m_aspect_ratio_received.store(true);
+  m_aspect = aspect;
+  interrupt();
+}
+
 void GameProcessor::callback_loadLevel(Level::Ptr level) {
   std::unique_lock<std::mutex> lock(m_load_level_mutex);
   m_load_level_received.store(true);
@@ -60,6 +70,7 @@ void GameProcessor::callback_initBall(Ball init_ball) {
   std::unique_lock<std::mutex> lock(m_init_ball_position_mutex);
   m_init_ball_position_received.store(true);
   m_ball = init_ball;
+  ERR("COOO: BALL: %lf %lf", m_ball.pose.x, m_ball.pose.y);
   interrupt();
 }
 
@@ -113,6 +124,7 @@ void GameProcessor::onStop() {
 
 bool GameProcessor::checkForWakeUp() {
   return m_ball_is_flying ||
+      m_aspect_ratio_received.load() ||
       m_load_level_received.load() ||
       m_throw_ball_received.load() ||
       m_init_ball_position_received.load() ||
@@ -122,6 +134,10 @@ bool GameProcessor::checkForWakeUp() {
 }
 
 void GameProcessor::eventHandler() {
+  if (m_aspect_ratio_received.load()) {
+    m_aspect_ratio_received.store(false);
+    process_aspectMeasured();
+  }
   if (m_load_level_received.load()) {
     m_load_level_received.store(false);
     process_loadLevel();
@@ -153,6 +169,11 @@ void GameProcessor::eventHandler() {
 
 /* Processors group */
 // ----------------------------------------------------------------------------
+void GameProcessor::process_aspectMeasured() {
+  std::unique_lock<std::mutex> lock(m_aspect_ratio_mutex);
+  // no-op
+}
+
 void GameProcessor::process_loadLevel() {
   std::unique_lock<std::mutex> lock(m_load_level_mutex);
   // no-op
@@ -163,6 +184,7 @@ void GameProcessor::process_throwBall() {
   m_level_finished = false;
   m_ball_is_flying = true;
   m_is_ball_lost = false;
+  m_ball_pose_corrected = false;
 }
 
 void GameProcessor::process_initBall() {
@@ -175,7 +197,7 @@ void GameProcessor::process_initBall() {
 
 void GameProcessor::process_initBite() {
   std::unique_lock<std::mutex> lock(m_init_bite_mutex);
-  m_bite_upper_border = -BiteParams::neg_biteElevation + 2 * m_bite.dimens.height;
+  m_bite_upper_border = -BiteParams::neg_biteElevation + m_bite.dimens.height;
 }
 
 void GameProcessor::process_levelDimens() {
@@ -191,6 +213,8 @@ void GameProcessor::process_biteMoved() {
 /* LogicFunc group */
 // ----------------------------------------------------------------------------
 void GameProcessor::moveBall() {
+  m_ball_pose_corrected = false;
+
   if (m_level_finished) {
     m_ball_is_flying = false;  // stop flying before notify to avoid bugs
     level_finished_event.notifyListeners(true);
@@ -199,10 +223,10 @@ void GameProcessor::moveBall() {
   }
 
   // ball's position in the next frame
-  GLfloat x_velocity = m_ball.x_velocity * cos(m_ball.angle);
-  GLfloat y_velocity = m_ball.y_velocity * sin(m_ball.angle);
-  GLfloat new_x = m_ball.pose.x + x_velocity;
-  GLfloat new_y = m_ball.pose.y + y_velocity;
+  GLfloat old_x = m_ball.pose.x;
+  GLfloat old_y = m_ball.pose.y;
+  GLfloat new_x = m_ball.pose.x + m_ball.x_velocity * cos(m_ball.angle);
+  GLfloat new_y = m_ball.pose.y + m_ball.y_velocity * sin(m_ball.angle);
 
   if (m_is_ball_lost && new_y <= -1.0f) {
     m_ball_is_flying = false;  // stop flying before notify to avoid bugs
@@ -211,26 +235,34 @@ void GameProcessor::moveBall() {
     return;
   }
 
-  if (m_ball.pose.x >= BallParams::neg_ballHalfSize) {  // right border
+  if (new_x >= BallParams::neg_ballHalfSize) {  // right border
     collideRightBorder();
-  } else if (m_ball.pose.x <= -BallParams::neg_ballHalfSize) {  // left border
+    m_ball_pose_corrected = correctBallPosition(BallParams::neg_ballHalfSize, new_y);
+  } else if (new_x <= -BallParams::neg_ballHalfSize) {  // left border
     collideLeftBorder();
+    m_ball_pose_corrected = correctBallPosition(-BallParams::neg_ballHalfSize, new_y);
   }
 
-  if (new_y < m_bite_upper_border - BallParams::ballHalfSize) {
+  if (new_y <= m_bite_upper_border + BallParams::ballHalfSize) {
     if (!m_is_ball_lost) {
       m_is_ball_lost = !collideBite(new_x);
+      ERR("COOO:  ox=%lf oy=%lf bx=%lf by=%lf nx=%lf ny=%lf b=%lf",
+          old_x, old_y, m_ball.pose.x, m_ball.pose.y, new_x, new_y, m_bite_upper_border);
+      m_ball_pose_corrected = correctBallPosition(new_x, m_bite_upper_border + BallParams::ballHalfSize);
+      return;
     }
   } else if (collideBlocks(new_x, new_y)) {
     m_level_finished = (m_level->blockImpact() == 0);
   }
 
-  new_x = m_ball.pose.x + m_ball.x_velocity * cos(m_ball.angle);
-  new_y = m_ball.pose.y + m_ball.y_velocity * sin(m_ball.angle);
+  new_x = old_x + m_ball.x_velocity * cos(m_ball.angle);
+  new_y = old_y + m_ball.y_velocity * sin(m_ball.angle);
   m_ball.pose.x = new_x;
   m_ball.pose.y = new_y;
 
-  move_ball_event.notifyListeners(m_ball);
+  if (!m_ball_pose_corrected) {
+    move_ball_event.notifyListeners(m_ball);
+  }
   std::this_thread::sleep_for (std::chrono::nanoseconds(100000));
 }
 
@@ -315,6 +347,7 @@ bool GameProcessor::collideBlocks(GLfloat new_x, GLfloat new_y) {
 
   } else if (new_y >= BallParams::neg_ballHalfSize) {
     collideHorizontalSurface();
+    m_ball_pose_corrected = correctBallPosition(new_x, BallParams::neg_ballHalfSize);
   }
   return false;
 }
@@ -327,6 +360,13 @@ void GameProcessor::getImpactedBlock(
 
   *col = static_cast<size_t>(std::floor((ball_x + BallParams::neg_ballHalfSize) / m_level_dimens.block_width));
   *row = static_cast<size_t>(std::floor((BallParams::neg_ballHalfSize - ball_y) / m_level_dimens.block_height));
+}
+
+bool GameProcessor::correctBallPosition(GLfloat new_x, GLfloat new_y) {
+  m_ball.pose.x = new_x;
+  m_ball.pose.y = new_y;
+  move_ball_event.notifyListeners(m_ball);
+  return true;
 }
 
 }

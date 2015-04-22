@@ -31,6 +31,8 @@ public:
    *  which AsyncContext subscribed on.
    *  @{
    */
+  /// @brief Called when aspect ratio has been measured.
+  void callback_aspectMeasured(float aspect);
   /// @brief Called when user requests a level to be loaded
   void callback_loadLevel(Level::Ptr level);
   /// @brief Called when user sends a command to throw a ball.
@@ -73,6 +75,8 @@ public:
   /** @defgroup Event Outcoming events and listeners for incoming events.
    * @{
    */
+  /// @brief Listens for measured aspect ratio.
+  EventListener<float> aspect_ratio_listener;
   /// @brief Listens for event which occurs when user requests a level to be loaded.
   EventListener<Level::Ptr> load_level_listener;
   /// @brief Listens for event which occurs when user sends throw ball command.
@@ -113,9 +117,11 @@ private:
    * @{
    */
   Level::Ptr m_level;  //!< Game level at it's current state.
+  GLfloat m_aspect;  //!< Measured aspect ratio.
   bool m_level_finished;  //!< Whether level has been successfully finished.
   bool m_ball_is_flying;  //!< Whether the ball is flying now or not.
   bool m_is_ball_lost;  //!< Whether the ball has been lost or not.
+  bool m_ball_pose_corrected;  //!< Auxiliary flag for corrected ball's pose.
   Ball m_ball;  //!< Physical ball's representation.
   Bite m_bite;  //!< Physical bite's representation.
   GLfloat m_bite_upper_border;  //!< Upper border of bite.
@@ -134,12 +140,14 @@ private:
    * @{
    */
   std::mutex m_jnienvironment_mutex;  //!< Sentinel for thread attach to JVM.
+  std::mutex m_aspect_ratio_mutex;  //!< Sentinel for measured aspect ratio.
   std::mutex m_load_level_mutex;  //!< Sentinel for load level user request.
   std::mutex m_throw_ball_mutex;  //!< Sentinel for throw ball user command.
   std::mutex m_init_ball_position_mutex;  //!< Sentinel for init ball position setting.
   std::mutex m_init_bite_mutex;  //!< Sentinel for initial bite dimensions.
   std::mutex m_level_dimens_mutex;  //!< Sentinel for loaded level dimensions.
   std::mutex m_bite_location_mutex;  //!< Sentinel for bite's center location changes.
+  std::atomic_bool m_aspect_ratio_received;  //!< Aspect ratio has been measured.
   std::atomic_bool m_load_level_received;  //!< Load level request has been received.
   std::atomic_bool m_throw_ball_received;  //!< Throw ball command has been received.
   std::atomic_bool m_init_ball_position_received;  //!< Setting ball into init position received.
@@ -169,6 +177,8 @@ private:
    *  corresponding event occurred and has been caught.
    *  @{
    */
+  /// @brief Processing when aspect ratio has been measured.
+  void process_aspectMeasured();
   /// @brief Processing when new level has been loaded.
   void process_loadLevel();
   /// @brief Throws the ball, setting it's initial speed and direction.
@@ -222,6 +232,12 @@ private:
   /// @param row Output row index of impacted block of current level.
   /// @param col Output column index of impacted block of current level.
   void getImpactedBlock(GLfloat ball_x, GLfloat ball_y, size_t* row, size_t* col);
+  /// @brief Corrects ball's visual position after collision and notifies
+  /// rendering thread.
+  /// @param new_x Corrected ball's center position along X axis.
+  /// @param new_y Corrected ball's center position along Y axis.
+  /// @return Always TRUE to indicate that position has been corrected.
+  bool correctBallPosition(GLfloat new_x, GLfloat new_y);
   /** @} */  // end of Maths group
 };
 

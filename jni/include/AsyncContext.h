@@ -101,11 +101,13 @@ public:
   /// @brief Listens for event which occurs when level has been successfully finished.
   EventListener<bool> level_finished_listener;
 
+  /// @brief Notifies for measured aspect ratio.
+  Event<float> aspect_ratio_event;
   /// @brief Notifies ball has been placed to it's initial position.
   Event<Ball> init_ball_position_event;
   /// @brief Notifies bite's dimensions have been measured.
   Event<Bite> init_bite_event;
-  /// @brief Notifies about measured dimensions of loaded level.
+  /// @brief Notifies for measured dimensions of loaded level.
   Event<LevelDimens> level_dimens_event;
   /// @brief Notifies bite location has changed.
   Event<Bite> bite_location_event;
