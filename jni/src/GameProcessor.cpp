@@ -57,6 +57,7 @@ void GameProcessor::callback_loadLevel(Level::Ptr level) {
   std::unique_lock<std::mutex> lock(m_load_level_mutex);
   m_load_level_received.store(true);
   m_level = level;
+  WRN("CARD: %zu", m_level->getCardinality());
   interrupt();
 }
 
@@ -248,7 +249,8 @@ void GameProcessor::moveBall() {
       m_ball_pose_corrected = correctBallPosition(new_x, m_bite_upper_border + m_ball.dimens.halfHeight());
     }
   } else if (collideBlocks(new_x, new_y)) {
-    m_level_finished = (m_level->blockImpact() == 0);
+    ERR("CARD: %zu", m_level->getCardinality());
+    m_level_finished = (m_level->getCardinality() == 0);
   }
 
   new_x = old_x + m_ball.x_velocity * cos(m_ball.angle);
@@ -337,6 +339,7 @@ bool GameProcessor::collideBlocks(GLfloat new_x, GLfloat new_y) {
         } else if (m_ball.pose.x + 1.0f > right_border) {
           collideLeftBorder();
         }
+        m_level->blockImpact();  // TODO: fix mult collisions
         break;
     }
     block_impact_event.notifyListeners(std::make_pair(row, col));
@@ -355,7 +358,7 @@ void GameProcessor::getImpactedBlock(
     size_t* row,
     size_t* col) {
 
-  *col = static_cast<size_t>(std::floor((ball_x + m_ball.dimens.halfWidth()) / m_level_dimens.block_width));
+  *col = static_cast<size_t>(std::floor((ball_x + 1.0f - m_ball.dimens.halfWidth()) / m_level_dimens.block_width));
   *row = static_cast<size_t>(std::floor((1.0f - m_ball.dimens.halfHeight() - ball_y) / m_level_dimens.block_height));
 }
 
