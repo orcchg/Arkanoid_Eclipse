@@ -16,6 +16,7 @@ GameProcessor::GameProcessor(JavaVM* jvm, jobject master_object)
   , fireJavaEvent_lostBall_id(nullptr)
   , fireJavaEvent_levelFinished_id(nullptr)
   , m_level(nullptr)
+  , m_level_finished(false)
   , m_ball_is_flying(false)
   , m_is_ball_lost(false)
   , m_ball()
@@ -159,6 +160,7 @@ void GameProcessor::process_loadLevel() {
 
 void GameProcessor::process_throwBall() {
   std::unique_lock<std::mutex> lock(m_throw_ball_mutex);
+  m_level_finished = false;
   m_ball_is_flying = true;
   m_is_ball_lost = false;
 }
@@ -189,13 +191,20 @@ void GameProcessor::process_biteMoved() {
 /* LogicFunc group */
 // ----------------------------------------------------------------------------
 void GameProcessor::moveBall() {
+  if (m_level_finished) {
+    m_ball_is_flying = false;  // stop flying before notify to avoid bugs
+    level_finished_event.notifyListeners(true);
+    onLevelFinished(true);
+    return;
+  }
+
   // ball's position in the next frame
   GLfloat new_x = m_ball.pose.x + m_ball.x_velocity * cos(m_ball.angle);
   GLfloat new_y = m_ball.pose.y + m_ball.y_velocity * sin(m_ball.angle);
 
   if (m_is_ball_lost && new_y <= -1.0f) {
+    m_ball_is_flying = false;  // stop flying before notify to avoid bugs
     lost_ball_event.notifyListeners(true);
-    m_ball_is_flying = false;
     onLostBall(true);
     return;
   }
@@ -212,12 +221,7 @@ void GameProcessor::moveBall() {
     }
   } else {
     if (collideBlocks(new_x, new_y)) {
-      if (m_level->blockImpact() == 0) {
-        level_finished_event.notifyListeners(true);
-        m_ball_is_flying = false;  // stop flying
-        onLevelFinished(true);
-        return;
-      }
+      m_level_finished = (m_level->blockImpact() == 0);
     }
   }
 

@@ -113,6 +113,7 @@ private:
    * @{
    */
   Level::Ptr m_level;  //!< Game level at it's current state.
+  bool m_level_finished;  //!< Whether level has been successfully finished.
   bool m_ball_is_flying;  //!< Whether the ball is flying now or not.
   bool m_is_ball_lost;  //!< Whether the ball has been lost or not.
   Ball m_ball;  //!< Physical ball's representation.
