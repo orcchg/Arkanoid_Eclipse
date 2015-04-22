@@ -216,6 +216,7 @@ void GameProcessor::moveBall() {
         level_finished_event.notifyListeners(true);
         m_ball_is_flying = false;  // stop flying
         onLevelFinished(true);
+        return;
       }
     }
   }
