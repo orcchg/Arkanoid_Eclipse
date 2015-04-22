@@ -305,20 +305,27 @@ void AsyncContext::process_levelFinished() {
 /* LogicFunc group */
 // ----------------------------------------------------------------------------
 void AsyncContext::initGame() {
+  aspect_ratio_event.notifyListeners(m_aspect);
+
   // ensure correct initial location
-  m_bite = Bite();
+  m_bite = Bite(m_aspect);
   m_bite.dimens.height = BiteParams::biteHeight * m_aspect;
+
+  m_ball = Ball(m_aspect);
+  m_ball.dimens.height = BallParams::ballSize * m_aspect;
   m_ball.pose.x = m_bite.x_pose;
-  m_ball.pose.y = -BiteParams::neg_biteElevation + m_bite.dimens.height;
+  m_ball.pose.y = -BiteParams::neg_biteElevation + m_ball.dimens.halfHeight();
+      //-BiteParams::neg_biteElevation + m_bite.dimens.height;
   moveBite(0.0f);
 
   // move ball to it's initial position - at the center of the bite
-  util::setRectangleVertices(
-      &m_ball_vertex_buffer[0],
-      BallParams::ballSize, BallParams::ballSize * m_aspect,
-      -BallParams::ballHalfSize + m_ball.pose.x,
-      m_ball.pose.y + BallParams::ballSize * m_aspect,
-      1, 1);
+//  util::setRectangleVertices(
+//      &m_ball_vertex_buffer[0],
+//      BallParams::ballSize, BallParams::ballSize * m_aspect,
+//      -BallParams::ballHalfSize + m_ball.pose.x,
+//      m_ball.pose.y + BallParams::ballSize * m_aspect,
+//      1, 1);
+  moveBall(m_ball.pose.x, m_ball.pose.y);
 
   init_ball_position_event.notifyListeners(m_ball);
   init_bite_event.notifyListeners(m_bite);
@@ -341,7 +348,7 @@ void AsyncContext::moveBite(float position) {
       &m_bite_vertex_buffer[0],
       BiteParams::biteWidth, m_bite.dimens.height,
       -BiteParams::biteHalfWidth + m_bite.x_pose,
-      -BiteParams::neg_biteElevation + m_bite.dimens.height,
+      -BiteParams::neg_biteElevation,
       1, 1);
 
   bite_location_event.notifyListeners(m_bite);
@@ -350,9 +357,9 @@ void AsyncContext::moveBite(float position) {
 void AsyncContext::moveBall(float x_position, float y_position) {
   util::setRectangleVertices(
       &m_ball_vertex_buffer[0],
-      BallParams::ballSize, BallParams::ballSize * m_aspect,
+      BallParams::ballSize, m_ball.dimens.height,
       -BallParams::ballHalfSize + x_position,
-      -BallParams::ballHalfSize * m_aspect + y_position,
+      m_ball.dimens.halfHeight() + y_position,//-BiteParams::neg_biteElevation + m_ball.dimens.height / 2,
       1, 1);
 }
 

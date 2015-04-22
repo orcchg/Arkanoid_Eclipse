@@ -11,8 +11,14 @@ namespace game {
 struct BiteDimens {
   GLfloat width, height;
 
-  BiteDimens(GLfloat w = BiteParams::biteWidth, GLfloat h = BiteParams::biteHeight)
-    : width(w), height(h) {
+private:
+  GLfloat aspect;
+
+public:
+  BiteDimens(GLfloat aspect, GLfloat w = BiteParams::biteWidth, GLfloat h = BiteParams::biteHeight)
+    : aspect(aspect)
+    , width(w)
+    , height(h * aspect) {
   }
 };
 
