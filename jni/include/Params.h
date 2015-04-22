@@ -25,7 +25,7 @@ struct BallParams {
   constexpr static float ballHalfSize = 0.025f;  //!< Half-size of any of 4 sides of ball.
   constexpr static float neg_ballHalfSize = 0.975f;  //!< One minus ball half-size.
   constexpr static float ballAngle = util::PI4;  //!< Initial angle at game start
-  constexpr static float ballSpeed = 0.0000025f;   //!< Initial speed at game start
+  constexpr static float ballSpeed = 0.00015f;   //!< Initial speed at game start
   constexpr static float ballMass = 1.0f;  //!< Constant mass of ball.
 };
 
