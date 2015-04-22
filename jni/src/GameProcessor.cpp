@@ -227,7 +227,7 @@ void GameProcessor::moveBall() {
   m_ball.pose.y = new_y;
 
   move_ball_event.notifyListeners(m_ball);
-  std::this_thread::sleep_for (std::chrono::milliseconds(150));
+//  std::this_thread::sleep_for (std::chrono::milliseconds(1));
 }
 
 void GameProcessor::onLostBall(bool /* dummy */) {
