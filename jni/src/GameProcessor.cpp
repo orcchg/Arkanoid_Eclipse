@@ -197,7 +197,7 @@ void GameProcessor::process_initBall() {
 
 void GameProcessor::process_initBite() {
   std::unique_lock<std::mutex> lock(m_init_bite_mutex);
-  m_bite_upper_border = -BiteParams::neg_biteElevation + m_bite.dimens.height;
+  m_bite_upper_border = -BiteParams::neg_biteElevation;
 }
 
 void GameProcessor::process_levelDimens() {
@@ -243,12 +243,12 @@ void GameProcessor::moveBall() {
     m_ball_pose_corrected = correctBallPosition(-BallParams::neg_ballHalfSize, new_y);
   }
 
-  if (new_y <= m_bite_upper_border + BallParams::ballHalfSize) {
+  if (new_y <= m_bite_upper_border + m_ball.dimens.halfHeight()) {
     if (!m_is_ball_lost) {
       m_is_ball_lost = !collideBite(new_x);
       ERR("COOO:  ox=%lf oy=%lf bx=%lf by=%lf nx=%lf ny=%lf b=%lf",
           old_x, old_y, m_ball.pose.x, m_ball.pose.y, new_x, new_y, m_bite_upper_border);
-      m_ball_pose_corrected = correctBallPosition(new_x, m_bite_upper_border + BallParams::ballHalfSize);
+      m_ball_pose_corrected = correctBallPosition(new_x, m_bite_upper_border + m_ball.dimens.halfHeight());
       return;
     }
   } else if (collideBlocks(new_x, new_y)) {

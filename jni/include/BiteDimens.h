@@ -15,7 +15,7 @@ private:
   GLfloat aspect;
 
 public:
-  BiteDimens(GLfloat aspect, GLfloat w = BiteParams::biteWidth, GLfloat h = BiteParams::biteHeight)
+  BiteDimens(GLfloat aspect = 1.0f, GLfloat w = BiteParams::biteWidth, GLfloat h = BiteParams::biteHeight)
     : aspect(aspect)
     , width(w)
     , height(h * aspect) {

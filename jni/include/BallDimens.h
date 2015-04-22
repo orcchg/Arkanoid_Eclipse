@@ -16,7 +16,7 @@ private:
   GLfloat half_width, half_height;
 
 public:
-  BallDimens(GLfloat aspect, GLfloat w = BallParams::ballSize, GLfloat h = BallParams::ballSize)
+  BallDimens(GLfloat aspect = 1.0f, GLfloat w = BallParams::ballSize, GLfloat h = BallParams::ballSize)
     : aspect(aspect)
     , width(w)
     , height(h * aspect)
