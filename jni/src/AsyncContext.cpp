@@ -315,16 +315,8 @@ void AsyncContext::initGame() {
   m_ball.dimens.height = BallParams::ballSize * m_aspect;
   m_ball.pose.x = m_bite.x_pose;
   m_ball.pose.y = -BiteParams::neg_biteElevation + m_ball.dimens.halfHeight();
-      //-BiteParams::neg_biteElevation + m_bite.dimens.height;
-  moveBite(0.0f);
 
-  // move ball to it's initial position - at the center of the bite
-//  util::setRectangleVertices(
-//      &m_ball_vertex_buffer[0],
-//      BallParams::ballSize, BallParams::ballSize * m_aspect,
-//      -BallParams::ballHalfSize + m_ball.pose.x,
-//      m_ball.pose.y + BallParams::ballSize * m_aspect,
-//      1, 1);
+  moveBite(0.0f);
   moveBall(m_ball.pose.x, m_ball.pose.y);
 
   init_ball_position_event.notifyListeners(m_ball);
@@ -359,7 +351,7 @@ void AsyncContext::moveBall(float x_position, float y_position) {
       &m_ball_vertex_buffer[0],
       BallParams::ballSize, m_ball.dimens.height,
       -BallParams::ballHalfSize + x_position,
-      m_ball.dimens.halfHeight() + y_position,//-BiteParams::neg_biteElevation + m_ball.dimens.height / 2,
+      m_ball.dimens.halfHeight() + y_position,
       1, 1);
 }
 
