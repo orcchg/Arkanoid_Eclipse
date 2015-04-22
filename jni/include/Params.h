@@ -13,7 +13,7 @@ struct BiteParams {
   constexpr static float biteTouchArea = 0.15f;  //!< Radius of touch area to affect bite.
   /// @brief Elevation of bite above the lower boundary of the playground.
   constexpr static float biteElevation = 0.2f;
-  constexpr static float neg_biteElevation = 0.8f;  //!< One minus bite elevation.
+  constexpr static float neg_biteElevation = 0.7f;  //!< One minus bite elevation.
   constexpr static float biteMass = 2.0f;  //!< Constant mass of bite.
   /// @brief Amount of the bite's movement which will go into the ball's spin.
   constexpr static float angularFactor = 0.3f;
@@ -21,10 +21,10 @@ struct BiteParams {
 };
 
 struct BallParams {
-  constexpr static float ballSize = 0.05f;  //!< Size of any of 4 sides of ball.
-  constexpr static float neg_ballSize = 0.95f;  //!< One minus ball size.
-  constexpr static float ballHalfSize = 0.025f;  //!< Half-size of any of 4 sides of ball.
-  constexpr static float neg_ballHalfSize = 0.975f;  //!< One minus ball half-size.
+  constexpr static float ballSize = 0.1f;  //!< Size of any of 4 sides of ball.
+  constexpr static float neg_ballSize = 1.0f - ballSize;
+  constexpr static float ballHalfSize = ballSize * 0.5f;
+  constexpr static float neg_ballHalfSize = 1.0f - ballHalfSize;
   constexpr static float ballAngle = util::PI4;  //!< Initial angle at game start
   constexpr static float ballSpeed = 0.0001f;   //!< Initial speed at game start
   constexpr static float ballMass = 1.0f;  //!< Constant mass of ball.
