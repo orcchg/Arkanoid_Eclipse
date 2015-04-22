@@ -211,9 +211,9 @@ void GameProcessor::moveBall() {
     return;
   }
 
-  if (new_x >= BallParams::neg_ballHalfSize + std::fabs(x_velocity)) {  // right border
+  if (m_ball.pose.x >= BallParams::neg_ballHalfSize) {  // right border
     collideRightBorder();
-  } else if (new_x <= -BallParams::neg_ballHalfSize - std::fabs(x_velocity)) {  // left border
+  } else if (m_ball.pose.x <= -BallParams::neg_ballHalfSize) {  // left border
     collideLeftBorder();
   }
 
