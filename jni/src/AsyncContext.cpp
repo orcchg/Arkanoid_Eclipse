@@ -188,6 +188,11 @@ void AsyncContext::eventHandler() {
       m_throw_ball_received.store(false);
       process_throwBall();
     }
+    if (m_block_impact_received.load()) {
+      m_block_impact_received.store(false);
+      process_blockImpact();
+    }  // block impact must be processed before
+       // new level loaded to avoid crash
     if (m_load_level_received.load()) {
       m_load_level_received.store(false);
       process_loadLevel();
@@ -199,10 +204,6 @@ void AsyncContext::eventHandler() {
     if (m_lost_ball_received.load()) {
       m_lost_ball_received.store(false);
       process_lostBall();
-    }
-    if (m_block_impact_received.load()) {
-      m_block_impact_received.store(false);
-      process_blockImpact();
     }
     if (m_level_finished_received.load()) {
       m_level_finished_received.store(false);
