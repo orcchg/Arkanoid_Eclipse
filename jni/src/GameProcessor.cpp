@@ -193,6 +193,8 @@ void GameProcessor::process_initBall() {
   m_ball.angle = m_angle_distribution(m_generator);  // BallParams::ballAngle;
   m_ball.angle += m_direction_distribution(m_generator) ? 0.0f : util::PI2;
   m_ball.angle = std::fmod(m_ball.angle, util::_2PI);
+
+  m_ball.angle = util::PI2 + 2.5*util::PI6;  //XXX
 }
 
 void GameProcessor::process_initBite() {
@@ -253,15 +255,14 @@ void GameProcessor::moveBall() {
     m_level_finished = (m_level->blockImpact() == 0);
   }
 
-  new_x = old_x + m_ball.velocity * cos(m_ball.angle);
-  new_y = old_y + m_ball.velocity * sin(m_ball.angle);
-  m_ball.pose.x = new_x;
-  m_ball.pose.y = new_y;
-
   if (!m_ball_pose_corrected) {
+    new_x = old_x + m_ball.velocity * cos(m_ball.angle);
+    new_y = old_y + m_ball.velocity * sin(m_ball.angle);
+    m_ball.pose.x = new_x;
+    m_ball.pose.y = new_y;
     move_ball_event.notifyListeners(m_ball);
   }
-  std::this_thread::sleep_for (std::chrono::nanoseconds(1));
+  std::this_thread::sleep_for (std::chrono::nanoseconds(100000));
 }
 
 void GameProcessor::onLostBall(bool /* dummy */) {
@@ -340,14 +341,21 @@ bool GameProcessor::collideBlocks(GLfloat new_x, GLfloat new_y) {
         // fly without disturbance
         return false;
       default:
-        if (m_ball.pose.x + 1.0f > left_border &&
-            m_ball.pose.x + 1.0f <= right_border &&
+        if (m_ball.pose.x + 1.0f > left_border/* - m_ball.dimens.halfWidth()*/ &&
+            m_ball.pose.x + 1.0f < right_border/* + m_ball.dimens.halfWidth()*/ &&
             (m_ball.pose.y + 1.0f >= top_border || m_ball.pose.y + 1.0f <= bottom_border)) {
           collideHorizontalSurface();
-        } else if (m_ball.pose.x + 1.0f <= left_border) {
+//          if (m_ball.pose.y + 1.0f >= top_border) {
+//            m_ball_pose_corrected = correctBallPosition(m_ball.pose.x, top_border - 1.0f + m_ball.dimens.halfHeight());
+//          } else if (m_ball.pose.y + 1.0f <= bottom_border) {
+//            m_ball_pose_corrected = correctBallPosition(m_ball.pose.x, bottom_border - 1.0f - m_ball.dimens.halfHeight());
+//          }
+        } else if (m_ball.pose.x + 1.0f <= left_border/* - m_ball.dimens.halfWidth()*/) {
           collideRightBorder();
-        } else if (m_ball.pose.x + 1.0f > right_border) {
+//          m_ball_pose_corrected = correctBallPosition(left_border - 1.0f - m_ball.dimens.halfWidth(), m_ball.pose.y);
+        } else if (m_ball.pose.x + 1.0f >= right_border/* + m_ball.dimens.halfWidth()*/) {
           collideLeftBorder();
+//          m_ball_pose_corrected = correctBallPosition(right_border - 1.0f + m_ball.dimens.halfWidth(), m_ball.pose.y);
         }
         break;
     }
@@ -368,7 +376,7 @@ void GameProcessor::getImpactedBlock(
     size_t* col) {
 
   *col = static_cast<size_t>(std::floor((ball_x + 1.0f) / m_level_dimens.block_width));
-  *row = static_cast<size_t>(std::floor((1.0f - ball_y) / m_level_dimens.block_height));
+  *row = static_cast<size_t>(std::floor((1.0f - m_ball.dimens.halfHeight() - ball_y) / m_level_dimens.block_height));
 }
 
 bool GameProcessor::correctBallPosition(GLfloat new_x, GLfloat new_y) {
