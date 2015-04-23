@@ -48,7 +48,7 @@ void GameProcessor::callback_loadLevel(Level::Ptr level) {
   std::unique_lock<std::mutex> lock(m_load_level_mutex);
   m_load_level_received.store(true);
   m_level = level;
-  WRN("CARD: %zu", m_level->getCardinality());
+  INF("New level loaded, initial cardinality: %i", m_level->getCardinality());
   interrupt();
 }
 
@@ -234,7 +234,6 @@ void GameProcessor::moveBall() {
       correctBallPosition(new_x, m_bite_upper_border + m_ball.dimens.halfHeight());
     }
   } else if (collideBlocks(new_x, new_y)) {
-    ERR("CARD: %zu", m_level->getCardinality());
     m_level_finished = (m_level->blockImpact() == 0);
   }
 
