@@ -300,7 +300,6 @@ void GameProcessor::collideHorizontalSurface() {
   m_ball.angle = sign * std::fmod(std::fabs(m_ball.angle), util::_2PI);
 }
 
-// http://stackoverflow.com/questions/8063696/arkanoid-physics-projectile-physics-simulation
 bool GameProcessor::collideBite(GLfloat new_x) {
   if (new_x >= -(BiteParams::biteHalfWidth + BallParams::ballHalfSize) + m_bite.x_pose &&
       new_x <= (BiteParams::biteHalfWidth + BallParams::ballHalfSize) + m_bite.x_pose) {
@@ -317,8 +316,7 @@ bool GameProcessor::collideBite(GLfloat new_x) {
 //      ERR("%s", message);
 //      throw GameProcessorException(message);
     }
-//    GLfloat sign = m_ball.angle >= 0.0f ? 1.0f : -1.0f;
-    m_ball.angle = /*sign * */std::fmod(std::fabs(m_ball.angle), util::_2PI);
+    m_ball.angle = std::fmod(std::fabs(m_ball.angle), util::_2PI);
   } else {
     return false;  // ball missed the bite
   }
