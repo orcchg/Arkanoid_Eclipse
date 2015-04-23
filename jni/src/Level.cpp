@@ -131,6 +131,7 @@ int Level::calculateCardinality() const {
     for (size_t c = 0; c < cols; ++c) {
       switch (blocks[r][c]) {
         default:
+        case Block::TITAN:
         case Block::NONE:
           break;
         case Block::SIMPLE:
