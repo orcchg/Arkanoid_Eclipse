@@ -174,8 +174,6 @@ void GameProcessor::process_initBall() {
   m_ball.angle = m_angle_distribution(m_generator);  // BallParams::ballAngle;
   m_ball.angle += m_direction_distribution(m_generator) ? 0.0f : util::PI2;
   m_ball.angle = std::fmod(m_ball.angle, util::_2PI);
-
-  m_ball.angle = util::PI2 + 2.5*util::PI6;  //XXX
 }
 
 void GameProcessor::process_initBite() {

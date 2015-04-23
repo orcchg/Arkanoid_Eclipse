@@ -3,6 +3,8 @@ package com.orcchg.arkanoid.surface;
 public class Levels {
   public static String[] get(int index) {
     switch (index) {
+      case -2:
+        return SAMPLE2;
       case -1:
         return SAMPLE;
       default:
@@ -19,8 +21,24 @@ public class Levels {
     }
   }
   
+  private static final String[] SAMPLE2 = new String[] {"          ",
+                                                        "          ",
+                                                        "          ",
+                                                        "          ",
+                                                        "          ",
+                                                        "          ",
+                                                        "          ",
+                                                        "          ",
+                                                        "  TTTTTT  ",
+                                                        "  TTBSTT  ",
+                                                        "  TTSBTT  ",
+                                                        "  TTBSTT  ",
+                                                        "  TTSBTT  ",
+                                                        "  TT  TT  ",
+                                                        "  TTTTTT  "};
+  
   private static final String[] SAMPLE = new String[] {"          ",
-                                                       "     T    "};
+                                                       "     S    "};
   
   private static final String[] FIRST = new String[] {"          ",
                                                       "   SSSS   ",
