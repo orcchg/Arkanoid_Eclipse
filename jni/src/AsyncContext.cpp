@@ -281,6 +281,7 @@ void AsyncContext::process_lostBall() {
 
 void AsyncContext::process_blockImpact() {
   std::unique_lock<std::mutex> lock(m_block_impact_mutex);
+  std::unique_lock<std::mutex> lock_level(m_load_level_mutex);
   m_level->fillColorArrayAtBlock(&m_level_color_buffer[0], m_impact_row, m_impact_col);
 }
 
@@ -456,6 +457,7 @@ void AsyncContext::render() {
 /* Drawings group */
 // ----------------------------------------------------------------------------
 void AsyncContext::drawLevel() {
+  std::unique_lock<std::mutex> lock(m_load_level_mutex);
   m_level_shader->useProgram();
 
   GLuint a_position = m_level_shader->getVertexAttribLocation();
@@ -474,6 +476,7 @@ void AsyncContext::drawLevel() {
 }
 
 void AsyncContext::drawBlock(size_t row, size_t col) {
+  std::unique_lock<std::mutex> lock(m_load_level_mutex);
   m_level_shader->useProgram();
 
   GLuint a_position = m_level_shader->getVertexAttribLocation();
