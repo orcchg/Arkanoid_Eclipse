@@ -191,6 +191,11 @@ private:
   /// and then notifies listeners that event 'move_ball_event' occurs.
   /// @details Calculated position is the ball's position in the next frame.
   void moveBall();
+  /// @brief Shift the ball into specified position.
+  /// @param new_x New ball's center position along X axis.
+  /// @param new_y New ball's center position along Y axis.
+  /// @note Forces ball's movement with notification, only internal uses.
+  void shiftBall(GLfloat new_x, GLfloat new_y);
   /// @brief Notifies Java layer the ball has been lost.
   void onLostBall(bool /* dummy */);
   /// @brief Notifies Java layer level has been successfully finished.

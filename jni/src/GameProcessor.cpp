@@ -190,7 +190,9 @@ void GameProcessor::process_levelDimens() {
 
 void GameProcessor::process_biteMoved() {
   std::unique_lock<std::mutex> lock(m_bite_location_mutex);
-  // no-op
+  if (!m_ball_is_flying) {  // move ball following the bite
+    shiftBall(m_bite.x_pose, m_ball.pose.y /* unchanged */);
+  }
 }
 
 /* LogicFunc group */
@@ -239,11 +241,15 @@ void GameProcessor::moveBall() {
   if (!m_ball_pose_corrected) {
     new_x = old_x + m_ball.velocity * cos(m_ball.angle);
     new_y = old_y + m_ball.velocity * sin(m_ball.angle);
-    m_ball.pose.x = new_x;
-    m_ball.pose.y = new_y;
-    move_ball_event.notifyListeners(m_ball);
+    shiftBall(new_x, new_y);
   }
   std::this_thread::sleep_for (std::chrono::nanoseconds(1));
+}
+
+void GameProcessor::shiftBall(GLfloat new_x, GLfloat new_y) {
+  m_ball.pose.x = new_x;
+  m_ball.pose.y = new_y;
+  move_ball_event.notifyListeners(m_ball);
 }
 
 void GameProcessor::onLostBall(bool /* dummy */) {
@@ -365,9 +371,7 @@ void GameProcessor::getImpactedBlock(
 }
 
 bool GameProcessor::correctBallPosition(GLfloat new_x, GLfloat new_y) {
-  m_ball.pose.x = new_x;
-  m_ball.pose.y = new_y;
-  move_ball_event.notifyListeners(m_ball);
+  shiftBall(new_x, new_y);
   return true;
 }
 
