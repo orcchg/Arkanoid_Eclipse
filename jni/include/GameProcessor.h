@@ -210,6 +210,11 @@ private:
   /// @param new_x Position of ball's center along X axis in the next frame.
   /// @return TRUE in case ball collides bite, FALSE if ball misses the bite.
   bool collideBite(GLfloat new_x);
+  /// @brief Recalculates ball's angle when it faces bite's end.
+  /// @param new_x Position of ball's center along X axis in the next frame.
+  /// @param new_y Position of ball's center along Y axis in the next frame.
+  /// @return TRUE in case ball collides bite, FALSE if ball misses the bite.
+  bool collideBiteEnd(GLfloat new_x, GLfloat new_y);
   /// @brief Processing of collision between ball and level's blocks.
   /// @param new_x Position of ball's center along X axis in the next frame.
   /// @param new_y Position of ball's center along Y axis in the next frame.

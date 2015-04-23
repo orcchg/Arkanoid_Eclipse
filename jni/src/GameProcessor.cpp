@@ -229,6 +229,7 @@ void GameProcessor::moveBall() {
     if (!m_is_ball_lost) {
       m_is_ball_lost = !collideBite(new_x);
       m_ball_pose_corrected = correctBallPosition(new_x, m_bite_upper_border + m_ball.dimens.halfHeight());
+      collideBiteEnd(new_x, new_y);
     }
   } else if (collideBlocks(new_x, new_y)) {
     ERR("CARD: %zu", m_level->getCardinality());
@@ -306,6 +307,21 @@ bool GameProcessor::collideBite(GLfloat new_x) {
     return false;  // ball missed the bite
   }
   return true;
+}
+
+bool GameProcessor::collideBiteEnd(GLfloat new_x, GLfloat new_y) {
+  if (new_y >= m_bite_upper_border - m_bite.dimens.height) {
+    if (new_x >= -(BiteParams::biteHalfWidth + BallParams::ballHalfSize) + m_bite.x_pose &&
+        new_x <= m_bite.x_pose - BallParams::ballHalfSize) {
+      collideRightBorder();
+      return true;
+    } else if (new_x <= (BiteParams::biteHalfWidth + BallParams::ballHalfSize) + m_bite.x_pose &&
+               new_x >= m_bite.x_pose + BallParams::ballHalfSize) {
+      collideLeftBorder();
+      return true;
+    }
+  }
+  return false;  // ball missed the bite's end
 }
 
 bool GameProcessor::collideBlocks(GLfloat new_x, GLfloat new_y) {
