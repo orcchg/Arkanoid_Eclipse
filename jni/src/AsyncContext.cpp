@@ -178,6 +178,7 @@ void AsyncContext::eventHandler() {
   if (m_surface_received.load()) {
     m_surface_received.store(false);
     process_setWindow();
+    initGame();
   }
   if (m_window_set) {
     if (m_shift_gamepad_received.load()) {
@@ -231,7 +232,6 @@ void AsyncContext::process_setWindow() {
   }
   glOptionsConfig();
   m_window_set = true;
-  initGame();  // TODO: remove from there, attach to event
   DBG("exit AsyncContext::process_setWindow()");
 }
 
@@ -286,11 +286,14 @@ void AsyncContext::process_lostBall() {
 
 void AsyncContext::process_blockImpact() {
   std::unique_lock<std::mutex> lock(m_block_impact_mutex);
-  m_level->fillColorArrayAtBlock(&m_level_color_buffer[0], m_impact_row, m_impact_col);
+  if (m_level != nullptr) {
+    m_level->fillColorArrayAtBlock(&m_level_color_buffer[0], m_impact_row, m_impact_col);
+  }
 }
 
 void AsyncContext::process_levelFinished() {
   std::unique_lock<std::mutex> lock(m_level_finished_mutex);
+//  m_level = nullptr;
   initGame();
 }
 
@@ -300,13 +303,12 @@ void AsyncContext::initGame() {
   // ensure correct initial location
   m_bite = Bite(m_aspect);
   m_bite.dimens.height = BiteParams::biteHeight * m_aspect;
+  moveBite(0.0f);
 
   m_ball = Ball(m_aspect);
   m_ball.dimens.height = BallParams::ballSize * m_aspect;
   m_ball.pose.x = m_bite.x_pose;
   m_ball.pose.y = -BiteParams::neg_biteElevation + m_ball.dimens.halfHeight();
-
-  moveBite(0.0f);
   moveBall(m_ball.pose.x, m_ball.pose.y);
 
   init_ball_position_event.notifyListeners(m_ball);
@@ -461,6 +463,7 @@ void AsyncContext::render() {
 /* Drawings group */
 // ----------------------------------------------------------------------------
 void AsyncContext::drawLevel() {
+//  if (m_level == nullptr) { return; }
   m_level_shader->useProgram();
 
   GLuint a_position = m_level_shader->getVertexAttribLocation();
@@ -479,6 +482,7 @@ void AsyncContext::drawLevel() {
 }
 
 void AsyncContext::drawBlock(size_t row, size_t col) {
+//  if (m_level == nullptr) { return; }
   m_level_shader->useProgram();
 
   GLuint a_position = m_level_shader->getVertexAttribLocation();

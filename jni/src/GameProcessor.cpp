@@ -234,6 +234,7 @@ void GameProcessor::moveBall() {
       correctBallPosition(new_x, m_bite_upper_border + m_ball.dimens.halfHeight());
     }
   } else if (collideBlocks(new_x, new_y)) {
+    DBG("Cardinality before impact: %i", m_level->getCardinality());
     m_level_finished = (m_level->blockImpact() == 0);
   }
 

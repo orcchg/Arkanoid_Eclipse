@@ -11,16 +11,18 @@ public class Levels {
         return SAMPLE;
       default:
       case 0:
-        return FIRST;
+        return ZERO;
       case 1:
-        return SECOND;
+        return FIRST;
       case 2:
-        return THIRD;
+        return SECOND;
       case 3:
-        return FOURTH;
+        return THIRD;
       case 4:
-        return FIFTH;
+        return FOURTH;
       case 5:
+        return FIFTH;
+      case 6:
         return SIXTH;
     }
   }
@@ -45,6 +47,9 @@ public class Levels {
   
   private static final String[] SAMPLE = new String[] {"          ",
                                                        "     S    "};
+  
+  private static final String[] ZERO = new String[] {"          ",
+                                                      "     S    "};
   
   private static final String[] FIRST = new String[] {"          ",
                                                       "   SSSS   ",
@@ -112,5 +117,23 @@ public class Levels {
                                                       "         S"};
   
   private static final String[] SIXTH = new String[] {"          ",
-                                                      "     S    "};
+                                                      "          ",
+                                                      "          ",
+                                                      "          ",
+                                                      "          ",
+                                                      "          ",
+                                                      "    T     ",
+                                                      "   TSB    ",
+                                                      "  TSSSB   ",
+                                                      " TSSSSSB  ",
+                                                      "  TSSSSB  ",
+                                                      "   TSSB   ",
+                                                      "    TB    ",
+                                                      "     B    ",
+                                                      "    BST   ",
+                                                      "   BSSST  ",
+                                                      "  BSSSSST ",
+                                                      "   BSSST  ",
+                                                      "    BBT   ",
+                                                      "     B    "};
 }
