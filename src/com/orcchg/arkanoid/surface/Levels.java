@@ -14,11 +14,13 @@ public class Levels {
         return THIRD;
       case 3:
         return FOURTH;
+      case 4:
+        return FIFTH;
     }
   }
   
   private static final String[] SAMPLE = new String[] {"          ",
-                                                       "     S    "};
+                                                       "     T    "};
   
   private static final String[] FIRST = new String[] {"          ",
                                                       "   SSSS   ",
@@ -65,4 +67,23 @@ public class Levels {
   private static final String[] FOURTH = new String[] {"S B SS B S",
                                                        " S BBBS S ",
                                                        "B S SS B S"};
+  
+  private static final String[] FIFTH = new String[] {"          ",
+                                                      "          ",
+                                                      "         B",
+                                                      "         B",
+                                                      "         B",
+                                                      "         B",
+                                                      "         B",
+                                                      "         B",
+                                                      "         B",
+                                                      "         B",
+                                                      "         B",
+                                                      "         B",
+                                                      "         B",
+                                                      "         B",
+                                                      "         B",
+                                                      "         B",
+                                                      "         B",
+                                                      "         B"};
 }

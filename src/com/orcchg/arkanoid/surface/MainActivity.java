@@ -11,6 +11,7 @@ import android.view.MenuItem;
 
 public class MainActivity extends FragmentActivity {
   private static final String TAG = "Arkanoid_MainActivity";
+  private static final int INITIAL_LEVEL = -1;
   
   static {
     System.loadLibrary("Arkanoid");
@@ -32,7 +33,7 @@ public class MainActivity extends FragmentActivity {
   protected void onResume() {
     mAsyncContext.start();
     mSurface.setAsyncContext(mAsyncContext);
-    mAsyncContext.loadLevel(Levels.get(-1));
+    mAsyncContext.loadLevel(Levels.get(INITIAL_LEVEL));
     super.onResume();
   }
   
@@ -71,7 +72,7 @@ public class MainActivity extends FragmentActivity {
   private static class CoreEventHandler implements AsyncContext.CoreEventListener {
     private static final String TAG = "CoreEvent";
     private WeakReference<MainActivity> activityRef;
-    private int currentLevel = -1;
+    private int currentLevel = INITIAL_LEVEL;
     
     CoreEventHandler(final MainActivity activity) {
       activityRef = new WeakReference<MainActivity>(activity);
