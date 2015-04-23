@@ -375,6 +375,7 @@ void GameProcessor::getImpactedBlock(
     size_t* row,
     size_t* col) {
 
+  // TODO: potential crash for levels less than fullscreen by width (X direction)
   *col = static_cast<size_t>(std::floor((ball_x + 1.0f) / m_level_dimens.block_width));
   *row = static_cast<size_t>(std::floor((1.0f - m_ball.dimens.halfHeight() - ball_y) / m_level_dimens.block_height));
 }
