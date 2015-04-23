@@ -166,6 +166,7 @@ void GameProcessor::process_throwBall() {
   m_ball_is_flying = true;
   m_is_ball_lost = false;
   m_ball_pose_corrected = false;
+  INF("Ball has been thrown");
 }
 
 void GameProcessor::process_initBall() {
@@ -195,7 +196,6 @@ void GameProcessor::process_biteMoved() {
 /* LogicFunc group */
 // ----------------------------------------------------------------------------
 void GameProcessor::moveBall() {
-  std::unique_lock<std::mutex> lock(m_load_level_mutex);
   m_ball_pose_corrected = false;
 
   if (m_level_finished) {
