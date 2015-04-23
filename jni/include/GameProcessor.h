@@ -232,8 +232,7 @@ private:
   /// rendering thread.
   /// @param new_x Corrected ball's center position along X axis.
   /// @param new_y Corrected ball's center position along Y axis.
-  /// @return Always TRUE to indicate that position has been corrected.
-  bool correctBallPosition(GLfloat new_x, GLfloat new_y);
+  void correctBallPosition(GLfloat new_x, GLfloat new_y);
   /** @} */  // end of Maths group
 };
 

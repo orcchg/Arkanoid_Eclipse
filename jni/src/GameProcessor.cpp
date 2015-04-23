@@ -222,16 +222,16 @@ void GameProcessor::moveBall() {
 
   if (new_x >= 1.0f - m_ball.dimens.halfWidth()) {  // right border
     collideRightBorder();
-    m_ball_pose_corrected = correctBallPosition(1.0f - m_ball.dimens.halfWidth(), new_y);
+    correctBallPosition(1.0f - m_ball.dimens.halfWidth(), new_y);
   } else if (new_x <= -1.0f + m_ball.dimens.halfWidth()) {  // left border
     collideLeftBorder();
-    m_ball_pose_corrected = correctBallPosition(-1.0f + m_ball.dimens.halfWidth(), new_y);
+    correctBallPosition(-1.0f + m_ball.dimens.halfWidth(), new_y);
   }
 
   if (new_y <= m_bite_upper_border + m_ball.dimens.halfHeight()) {
     if (!m_is_ball_lost) {
       m_is_ball_lost = !collideBite(new_x);
-      m_ball_pose_corrected = correctBallPosition(new_x, m_bite_upper_border + m_ball.dimens.halfHeight());
+      correctBallPosition(new_x, m_bite_upper_border + m_ball.dimens.halfHeight());
     }
   } else if (collideBlocks(new_x, new_y)) {
     ERR("CARD: %zu", m_level->getCardinality());
@@ -354,7 +354,7 @@ bool GameProcessor::collideBlocks(GLfloat new_x, GLfloat new_y) {
 
   } else if (new_y >= 1.0f - m_ball.dimens.halfHeight()) {
     collideHorizontalSurface();
-    m_ball_pose_corrected = correctBallPosition(new_x, 1.0f - m_ball.dimens.halfHeight());
+    correctBallPosition(new_x, 1.0f - m_ball.dimens.halfHeight());
   }
   return false;
 }
@@ -370,9 +370,9 @@ void GameProcessor::getImpactedBlock(
   *row = static_cast<size_t>(std::floor((1.0f - m_ball.dimens.halfHeight() - ball_y) / m_level_dimens.block_height));
 }
 
-bool GameProcessor::correctBallPosition(GLfloat new_x, GLfloat new_y) {
+void GameProcessor::correctBallPosition(GLfloat new_x, GLfloat new_y) {
   shiftBall(new_x, new_y);
-  return true;
+  m_ball_pose_corrected = true;
 }
 
 }
