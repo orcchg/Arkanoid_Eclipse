@@ -95,12 +95,12 @@ public:
   /// @brief Sets the block by row and column indices.
   inline void setBlock(size_t row, size_t col, Block value) { blocks[row][col] = value; }
   /// @brief Gets recorded cardinality.
-  inline size_t getCardinality() const { return initial_cardinality; }
+  inline int getCardinality() const { return initial_cardinality; }
   /// @brief Decrements recorded cardinality due to impact of some block.
   /// @return Updated cardinality.
-  inline size_t blockImpact() { return --initial_cardinality; }
+  inline int blockImpact() { return --initial_cardinality; }
   /// @brief Calculates current cardinality of this Level instance.
-  size_t calculateCardinality() const;
+  int calculateCardinality() const;
 
   void print() const;
 
@@ -108,7 +108,7 @@ private:
   Level(size_t rows, size_t cols);
 
   size_t rows, cols;
-  size_t initial_cardinality;
+  int initial_cardinality;
   Block** blocks;
 };
 

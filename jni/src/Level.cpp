@@ -117,7 +117,7 @@ void Level::fillColorArrayAtBlock(GLfloat* const array, size_t row, size_t col) 
   util::setColor(bgra, &array[lower_right_i], 4);
 }
 
-size_t Level::calculateCardinality() const {
+int Level::calculateCardinality() const {
   size_t cardinality = 0;
   for (size_t r = 0; r < rows; ++r) {
     for (size_t c = 0; c < cols; ++c) {

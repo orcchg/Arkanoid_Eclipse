@@ -215,12 +215,12 @@ void GameProcessor::process_biteMoved() {
 void GameProcessor::moveBall() {
   m_ball_pose_corrected = false;
 
-  if (m_level_finished) {
-    m_ball_is_flying = false;  // stop flying before notify to avoid bugs
-    level_finished_event.notifyListeners(true);
-    onLevelFinished(true);
-    return;
-  }
+//  if (m_level_finished) {
+//    m_ball_is_flying = false;  // stop flying before notify to avoid bugs
+//    level_finished_event.notifyListeners(true);
+//    onLevelFinished(true);
+//    return;
+//  }
 
   // ball's position in the next frame
   GLfloat old_x = m_ball.pose.x;
@@ -261,7 +261,7 @@ void GameProcessor::moveBall() {
   if (!m_ball_pose_corrected) {
     move_ball_event.notifyListeners(m_ball);
   }
-  std::this_thread::sleep_for (std::chrono::nanoseconds(100000));
+  std::this_thread::sleep_for (std::chrono::nanoseconds(1));
 }
 
 void GameProcessor::onLostBall(bool /* dummy */) {
@@ -304,9 +304,28 @@ void GameProcessor::collideHorizontalSurface() {
 bool GameProcessor::collideBite(GLfloat new_x) {
   if (new_x >= -(BiteParams::biteHalfWidth + BallParams::ballHalfSize) + m_bite.x_pose &&
       new_x <= (BiteParams::biteHalfWidth + BallParams::ballHalfSize) + m_bite.x_pose) {
-    if (m_ball.angle >= util::PI) {
-      collideHorizontalSurface();
+    GLfloat beta = std::atan(std::fabs(new_x - m_bite.x_pose) / m_bite.radius);
+    GLfloat gamma = 0.0f;
+    int d = 0;
+    if (m_ball.angle >= util::_3PI2) {
+      gamma = std::fabs(util::_2PI - m_ball.angle);
+      m_ball.angle = 2 * beta - gamma;
+    } else if (m_ball.angle >= util::PI) {
+      d = 1;
+      gamma = std::fabs(m_ball.angle - util::PI);
+      m_ball.angle = util::PI - std::fabs(2 * beta - gamma);
+    } else {
+//      const char* message = "Invalid angle for bite collision !";
+//      ERR("%s", message);
+//      throw GameProcessorException(message);
     }
+    INF("X=%lf M=%lf, Beta=%lf, gamma=%lf, A=%lf D=%i",
+        new_x,
+        std::fabs(new_x - m_bite.x_pose) / BiteParams::biteHalfWidth,
+        beta / util::PI2, gamma / util::PI2, m_ball.angle / util::PI2,
+        d);
+//    GLfloat sign = m_ball.angle >= 0.0f ? 1.0f : -1.0f;
+    m_ball.angle = /*sign * */std::fmod(std::fabs(m_ball.angle), util::_2PI);
   } else {
     return false;  // ball missed the bite
   }
