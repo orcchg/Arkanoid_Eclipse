@@ -292,8 +292,6 @@ void AsyncContext::process_levelFinished() {
 /* LogicFunc group */
 // ----------------------------------------------------------------------------
 void AsyncContext::initGame() {
-  aspect_ratio_event.notifyListeners(m_aspect);
-
   // ensure correct initial location
   m_bite = Bite(m_aspect);
   m_bite.dimens.height = BiteParams::biteHeight * m_aspect;

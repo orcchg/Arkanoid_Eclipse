@@ -16,7 +16,6 @@ GameProcessor::GameProcessor(JavaVM* jvm, jobject master_object)
   , fireJavaEvent_lostBall_id(nullptr)
   , fireJavaEvent_levelFinished_id(nullptr)
   , m_level(nullptr)
-  , m_aspect(1.0f)
   , m_level_finished(false)
   , m_ball_is_flying(false)
   , m_is_ball_lost(false)
@@ -30,7 +29,6 @@ GameProcessor::GameProcessor(JavaVM* jvm, jobject master_object)
   , m_direction_distribution(0.5f) {
 
   DBG("enter GameProcessor ctor");
-  m_aspect_ratio_received.store(false);
   m_load_level_received.store(false);
   m_throw_ball_received.store(false);
   m_init_ball_position_received.store(false);
@@ -46,13 +44,6 @@ GameProcessor::~GameProcessor() {
 
 /* Callbacks group */
 // ----------------------------------------------------------------------------
-void GameProcessor::callback_aspectMeasured(float aspect) {
-  std::unique_lock<std::mutex> lock(m_aspect_ratio_mutex);
-  m_aspect_ratio_received.store(true);
-  m_aspect = aspect;
-  interrupt();
-}
-
 void GameProcessor::callback_loadLevel(Level::Ptr level) {
   std::unique_lock<std::mutex> lock(m_load_level_mutex);
   m_load_level_received.store(true);
@@ -124,7 +115,6 @@ void GameProcessor::onStop() {
 
 bool GameProcessor::checkForWakeUp() {
   return m_ball_is_flying ||
-      m_aspect_ratio_received.load() ||
       m_load_level_received.load() ||
       m_throw_ball_received.load() ||
       m_init_ball_position_received.load() ||
@@ -134,10 +124,6 @@ bool GameProcessor::checkForWakeUp() {
 }
 
 void GameProcessor::eventHandler() {
-  if (m_aspect_ratio_received.load()) {
-    m_aspect_ratio_received.store(false);
-    process_aspectMeasured();
-  }
   if (m_load_level_received.load()) {
     m_load_level_received.store(false);
     process_loadLevel();
@@ -169,11 +155,6 @@ void GameProcessor::eventHandler() {
 
 /* Processors group */
 // ----------------------------------------------------------------------------
-void GameProcessor::process_aspectMeasured() {
-  std::unique_lock<std::mutex> lock(m_aspect_ratio_mutex);
-  // no-op
-}
-
 void GameProcessor::process_loadLevel() {
   std::unique_lock<std::mutex> lock(m_load_level_mutex);
   // no-op
