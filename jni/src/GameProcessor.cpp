@@ -225,8 +225,8 @@ void GameProcessor::moveBall() {
   // ball's position in the next frame
   GLfloat old_x = m_ball.pose.x;
   GLfloat old_y = m_ball.pose.y;
-  GLfloat new_x = m_ball.pose.x + m_ball.x_velocity * cos(m_ball.angle);
-  GLfloat new_y = m_ball.pose.y + m_ball.y_velocity * sin(m_ball.angle);
+  GLfloat new_x = m_ball.pose.x + m_ball.velocity * cos(m_ball.angle);
+  GLfloat new_y = m_ball.pose.y + m_ball.velocity * sin(m_ball.angle);
 
   if (m_is_ball_lost && new_y <= -1.0f) {
     m_ball_is_flying = false;  // stop flying before notify to avoid bugs
@@ -253,8 +253,8 @@ void GameProcessor::moveBall() {
     m_level_finished = (m_level->getCardinality() == 0);
   }
 
-  new_x = old_x + m_ball.x_velocity * cos(m_ball.angle);
-  new_y = old_y + m_ball.y_velocity * sin(m_ball.angle);
+  new_x = old_x + m_ball.velocity * cos(m_ball.angle);
+  new_y = old_y + m_ball.velocity * sin(m_ball.angle);
   m_ball.pose.x = new_x;
   m_ball.pose.y = new_y;
 
@@ -304,10 +304,6 @@ void GameProcessor::collideHorizontalSurface() {
 bool GameProcessor::collideBite(GLfloat new_x) {
   if (new_x >= -(BiteParams::biteHalfWidth + BallParams::ballHalfSize) + m_bite.x_pose &&
       new_x <= (BiteParams::biteHalfWidth + BallParams::ballHalfSize) + m_bite.x_pose) {
-//    GLfloat mass_factor = m_bite.mass / m_ball.mass;
-//    m_ball.x_velocity += BiteParams::neg_angularFactor * m_bite.x_velocity * mass_factor * m_bite.friction;
-//    m_ball.y_velocity = -m_ball.y_velocity;
-//    m_ball.spin += BiteParams::angularFactor * m_bite.x_velocity  * mass_factor * m_bite.friction;;
     if (m_ball.angle >= util::PI) {
       collideHorizontalSurface();
     }

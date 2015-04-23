@@ -11,17 +11,13 @@ struct Ball {
   BallDimens dimens;
   BallPosition pose;  //!< Location of ball's center.
   GLfloat angle;  //!< Angle (radian) between velocity and positive X axis.
-  GLfloat x_velocity, y_velocity;
-  GLfloat spin;
-  GLfloat mass;
+  GLfloat velocity;
 
   Ball(GLfloat aspect = 1.0f)
     : dimens(aspect)
     , pose()
-    , x_velocity(BallParams::ballSpeed)
-    , y_velocity(BallParams::ballSpeed)
-    , spin(0.0f)
-    , mass(BallParams::ballMass) {
+    , angle(0.0f)
+    , velocity(BallParams::ballSpeed) {
   }
 };
 

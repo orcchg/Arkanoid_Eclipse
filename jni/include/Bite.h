@@ -10,15 +10,11 @@ struct Bite {
   BiteDimens dimens;
   GLfloat x_pose;
   GLfloat x_velocity;
-  GLfloat mass;
-  GLfloat friction;
 
   Bite(GLfloat aspect = 1.0f)
     : dimens(aspect)
     , x_pose(0.0f)
-    , x_velocity(0.0f)
-    , mass(BiteParams::biteMass)
-    , friction(1.0f) {
+    , x_velocity(0.0f) {
   }
 };
 
