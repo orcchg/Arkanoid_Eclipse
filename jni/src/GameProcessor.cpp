@@ -191,8 +191,11 @@ void GameProcessor::process_initBall() {
   std::unique_lock<std::mutex> lock(m_init_ball_position_mutex);
   // restore ball's initial velocity
   m_ball.angle = m_angle_distribution(m_generator);  // BallParams::ballAngle;
-  m_ball.angle += m_direction_distribution(m_generator) ? util::PI2 : 0.0f;
+  m_ball.angle += m_direction_distribution(m_generator) ? 0.0f : util::PI2;
   m_ball.angle = std::fmod(m_ball.angle, util::_2PI);
+
+  // TODO:
+  m_ball.angle = util::PI2 + 2.5f*util::PI6;
 }
 
 void GameProcessor::process_initBite() {
@@ -215,12 +218,12 @@ void GameProcessor::process_biteMoved() {
 void GameProcessor::moveBall() {
   m_ball_pose_corrected = false;
 
-//  if (m_level_finished) {
-//    m_ball_is_flying = false;  // stop flying before notify to avoid bugs
-//    level_finished_event.notifyListeners(true);
-//    onLevelFinished(true);
-//    return;
-//  }
+  if (m_level_finished) {
+    m_ball_is_flying = false;  // stop flying before notify to avoid bugs
+    level_finished_event.notifyListeners(true);
+    onLevelFinished(true);
+    return;
+  }
 
   // ball's position in the next frame
   GLfloat old_x = m_ball.pose.x;
@@ -250,7 +253,7 @@ void GameProcessor::moveBall() {
     }
   } else if (collideBlocks(new_x, new_y)) {
     ERR("CARD: %zu", m_level->getCardinality());
-    m_level_finished = (m_level->getCardinality() == 0);
+    m_level_finished = (m_level->blockImpact() == 0);
   }
 
   new_x = old_x + m_ball.velocity * cos(m_ball.angle);
@@ -303,13 +306,13 @@ void GameProcessor::collideHorizontalSurface() {
 bool GameProcessor::collideBite(GLfloat new_x) {
   if (new_x >= -(BiteParams::biteHalfWidth + BallParams::ballHalfSize) + m_bite.x_pose &&
       new_x <= (BiteParams::biteHalfWidth + BallParams::ballHalfSize) + m_bite.x_pose) {
+
     GLfloat beta = std::atan(std::fabs(new_x - m_bite.x_pose) / m_bite.radius);
-    GLfloat gamma = 0.0f;
     if (m_ball.angle >= util::_3PI2) {
-      gamma = std::fabs(util::_2PI - m_ball.angle);
+      GLfloat gamma = std::fabs(util::_2PI - m_ball.angle);
       m_ball.angle = 2 * beta - gamma;
     } else if (m_ball.angle >= util::PI) {
-      gamma = std::fabs(m_ball.angle - util::PI);
+      GLfloat gamma = std::fabs(m_ball.angle - util::PI);
       m_ball.angle = util::PI - std::fabs(2 * beta - gamma);
     } else {
 //      const char* message = "Invalid angle for bite collision !";
@@ -317,6 +320,7 @@ bool GameProcessor::collideBite(GLfloat new_x) {
 //      throw GameProcessorException(message);
     }
     m_ball.angle = std::fmod(std::fabs(m_ball.angle), util::_2PI);
+
   } else {
     return false;  // ball missed the bite
   }
@@ -333,19 +337,24 @@ bool GameProcessor::collideBlocks(GLfloat new_x, GLfloat new_y) {
     m_level_dimens.getBlockDimens(row, col, &top_border, &bottom_border, &left_border, &right_border);
 
     Block block = m_level->getBlock(row, col);
+    m_level->setBlockImpacted(row, col);
     switch (block) {
       case Block::NONE:
         // fly without disturbance
         return false;
       default:
-        if (m_ball.pose.x + 1.0f >= left_border && m_ball.pose.x + 1.0f <= right_border) {
+        if (m_ball.pose.x + 1.0f > left_border &&
+            m_ball.pose.x + 1.0f <= right_border &&
+            (m_ball.pose.y + 1.0f >= top_border || m_ball.pose.y + 1.0f <= bottom_border)) {
           collideHorizontalSurface();
-        } else if (m_ball.pose.x + 1.0f < left_border) {
+          WRN("SURF: ox=%lf oy=%lf nx=%lf ny=%lf", m_ball.pose.x, m_ball.pose.y, new_x, new_y);
+        } else if (m_ball.pose.x + 1.0f <= left_border) {
           collideRightBorder();
+          WRN("TE RIGHT: ox=%lf oy=%lf nx=%lf ny=%lf", m_ball.pose.x, m_ball.pose.y, new_x, new_y);
         } else if (m_ball.pose.x + 1.0f > right_border) {
           collideLeftBorder();
+          WRN("TE LEFT: ox=%lf oy=%lf nx=%lf ny=%lf", m_ball.pose.x, m_ball.pose.y, new_x, new_y);
         }
-        m_level->blockImpact();  // TODO: fix mult collisions
         break;
     }
     block_impact_event.notifyListeners(std::make_pair(row, col));
@@ -364,8 +373,8 @@ void GameProcessor::getImpactedBlock(
     size_t* row,
     size_t* col) {
 
-  *col = static_cast<size_t>(std::floor((ball_x + 1.0f - m_ball.dimens.halfWidth()) / m_level_dimens.block_width));
-  *row = static_cast<size_t>(std::floor((1.0f - m_ball.dimens.halfHeight() - ball_y) / m_level_dimens.block_height));
+  *col = static_cast<size_t>(std::floor((ball_x + 1.0f/* - m_ball.dimens.halfWidth()*/) / m_level_dimens.block_width));
+  *row = static_cast<size_t>(std::floor((1.0f/* - m_ball.dimens.halfHeight()*/ - ball_y) / m_level_dimens.block_height));
 }
 
 bool GameProcessor::correctBallPosition(GLfloat new_x, GLfloat new_y) {

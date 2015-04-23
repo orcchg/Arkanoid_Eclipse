@@ -281,19 +281,6 @@ void AsyncContext::process_lostBall() {
 
 void AsyncContext::process_blockImpact() {
   std::unique_lock<std::mutex> lock(m_block_impact_mutex);
-  Block block = m_level->getBlock(m_impact_row, m_impact_col);
-  switch (block) {
-    case Block::SIMPLE:
-      m_level->setBlock(m_impact_row, m_impact_col, Block::NONE);
-      break;
-    case Block::BRICK:
-      m_level->setBlock(m_impact_row, m_impact_col, Block::SIMPLE);
-      break;
-    case Block::NONE:
-    default:
-      // no-op
-      break;
-  }
   m_level->fillColorArrayAtBlock(&m_level_color_buffer[0], m_impact_row, m_impact_col);
 }
 

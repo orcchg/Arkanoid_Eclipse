@@ -21,6 +21,8 @@ Block charToBlock(char ch) {
     return Block::SIMPLE;
   case 'B':
     return Block::BRICK;
+  case 'T':
+    return Block::TITAN;
   default:
     return Block::NONE;
   }
@@ -32,6 +34,8 @@ char blockToChar(Block block) {
     return 'S';
   case Block::BRICK:
     return 'B';
+  case Block::TITAN:
+    return 'T';
   case Block::NONE:
   default:
     return ' ';
@@ -110,6 +114,10 @@ void Level::fillColorArrayAtBlock(GLfloat* const array, size_t row, size_t col) 
       break;
     case Block::BRICK:
       bgra = util::BGRA<GLfloat>(util::RED);
+      break;
+    case Block::TITAN:
+      bgra = util::BGRA<GLfloat>(util::CYAN);
+      break;
   }
   util::setColor(bgra, &array[upper_left_i], 4);
   util::setColor(bgra, &array[upper_right_i], 4);
@@ -135,6 +143,23 @@ int Level::calculateCardinality() const {
     }
   }
   return cardinality;
+}
+
+void Level::setBlockImpacted(size_t row, size_t col) {
+  Block block = getBlock(row, col);
+  switch (block) {
+    case Block::SIMPLE:
+      setBlock(row, col, Block::NONE);
+      break;
+    case Block::BRICK:
+      setBlock(row, col, Block::SIMPLE);
+      break;
+    case Block::TITAN:
+    case Block::NONE:
+    default:
+      // no-op
+      break;
+  }
 }
 
 void Level::print() const {

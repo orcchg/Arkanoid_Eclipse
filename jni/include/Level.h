@@ -19,7 +19,8 @@ namespace game {
 enum class Block : int {
   NONE = 0,    // ' '
   SIMPLE = 1,  // 'S'
-  BRICK = 2    // 'B'
+  BRICK = 2,   // 'B'
+  TITAN = 3    // 'T'
 };
 
 Block charToBlock(char ch);
@@ -101,6 +102,10 @@ public:
   inline int blockImpact() { return --initial_cardinality; }
   /// @brief Calculates current cardinality of this Level instance.
   int calculateCardinality() const;
+  /// @brief Updates specified block after single impact.
+  /// @param row Row index of impacted block.
+  /// @param col Column index of impacted block.
+  void setBlockImpacted(size_t row, size_t col);
 
   void print() const;
 
