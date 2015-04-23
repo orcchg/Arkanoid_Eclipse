@@ -195,6 +195,7 @@ void GameProcessor::process_biteMoved() {
 /* LogicFunc group */
 // ----------------------------------------------------------------------------
 void GameProcessor::moveBall() {
+  std::unique_lock<std::mutex> lock(m_load_level_mutex);
   m_ball_pose_corrected = false;
 
   if (m_level_finished) {
