@@ -306,12 +306,10 @@ bool GameProcessor::collideBite(GLfloat new_x) {
       new_x <= (BiteParams::biteHalfWidth + BallParams::ballHalfSize) + m_bite.x_pose) {
     GLfloat beta = std::atan(std::fabs(new_x - m_bite.x_pose) / m_bite.radius);
     GLfloat gamma = 0.0f;
-    int d = 0;
     if (m_ball.angle >= util::_3PI2) {
       gamma = std::fabs(util::_2PI - m_ball.angle);
       m_ball.angle = 2 * beta - gamma;
     } else if (m_ball.angle >= util::PI) {
-      d = 1;
       gamma = std::fabs(m_ball.angle - util::PI);
       m_ball.angle = util::PI - std::fabs(2 * beta - gamma);
     } else {
@@ -319,11 +317,6 @@ bool GameProcessor::collideBite(GLfloat new_x) {
 //      ERR("%s", message);
 //      throw GameProcessorException(message);
     }
-    INF("X=%lf M=%lf, Beta=%lf, gamma=%lf, A=%lf D=%i",
-        new_x,
-        std::fabs(new_x - m_bite.x_pose) / BiteParams::biteHalfWidth,
-        beta / util::PI2, gamma / util::PI2, m_ball.angle / util::PI2,
-        d);
 //    GLfloat sign = m_ball.angle >= 0.0f ? 1.0f : -1.0f;
     m_ball.angle = /*sign * */std::fmod(std::fabs(m_ball.angle), util::_2PI);
   } else {
