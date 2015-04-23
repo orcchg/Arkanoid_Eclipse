@@ -25,8 +25,8 @@ GameProcessor::GameProcessor(JavaVM* jvm, jobject master_object)
   , m_bite_upper_border(-BiteParams::neg_biteElevation)
   , m_level_dimens(0, 0, 0.0f, 0.0f)
   , m_generator()
-  , m_angle_distribution(util::PI4, util::PI16)
-  , m_direction_distribution(0.5f) {
+  , m_angle_distribution(util::PI12, util::PI30)
+  , m_direction_distribution(0.25f) {
 
   DBG("enter GameProcessor ctor");
   m_load_level_received.store(false);
@@ -171,7 +171,8 @@ void GameProcessor::process_throwBall() {
 void GameProcessor::process_initBall() {
   std::unique_lock<std::mutex> lock(m_init_ball_position_mutex);
   // restore ball's initial velocity
-  m_ball.angle = m_angle_distribution(m_generator);  // BallParams::ballAngle;
+  std::normal_distribution<float> init_angle_distribution(util::PI4, util::PI12);
+  m_ball.angle = init_angle_distribution(m_generator);  // BallParams::ballAngle;
   m_ball.angle += m_direction_distribution(m_generator) ? 0.0f : util::PI2;
   m_ball.angle = std::fmod(m_ball.angle, util::_2PI);
 }
@@ -284,13 +285,16 @@ bool GameProcessor::collideBite(GLfloat new_x) {
   if (new_x >= -(BiteParams::biteHalfWidth + BallParams::ballHalfSize) + m_bite.x_pose &&
       new_x <= (BiteParams::biteHalfWidth + BallParams::ballHalfSize) + m_bite.x_pose) {
 
-    GLfloat beta = std::atan(std::fabs(new_x - m_bite.x_pose) / m_bite.radius);
+    GLfloat distance = std::fabs(new_x - m_bite.x_pose);
+    GLfloat beta = std::atan(distance / m_bite.radius);
+    float random_error = m_direction_distribution(m_generator) && distance > BiteParams::biteQuarterWidth ? m_angle_distribution(m_generator) : 0.0f;
+
     if (m_ball.angle >= util::_3PI2) {
       GLfloat gamma = std::fabs(util::_2PI - m_ball.angle);
-      m_ball.angle = 2 * beta - gamma;
+      m_ball.angle = 2 * beta - gamma + random_error;
     } else if (m_ball.angle >= util::PI) {
       GLfloat gamma = std::fabs(m_ball.angle - util::PI);
-      m_ball.angle = util::PI - std::fabs(2 * beta - gamma);
+      m_ball.angle = util::PI - std::fabs(2 * beta - gamma) - random_error;
     } else {
 //      const char* message = "Invalid angle for bite collision !";
 //      ERR("%s", message);

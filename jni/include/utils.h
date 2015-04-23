@@ -14,7 +14,9 @@ constexpr float PI = 3.1415926f;
 constexpr float PI2 = 1.5707963f;
 constexpr float PI4 = 0.78539815f;
 constexpr float PI6 = 0.5235988f;
+constexpr float PI12 = 0.261799383f;
 constexpr float PI16 = 0.1963495375f;
+constexpr float PI30 = 0.10471975f;
 
 constexpr float epsilon = 1e-4;
 

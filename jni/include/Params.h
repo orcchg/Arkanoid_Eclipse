@@ -8,6 +8,7 @@ namespace game {
 struct BiteParams {
   constexpr static float biteWidth = 0.5f;  //!< Normalized width of bite.
   constexpr static float biteHalfWidth = biteWidth * 0.5f;
+  constexpr static float biteQuarterWidth = biteHalfWidth * 0.5f;
   constexpr static float biteHeight = 0.08f;  //!< Normalized height of bite.
   constexpr static float neg_biteHalfWidth = 1.0f - biteHalfWidth;
   constexpr static float biteTouchArea = 0.15f;  //!< Radius of touch area to affect bite.
