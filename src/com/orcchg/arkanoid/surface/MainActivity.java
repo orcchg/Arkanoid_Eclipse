@@ -11,7 +11,7 @@ import android.view.MenuItem;
 
 public class MainActivity extends FragmentActivity {
   private static final String TAG = "Arkanoid_MainActivity";
-  private static final int INITIAL_LEVEL = 6;
+  private static final int INITIAL_LEVEL = 0;
   
   static {
     System.loadLibrary("Arkanoid");
@@ -88,7 +88,11 @@ public class MainActivity extends FragmentActivity {
       Log.i(TAG, "Level finished !");
       MainActivity activity = activityRef.get();
       if (activity != null) {
-        activity.mAsyncContext.loadLevel(Levels.get(++currentLevel));
+        ++currentLevel;
+        if (currentLevel >= Levels.TOTAL_LEVELS) {
+          currentLevel = INITIAL_LEVEL;
+        }
+        activity.mAsyncContext.loadLevel(Levels.get(currentLevel)); 
       }
     }
   }

@@ -1,6 +1,8 @@
 package com.orcchg.arkanoid.surface;
 
 public class Levels {
+  public static final int TOTAL_LEVELS = 7;
+  
   public static String[] get(int index) {
     switch (index) {
       case -3:
