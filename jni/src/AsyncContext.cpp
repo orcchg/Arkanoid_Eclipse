@@ -293,7 +293,7 @@ void AsyncContext::process_blockImpact() {
 
 void AsyncContext::process_levelFinished() {
   std::unique_lock<std::mutex> lock(m_level_finished_mutex);
-//  m_level = nullptr;
+  m_level = nullptr;
   initGame();
 }
 
