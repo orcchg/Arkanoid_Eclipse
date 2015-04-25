@@ -17,10 +17,24 @@
 namespace game {
 
 enum class Block : int {
-  NONE = 0,    // ' '
-  SIMPLE = 1,  // 'S'
-  BRICK = 2,   // 'B'
-  TITAN = 3    // 'T'
+  NONE = 0,        // ' ' - not disturbing
+  ALUMINIUM = 1,   // 'A' - one impact to destroy
+  BRICK = 2,       // 'B' - two impacts to destroy
+  CLAY = 3,        // 'C' - one impact to destroy, small disturbing
+  DEATH = 4,       // 'D' - lost ball automatically
+  ELECTRO = 5,     // 'E' - one impact to destroy, destroys nearrest blocks
+  FOG = 6,         // 'F' - one impact to destroy, not disturbing
+  GAS = 7,         // 'G' - one impact to destroy, not disturbing
+  HYPER = 8,       // 'H' - one impact to destroy, teleports ball randomly (not lost)
+  IRON = 9,        // 'I' - three impacts to destroy
+  // XXX: add new
+  STEEL = 10,      // 'L' - three impacts to destroy
+  // XXX: add new
+  ROLLING = 11,    // 'R' - one impact to destroy, random disturbing
+  SIMPLE = 12,     // 'S' - one impact to destroy
+  TITAN = 13,      // 'T' - invulnerable
+  // XXX: add new
+  WATER = 14,      // 'W' - one impact to destroy, small disturbing
 };
 
 Block charToBlock(char ch);

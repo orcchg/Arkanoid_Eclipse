@@ -17,28 +17,78 @@ namespace game {
 
 Block charToBlock(char ch) {
   switch (ch) {
-  case 'S':
-    return Block::SIMPLE;
-  case 'B':
-    return Block::BRICK;
-  case 'T':
-    return Block::TITAN;
-  default:
-    return Block::NONE;
+    case 'A':
+      return Block::ALUMINIUM;
+    case 'B':
+      return Block::BRICK;
+    case 'C':
+      return Block::CLAY;
+    case 'D':
+      return Block::DEATH;
+    case 'E':
+      return Block::ELECTRO;
+    case 'F':
+      return Block::FOG;
+    case 'G':
+      return Block::GAS;
+    case 'H':
+      return Block::HYPER;
+    case 'I':
+      return Block::IRON;
+      // XXX: add new
+    case 'L':
+      return Block::STEEL;
+      // XXX: add new
+    case 'R':
+      return Block::ROLLING;
+    case 'S':
+      return Block::SIMPLE;
+    case 'T':
+      return Block::TITAN;
+      // XXX: add new
+    case 'W':
+      return Block::WATER;
+    default:
+      return Block::NONE;
   }
 }
 
 char blockToChar(Block block) {
   switch (block) {
-  case Block::SIMPLE:
-    return 'S';
-  case Block::BRICK:
-    return 'B';
-  case Block::TITAN:
-    return 'T';
-  case Block::NONE:
-  default:
-    return ' ';
+    case Block::ALUMINIUM:
+      return 'A';
+    case Block::BRICK:
+      return 'B';
+    case Block::CLAY:
+      return 'C';
+    case Block::DEATH:
+      return 'D';
+    case Block::ELECTRO:
+      return 'E';
+    case Block::FOG:
+      return 'F';
+    case Block::GAS:
+      return 'G';
+    case Block::HYPER:
+      return 'H';
+    case Block::IRON:
+      return 'I';
+      // XXX: add new
+    case Block::STEEL:
+      return 'L';
+      // XXX: add new
+    case Block::ROLLING:
+      return 'R';
+    case Block::SIMPLE:
+      return 'S';
+    case Block::TITAN:
+      return 'T';
+      // XXX: add new
+    case Block::WATER:
+      return 'W';
+    case Block::NONE:
+    default:
+      return ' ';
   }
 }
 
