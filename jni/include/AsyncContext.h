@@ -4,6 +4,7 @@
 #include <atomic>
 #include <memory>
 #include <mutex>
+#include <queue>
 #include <utility>
 
 #include <android/native_window.h>
@@ -17,6 +18,7 @@
 #include "Bite.h"
 #include "Level.h"
 #include "LevelDimens.h"
+#include "RowCol.h"
 #include "Shader.h"
 
 namespace game {
@@ -53,7 +55,7 @@ public:
   /// @brief Called when ball has been lost.
   void callback_lostBall(float is_lost);
   /// @brief Called when block has been impacted.
-  void callback_blockImpact(std::pair<size_t, size_t> block);
+  void callback_blockImpact(RowCol block);
   /// @brief Called when level has been successfully finished.
   void callback_levelFinished(bool is_finished);
   /** @} */  // end of Callbacks group
@@ -97,7 +99,7 @@ public:
   /// @brief Listens for event which occurs when ball has been lost.
   EventListener<bool> lost_ball_listener;
   /// @brief Listens for event which occurs when block has been impacted.
-  EventListener<std::pair<size_t, size_t>> block_impact_listener;
+  EventListener<RowCol> block_impact_listener;
   /// @brief Listens for event which occurs when level has been successfully finished.
   EventListener<bool> level_finished_listener;
 
@@ -143,8 +145,7 @@ private:
   GLfloat m_position;  //!< Last received position value of user's motion gesture.
   Bite m_bite;  //!< Physical bite's representation.
   Ball m_ball;  //!< Physical ball's representation.
-  size_t m_impact_row;  //!< Row index of last impacted block.
-  size_t m_impact_col;  //!< Column index of last impacted block.
+  std::queue<RowCol> m_impact_queue;  //!< Queue of impacted blocks' indices.
 
   GLfloat* m_bite_vertex_buffer;  //!< Re-usable buffer for vertices of bite.
   GLfloat* m_bite_color_buffer;   //!< Re-usable buffer for colors of bite.

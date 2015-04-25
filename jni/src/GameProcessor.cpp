@@ -349,7 +349,7 @@ bool GameProcessor::collideBlocks(GLfloat new_x, GLfloat new_y) {
         }
         break;
     }
-    block_impact_event.notifyListeners(std::make_pair(row, col));
+    block_impact_event.notifyListeners(RowCol(row, col));
     return (block != Block::TITAN);
 
   } else if (new_y >= 1.0f - m_ball.dimens.halfHeight()) {

@@ -14,6 +14,7 @@
 #include "Bite.h"
 #include "Level.h"
 #include "LevelDimens.h"
+#include "RowCol.h"
 #include "utils.h"
 
 namespace game {
@@ -91,7 +92,7 @@ public:
   /// @brief Notifies whether the ball has been lost.
   Event<bool> lost_ball_event;
   /// @brief Notifies block has been impacted.
-  Event<std::pair<size_t, size_t>> block_impact_event;
+  Event<RowCol> block_impact_event;
   /// @brief Notifies level has been successfully finished.
   Event<bool> level_finished_event;
   /** @} */  // end of Event group
