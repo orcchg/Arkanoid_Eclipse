@@ -308,7 +308,12 @@ bool GameProcessor::collideBite(GLfloat new_x) {
 //      throw GameProcessorException(message);
     }
     m_ball.angle = std::fmod(std::fabs(m_ball.angle), util::_2PI);
-
+    // avoid small angles
+    if (m_ball.angle <= util::PI12) {
+      m_ball.angle += util::PI12;
+    } else if (m_ball.angle >= util::PI - util::PI12) {
+      m_ball.angle -= util::PI12;
+    }
   } else {
     return false;  // ball missed the bite
   }
