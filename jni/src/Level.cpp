@@ -163,14 +163,50 @@ void Level::fillColorArrayAtBlock(GLfloat* const array, size_t row, size_t col) 
     case Block::NONE:
       bgra = util::BGRA<GLfloat>(util::TRANSPARENT);
       break;
-    case Block::SIMPLE:
-      bgra = util::BGRA<GLfloat>(util::GREEN);
+    case Block::ALUMINIUM:
+      bgra = util::BGRA<GLfloat>(util::ALUMINIUM);
       break;
     case Block::BRICK:
-      bgra = util::BGRA<GLfloat>(util::RED);
+      bgra = util::BGRA<GLfloat>(util::BRICK);
+      break;
+    case Block::CLAY:
+      bgra = util::BGRA<GLfloat>(util::CLAY);
+      break;
+    case Block::DEATH:
+      bgra = util::BGRA<GLfloat>(util::DEATH);
+      break;
+    case Block::ELECTRO:
+      bgra = util::BGRA<GLfloat>(util::ELECTRO);
+      break;
+    case Block::FOG:
+      bgra = util::BGRA<GLfloat>(util::FOG);
+      break;
+    case Block::GAS:
+      bgra = util::BGRA<GLfloat>(util::GAS);
+      break;
+    case Block::HYPER:
+      bgra = util::BGRA<GLfloat>(util::HYPER);
+      break;
+    case Block::IRON:
+      bgra = util::BGRA<GLfloat>(util::IRON);
+      break;
+    case Block::JELLY:
+      bgra = util::BGRA<GLfloat>(util::JELLY);
+      break;
+    case Block::STEEL:
+      bgra = util::BGRA<GLfloat>(util::STEEL);
+      break;
+    case Block::ROLLING:
+      bgra = util::BGRA<GLfloat>(util::ROLLING);
+      break;
+    case Block::SIMPLE:
+      bgra = util::BGRA<GLfloat>(util::SIMPLE);
       break;
     case Block::TITAN:
-      bgra = util::BGRA<GLfloat>(util::CYAN);
+      bgra = util::BGRA<GLfloat>(util::TITAN);
+      break;
+    case Block::WATER:
+      bgra = util::BGRA<GLfloat>(util::WATER);
       break;
   }
   util::setColor(bgra, &array[upper_left_i], 4);
