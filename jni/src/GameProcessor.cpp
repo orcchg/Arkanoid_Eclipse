@@ -202,8 +202,6 @@ void GameProcessor::moveBall() {
 
   if (m_level_finished) {
     m_ball_is_flying = false;  // stop flying before notify to avoid bugs
-    m_level.reset();
-    m_level = nullptr;
     level_finished_event.notifyListeners(true);
     onLevelFinished(true);
     return;

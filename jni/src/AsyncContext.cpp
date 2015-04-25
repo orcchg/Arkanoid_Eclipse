@@ -25,8 +25,8 @@ AsyncContext::AsyncContext(JavaVM* jvm)
   , m_position(0.0f)
   , m_bite()
   , m_ball()
-  , m_impact_row(0)
-  , m_impact_col(0)
+  , m_impact_row(-1)
+  , m_impact_col(-1)
   , m_bite_vertex_buffer(new GLfloat[16])
   , m_bite_color_buffer(new GLfloat[16])
   , m_ball_vertex_buffer(new GLfloat[16])
@@ -248,8 +248,8 @@ void AsyncContext::process_throwBall() {
 
 void AsyncContext::process_loadLevel() {
   std::unique_lock<std::mutex> lock(m_load_level_mutex);
-  m_impact_row = 0;
-  m_impact_col = 0;
+  m_impact_row = -1;
+  m_impact_col = -1;
 
   // release memory allocated for previous level if any
   delete [] m_level_vertex_buffer;
@@ -286,14 +286,13 @@ void AsyncContext::process_lostBall() {
 
 void AsyncContext::process_blockImpact() {
   std::unique_lock<std::mutex> lock(m_block_impact_mutex);
-  if (m_level != nullptr) {
+  if (m_impact_row != -1 && m_impact_col != -1) {
     m_level->fillColorArrayAtBlock(&m_level_color_buffer[0], m_impact_row, m_impact_col);
   }
 }
 
 void AsyncContext::process_levelFinished() {
   std::unique_lock<std::mutex> lock(m_level_finished_mutex);
-  m_level = nullptr;
   initGame();
 }
 

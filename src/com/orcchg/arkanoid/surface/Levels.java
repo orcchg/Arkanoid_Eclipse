@@ -5,6 +5,8 @@ public class Levels {
   
   public static String[] get(int index) {
     switch (index) {
+      case -4:
+        return SAMPLE4;
       case -3:
         return SAMPLE3;
       case -2:
@@ -28,6 +30,27 @@ public class Levels {
         return SIXTH;
     }
   }
+  
+  private static final String[] SAMPLE4 = new String[] {"SSSSSSSSSS",
+                                                        "SSSSSSSSSS",
+                                                        "SSSSSSSSSS",
+                                                        "SSSSSSSSSS",
+                                                        "SSSSSSSSSS",
+                                                        "SSSSSSSSSS",
+                                                        "SSSSSSSSSS",
+                                                        "SSSSSSSSSS",
+                                                        "SSSSSSSSSS",
+                                                        "SSSSSSSSSS",
+                                                        "SSSSSSSSSS",
+                                                        "SSSSSSSSSS",
+                                                        "SSSSSSSSSS",
+                                                        "SSSSSSSSSS",
+                                                        "SSSSSSSSSS",
+                                                        "SSSSSSSSSS",
+                                                        "SSSSSSSSSS",
+                                                        "SSSSSSSSSS",
+                                                        "SSSSSSSSSS",
+                                                        "SSSSSSSSSS"};
   
   private static final String[] SAMPLE3 = new String[] {"SSSSSSSSSS"};
   

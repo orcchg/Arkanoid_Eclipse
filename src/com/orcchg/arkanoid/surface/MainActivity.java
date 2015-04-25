@@ -11,7 +11,7 @@ import android.view.MenuItem;
 
 public class MainActivity extends FragmentActivity {
   private static final String TAG = "Arkanoid_MainActivity";
-  private static final int INITIAL_LEVEL = 0;
+  private static final int INITIAL_LEVEL = -4;
   
   static {
     System.loadLibrary("Arkanoid");
@@ -91,6 +91,13 @@ public class MainActivity extends FragmentActivity {
         ++currentLevel;
         if (currentLevel >= Levels.TOTAL_LEVELS) {
           currentLevel = INITIAL_LEVEL;
+        }
+        try {
+          Thread.sleep(250);  // let all core treads finished their jobs
+          // TODO: Show win animation instead
+        } catch (InterruptedException e) {
+          Thread.interrupted();
+          e.printStackTrace();
         }
         activity.mAsyncContext.loadLevel(Levels.get(currentLevel)); 
       }
