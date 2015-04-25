@@ -35,6 +35,8 @@ Block charToBlock(char ch) {
       return Block::HYPER;
     case 'I':
       return Block::IRON;
+    case 'J':
+      return Block::JELLY;
       // XXX: add new
     case 'L':
       return Block::STEEL;
@@ -73,6 +75,8 @@ char blockToChar(Block block) {
       return 'H';
     case Block::IRON:
       return 'I';
+    case Block::JELLY:
+      return 'J';
       // XXX: add new
     case Block::STEEL:
       return 'L';
@@ -213,6 +217,7 @@ void Level::setBlockImpacted(size_t row, size_t col) {
     case Block::FOG:
     case Block::GAS:
     case Block::HYPER:
+    case Block::JELLY:
     case Block::ROLLING:
     case Block::SIMPLE:
     case Block::WATER:

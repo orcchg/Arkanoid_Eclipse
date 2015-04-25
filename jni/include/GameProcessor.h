@@ -130,6 +130,7 @@ private:
   std::default_random_engine m_generator;
   std::normal_distribution<float> m_angle_distribution;
   std::bernoulli_distribution m_direction_distribution;
+  std::binomial_distribution<int> m_viscosity_distribution;
   /** @} */  // Maths
 
   /** @defgroup Mutex Thread-safety variables
@@ -222,6 +223,22 @@ private:
   /// @return TRUE in case ball collides level's lower border,
   /// FALSE if ball misses such border.
   bool collideBlocks(GLfloat new_x, GLfloat new_y);
+  /// @brief Performs elastic block collision from certain side of block
+  /// depending on previous ball's position.
+  /// @param top_border Top border of collided block.
+  /// @param bottom_border Bottom border of collided block.
+  /// @param left_border Left border of collided block.
+  /// @param right_border Right border of collided block.
+  void elasticBlockCollision(GLfloat top_border, GLfloat bottom_border, GLfloat left_border, GLfloat right_border);
+  /// @brief Performs viscous block collision from certain side of block
+  /// depending on previous ball's position.
+  /// @param top_border Top border of collided block.
+  /// @param bottom_border Bottom border of collided block.
+  /// @param left_border Left border of collided block.
+  /// @param right_border Right border of collided block.
+  /// @param viscosity Percentage of viscosity (from 0 to 100)
+  /// @details 0 viscosity - no disturbance, 100 - elastic collision
+  void viscousBlockCollision(GLfloat top_border, GLfloat bottom_border, GLfloat left_border, GLfloat right_border, int viscosity);
   /// @brief Calculates row- and column- index of block which is impacted
   /// with the ball at given location.
   /// @param ball_x Position of ball's center along X axis.
