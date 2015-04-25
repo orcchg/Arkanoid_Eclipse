@@ -184,15 +184,30 @@ int Level::calculateCardinality() const {
   for (size_t r = 0; r < rows; ++r) {
     for (size_t c = 0; c < cols; ++c) {
       switch (blocks[r][c]) {
-        default:
-        case Block::TITAN:
-        case Block::NONE:
-          break;
-        case Block::SIMPLE:
-          ++cardinality;
+        case Block::IRON:
+        case Block::STEEL:
+          cardinality += 3;
           break;
         case Block::BRICK:
           cardinality += 2;
+          break;
+        case Block::ALUMINIUM:
+        case Block::CLAY:
+        case Block::DEATH:
+        case Block::ELECTRO:
+        case Block::FOG:
+        case Block::GAS:
+        case Block::HYPER:
+        case Block::JELLY:
+        case Block::ROLLING:
+        case Block::SIMPLE:
+        case Block::WATER:
+          ++cardinality;
+          break;
+
+        default:
+        case Block::TITAN:
+        case Block::NONE:
           break;
       }
     }
