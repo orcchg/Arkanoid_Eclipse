@@ -199,11 +199,24 @@ int Level::calculateCardinality() const {
 void Level::setBlockImpacted(size_t row, size_t col) {
   Block block = getBlock(row, col);
   switch (block) {
-    case Block::SIMPLE:
-      setBlock(row, col, Block::NONE);
+    case Block::IRON:
+    case Block::STEEL:
+      setBlock(row, col, Block::BRICK);
       break;
     case Block::BRICK:
       setBlock(row, col, Block::SIMPLE);
+      break;
+    case Block::ALUMINIUM:
+    case Block::CLAY:
+    case Block::DEATH:
+    case Block::ELECTRO:
+    case Block::FOG:
+    case Block::GAS:
+    case Block::HYPER:
+    case Block::ROLLING:
+    case Block::SIMPLE:
+    case Block::WATER:
+      setBlock(row, col, Block::NONE);
       break;
     case Block::TITAN:
     case Block::NONE:

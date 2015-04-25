@@ -21,7 +21,7 @@ enum class Block : int {
   ALUMINIUM = 1,   // 'A' - one impact to destroy
   BRICK = 2,       // 'B' - two impacts to destroy
   CLAY = 3,        // 'C' - one impact to destroy, small disturbing
-  DEATH = 4,       // 'D' - lost ball automatically
+  DEATH = 4,       // 'D' - one impact to destroy, lost ball automatically
   ELECTRO = 5,     // 'E' - one impact to destroy, destroys nearrest blocks
   FOG = 6,         // 'F' - one impact to destroy, not disturbing
   GAS = 7,         // 'G' - one impact to destroy, not disturbing
