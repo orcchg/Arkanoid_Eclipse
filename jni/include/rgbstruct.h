@@ -57,21 +57,21 @@ constexpr static GLfloat MESHLAB[4] = { 0.8118f, 0.4f, 0.4f, 1.f };
 constexpr static GLfloat TRANSPARENT[4] = { 0.f, 0.f, 0.f,   0.f};
 
 // http://www.color-hex.com/color-names.html
-constexpr static GLfloat ALUMINIUM[4] = {0.8f,    0.7843f, 0.7843f, 1.f};
-constexpr static GLfloat BRICK[4]     = {0.1333f, 0.1333f, 0.6980f, 1.f};
-constexpr static GLfloat CLAY[4]      = {0.6078f, 0.8275,  1.f,     1.f};
+constexpr static GLfloat ALUMINIUM[4] = {0.7843f, 0.7843f, 0.8f   , 1.f};
+constexpr static GLfloat BRICK[4]     = {0.6980f, 0.1333f, 0.1333f, 1.f};
+constexpr static GLfloat CLAY[4]      = {1.f,     0.8275,  0.6078f, 1.f};
 constexpr static GLfloat DEATH[4]     = {0.f,     0.3922f, 0.f,     1.f};
-constexpr static GLfloat ELECTRO[4]   = {0.9333f, 0.f,     0.f,     1.f};
-constexpr static GLfloat FOG[4]       = {0.9333f, 0.9333f, 0.8784f, 1.f};
-constexpr static GLfloat GAS[4]       = {0.f,     0.8039f, 0.4f,    1.f};
-constexpr static GLfloat HYPER[4]     = {0.8863f, 0.1686f, 0.5412f, 1.f};
-constexpr static GLfloat IRON[4]      = {0.5451f, 0.5451f, 0.5137f, 1.f};
-constexpr static GLfloat JELLY[4]     = {0.2f,    0.2f,    0.8039f, 1.f};
-constexpr static GLfloat STEEL[4]     = {0.5451f, 0.5255f, 0.3255f, 1.f};
-constexpr static GLfloat ROLLING[4]   = {0.1843f, 0.2431f, 0.5455f, 1.f};
-constexpr static GLfloat SIMPLE[4]    = {0.3529f, 0.8039f, 0.6353f, 1.f};
-constexpr static GLfloat TITAN[4]     = {0.0549f, 0.6784f, 0.9333f, 1.f};
-constexpr static GLfloat WATER[4]     = {0.8039f, 0.6039f, 0.f,     1.f};
+constexpr static GLfloat ELECTRO[4]   = {0.f,     0.f,     0.9333f, 1.f};
+constexpr static GLfloat FOG[4]       = {0.8784f, 0.9333f, 0.9333f, 1.f};
+constexpr static GLfloat GAS[4]       = {0.4f,    0.8039f, 0.f,     1.f};
+constexpr static GLfloat HYPER[4]     = {0.5412f, 0.1686f, 0.8863f, 1.f};
+constexpr static GLfloat IRON[4]      = {0.5137f, 0.5451f, 0.5451f, 1.f};
+constexpr static GLfloat JELLY[4]     = {0.8039f, 0.2f,    0.2f,    1.f};
+constexpr static GLfloat STEEL[4]     = {0.3255f, 0.5255f, 0.5451f, 1.f};
+constexpr static GLfloat ROLLING[4]   = {0.5455f, 0.2431f, 0.1843f, 1.f};
+constexpr static GLfloat SIMPLE[4]    = {0.6353f, 0.8039f, 0.3529f, 1.f};
+constexpr static GLfloat TITAN[4]     = {0.9333f, 0.6784f, 0.0549f, 1.f};
+constexpr static GLfloat WATER[4]     = {0.f,     0.6039f, 0.8039f, 1.f};
 
 }
 

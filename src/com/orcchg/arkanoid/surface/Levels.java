@@ -81,7 +81,7 @@ public class Levels {
                                                         "  TTBSTT  ",
                                                         "  TTSBTT  ",
                                                         "  TT  TT  ",
-                                                        "  TTTTTT  "};
+                                                        "  TFFFFT  "};
   
   private static final String[] SAMPLE = new String[] {"          ",
                                                        "     S    "};
