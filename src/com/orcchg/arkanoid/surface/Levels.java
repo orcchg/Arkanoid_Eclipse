@@ -5,6 +5,8 @@ public class Levels {
   
   public static String[] get(int index) {
     switch (index) {
+      case -5:
+        return SAMPLE5;
       case -4:
         return SAMPLE4;
       case -3:
@@ -28,8 +30,19 @@ public class Levels {
         return FIFTH;
       case 6:
         return SIXTH;
+      case 7:
+        return SEVENTH;
     }
   }
+  
+  private static final String[] SAMPLE5 = new String[] {"SSSSSSSSSS",
+                                                        "FFFFFFFFFF",
+                                                        "GGGGGGGGGG",
+                                                        "FFFFFFFFFF",
+                                                        "FFFFFFFFFF",
+                                                        "FFFFFFFFFF",
+                                                        "FFFFFFFFFF",
+                                                        "FFFFFFFFFF"};
   
   private static final String[] SAMPLE4 = new String[] {"SSSSSSSSSS",
                                                         "SSSSSSSSSS",
@@ -161,4 +174,16 @@ public class Levels {
                                                       "   BSSST  ",
                                                       "    BBT   ",
                                                       "     B    "};
+  
+  private static final String[] SEVENTH = new String[] {"          ",
+                                                        "          ",
+                                                        "          ",
+                                                        "          ",
+                                                        "          ",
+                                                        "    RC    ",
+                                                        "   WWWW   ",
+                                                        " SSSCCSSS ",
+                                                        "  SWWJJW  ",
+                                                        " SJJCCWSS ",
+                                                        "  RRWRRC  "};
 }
