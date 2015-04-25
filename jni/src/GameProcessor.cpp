@@ -325,7 +325,6 @@ bool GameProcessor::collideBlocks(GLfloat new_x, GLfloat new_y) {
     m_level_dimens.getBlockDimens(row, col, &top_border, &bottom_border, &left_border, &right_border);
 
     Block block = m_level->getBlock(row, col);
-    m_level->setBlockImpacted(row, col);
     switch (block) {
       case Block::NONE:
         // fly without disturbance
