@@ -302,10 +302,6 @@ bool GameProcessor::collideBite(GLfloat new_x) {
     } else if (m_ball.angle >= util::PI) {
       GLfloat gamma = std::fabs(m_ball.angle - util::PI);
       m_ball.angle = util::PI - std::fabs(2 * beta - gamma) - random_error;
-    } else {
-//      const char* message = "Invalid angle for bite collision !";
-//      ERR("%s", message);
-//      throw GameProcessorException(message);
     }
     m_ball.angle = std::fmod(std::fabs(m_ball.angle), util::_2PI);
     // avoid small angles
