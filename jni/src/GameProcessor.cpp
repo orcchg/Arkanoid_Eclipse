@@ -301,22 +301,16 @@ bool GameProcessor::collideBite(GLfloat new_x) {
     if (new_x >= m_bite.x_pose + BiteParams::biteQuarterWidth) {
       GLfloat normal = std::fabs(util::PI2 - beta);
       if (m_ball.angle >= util::_3PI2) {
-//        GLfloat gamma = m_ball.angle - util::_3PI2;
-//        GLfloat delta = std::fabs(gamma + 2 * beta - util::PI2);
-//        m_ball.angle = util::_2PI - delta;
         collideHorizontalSurface();
-        INF("ONE");
       } else if (m_ball.angle >= util::PI) {
         GLfloat gamma = util::_3PI2 - m_ball.angle;
         if (gamma <= beta) {
           GLfloat delta = std::fabs(gamma - 2 * beta + util::PI2);
           m_ball.angle = delta;
-          WRN("TWO: %lf g=%lf b=%lf", gamma / beta, gamma / util::PI, beta / util::PI);
         } else {
           gamma = m_ball.angle - util::PI;
           GLfloat delta = std::fabs(gamma + 2 * beta - util::PI2);
           m_ball.angle = util::PI2 - delta;
-          ERR("THREE: %lf g=%lf b=%lf", gamma / beta, gamma / util::PI, beta / util::PI);
         }
       }
     } else if (new_x <= m_bite.x_pose - BiteParams::biteQuarterWidth) {
@@ -326,36 +320,18 @@ bool GameProcessor::collideBite(GLfloat new_x) {
         if (gamma <= beta) {
           GLfloat delta = std::fabs(gamma - 2 * beta + util::PI2);
           m_ball.angle = util::PI - delta;
-          ERR("FOUR: %lf g=%lf b=%lf", gamma / beta, gamma / util::PI, beta / util::PI);
         } else {
           gamma = util::_2PI - m_ball.angle;
           GLfloat delta = std::fabs(gamma + 2 * beta - util::PI2);
           m_ball.angle = util::PI2 + delta;
-          WRN("FIVE: %lf g=%lf b=%lf", gamma / beta, gamma / util::PI, beta / util::PI);
         }
       } else if (m_ball.angle >= util::PI) {
-//        GLfloat gamma = util::_3PI2 - m_ball.angle;
-//        GLfloat delta = std::fabs(gamma + 2 * beta - util::PI2);
-//        m_ball.angle = util::PI + delta;
         collideHorizontalSurface();
-        INF("SIX");
       }
     } else {
       collideHorizontalSurface();
     }
-
-    //float random_error = m_direction_distribution(m_generator) && distance > BiteParams::biteQuarterWidth ? m_angle_distribution(m_generator) : 0.0f;
-
-    /*if (m_ball.angle >= util::_3PI2) {
-      GLfloat gamma = std::fabs(util::_2PI - m_ball.angle);
-      m_ball.angle = 2 * beta - gamma;// + random_error;
-    } else if (m_ball.angle >= util::PI) {
-      GLfloat gamma = std::fabs(m_ball.angle - util::PI);
-      m_ball.angle = util::PI - std::fabs(2 * beta - gamma);// - random_error;
-    }*/
     m_ball.angle = std::fmod(std::fabs(m_ball.angle), util::_2PI);
-
-    ERR("ANGLE: %lf", m_ball.angle / util::PI);
   } else {
     return false;  // ball missed the bite
   }
