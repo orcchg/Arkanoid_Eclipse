@@ -47,7 +47,7 @@ public:
   /// @param distance Distance the user's pointer has passed.
   void callback_shiftGamepad(float distance);
   /// @brief Called when user sends a command to throw a ball.
-  void callback_throwBall(bool /* dummy */);
+  void callback_throwBall(float angle);
   /// @brief Called when user requests a level to be loaded
   void callback_loadLevel(Level::Ptr level);
   /// @brief Called when ball has moved to a new position.
@@ -91,7 +91,7 @@ public:
   /// @brief Listens for event which occurs when user performs a motion gesture.
   EventListener<float> shift_gesture_listener;
   /// @brief Listens for event which occurs when user sends throw ball command.
-  EventListener<bool> throw_ball_listener;
+  EventListener<float> throw_ball_listener;
   /// @brief Listens for event which occurs when user requests a level to be loaded.
   EventListener<Level::Ptr> load_level_listener;
   /// @brief Listens for event which occurs when ball has moved to a new position.
@@ -142,6 +142,7 @@ private:
   /** @defgroup LogicData Game logic related data members.
    * @{
    */
+  GLfloat m_throw_angle;  //!< Initial throw level between ball's trajectory and X axis.
   GLfloat m_position;  //!< Last received position value of user's motion gesture.
   Bite m_bite;  //!< Physical bite's representation.
   Ball m_ball;  //!< Physical ball's representation.

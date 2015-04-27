@@ -35,7 +35,7 @@ public:
   /// @brief Called when user requests a level to be loaded
   void callback_loadLevel(Level::Ptr level);
   /// @brief Called when user sends a command to throw a ball.
-  void callback_throwBall(bool /* dummy */);
+  void callback_throwBall(float angle);
   /// @brief Called when ball has been set to it's initial position.
   void callback_initBall(Ball init_ball);
   /// @brief Called when bite's dimensions have been measured.
@@ -77,7 +77,7 @@ public:
   /// @brief Listens for event which occurs when user requests a level to be loaded.
   EventListener<Level::Ptr> load_level_listener;
   /// @brief Listens for event which occurs when user sends throw ball command.
-  EventListener<bool> throw_ball_listener;
+  EventListener<float> throw_ball_listener;
   /// @brief Listens for event which occurs when ball is placed to some initial position.
   EventListener<Ball> init_ball_position_listener;
   /// @brief Listens for bite's measured dimensions.
@@ -114,6 +114,7 @@ private:
    * @{
    */
   Level::Ptr m_level;  //!< Game level at it's current state.
+  GLfloat m_throw_angle;  //!< Initial throw level between ball's trajectory and X axis.
   bool m_level_finished;  //!< Whether level has been successfully finished.
   bool m_ball_is_flying;  //!< Whether the ball is flying now or not.
   bool m_is_ball_lost;  //!< Whether the ball has been lost or not.

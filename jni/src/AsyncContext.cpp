@@ -22,6 +22,7 @@ AsyncContext::AsyncContext(JavaVM* jvm)
   , m_width(0), m_height(0)
   , m_config(nullptr)
   , m_num_configs(0), m_format(0)
+  , m_throw_angle(60.0f)
   , m_position(0.0f)
   , m_bite()
   , m_ball()
@@ -89,9 +90,10 @@ void AsyncContext::callback_shiftGamepad(float position) {
   interrupt();
 }
 
-void AsyncContext::callback_throwBall(bool /* dummy */) {
+void AsyncContext::callback_throwBall(float angle) {
   std::unique_lock<std::mutex> lock(m_throw_ball_mutex);
   m_throw_ball_received.store(true);
+  m_throw_angle = angle;
   interrupt();
 }
 

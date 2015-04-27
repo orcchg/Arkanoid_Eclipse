@@ -86,9 +86,9 @@ JNIEXPORT void JNICALL Java_com_orcchg_arkanoid_surface_AsyncContext_shiftGamepa
 }
 
 JNIEXPORT void JNICALL Java_com_orcchg_arkanoid_surface_AsyncContext_throwBall
-  (JNIEnv *jenv, jobject, jlong descriptor) {
+  (JNIEnv *jenv, jobject, jlong descriptor, jfloat angle) {
   AsyncContextHelper* ptr = (AsyncContextHelper*) descriptor;
-  ptr->throw_ball_event.notifyListeners(true);
+  ptr->throw_ball_event.notifyListeners(angle);
 }
 
 /* Tools */

@@ -16,6 +16,7 @@ GameProcessor::GameProcessor(JavaVM* jvm, jobject master_object)
   , fireJavaEvent_lostBall_id(nullptr)
   , fireJavaEvent_levelFinished_id(nullptr)
   , m_level(nullptr)
+  , m_throw_angle(60.0f)
   , m_level_finished(false)
   , m_ball_is_flying(false)
   , m_is_ball_lost(false)
@@ -53,9 +54,10 @@ void GameProcessor::callback_loadLevel(Level::Ptr level) {
   interrupt();
 }
 
-void GameProcessor::callback_throwBall(bool /* dummy */) {
+void GameProcessor::callback_throwBall(float angle) {
   std::unique_lock<std::mutex> lock(m_throw_ball_mutex);
   m_throw_ball_received.store(true);
+  m_throw_angle = angle;
   interrupt();
 }
 

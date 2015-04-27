@@ -66,10 +66,10 @@ JNIEXPORT void JNICALL Java_com_orcchg_arkanoid_surface_AsyncContext_shiftGamepa
 /*
  * Class:     com_orcchg_arkanoid_surface_AsyncContext
  * Method:    throwBall
- * Signature: (J)V
+ * Signature: (JF)V
  */
 JNIEXPORT void JNICALL Java_com_orcchg_arkanoid_surface_AsyncContext_throwBall
-  (JNIEnv *, jobject, jlong);
+  (JNIEnv *, jobject, jlong, jfloat);
 
 /* Tools */
 // ----------------------------------------------------------------------------
@@ -139,7 +139,7 @@ struct AsyncContextHelper {
    */
   Event<ANativeWindow*> surface_received_event;  //!< When surface has been prepared.
   Event<float> shift_gesture_event;  //!< When user does a motion gesture.
-  Event<bool> throw_ball_event;  //<! When user sends a throw ball command.
+  Event<float> throw_ball_event;  //<! When user sends a throw ball command.
   Event<game::Level::Ptr> load_level_event;  //<! When user's requested to load level.
   /** @} */  // end of AsyncContextEvent group
 

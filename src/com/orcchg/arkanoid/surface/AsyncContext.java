@@ -27,7 +27,7 @@ class AsyncContext {
   
   /* User actions */
   void shiftGamepad(float position) { shiftGamepad(descriptor, position); }
-  void throwBall() { throwBall(descriptor); }
+  void throwBall(float angle) { throwBall(descriptor, angle); }
 
   /* Tools */
   void loadLevel(final String[] level) { loadLevel(descriptor, level); }
@@ -59,7 +59,7 @@ class AsyncContext {
   
   /* User actions */
   private native void shiftGamepad(long descriptor, float position);
-  private native void throwBall(long descriptor);
+  private native void throwBall(long descriptor, float angle);
   
   /* Tools */
   private native void loadLevel(long descriptor, String[] in_level);
