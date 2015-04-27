@@ -307,10 +307,12 @@ bool GameProcessor::collideBite(GLfloat new_x) {
         if (gamma <= beta) {
           GLfloat delta = std::fabs(gamma - 2 * beta + util::PI2);
           m_ball.angle = delta;
+          smallAngleAvoid();
         } else {
           gamma = m_ball.angle - util::PI;
           GLfloat delta = std::fabs(gamma + 2 * beta - util::PI2);
           m_ball.angle = util::PI2 - delta;
+          smallAngleAvoid();
         }
       }
     } else if (new_x <= m_bite.x_pose - BiteParams::biteQuarterWidth) {
@@ -320,10 +322,12 @@ bool GameProcessor::collideBite(GLfloat new_x) {
         if (gamma <= beta) {
           GLfloat delta = std::fabs(gamma - 2 * beta + util::PI2);
           m_ball.angle = util::PI - delta;
+          smallAngleAvoid();
         } else {
           gamma = util::_2PI - m_ball.angle;
           GLfloat delta = std::fabs(gamma + 2 * beta - util::PI2);
           m_ball.angle = util::PI2 + delta;
+          smallAngleAvoid();
         }
       } else if (m_ball.angle >= util::PI) {
         collideHorizontalSurface();
@@ -471,11 +475,19 @@ void GameProcessor::correctBallPosition(GLfloat new_x, GLfloat new_y) {
 void GameProcessor::smallAngleAvoid() {
   if (m_ball.angle <= util::PI8) {
     m_ball.angle += util::PI10;
-  } else if (m_ball.angle >= util::PI - util::PI8) {
+  } else if (m_ball.angle >= util::_2PI - util::PI8) {
     m_ball.angle -= util::PI10;
-  } else if (m_ball.angle <= util::PI2 + util::PI12) {
+  } else if (m_ball.angle >= util::PI - util::PI8 && m_ball.angle <= util::PI) {
+    m_ball.angle -= util::PI10;
+  } else if (m_ball.angle > util::PI && m_ball.angle <= util::PI + util::PI8) {
+    m_ball.angle += util::PI10;
+  } else if (m_ball.angle <= util::PI2 + util::PI12 && m_ball.angle >= util::PI2) {
     m_ball.angle += util::PI16;
-  } else if (m_ball.angle >= util::PI2 - util::PI12) {
+  } else if (m_ball.angle >= util::PI2 - util::PI12 && m_ball.angle < util::PI2) {
+    m_ball.angle -= util::PI16;
+  } else if (m_ball.angle >= util::_3PI2 && m_ball.angle <= util::_3PI2 + util::PI12) {
+    m_ball.angle += util::PI16;
+  } else if (m_ball.angle < util::_3PI2 && m_ball.angle >= util::_3PI2 - util::PI12) {
     m_ball.angle -= util::PI16;
   }
 }
