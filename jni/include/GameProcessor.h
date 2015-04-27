@@ -254,6 +254,8 @@ private:
   /// @param new_x Corrected ball's center position along X axis.
   /// @param new_y Corrected ball's center position along Y axis.
   void correctBallPosition(GLfloat new_x, GLfloat new_y);
+  /// @brief Slightly disturbs ball's angle to avoid small declines.
+  void smallAngleAvoid();
   /** @} */  // end of Maths group
 };
 

@@ -298,42 +298,51 @@ bool GameProcessor::collideBite(GLfloat new_x) {
     GLfloat distance = std::fabs(new_x - m_bite.x_pose);
     GLfloat beta = std::fabs(std::atan(distance / m_bite.radius));
 
-    if (new_x >= m_bite.x_pose) {
+    if (new_x >= m_bite.x_pose + BiteParams::biteQuarterWidth) {
       GLfloat normal = std::fabs(util::PI2 - beta);
       if (m_ball.angle >= util::_3PI2) {
-        GLfloat gamma = m_ball.angle - util::_3PI2;
-        GLfloat delta = std::fabs(gamma + 2 * beta - util::PI2);
-        m_ball.angle = util::_2PI - delta;
+//        GLfloat gamma = m_ball.angle - util::_3PI2;
+//        GLfloat delta = std::fabs(gamma + 2 * beta - util::PI2);
+//        m_ball.angle = util::_2PI - delta;
+        collideHorizontalSurface();
+        INF("ONE");
       } else if (m_ball.angle >= util::PI) {
         GLfloat gamma = util::_3PI2 - m_ball.angle;
         if (gamma <= beta) {
           GLfloat delta = std::fabs(gamma - 2 * beta + util::PI2);
           m_ball.angle = delta;
+          WRN("TWO: %lf g=%lf b=%lf", gamma / beta, gamma / util::PI, beta / util::PI);
         } else {
           gamma = m_ball.angle - util::PI;
           GLfloat delta = std::fabs(gamma + 2 * beta - util::PI2);
           m_ball.angle = util::PI2 - delta;
+          ERR("THREE: %lf g=%lf b=%lf", gamma / beta, gamma / util::PI, beta / util::PI);
         }
       }
-    } else {
+    } else if (new_x <= m_bite.x_pose - BiteParams::biteQuarterWidth) {
       GLfloat normal = std::fabs(util::PI2 + beta);
       if (m_ball.angle >= util::_3PI2) {
         GLfloat gamma = m_ball.angle - util::_3PI2;
         if (gamma <= beta) {
           GLfloat delta = std::fabs(gamma - 2 * beta + util::PI2);
           m_ball.angle = util::PI - delta;
+          ERR("FOUR: %lf g=%lf b=%lf", gamma / beta, gamma / util::PI, beta / util::PI);
         } else {
           gamma = util::_2PI - m_ball.angle;
           GLfloat delta = std::fabs(gamma + 2 * beta - util::PI2);
           m_ball.angle = util::PI2 + delta;
+          WRN("FIVE: %lf g=%lf b=%lf", gamma / beta, gamma / util::PI, beta / util::PI);
         }
       } else if (m_ball.angle >= util::PI) {
-        GLfloat gamma = util::_3PI2 - m_ball.angle;
-        GLfloat delta = std::fabs(gamma + 2 * beta - util::PI2);
-        m_ball.angle = util::PI + delta;
+//        GLfloat gamma = util::_3PI2 - m_ball.angle;
+//        GLfloat delta = std::fabs(gamma + 2 * beta - util::PI2);
+//        m_ball.angle = util::PI + delta;
+        collideHorizontalSurface();
+        INF("SIX");
       }
+    } else {
+      collideHorizontalSurface();
     }
-    m_ball.angle = std::fmod(std::fabs(m_ball.angle), util::_2PI);
 
     //float random_error = m_direction_distribution(m_generator) && distance > BiteParams::biteQuarterWidth ? m_angle_distribution(m_generator) : 0.0f;
 
@@ -343,14 +352,10 @@ bool GameProcessor::collideBite(GLfloat new_x) {
     } else if (m_ball.angle >= util::PI) {
       GLfloat gamma = std::fabs(m_ball.angle - util::PI);
       m_ball.angle = util::PI - std::fabs(2 * beta - gamma);// - random_error;
-    }
-    m_ball.angle = std::fmod(std::fabs(m_ball.angle), util::_2PI);
-    // avoid small angles
-    if (m_ball.angle <= util::PI12) {
-      m_ball.angle += util::PI12;
-    } else if (m_ball.angle >= util::PI - util::PI12) {
-      m_ball.angle -= util::PI12;
     }*/
+    m_ball.angle = std::fmod(std::fabs(m_ball.angle), util::_2PI);
+
+    ERR("ANGLE: %lf", m_ball.angle / util::PI);
   } else {
     return false;  // ball missed the bite
   }
@@ -485,6 +490,18 @@ bool GameProcessor::getImpactedBlock(
 void GameProcessor::correctBallPosition(GLfloat new_x, GLfloat new_y) {
   shiftBall(new_x, new_y);
   m_ball_pose_corrected = true;
+}
+
+void GameProcessor::smallAngleAvoid() {
+  if (m_ball.angle <= util::PI8) {
+    m_ball.angle += util::PI10;
+  } else if (m_ball.angle >= util::PI - util::PI8) {
+    m_ball.angle -= util::PI10;
+  } else if (m_ball.angle <= util::PI2 + util::PI12) {
+    m_ball.angle += util::PI16;
+  } else if (m_ball.angle >= util::PI2 - util::PI12) {
+    m_ball.angle -= util::PI16;
+  }
 }
 
 }

@@ -15,7 +15,7 @@ struct BiteParams {
   /// @brief Elevation of bite above the lower boundary of the playground.
   constexpr static float biteElevation = 0.3f;
   constexpr static float neg_biteElevation = 1.0f - biteElevation;
-  constexpr static float radius = biteWidth * 20.0f;  //!< Curvature radius of bite.
+  constexpr static float radius = biteWidth * 1.0f;  //!< Curvature radius of bite.
 };
 
 struct BallParams {
