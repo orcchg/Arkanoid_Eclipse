@@ -429,9 +429,18 @@ void GameProcessor::getImpactedBlock(
     size_t* row,
     size_t* col) {
 
-  // TODO: potential crash for levels less than fullscreen by width (X direction)
-  *col = static_cast<size_t>(std::floor((ball_x + 1.0f) / m_level_dimens.block_width));
-  *row = static_cast<size_t>(std::floor((1.0f - m_ball.dimens.halfHeight() - ball_y) / m_level_dimens.block_height));
+  if (m_ball.pose.x >= ball_x) {  // from right
+    *col = static_cast<size_t>(std::floor((ball_x - m_ball.dimens.halfWidth() + 1.0f) / m_level_dimens.block_width));
+  } else {  // from left
+    *col = static_cast<size_t>(std::floor((ball_x + m_ball.dimens.halfWidth() + 1.0f) / m_level_dimens.block_width));
+  }
+
+  if (m_ball.pose.y >= ball_y) {  // from top
+    *row = static_cast<size_t>(std::floor((1.0f + m_ball.dimens.halfHeight() - ball_y) / m_level_dimens.block_height));
+  } else {  // from bottom
+    *row = static_cast<size_t>(std::floor((1.0f - m_ball.dimens.halfHeight() - ball_y) / m_level_dimens.block_height));
+  }
+  ERR("Impacted: row=%zu/%zu col=%zu/%zu", row, m_level->numRows(), col, m_level->numCols());
 }
 
 void GameProcessor::correctBallPosition(GLfloat new_x, GLfloat new_y) {
