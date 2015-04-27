@@ -7,8 +7,8 @@ namespace game {
 
 /// @brief Measured level dimensions.
 struct LevelDimens {
-  constexpr static float blockWidth = 0.8f;
-  constexpr static float blockHeight = 1.1f;
+  constexpr static float blockWidth = 0.2f;
+  constexpr static float blockHeight = 0.1f;
 
   size_t rows, cols;
   GLfloat width, height, block_width, block_height;
