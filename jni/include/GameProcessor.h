@@ -245,7 +245,9 @@ private:
   /// @param ball_y Position of ball's center along Y axis.
   /// @param row Output row index of impacted block of current level.
   /// @param col Output column index of impacted block of current level.
-  void getImpactedBlock(GLfloat ball_x, GLfloat ball_y, size_t* row, size_t* col);
+  /// @return TRUE is some block has been impacted, FALSE if ball has left level's boundaries
+  /// in order to avoid index of block out of bounds.
+  bool getImpactedBlock(GLfloat ball_x, GLfloat ball_y, size_t* row, size_t* col);
   /// @brief Corrects ball's visual position after collision and notifies
   /// rendering thread.
   /// @param new_x Corrected ball's center position along X axis.

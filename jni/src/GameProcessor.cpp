@@ -321,7 +321,9 @@ bool GameProcessor::collideBlocks(GLfloat new_x, GLfloat new_y) {
   if (new_y >= 1.0f - m_ball.dimens.halfHeight() - m_level_dimens.height &&
       new_y < 1.0f - m_ball.dimens.halfHeight()) {
     size_t row = 0, col = 0;
-    getImpactedBlock(new_x, new_y, &row, &col);
+    if (!getImpactedBlock(new_x, new_y, &row, &col)) {
+      return false;  // ball has left level boundaries
+    }
 
     GLfloat top_border = 0.0f, bottom_border = 0.0f, left_border = 0.0f, right_border = 0.0f;
     m_level_dimens.getBlockDimens(row, col, &top_border, &bottom_border, &left_border, &right_border);
@@ -423,7 +425,7 @@ void GameProcessor::viscousBlockCollision(
   m_ball.angle = sign * std::fmod(std::fabs(m_ball.angle), util::_2PI);
 }
 
-void GameProcessor::getImpactedBlock(
+bool GameProcessor::getImpactedBlock(
     GLfloat ball_x,
     GLfloat ball_y,
     size_t* row,
@@ -440,7 +442,11 @@ void GameProcessor::getImpactedBlock(
   } else {  // from bottom
     *row = static_cast<size_t>(std::floor((1.0f - m_ball.dimens.halfHeight() - ball_y) / m_level_dimens.block_height));
   }
-  ERR("Impacted: row=%zu/%zu col=%zu/%zu", row, m_level->numRows(), col, m_level->numCols());
+
+  if (*row >= m_level->numRows() || *col >= m_level->numCols()) {
+    return false;
+  }
+  return true;
 }
 
 void GameProcessor::correctBallPosition(GLfloat new_x, GLfloat new_y) {
