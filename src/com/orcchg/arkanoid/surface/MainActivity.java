@@ -79,6 +79,11 @@ public class MainActivity extends FragmentActivity {
     }
     
     @Override
+    public void onThrowBall() {
+      Log.i(TAG, "Ball has been thrown !");
+    }
+    
+    @Override
     public void onLostBall() {
       Log.i(TAG, "Ball has been lost !");
     }

@@ -380,21 +380,14 @@ void GameProcessor::elasticBlockCollision(
     GLfloat left_border,
     GLfloat right_border) {
 
-  if (m_ball.pose.x + 1.0f > left_border/* - m_ball.dimens.halfWidth()*/ &&
-      m_ball.pose.x + 1.0f < right_border/* + m_ball.dimens.halfWidth()*/ &&
+  if (m_ball.pose.x + 1.0f > left_border &&
+      m_ball.pose.x + 1.0f < right_border &&
       (m_ball.pose.y + 1.0f >= top_border || m_ball.pose.y + 1.0f <= bottom_border)) {
     collideHorizontalSurface();
-//          if (m_ball.pose.y + 1.0f >= top_border) {
-//            m_ball_pose_corrected = correctBallPosition(m_ball.pose.x, top_border - 1.0f + m_ball.dimens.halfHeight());
-//          } else if (m_ball.pose.y + 1.0f <= bottom_border) {
-//            m_ball_pose_corrected = correctBallPosition(m_ball.pose.x, bottom_border - 1.0f - m_ball.dimens.halfHeight());
-//          }
-  } else if (m_ball.pose.x + 1.0f <= left_border/* - m_ball.dimens.halfWidth()*/) {
+  } else if (m_ball.pose.x + 1.0f <= left_border) {
     collideRightBorder();
-//          m_ball_pose_corrected = correctBallPosition(left_border - 1.0f - m_ball.dimens.halfWidth(), m_ball.pose.y);
-  } else if (m_ball.pose.x + 1.0f >= right_border/* + m_ball.dimens.halfWidth()*/) {
+  } else if (m_ball.pose.x + 1.0f >= right_border) {
     collideLeftBorder();
-//          m_ball_pose_corrected = correctBallPosition(right_border - 1.0f + m_ball.dimens.halfWidth(), m_ball.pose.y);
   }
 }
 
