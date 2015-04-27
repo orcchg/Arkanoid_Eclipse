@@ -30,7 +30,7 @@ Block charToBlock(char ch) {
     case 'F':
       return Block::FOG;
     case 'G':
-      return Block::GAS;
+      return Block::GLASS;
     case 'H':
       return Block::HYPER;
     case 'I':
@@ -69,7 +69,7 @@ char blockToChar(Block block) {
       return 'E';
     case Block::FOG:
       return 'F';
-    case Block::GAS:
+    case Block::GLASS:
       return 'G';
     case Block::HYPER:
       return 'H';
@@ -181,8 +181,8 @@ void Level::fillColorArrayAtBlock(GLfloat* const array, size_t row, size_t col) 
     case Block::FOG:
       bgra = util::BGRA<GLfloat>(util::FOG);
       break;
-    case Block::GAS:
-      bgra = util::BGRA<GLfloat>(util::GAS);
+    case Block::GLASS:
+      bgra = util::BGRA<GLfloat>(util::GLASS);
       break;
     case Block::HYPER:
       bgra = util::BGRA<GLfloat>(util::HYPER);
@@ -232,7 +232,7 @@ int Level::calculateCardinality() const {
         case Block::DEATH:
         case Block::ELECTRO:
         case Block::FOG:
-        case Block::GAS:
+        case Block::GLASS:
         case Block::HYPER:
         case Block::JELLY:
         case Block::ROLLING:
@@ -266,7 +266,7 @@ void Level::setBlockImpacted(size_t row, size_t col) {
     case Block::DEATH:
     case Block::ELECTRO:
     case Block::FOG:
-    case Block::GAS:
+    case Block::GLASS:
     case Block::HYPER:
     case Block::JELLY:
     case Block::ROLLING:

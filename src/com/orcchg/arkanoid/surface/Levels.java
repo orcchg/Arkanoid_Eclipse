@@ -68,7 +68,7 @@ public class Levels {
                                                         "  TFFFFT  "};
   
   private static final String[] SAMPLE = new String[] {"          ",
-                                                       "     S    "};
+                                                       " T        "};
   
   private static final String[] L0 = new String[] {"          ",
                                                    "     S    "};

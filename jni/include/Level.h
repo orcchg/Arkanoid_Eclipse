@@ -24,7 +24,7 @@ enum class Block : int {
   DEATH = 4,       // 'D' - one impact to destroy, lost ball automatically
   ELECTRO = 5,     // 'E' - one impact to destroy, destroys nearest blocks
   FOG = 6,         // 'F' - one impact to destroy, not disturbing
-  GAS = 7,         // 'G' - one impact to destroy, not disturbing
+  GLASS = 7,         // 'G' - one impact to destroy, not disturbing
   HYPER = 8,       // 'H' - one impact to destroy, teleports ball randomly (not lost)
   IRON = 9,        // 'I' - three impacts to destroy
   JELLY = 10,      // 'J' - one impact to destroy, large disturbing

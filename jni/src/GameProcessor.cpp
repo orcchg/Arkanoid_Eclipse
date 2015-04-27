@@ -338,7 +338,7 @@ bool GameProcessor::collideBlocks(GLfloat new_x, GLfloat new_y) {
         break;
         // TODO: ELECTRO implement
       case Block::FOG:
-      case Block::GAS:
+      case Block::GLASS:
         // fly without disturbance
         break;
       case Block::ROLLING:
