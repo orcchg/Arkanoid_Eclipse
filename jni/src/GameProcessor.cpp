@@ -131,10 +131,6 @@ void GameProcessor::eventHandler() {
     m_load_level_received.store(false);
     process_loadLevel();
   }
-  if (m_throw_ball_received.load()) {
-    m_throw_ball_received.store(false);
-    process_throwBall();
-  }
   if (m_init_ball_position_received.load()) {
     m_init_ball_position_received.store(false);
     process_initBall();
@@ -150,6 +146,10 @@ void GameProcessor::eventHandler() {
   if (m_bite_location_received.load()) {
     m_bite_location_received.store(false);
     process_biteMoved();
+  }
+  if (m_throw_ball_received.load()) {
+    m_throw_ball_received.store(false);
+    process_throwBall();
   }
   if (m_ball_is_flying) {
     moveBall();

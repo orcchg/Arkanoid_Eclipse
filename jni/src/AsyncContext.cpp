@@ -183,10 +183,6 @@ void AsyncContext::eventHandler() {
       m_shift_gamepad_received.store(false);
       process_shiftGamepad();
     }
-    if (m_throw_ball_received.load()) {
-      m_throw_ball_received.store(false);
-      process_throwBall();
-    }
     if (m_block_impact_received.load()) {
       m_block_impact_received.store(false);
       process_blockImpact();
@@ -195,6 +191,10 @@ void AsyncContext::eventHandler() {
     if (m_load_level_received.load()) {
       m_load_level_received.store(false);
       process_loadLevel();
+    }
+    if (m_throw_ball_received.load()) {
+      m_throw_ball_received.store(false);
+      process_throwBall();
     }
     if (m_move_ball_received.load()) {
       m_move_ball_received.store(false);
