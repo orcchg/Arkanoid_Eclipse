@@ -399,6 +399,9 @@ bool GameProcessor::collideBlocks(GLfloat new_x, GLfloat new_y) {
     int viscosity = 0;
     Block block = m_level->getBlock(row, col);
     m_level->setBlockImpacted(row, col);
+    if (block != Block::NONE) {
+      DBG("Impacted block: row = %i, col = %i", row, col);
+    }
     switch (block) {
       case Block::NONE:
         // no impact and disturbance
@@ -514,22 +517,20 @@ void GameProcessor::elasticBlockCollision(
         m_ball.pose.x, m_ball.pose.y, left_border, right_border, top_border, bottom_border);
     return;
   }
-  if (m_ball.pose.x + 1.0f <= left_border &&
-      m_ball.pose.y + 1.0f >= 2.0f - bottom_border &&
-      m_ball.pose.y + 1.0f <= 2.0f - top_border) {
+  if (m_ball.pose.x + 1.0f <= left_border) {
     WRN("LEFT ELASTIC: x=%lf y=%lf left=%lf right=%lf top=%lf bot=%lf",
         m_ball.pose.x, m_ball.pose.y, left_border, right_border, top_border, bottom_border);
     collideRightBorder();
     return;
   }
-  if (m_ball.pose.x + 1.0f >= right_border &&
-      m_ball.pose.y + 1.0f >= 2.0f - bottom_border &&
-      m_ball.pose.y + 1.0f <= 2.0f - top_border) {
+  if (m_ball.pose.x + 1.0f >= right_border) {
     WRN("RIGHT ELASTIC: x=%lf y=%lf left=%lf right=%lf top=%lf bot=%lf",
         m_ball.pose.x, m_ball.pose.y, left_border, right_border, top_border, bottom_border);
     collideLeftBorder();
     return;
   }
+  INF("MAGIC: x=%lf y=%lf left=%lf right=%lf top=%lf bot=%lf",
+        m_ball.pose.x, m_ball.pose.y, left_border, right_border, top_border, bottom_border);
 }
 
 void GameProcessor::viscousBlockCollision(
@@ -553,16 +554,12 @@ void GameProcessor::viscousBlockCollision(
     viscousAngleDisturbance(viscosity);
     return;
   }
-  if (m_ball.pose.x + 1.0f <= left_border &&
-      m_ball.pose.y + 1.0f >= 2.0f - bottom_border &&
-      m_ball.pose.y + 1.0f <= 2.0f - top_border) {
+  if (m_ball.pose.x + 1.0f <= left_border) {
     collideRightBorder();
     viscousAngleDisturbance(viscosity);
     return;
   }
-  if (m_ball.pose.x + 1.0f >= right_border &&
-      m_ball.pose.y + 1.0f >= 2.0f - bottom_border &&
-      m_ball.pose.y + 1.0f <= 2.0f - top_border) {
+  if (m_ball.pose.x + 1.0f >= right_border) {
     collideLeftBorder();
     viscousAngleDisturbance(viscosity);
     return;

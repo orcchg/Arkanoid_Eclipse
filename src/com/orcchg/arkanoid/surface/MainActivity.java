@@ -11,7 +11,7 @@ import android.view.MenuItem;
 
 public class MainActivity extends FragmentActivity {
   private static final String TAG = "Arkanoid_MainActivity";
-  private static final int INITIAL_LEVEL = 20;
+  private static final int INITIAL_LEVEL = 22;
   
   static {
     System.loadLibrary("Arkanoid");
