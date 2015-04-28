@@ -10,8 +10,8 @@ void LevelDimens::getBlockDimens(
     GLfloat* left_border,
     GLfloat* right_border) {
 
-  *top_border = (row + 1) * block_height;
-  *bottom_border = row * block_height;
+  *top_border = row * block_height;
+  *bottom_border = (row + 1) * block_height;
   *left_border = col * block_width;
   *right_border = (col + 1) * block_width;
 }

@@ -30,6 +30,7 @@ JNIEXPORT jlong JNICALL Java_com_orcchg_arkanoid_surface_AsyncContext_init
   ptr->acontext->block_impact_listener = ptr->processor->block_impact_event.createListener(&game::AsyncContext::callback_blockImpact, ptr->acontext);
   ptr->acontext->level_finished_listener = ptr->processor->level_finished_event.createListener(&game::AsyncContext::callback_levelFinished, ptr->acontext);
 
+  ptr->processor->aspect_ratio_listener = ptr->acontext->aspect_ratio_event.createListener(&game::GameProcessor::callback_aspectMeasured, ptr->processor);
   ptr->processor->load_level_listener = ptr->load_level_event.createListener(&game::GameProcessor::callback_loadLevel, ptr->processor);
   ptr->processor->throw_ball_listener = ptr->throw_ball_event.createListener(&game::GameProcessor::callback_throwBall, ptr->processor);
   ptr->processor->init_ball_position_listener = ptr->acontext->init_ball_position_event.createListener(&game::GameProcessor::callback_initBall, ptr->processor);
