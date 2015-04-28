@@ -30,8 +30,8 @@ enum class Block : int {
   HYPER = 8,       // 'H' - [ 1 ] teleports ball randomly (not lost)
   IRON = 9,        //! 'I' - [ 3 ]
   JELLY = 10,      //! 'J' - [ 1 ] large disturbing
-  KNOCK_VERTICAL = 11,      // 'K' - [ 1 ] destroys blocks behind
-  KNOCK_HORIZONTAL = 12,    // '#' - [ 1 ] destroys blocks behind
+  KNOCK_VERTICAL = 11,      //! 'K' - [ 1 ] destroys blocks behind
+  KNOCK_HORIZONTAL = 12,    //! '#' - [ 1 ] destroys blocks behind
   STEEL = 13,      //! 'L' - [ 3 ]
   MAGIC = 14,      // 'M' - [ 1 ] transforms nearest blocks
   NETWORK = 15,    // 'N' - [ 2 ] destroys all other NETWORK blocks

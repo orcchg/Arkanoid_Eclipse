@@ -533,7 +533,6 @@ void Level::destroyBlocksAround(int row, int col, std::vector<RowCol>* output) {
 void Level::destroyBlocksBehind(int row, int col, Direction direction, std::vector<RowCol>* output) {
   switch (direction) {
     case Direction::UP:
-      ERR("UP");
       --row;
       while (row >= 0) {
         initial_cardinality -= getCardinalityCost(getBlock(row, col));
@@ -543,7 +542,6 @@ void Level::destroyBlocksBehind(int row, int col, Direction direction, std::vect
       }
       break;
     case Direction::DOWN:
-      WRN("DOWN");
       ++row;
       while (row < rows) {
         initial_cardinality -= getCardinalityCost(getBlock(row, col));
