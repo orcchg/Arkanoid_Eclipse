@@ -18,32 +18,32 @@ namespace game {
 
 enum class Block : int {
   NONE = 0,        // ' ' - not disturbing
-  ALUMINIUM = 1,   // 'A' - one impact to destroy
-  BRICK = 2,       // 'B' - two impacts to destroy
-  CLAY = 3,        // 'C' - one impact to destroy, small disturbing
-  DEATH = 4,       // 'D' - one impact to destroy, lost ball automatically
-  ELECTRO = 5,     // 'E' - one impact to destroy, destroys nearest blocks
-  FOG = 6,         // 'F' - one impact to destroy, not disturbing
-  GLASS = 7,       // 'G' - one impact to destroy, not disturbing
-  HYPER = 8,       // 'H' - one impact to destroy, teleports ball randomly (not lost)
-  IRON = 9,        // 'I' - three impacts to destroy
-  JELLY = 10,      // 'J' - one impact to destroy, large disturbing
-  KNOCK = 11,      // 'K' - one impact to destroy, destroys blocks behind
-  STEEL = 12,      // 'L' - three impacts to destroy
-  MAGIC = 13,      // 'M' - one impact to destroy, transforms nearest blocks
-  NETWORK = 14,    // 'N' - two impacts to destroy, destroys all other NETWORK blocks
-  ORIGIN = 15,     // 'O' - one impact to destroy, puts ball into initial position
-  PLUMBUM = 16,    // 'P' - four impacts to destroy
-  QUICK = 17,      // 'Q' - three impacts to destroy, transform all other blocks
-  ROLLING = 18,    // 'R' - one impact to destroy, random disturbing
-  SIMPLE = 19,     // 'S' - one impact to destroy
+  ALUMINIUM = 1,   // 'A' - [ 1 ]
+  BRICK = 2,       // 'B' - [ 2 ]
+  CLAY = 3,        // 'C' - [ 1 ] small disturbing
+  DEATH = 4,       // 'D' - [ 1 ] lost ball automatically
+  ELECTRO = 5,     // 'E' - [ 1 ] destroys nearest blocks
+  FOG = 6,         // 'F' - [ 1 ] not disturbing
+  GLASS = 7,       // 'G' - [ 1 ], not disturbing
+  HYPER = 8,       // 'H' - [ 1 ] teleports ball randomly (not lost)
+  IRON = 9,        // 'I' - [ 3 ]
+  JELLY = 10,      // 'J' - [ 1 ] large disturbing
+  KNOCK = 11,      // 'K' - [ 1 ] destroys blocks behind
+  STEEL = 12,      // 'L' - [ 3 ]
+  MAGIC = 13,      // 'M' - [ 1 ] transforms nearest blocks
+  NETWORK = 14,    // 'N' - [ 2 ] destroys all other NETWORK blocks
+  ORIGIN = 15,     // 'O' - [ 1 ] puts ball into initial position
+  PLUMBUM = 16,    // 'P' - [ 4 ]
+  QUICK = 17,      // 'Q' - [ 3 ] transform all other blocks
+  ROLLING = 18,    // 'R' - [ 1 ] random disturbing
+  SIMPLE = 19,     // 'S' - [ 1 ]
   TITAN = 20,      // 'T' - invulnerable
-  ULTRA = 21,      // 'U' - five impacts to destroy, win level
+  ULTRA = 21,      // 'U' - [ 5 ] win level
   INVUL = 22,      // 'V' - invulnerable
-  WATER = 23,      // 'W' - one impact to destroy, small disturbing
-  EXTRA = 24,      // 'X' - one impact to destroy, transforms to invulnerable
-  YOGURT = 25,     // 'Y' - one impact to destroy, small disturbing
-  ZYGOTE = 26,     // 'Z' - two impacts to destroy, produces additional blocks
+  WATER = 23,      // 'W' - [ 1 ] small disturbing
+  EXTRA = 24,      // 'X' - [ 1 ] transforms to invulnerable
+  YOGURT = 25,     // 'Y' - [ 1 ] small disturbing
+  ZYGOTE = 26,     // 'Z' - [ 2 ] produces additional blocks
 
   NETWORK_1 = 27,
   QUICK_2 = 28, QUICK_1 = 29,
