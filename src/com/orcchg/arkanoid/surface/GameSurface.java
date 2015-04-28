@@ -13,7 +13,7 @@ import android.view.View;
 
 public class GameSurface extends SurfaceView implements SurfaceHolder.Callback {
   private static final String TAG = "Arkanoid_GameSurface";
-  private static final int VERTICAL_SWIPE_THRESHOLD = 40;  // in dp
+  private static final int VERTICAL_SWIPE_THRESHOLD_DP = 80;  // in dp
   
   private static int mDesiredWidth = 512;   // in dp
   private static int mDesiredHeight = 512;  // in dp
@@ -22,6 +22,7 @@ public class GameSurface extends SurfaceView implements SurfaceHolder.Callback {
   private float mHalfWidth;
   private float touchCurrentX = 0.0f;
   private float touchCurrentY = 0.0f;
+  private float VERTICAL_SWIPE_THRESHOLD;
   
   private WeakReference<AsyncContext> mAsyncContextRef;
   
@@ -36,6 +37,7 @@ public class GameSurface extends SurfaceView implements SurfaceHolder.Callback {
   public GameSurface(Context context, AttributeSet attrs, int defStyleAttr) {
 //    this(context, attrs, defStyleAttr, 0);
     super(context, attrs, defStyleAttr);
+    VERTICAL_SWIPE_THRESHOLD = Utility.dipToPixel(context, VERTICAL_SWIPE_THRESHOLD_DP);
     getHolder().addCallback(this);
   }
   
