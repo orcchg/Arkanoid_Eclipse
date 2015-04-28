@@ -87,8 +87,8 @@ public class MainActivity extends FragmentActivity {
     }
     
     @Override
-    public void onLostBall() {
-      Log.i(TAG, "Ball has been lost !");
+    public void onLostBall(int lives_rest) {
+      Log.i(TAG, "Ball has been lost ! Lives rest: " + lives_rest);
     }
 
     @Override

@@ -157,7 +157,7 @@ AsyncContextHelper::AsyncContextHelper(JNIEnv* jenv, jobject object)
   global_object = jenv->NewGlobalRef(object);
   jenv->DeleteLocalRef(object);
   jclass class_id = jenv->FindClass("com/orcchg/arkanoid/surface/AsyncContext");
-  fireJavaEvent_lostBall_id = jenv->GetMethodID(class_id, "fireJavaEvent_lostBall", "()V");
+  fireJavaEvent_lostBall_id = jenv->GetMethodID(class_id, "fireJavaEvent_lostBall", "(I)V");
   fireJavaEvent_levelFinished_id = jenv->GetMethodID(class_id, "fireJavaEvent_levelFinished", "()V");
 
   processor->setMasterObject(global_object);

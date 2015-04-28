@@ -26,6 +26,7 @@ GameProcessor::GameProcessor(JavaVM* jvm, jobject master_object)
   , m_bite()
   , m_bite_upper_border(-BiteParams::neg_biteElevation)
   , m_level_dimens(0, 0, 0.0f, 0.0f)
+  , m_total_lives(3)
   , m_generator()
   , m_angle_distribution(util::PI12, util::PI30)
   , m_direction_distribution(0.25f)
@@ -259,7 +260,8 @@ void GameProcessor::shiftBall(GLfloat new_x, GLfloat new_y) {
 void GameProcessor::onLostBall(bool /* dummy */) {
   m_is_ball_lost = false;
   m_is_ball_death = false;
-  m_jenv->CallVoidMethod(master_object, fireJavaEvent_lostBall_id);
+  --m_total_lives;
+  m_jenv->CallVoidMethod(master_object, fireJavaEvent_lostBall_id, m_total_lives);
 }
 
 void GameProcessor::onLevelFinished(bool /* dummy */) {

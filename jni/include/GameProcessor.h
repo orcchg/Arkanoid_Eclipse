@@ -124,6 +124,7 @@ private:
   Bite m_bite;  //!< Physical bite's representation.
   GLfloat m_bite_upper_border;  //!< Upper border of bite.
   LevelDimens m_level_dimens;  //!< Measured level's dimensions.
+  int m_total_lives;  //!< Total number of available lives.
   /** @} */  // end of LogicData group
 
   /** @defgroup Maths Maths auxiliary members.

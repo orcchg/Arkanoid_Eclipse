@@ -9,7 +9,7 @@ class AsyncContext {
   
   interface CoreEventListener {
     void onThrowBall();
-    void onLostBall();
+    void onLostBall(int lives_rest);
     void onLevelFinished();
   }
   
@@ -44,9 +44,9 @@ class AsyncContext {
     }
   }
   
-  void fireJavaEvent_lostBall() {
+  void fireJavaEvent_lostBall(int lives_rest) {
     if (mListener != null) {
-      mListener.onLostBall();
+      mListener.onLostBall(lives_rest);
     }
   }
   
