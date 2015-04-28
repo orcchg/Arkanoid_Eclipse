@@ -514,10 +514,6 @@ void Level::destroyBlocksAround(int row, int col, std::vector<RowCol>* output) {
     setBlock(row, col + 2, Block::NONE);
     output->emplace_back(row, col + 2);
   }
-
-  for (auto& i : *output) {
-    ERR("ITEM(%i %i): %i %i", row, col, i.row, i.col);
-  }
 }
 
 void Level::destroyBlocksBehind(int row, int col, Direction direction, std::vector<RowCol>* output) {
