@@ -14,6 +14,7 @@
 
 #include <GLES/gl.h>
 
+#include "logger.h"
 #include "RowCol.h"
 
 namespace game {

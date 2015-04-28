@@ -510,17 +510,23 @@ void GameProcessor::elasticBlockCollision(
       m_ball.pose.x + 1.0f < right_border &&
       (m_ball.pose.y + 1.0f >= 2.0f - top_border || m_ball.pose.y + 1.0f <= 2.0f - bottom_border)) {
     collideHorizontalSurface();
+    ERR("ELASTIC: x=%lf y=%lf left=%lf right=%lf top=%lf bot=%lf",
+        m_ball.pose.x, m_ball.pose.y, left_border, right_border, top_border, bottom_border);
     return;
   }
   if (m_ball.pose.x + 1.0f <= left_border &&
       m_ball.pose.y + 1.0f >= 2.0f - bottom_border &&
       m_ball.pose.y + 1.0f <= 2.0f - top_border) {
+    WRN("LEFT ELASTIC: x=%lf y=%lf left=%lf right=%lf top=%lf bot=%lf",
+        m_ball.pose.x, m_ball.pose.y, left_border, right_border, top_border, bottom_border);
     collideRightBorder();
     return;
   }
   if (m_ball.pose.x + 1.0f >= right_border &&
       m_ball.pose.y + 1.0f >= 2.0f - bottom_border &&
       m_ball.pose.y + 1.0f <= 2.0f - top_border) {
+    WRN("RIGHT ELASTIC: x=%lf y=%lf left=%lf right=%lf top=%lf bot=%lf",
+        m_ball.pose.x, m_ball.pose.y, left_border, right_border, top_border, bottom_border);
     collideLeftBorder();
     return;
   }
