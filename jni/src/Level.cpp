@@ -465,7 +465,6 @@ int Level::calculateCardinality() const {
         case Block::ROLLING:
         case Block::SIMPLE:
         case Block::WATER:
-        case Block::EXTRA:
         case Block::YOGURT:
           ++cardinality;
           break;
@@ -473,6 +472,7 @@ int Level::calculateCardinality() const {
         default:
         case Block::TITAN:
         case Block::INVUL:
+        case Block::EXTRA:
         case Block::NONE:
           break;
       }

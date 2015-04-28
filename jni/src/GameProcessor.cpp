@@ -438,7 +438,9 @@ bool GameProcessor::collideBlocks(GLfloat new_x, GLfloat new_y) {
         break;
     }
     block_impact_event.notifyListeners(RowCol(row, col));
-    return (block != Block::TITAN && block != Block::INVUL);
+    return (block != Block::TITAN &&
+            block != Block::INVUL &&
+            block != Block::EXTRA);
 
   } else if (new_y >= 1.0f - m_ball.dimens.halfHeight()) {
     collideHorizontalSurface();

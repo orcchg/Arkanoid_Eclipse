@@ -36,22 +36,22 @@ public class Levels {
   
   private static final String[] L3 = new String[]{"          ",
                                                   "          ",
-                                                  "S        S",
-                                                  "B        B",
-                                                  "S        S",
-                                                  "B        S",
-                                                  "S        B",
-                                                  "S        S",
-                                                  "S        S",
-                                                  "B        B",
-                                                  "S        S",
-                                                  "B        S",
-                                                  "S        B",
-                                                  "S        S",
-                                                  "B        B",
-                                                  "S        S",
-                                                  "B        S",
-                                                  "S        B"};
+                                                  "S   T    S",
+                                                  "B   T    B",
+                                                  "S   T    S",
+                                                  "B   T    S",
+                                                  "S   T    B",
+                                                  "S   TG   S",
+                                                  "S   TG  GS",
+                                                  "B   TG GGB",
+                                                  "S   TGGGGS",
+                                                  "B   TGGGGS",
+                                                  "S   TGGGGB",
+                                                  "S   TGGGGS",
+                                                  "B   TGG GB",
+                                                  "S   TG  GS",
+                                                  "B   TG   S",
+                                                  "S   T    B"};
   
   private static final String[] L4 = new String[] {"S B SS B S",
                                                    " S BBBS S ",
@@ -286,14 +286,14 @@ public class Levels {
                                                     "    OB    ",
                                                     "  O    O  "};
   
-  private static final String[] L18 = new String[] {"          ",
+  private static final String[] L18 = new String[] {"XX      XX",
                                                     "          ",
                                                     "  SSSSSS  ",
                                                     "  SSSSSS  ",
                                                     "          ",
                                                     "          ",
                                                     "          ",
-                                                    "    DD    "};
+                                                    "  XXXXXX  "};
   
   private static final String[] L19 = new String[] {"          ",
                                                     "          ",
