@@ -19,7 +19,8 @@ public class GameSurface extends SurfaceView implements SurfaceHolder.Callback {
   private int mWidth;
   private int mHeight;
   private float mHalfWidth;
-  private float touchCurrent = 0.0f;
+  private float touchCurrentX = 0.0f;
+  private float touchCurrentY = 0.0f;
   
   private WeakReference<AsyncContext> mAsyncContextRef;
   
@@ -73,11 +74,27 @@ public class GameSurface extends SurfaceView implements SurfaceHolder.Callback {
   public boolean onTouchEvent(MotionEvent event) {
     switch (event.getAction()) {
       case MotionEvent.ACTION_DOWN:
-        touchCurrent = event.getX() * event.getXPrecision();
+        touchCurrentX = event.getX() * event.getXPrecision();
+        touchCurrentY = event.getY() * event.getYPrecision();
+        break;
+      case MotionEvent.ACTION_POINTER_DOWN:
+        float pointerTwoTouchXdiff = event.getX() * event.getXPrecision() - touchCurrentX;
+        float pointerTwoTouchYdiff = event.getY() * event.getYPrecision() - touchCurrentY;
+        if (pointerTwoTouchYdiff <= 0.0f) {
+          break;
+        }
+        float angle = (float) Math.atan(Math.abs(pointerTwoTouchYdiff) / pointerTwoTouchXdiff);
+        angle = angle >= 0 ? angle : (float) (Math.PI - angle);
+        if (mAsyncContextRef != null) {
+          AsyncContext acontext = mAsyncContextRef.get();
+          if (acontext != null) {
+            acontext.throwBall(angle);
+          }
+        }
         break;
       case MotionEvent.ACTION_MOVE:
-        touchCurrent = event.getX() * event.getXPrecision();
-        float position = touchCurrent - mHalfWidth;
+        touchCurrentX = event.getX() * event.getXPrecision();
+        float position = touchCurrentX - mHalfWidth;
         if (mAsyncContextRef != null) {
           AsyncContext acontext = mAsyncContextRef.get();
           if (acontext != null) {
@@ -88,7 +105,8 @@ public class GameSurface extends SurfaceView implements SurfaceHolder.Callback {
       case MotionEvent.ACTION_UP:
         performClick();
       case MotionEvent.ACTION_CANCEL:
-        touchCurrent = 0.0f;
+        touchCurrentX = 0.0f;
+        touchCurrentY = 0.0f;
         break;
     }
     return true;

@@ -165,6 +165,7 @@ void GameProcessor::process_loadLevel() {
 
 void GameProcessor::process_throwBall() {
   std::unique_lock<std::mutex> lock(m_throw_ball_mutex);
+  m_ball.angle = m_throw_angle;
   m_level_finished = false;
   m_ball_is_flying = true;
   m_is_ball_lost = false;
@@ -175,10 +176,10 @@ void GameProcessor::process_throwBall() {
 void GameProcessor::process_initBall() {
   std::unique_lock<std::mutex> lock(m_init_ball_position_mutex);
   // restore ball's initial velocity
-  std::normal_distribution<float> init_angle_distribution(util::PI4, util::PI12);
-  m_ball.angle = init_angle_distribution(m_generator);  // BallParams::ballAngle;
-  m_ball.angle += m_direction_distribution(m_generator) ? 0.0f : util::PI2;
-  m_ball.angle = std::fmod(m_ball.angle, util::_2PI);
+//  std::normal_distribution<float> init_angle_distribution(util::PI4, util::PI12);
+//  m_ball.angle = init_angle_distribution(m_generator);  // BallParams::ballAngle;
+//  m_ball.angle += m_direction_distribution(m_generator) ? 0.0f : util::PI2;
+//  m_ball.angle = std::fmod(m_ball.angle, util::_2PI);
 }
 
 void GameProcessor::process_initBite() {
