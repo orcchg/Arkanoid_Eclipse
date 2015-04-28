@@ -293,7 +293,7 @@ public class Levels {
                                                     "          ",
                                                     "          ",
                                                     "          ",
-                                                    "    UU    "};
+                                                    "    DD    "};
   
   private static final String[] L19 = new String[] {"          ",
                                                     "          ",

@@ -20,6 +20,7 @@ GameProcessor::GameProcessor(JavaVM* jvm, jobject master_object)
   , m_level_finished(false)
   , m_ball_is_flying(false)
   , m_is_ball_lost(false)
+  , m_is_ball_death(false)
   , m_ball_pose_corrected(false)
   , m_ball()
   , m_bite()
@@ -170,6 +171,7 @@ void GameProcessor::process_throwBall() {
     m_level_finished = false;
     m_ball_is_flying = true;
     m_is_ball_lost = false;
+    m_is_ball_death = false;
     m_ball_pose_corrected = false;
   }
   INF("Ball has been thrown");
@@ -215,7 +217,7 @@ void GameProcessor::moveBall() {
   GLfloat new_x = m_ball.pose.x + m_ball.velocity * cos(m_ball.angle);
   GLfloat new_y = m_ball.pose.y + m_ball.velocity * sin(m_ball.angle);
 
-  if (m_is_ball_lost && new_y <= -1.0f) {
+  if ((m_is_ball_lost && new_y <= -1.0f) || m_is_ball_death) {
     m_ball_is_flying = false;  // stop flying before notify to avoid bugs
     lost_ball_event.notifyListeners(true);
     onLostBall(true);
@@ -256,6 +258,7 @@ void GameProcessor::shiftBall(GLfloat new_x, GLfloat new_y) {
 
 void GameProcessor::onLostBall(bool /* dummy */) {
   m_is_ball_lost = false;
+  m_is_ball_death = false;
   m_jenv->CallVoidMethod(master_object, fireJavaEvent_lostBall_id);
 }
 
@@ -363,8 +366,7 @@ bool GameProcessor::collideBlocks(GLfloat new_x, GLfloat new_y) {
         return false;
       // --------------------
       case Block::DEATH:
-        // XXX: lost ball perform
-        elasticBlockCollision(top_border, bottom_border, left_border, right_border);
+        m_is_ball_death = true;
         break;
       case Block::ULTRA_1:
         m_level->forceDropCardinality();

@@ -118,6 +118,7 @@ private:
   bool m_level_finished;  //!< Whether level has been successfully finished.
   bool m_ball_is_flying;  //!< Whether the ball is flying now or not.
   bool m_is_ball_lost;  //!< Whether the ball has been lost or not.
+  bool m_is_ball_death;  //!< Whether the ball has been lost after DEATH block collision.
   bool m_ball_pose_corrected;  //!< Auxiliary flag for corrected ball's pose.
   Ball m_ball;  //!< Physical ball's representation.
   Bite m_bite;  //!< Physical bite's representation.

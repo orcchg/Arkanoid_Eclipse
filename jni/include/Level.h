@@ -21,7 +21,7 @@ enum class Block : int {
   ALUMINIUM = 1,   //! 'A' - [ 1 ]
   BRICK = 2,       //! 'B' - [ 2 ]
   CLAY = 3,        //! 'C' - [ 1 ] small disturbing
-  DEATH = 4,       // 'D' - [ 1 ] lost ball automatically
+  DEATH = 4,       //! 'D' - [ 1 ] lost ball automatically
   ELECTRO = 5,     // 'E' - [ 1 ] destroys nearest blocks
   FOG = 6,         //! 'F' - [ 1 ] not disturbing
   GLASS = 7,       //! 'G' - [ 1 ], not disturbing
