@@ -255,10 +255,12 @@ void GameProcessor::shiftBall(GLfloat new_x, GLfloat new_y) {
 }
 
 void GameProcessor::onLostBall(bool /* dummy */) {
+  m_is_ball_lost = false;
   m_jenv->CallVoidMethod(master_object, fireJavaEvent_lostBall_id);
 }
 
 void GameProcessor::onLevelFinished(bool /* dummy */) {
+  m_level_finished = false;
   m_jenv->CallVoidMethod(master_object, fireJavaEvent_levelFinished_id);
 }
 
@@ -364,9 +366,8 @@ bool GameProcessor::collideBlocks(GLfloat new_x, GLfloat new_y) {
         // XXX: lost ball perform
         elasticBlockCollision(top_border, bottom_border, left_border, right_border);
         break;
-      case Block::ULTRA:
-        // XXX:
-        elasticBlockCollision(top_border, bottom_border, left_border, right_border);
+      case Block::ULTRA_1:
+        m_level->forceDropCardinality();
         break;
       // --------------------
       case Block::FOG:

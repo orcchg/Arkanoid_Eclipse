@@ -32,13 +32,13 @@ enum class Block : int {
   STEEL = 12,      //! 'L' - [ 3 ]
   MAGIC = 13,      // 'M' - [ 1 ] transforms nearest blocks
   NETWORK = 14,    // 'N' - [ 2 ] destroys all other NETWORK blocks
-  ORIGIN = 15,     // 'O' - [ 1 ] puts ball into initial position
+  ORIGIN = 15,     //! 'O' - [ 1 ] puts ball into initial position
   PLUMBUM = 16,    //! 'P' - [ 4 ]
   QUICK = 17,      // 'Q' - [ 3 ] transform all other blocks
   ROLLING = 18,    //! 'R' - [ 1 ] random disturbing
   SIMPLE = 19,     //! 'S' - [ 1 ]
   TITAN = 20,      //! 'T' - invulnerable
-  ULTRA = 21,      // 'U' - [ 5 ] win level
+  ULTRA = 21,      //! 'U' - [ 5 ] win level
   INVUL = 22,      //! 'V' - invulnerable
   WATER = 23,      //! 'W' - [ 1 ] small disturbing
   EXTRA = 24,      //! 'X' - [ 1 ] transforms to invulnerable
@@ -125,6 +125,8 @@ public:
   inline void setBlock(size_t row, size_t col, Block value) { blocks[row][col] = value; }
   /// @brief Gets recorded cardinality.
   inline int getCardinality() const { return initial_cardinality; }
+  /// @brief Forced way to drop cardinality for instant victory.
+  inline void forceDropCardinality() { initial_cardinality = 1; }
   /// @brief Decrements recorded cardinality due to impact of some block.
   /// @return Updated cardinality.
   inline int blockImpact() { return --initial_cardinality; }
