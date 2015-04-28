@@ -167,11 +167,11 @@ void GameProcessor::process_throwBall() {
   std::unique_lock<std::mutex> lock(m_throw_ball_mutex);
   if (!m_ball_is_flying) {
     m_ball.angle = m_throw_angle;
+    m_level_finished = false;
+    m_ball_is_flying = true;
+    m_is_ball_lost = false;
+    m_ball_pose_corrected = false;
   }
-  m_level_finished = false;
-  m_ball_is_flying = true;
-  m_is_ball_lost = false;
-  m_ball_pose_corrected = false;
   INF("Ball has been thrown");
 }
 
