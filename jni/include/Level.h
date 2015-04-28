@@ -14,6 +14,8 @@
 
 #include <GLES/gl.h>
 
+#include "RowCol.h"
+
 namespace game {
 
 enum class Block : int {
@@ -53,6 +55,14 @@ enum class Block : int {
 
 Block charToBlock(char ch);
 char blockToChar(Block block);
+
+enum class Direction : int {
+  NONE = 0,
+  UP = 1,
+  DOWN = 2,
+  RIGHT = 3,
+  LEFT = 4
+};
 
 /**
  * @class Level Level.h "include/Level.h"
@@ -111,39 +121,52 @@ public:
   /// @param col Column index of specified block.
   /// @details Memory for output array should be allocated manually
   /// by Client, required size for allocation is 16 * cols * rows.
-  void fillColorArrayAtBlock(GLfloat* const array, size_t row, size_t col) const;
+  void fillColorArrayAtBlock(GLfloat* const array, int row, int col) const;
 
   /// @brief Returns height of level.
-  inline size_t numRows() const { return rows; }
+  inline int numRows() const { return rows; }
   /// @brief Returns width of level.
-  inline size_t numCols() const { return cols; }
+  inline int numCols() const { return cols; }
   /// @brief Returns total blocks of level.
-  inline size_t size() const { return rows * cols; }
+  inline int size() const { return rows * cols; }
   /// @brief Gets block by row and column indices.
-  inline Block getBlock(size_t row, size_t col) const { return blocks[row][col]; }
+  inline Block getBlock(int row, int col) const { return blocks[row][col]; }
   /// @brief Sets the block by row and column indices.
-  inline void setBlock(size_t row, size_t col, Block value) { blocks[row][col] = value; }
+  inline void setBlock(int row, int col, Block value) { blocks[row][col] = value; }
   /// @brief Gets recorded cardinality.
   inline int getCardinality() const { return initial_cardinality; }
   /// @brief Forced way to drop cardinality for instant victory.
   inline void forceDropCardinality() { initial_cardinality = 1; }
+  /// @brief Gets cardinality of block.
+  static int getCardinalityCost(Block block);
   /// @brief Decrements recorded cardinality due to impact of some block.
   /// @return Updated cardinality.
   inline int blockImpact() { return --initial_cardinality; }
   /// @brief Updates specified block after single impact.
   /// @param row Row index of impacted block.
   /// @param col Column index of impacted block.
-  void setBlockImpacted(size_t row, size_t col);
+  void setBlockImpacted(int row, int col);
+  /// @brief Destroys blocks around certain block.
+  /// @param row Row index of certain block.
+  /// @param col Column index of certain block.
+  /// @param output Array of valid indices of influenced blocks.
+  void destroyBlocksAround(int row, int col, std::vector<RowCol>* output);
+  /// @brief Destroys blocks behind certain block.
+  /// @param row Row index of certain block.
+  /// @param col Column index of certain block.
+  /// @param direction Direction behind the block.
+  /// @param output Array of valid indices of influenced blocks.
+  void destroyBlocksBehind(int row, int col, Direction direction, std::vector<RowCol>* output);
 
   void print() const;
 
 private:
-  Level(size_t rows, size_t cols);
+  Level(int rows, int cols);
 
   /// @brief Calculates current cardinality of this Level instance.
   int calculateCardinality() const;
 
-  size_t rows, cols;
+  int rows, cols;
   int initial_cardinality;
   Block** blocks;
 };

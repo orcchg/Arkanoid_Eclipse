@@ -117,11 +117,11 @@ JNIEXPORT jobjectArray JNICALL Java_com_orcchg_arkanoid_surface_AsyncContext_sav
   AsyncContextHelper* ptr = (AsyncContextHelper*) descriptor;
 
   game::Level::Ptr level_ptr = ptr->acontext->getCurrentLevelState();
-  size_t size = level_ptr->numRows();
+  int size = level_ptr->numRows();
 
   jobjectArray out_level_Java =
       (jobjectArray) jenv->NewObjectArray(
-          size,
+          (jsize) size,
           String_clazz,
           jenv->NewStringUTF(""));
 

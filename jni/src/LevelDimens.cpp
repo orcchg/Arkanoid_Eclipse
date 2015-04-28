@@ -3,8 +3,8 @@
 namespace game {
 
 void LevelDimens::getBlockDimens(
-    size_t row,
-    size_t col,
+    int row,
+    int col,
     GLfloat* top_border,
     GLfloat* bottom_border,
     GLfloat* left_border,

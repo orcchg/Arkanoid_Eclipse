@@ -170,8 +170,8 @@ Level::Ptr Level::fromStringArray(const std::vector<std::string>& array, size_t 
   size_t max_width = *std::max_element(widths, widths + length);
 
   Level::Ptr level = std::shared_ptr<Level>(new Level(length, max_width));
-  for (size_t r = 0; r < level->rows; ++r) {
-    for (size_t c = 0; c < level->cols; ++c) {
+  for (int r = 0; r < level->rows; ++r) {
+    for (int c = 0; c < level->cols; ++c) {
       if (c < widths[r]) {
         level->blocks[r][c] = charToBlock(array[r][c]);
       } else {
@@ -188,9 +188,9 @@ Level::Ptr Level::fromStringArray(const std::vector<std::string>& array, size_t 
 }
 
 size_t Level::toStringArray(std::vector<std::string>* array) const {
-  for (size_t r = 0; r < rows; ++r) {
+  for (int r = 0; r < rows; ++r) {
     std::string line = "";
-    for (size_t c = 0; c < cols; ++c) {
+    for (int c = 0; c < cols; ++c) {
       line += blockToChar(blocks[r][c]);
     }
     array->emplace_back(line);
@@ -209,14 +209,14 @@ void Level::toVertexArray(
 }
 
 void Level::fillColorArray(GLfloat* const array) const {
-  for (size_t r = 0; r < rows; ++r) {
-    for (size_t c = 0; c < cols; ++c) {
+  for (int r = 0; r < rows; ++r) {
+    for (int c = 0; c < cols; ++c) {
       fillColorArrayAtBlock(array, r, c);
     }
   }
 }
 
-void Level::fillColorArrayAtBlock(GLfloat* const array, size_t row, size_t col) const {
+void Level::fillColorArrayAtBlock(GLfloat* const array, int row, int col) const {
   int upper_left_i  = 0  + 16 * (row * cols + col);
   int upper_right_i = 4  + 16 * (row * cols + col);
   int lower_left_i  = 8  + 16 * (row * cols + col);
@@ -321,7 +321,55 @@ void Level::fillColorArrayAtBlock(GLfloat* const array, size_t row, size_t col) 
   util::setColor(bgra, &array[lower_right_i], 4);
 }
 
-void Level::setBlockImpacted(size_t row, size_t col) {
+int Level::getCardinalityCost(Block block) {
+  switch (block) {
+    case Block::ULTRA:
+      return 5;
+    case Block::PLUMBUM:
+    case Block::ULTRA_4:
+      return 4;
+    case Block::IRON:
+    case Block::STEEL:
+    case Block::QUICK:
+    case Block::ULTRA_3:
+      return 3;
+    case Block::BRICK:
+    case Block::NETWORK:
+    case Block::ZYGOTE:
+    case Block::QUICK_2:
+    case Block::ULTRA_2:
+      return 2;
+    case Block::ALUMINIUM:
+    case Block::CLAY:
+    case Block::DEATH:
+    case Block::ELECTRO:
+    case Block::FOG:
+    case Block::GLASS:
+    case Block::HYPER:
+    case Block::JELLY:
+    case Block::KNOCK:
+    case Block::MAGIC:
+    case Block::ORIGIN:
+    case Block::ROLLING:
+    case Block::SIMPLE:
+    case Block::WATER:
+    case Block::YOGURT:
+    case Block::NETWORK_1:
+    case Block::QUICK_1:
+    case Block::ULTRA_1:
+    case Block::ZYGOTE_1:
+      return 1;
+
+    default:
+    case Block::TITAN:
+    case Block::INVUL:
+    case Block::EXTRA:
+    case Block::NONE:
+      return 0;
+  }
+}
+
+void Level::setBlockImpacted(int row, int col) {
   Block block = getBlock(row, col);
   switch (block) {
     case Block::ULTRA:
@@ -400,6 +448,122 @@ void Level::setBlockImpacted(size_t row, size_t col) {
   }
 }
 
+void Level::destroyBlocksAround(int row, int col, std::vector<RowCol>* output) {
+  if (row - 2 >= 0) {
+    initial_cardinality -= getCardinalityCost(getBlock(row - 2, col));
+    setBlock(row - 2, col, Block::NONE);
+    output->emplace_back(row - 2, col);
+  }
+
+  if (row - 1 >= 0) {
+    initial_cardinality -= getCardinalityCost(getBlock(row - 1, col));
+    setBlock(row - 1, col, Block::NONE);
+    output->emplace_back(row - 1, col);
+    if (col - 1 >= 0) {
+      initial_cardinality -= getCardinalityCost(getBlock(row - 1, col - 1));
+      setBlock(row - 1, col - 1, Block::NONE);
+      output->emplace_back(row - 1, col - 1);
+    }
+    if (col + 1 < cols) {
+      initial_cardinality -= getCardinalityCost(getBlock(row - 1, col + 1));
+      setBlock(row - 1, col + 1, Block::NONE);
+      output->emplace_back(row - 1, col + 1);
+    }
+  }
+
+  if (row + 1 < rows) {
+    initial_cardinality -= getCardinalityCost(getBlock(row + 1, col));
+    setBlock(row + 1, col, Block::NONE);
+    output->emplace_back(row + 1, col);
+    if (col - 1 >= 0) {
+      initial_cardinality -= getCardinalityCost(getBlock(row + 1, col - 1));
+      setBlock(row + 1, col - 1, Block::NONE);
+      output->emplace_back(row + 1, col - 1);
+    }
+    if (col + 1 < cols) {
+      initial_cardinality -= getCardinalityCost(getBlock(row + 1, col + 1));
+      setBlock(row + 1, col + 1, Block::NONE);
+      output->emplace_back(row + 1, col + 1);
+    }
+  }
+
+  if (row + 2 < rows) {
+    initial_cardinality -= getCardinalityCost(getBlock(row + 2, col));
+    setBlock(row + 2, col, Block::NONE);
+    output->emplace_back(row + 2, col);
+  }
+
+  // ------------------------
+  if (col - 2 >= 0) {
+    initial_cardinality -= getCardinalityCost(getBlock(row, col - 2));
+    setBlock(row, col - 2, Block::NONE);
+    output->emplace_back(row, col - 2);
+  }
+  if (col - 1 >= 0) {
+    initial_cardinality -= getCardinalityCost(getBlock(row, col - 1));
+    setBlock(row, col - 1, Block::NONE);
+    output->emplace_back(row, col - 1);
+  }
+  if (col + 1 < cols) {
+    initial_cardinality -= getCardinalityCost(getBlock(row, col + 1));
+    setBlock(row, col + 1, Block::NONE);
+    output->emplace_back(row, col + 1);
+  }
+  if (col + 2 < cols) {
+    initial_cardinality -= getCardinalityCost(getBlock(row, col + 2));
+    setBlock(row, col + 2, Block::NONE);
+    output->emplace_back(row, col + 2);
+  }
+
+  for (auto& i : *output) {
+    ERR("ITEM(%i %i): %i %i", row, col, i.row, i.col);
+  }
+}
+
+void Level::destroyBlocksBehind(int row, int col, Direction direction, std::vector<RowCol>* output) {
+  switch (direction) {
+    case Direction::UP:
+      --row;
+      while (row >= 0) {
+        initial_cardinality -= getCardinalityCost(getBlock(row, col));
+        setBlock(row, col, Block::NONE);
+        output->emplace_back(row, col);
+        --row;
+      }
+      break;
+    case Direction::DOWN:
+      ++row;
+      while (row < rows) {
+        initial_cardinality -= getCardinalityCost(getBlock(row, col));
+        setBlock(row, col, Block::NONE);
+        output->emplace_back(row, col);
+        ++row;
+      }
+      break;
+    case Direction::RIGHT:
+      ++col;
+      while (col < cols) {
+        initial_cardinality -= getCardinalityCost(getBlock(row, col));
+        setBlock(row, col, Block::NONE);
+        output->emplace_back(row, col);
+        ++col;
+      }
+      break;
+    case Direction::LEFT:
+      --col;
+      while (col >= 0) {
+        initial_cardinality -= getCardinalityCost(getBlock(row, col));
+        setBlock(row, col, Block::NONE);
+        output->emplace_back(row, col);
+        --col;
+      }
+      break;
+    case Direction::NONE:
+    default:
+      break;
+  }
+}
+
 void Level::print() const {
   std::vector<std::string> array;
   array.reserve(rows);
@@ -411,18 +575,18 @@ void Level::print() const {
 }
 
 // ----------------------------------------------------------------------------
-Level::Level(size_t rows, size_t cols)
+Level::Level(int rows, int cols)
   : rows(rows)
   , cols(cols)
   , initial_cardinality(0)
   , blocks(new Block*[rows]) {
-  for (size_t r = 0; r < rows; ++r) {
+  for (int r = 0; r < rows; ++r) {
     blocks[r] = new Block[cols];
   }
 }
 
 Level::~Level() {
-  for (size_t r = 0; r < rows; ++r) {
+  for (int r = 0; r < rows; ++r) {
     delete [] blocks[r];
     blocks[r] = nullptr;
   }
@@ -431,9 +595,9 @@ Level::~Level() {
 }
 
 int Level::calculateCardinality() const {
-  size_t cardinality = 0;
-  for (size_t r = 0; r < rows; ++r) {
-    for (size_t c = 0; c < cols; ++c) {
+  int cardinality = 0;
+  for (int r = 0; r < rows; ++r) {
+    for (int c = 0; c < cols; ++c) {
       switch (blocks[r][c]) {
         case Block::ULTRA:
           cardinality += 5;

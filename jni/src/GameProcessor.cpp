@@ -351,13 +351,27 @@ bool GameProcessor::collideBite(GLfloat new_x) {
 bool GameProcessor::collideBlocks(GLfloat new_x, GLfloat new_y) {
   if (new_y >= 1.0f - m_ball.dimens.halfHeight() - m_level_dimens.height &&
       new_y < 1.0f - m_ball.dimens.halfHeight()) {
-    size_t row = 0, col = 0;
+    int row = 0, col = 0;
     if (!getImpactedBlock(new_x, new_y, &row, &col)) {
       return false;  // ball has left level boundaries
     }
 
     GLfloat top_border = 0.0f, bottom_border = 0.0f, left_border = 0.0f, right_border = 0.0f;
     m_level_dimens.getBlockDimens(row, col, &top_border, &bottom_border, &left_border, &right_border);
+
+    Direction direction = Direction::NONE;
+    if (m_ball.pose.y >= new_y) {
+      direction = Direction::DOWN;
+    } else {
+      direction = Direction::UP;
+    }
+    if (m_ball.pose.x >= new_x) {
+      direction = Direction::LEFT;
+    } else {
+      direction = Direction::RIGHT;
+    }
+    std::vector<RowCol> affected_blocks;
+    affected_blocks.reserve(12);
 
     int viscosity = 0;
     Block block = m_level->getBlock(row, col);
@@ -380,14 +394,20 @@ bool GameProcessor::collideBlocks(GLfloat new_x, GLfloat new_y) {
         break;
       // --------------------
       case Block::ELECTRO:
-        // XXX:
         elasticBlockCollision(top_border, bottom_border, left_border, right_border);
+        m_level->destroyBlocksAround(row, col, &affected_blocks);
+        for (auto& item : affected_blocks) {
+          block_impact_event.notifyListeners(item);
+        }
         break;
       case Block::KNOCK:
-        // XXX:
         elasticBlockCollision(top_border, bottom_border, left_border, right_border);
+        m_level->destroyBlocksBehind(row, col, direction, &affected_blocks);
+        for (auto& item : affected_blocks) {
+          block_impact_event.notifyListeners(item);
+        }
         break;
-      case Block::NETWORK:
+      case Block::NETWORK_1:
         // XXX:
         elasticBlockCollision(top_border, bottom_border, left_border, right_border);
         break;
@@ -425,11 +445,11 @@ bool GameProcessor::collideBlocks(GLfloat new_x, GLfloat new_y) {
         // XXX:
         elasticBlockCollision(top_border, bottom_border, left_border, right_border);
         break;
-      case Block::QUICK:
+      case Block::QUICK_1:
         // XXX:
         elasticBlockCollision(top_border, bottom_border, left_border, right_border);
         break;
-      case Block::ZYGOTE:
+      case Block::ZYGOTE_1:
         // XXX:
         // intend no break;
       // --------------------
@@ -498,19 +518,19 @@ void GameProcessor::viscousBlockCollision(
 bool GameProcessor::getImpactedBlock(
     GLfloat ball_x,
     GLfloat ball_y,
-    size_t* row,
-    size_t* col) {
+    int* row,
+    int* col) {
 
   if (m_ball.pose.x >= ball_x) {  // from right
-    *col = static_cast<size_t>(std::floor((ball_x - m_ball.dimens.halfWidth() + 1.0f) / m_level_dimens.block_width));
+    *col = static_cast<int>(std::floor((ball_x - m_ball.dimens.halfWidth() + 1.0f) / m_level_dimens.block_width));
   } else {  // from left
-    *col = static_cast<size_t>(std::floor((ball_x + m_ball.dimens.halfWidth() + 1.0f) / m_level_dimens.block_width));
+    *col = static_cast<int>(std::floor((ball_x + m_ball.dimens.halfWidth() + 1.0f) / m_level_dimens.block_width));
   }
 
   if (m_ball.pose.y >= ball_y) {  // from top
-    *row = static_cast<size_t>(std::floor((1.0f + m_ball.dimens.halfHeight() - ball_y) / m_level_dimens.block_height));
+    *row = static_cast<int>(std::floor((1.0f + m_ball.dimens.halfHeight() - ball_y) / m_level_dimens.block_height));
   } else {  // from bottom
-    *row = static_cast<size_t>(std::floor((1.0f - m_ball.dimens.halfHeight() - ball_y) / m_level_dimens.block_height));
+    *row = static_cast<int>(std::floor((1.0f - m_ball.dimens.halfHeight() - ball_y) / m_level_dimens.block_height));
   }
 
   if (*row >= m_level->numRows() || *col >= m_level->numCols()) {

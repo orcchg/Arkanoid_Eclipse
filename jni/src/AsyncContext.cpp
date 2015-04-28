@@ -480,7 +480,7 @@ void AsyncContext::drawLevel() {
   glDisableVertexAttribArray(a_color);
 }
 
-void AsyncContext::drawBlock(size_t row, size_t col) {
+void AsyncContext::drawBlock(int row, int col) {
 //  if (m_level == nullptr) { return; }
   m_level_shader->useProgram();
 
