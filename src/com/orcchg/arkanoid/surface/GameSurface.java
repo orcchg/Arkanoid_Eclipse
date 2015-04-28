@@ -13,6 +13,7 @@ import android.view.View;
 
 public class GameSurface extends SurfaceView implements SurfaceHolder.Callback {
   private static final String TAG = "Arkanoid_GameSurface";
+  private static final int VERTICAL_SWIPE_THRESHOLD = 40;  // in dp
   
   private static int mDesiredWidth = 512;   // in dp
   private static int mDesiredHeight = 512;  // in dp
@@ -72,31 +73,31 @@ public class GameSurface extends SurfaceView implements SurfaceHolder.Callback {
 
   @Override
   public boolean onTouchEvent(MotionEvent event) {
-    switch (event.getActionMasked()) {
+    switch (event.getAction()) {
       case MotionEvent.ACTION_DOWN:
         touchCurrentX = event.getX() * event.getXPrecision();
         touchCurrentY = event.getY() * event.getYPrecision();
         break;
-      case MotionEvent.ACTION_POINTER_DOWN:
-        if (event.getPointerCount() == 2) {
-          float pointerTwoTouchXdiff = event.getX() * event.getXPrecision() - touchCurrentX;
-          float pointerTwoTouchYdiff = event.getY() * event.getYPrecision() - touchCurrentY;
-          if (pointerTwoTouchYdiff <= 0.0f) {
-            break;
-          }
-          float angle = (float) Math.atan(Math.abs(pointerTwoTouchYdiff) / pointerTwoTouchXdiff);
-          angle = angle >= 0 ? angle : (float) (Math.PI - angle);
-          if (mAsyncContextRef != null) {
-            AsyncContext acontext = mAsyncContextRef.get();
-            if (acontext != null) {
-              acontext.throwBall(angle);
-            }
-          }
-        }
-        break;
+//      case MotionEvent.ACTION_POINTER_DOWN:
+//        if (event.getPointerCount() == 2) {
+//          float pointerTwoTouchXdiff = event.getX() * event.getXPrecision() - touchCurrentX;
+//          float pointerTwoTouchYdiff = event.getY() * event.getYPrecision() - touchCurrentY;
+//          if (pointerTwoTouchYdiff <= 0.0f) {
+//            break;
+//          }
+//          float angle = (float) Math.atan(Math.abs(pointerTwoTouchYdiff) / pointerTwoTouchXdiff);
+//          angle = angle >= 0 ? angle : (float) (Math.PI - angle);
+//          if (mAsyncContextRef != null) {
+//            AsyncContext acontext = mAsyncContextRef.get();
+//            if (acontext != null) {
+//              acontext.throwBall(angle);
+//            }
+//          }
+//        }
+//        break;
       case MotionEvent.ACTION_MOVE:
-        touchCurrentX = event.getX() * event.getXPrecision();
-        float position = touchCurrentX - mHalfWidth;
+//        touchCurrentX = event.getX() * event.getXPrecision();
+        float position = /*touchCurrentX*/event.getX() * event.getXPrecision() - mHalfWidth;
         if (mAsyncContextRef != null) {
           AsyncContext acontext = mAsyncContextRef.get();
           if (acontext != null) {
@@ -105,6 +106,19 @@ public class GameSurface extends SurfaceView implements SurfaceHolder.Callback {
         }
         break;
       case MotionEvent.ACTION_UP:
+        float pointerTwoTouchXdiff = event.getX() * event.getXPrecision() - touchCurrentX;
+        float pointerTwoTouchYdiff = Math.abs(event.getY() * event.getYPrecision() - touchCurrentY);
+        Log.e(TAG, "THR X=" + pointerTwoTouchXdiff + ", Y=" + pointerTwoTouchYdiff);
+        if (pointerTwoTouchYdiff >= VERTICAL_SWIPE_THRESHOLD) {
+          float angle = (float) Math.atan(pointerTwoTouchYdiff / pointerTwoTouchXdiff);
+          angle = angle >= 0 ? angle : (float) (Math.PI - angle);
+          if (mAsyncContextRef != null) {
+            AsyncContext acontext = mAsyncContextRef.get();
+            if (acontext != null) {
+              acontext.throwBall(angle);
+            }
+          }
+        }
         performClick();
       case MotionEvent.ACTION_CANCEL:
         touchCurrentX = 0.0f;
