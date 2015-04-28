@@ -2,73 +2,11 @@ package com.orcchg.arkanoid.surface;
 
 public class Levels {  
   public static String[] get(int index) {
-    switch (index) {
-      case -5:
-        return SAMPLE5;
-      case -4:
-        return SAMPLE4;
-      case -3:
-        return SAMPLE3;
-      case -2:
-        return SAMPLE2;
-      case -1:
-        return SAMPLE;
-      default:
-        break;
+    if (index < 0 || index >= TOTAL_LEVELS) {
+      index = 0;
     }
     return levels[index];
   }
-  
-  private static final String[] SAMPLE5 = new String[] {"SSSSSSSSSS",
-                                                        "FFFFFFFFFF",
-                                                        "GGGGGGGGGG",
-                                                        "FFFFFFFFFF",
-                                                        "FFFFFFFFFF",
-                                                        "FFFFFFFFFF",
-                                                        "FFFFFFFFFF",
-                                                        "FFFFFFFFFF"};
-  
-  private static final String[] SAMPLE4 = new String[] {"SSSSSSSSSS",
-                                                        "SSSSSSSSSS",
-                                                        "SSSSSSSSSS",
-                                                        "SSSSSSSSSS",
-                                                        "SSSSSSSSSS",
-                                                        "SSSSSSSSSS",
-                                                        "SSSSSSSSSS",
-                                                        "SSSSSSSSSS",
-                                                        "SSSSSSSSSS",
-                                                        "SSSSSSSSSS",
-                                                        "SSSSSSSSSS",
-                                                        "SSSSSSSSSS",
-                                                        "SSSSSSSSSS",
-                                                        "SSSSSSSSSS",
-                                                        "SSSSSSSSSS",
-                                                        "SSSSSSSSSS",
-                                                        "SSSSSSSSSS",
-                                                        "SSSSSSSSSS",
-                                                        "SSSSSSSSSS",
-                                                        "SSSSSSSSSS"};
-  
-  private static final String[] SAMPLE3 = new String[] {"SSSSSSSSSS"};
-  
-  private static final String[] SAMPLE2 = new String[] {"          ",
-                                                        "          ",
-                                                        "          ",
-                                                        "          ",
-                                                        "          ",
-                                                        "          ",
-                                                        "          ",
-                                                        "          ",
-                                                        "  TTTTTT  ",
-                                                        "  TTBSTT  ",
-                                                        "  TTSBTT  ",
-                                                        "  TTBSTT  ",
-                                                        "  TTSBTT  ",
-                                                        "  TT  TT  ",
-                                                        "  TFFFFT  "};
-  
-  private static final String[] SAMPLE = new String[] {"          ",
-                                                       " T        "};
   
   private static final String[] L0 = new String[] {"          ",
                                                    "     S    "};

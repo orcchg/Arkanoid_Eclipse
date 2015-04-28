@@ -32,18 +32,6 @@ struct BGRA {
 };
 
 // @see http://stackoverflow.com/questions/13865842/does-static-constexpr-variable-make-sense
-//constexpr static GLshort BLACK[4]   = { 0,   0,   0,   255 };
-//constexpr static GLshort RED[4]     = { 255, 0,   0,   255 };
-//constexpr static GLshort GREEN[4]   = { 0,   255, 0,   255 };
-//constexpr static GLshort BLUE[4]    = { 0,   0,   255, 255 };
-//constexpr static GLshort CYAN[4]    = { 0,   255, 255, 255 };
-//constexpr static GLshort MAGENTA[4] = { 152, 0,   255, 255 };
-//constexpr static GLshort PURPLE[4]  = { 152, 0,   102, 255 };
-//constexpr static GLshort YELLOW[4]  = { 0,   255, 255, 255 };
-//constexpr static GLshort ORANGE[4]  = { 0,   102, 255, 255 };
-//constexpr static GLshort MESHLAB[4] = { 207, 102, 102, 255 };
-//constexpr static GLshort TRANSPARENT[4] = { 0, 0, 0,   0};
-
 constexpr static GLfloat BLACK[4]   = { 0.f,     0.f,  0.f,  1.f };
 constexpr static GLfloat RED[4]     = { 1.f,     0.f,  0.f,  1.f };
 constexpr static GLfloat GREEN[4]   = { 0.f,     1.f,  0.f,  1.f };
@@ -63,15 +51,26 @@ constexpr static GLfloat CLAY[4]      = {1.f,     0.8275,  0.6078f, 1.f};
 constexpr static GLfloat DEATH[4]     = {0.f,     0.3922f, 0.f,     1.f};
 constexpr static GLfloat ELECTRO[4]   = {0.f,     0.f,     0.9333f, 1.f};
 constexpr static GLfloat FOG[4]       = {0.8784f, 0.9333f, 0.9333f, 1.f};
-constexpr static GLfloat GLASS[4]     = {0.4f,    0.8039f, 0.f,     1.f};
+constexpr static GLfloat GLASS[4]     = {0.4980f, 1.f,     0.8314f, 1.f};
 constexpr static GLfloat HYPER[4]     = {0.5412f, 0.1686f, 0.8863f, 1.f};
 constexpr static GLfloat IRON[4]      = {0.5137f, 0.5451f, 0.5451f, 1.f};
 constexpr static GLfloat JELLY[4]     = {0.8039f, 0.2f,    0.2f,    1.f};
+constexpr static GLfloat KNOCK[4]     = {1.f,     0.4980f, 0.1412f, 1.f};
 constexpr static GLfloat STEEL[4]     = {0.3255f, 0.5255f, 0.5451f, 1.f};
+constexpr static GLfloat MAGIC[4]     = {0.6039f, 0.1961f, 0.8039f, 1.f};
+constexpr static GLfloat NETWORK[4]   = {1.f,     0.8431f, 0.f,     1.f};
+constexpr static GLfloat ORIGIN[4]    = {0.f,     0.5451f, 0.2706f, 1.f};
+constexpr static GLfloat PLUMBUM[4]   = {0.5451f, 0.4824f, 0.5451f, 1.f};
+constexpr static GLfloat QUICK[4]     = {0.1961f, 0.8039f, 0.1961f, 1.f};
 constexpr static GLfloat ROLLING[4]   = {0.5455f, 0.2431f, 0.1843f, 1.f};
 constexpr static GLfloat SIMPLE[4]    = {0.6353f, 0.8039f, 0.3529f, 1.f};
 constexpr static GLfloat TITAN[4]     = {0.9333f, 0.6784f, 0.0549f, 1.f};
+constexpr static GLfloat ULTRA[4]     = {0.5451f, 0.1333f, 0.3216f, 1.f};
+constexpr static GLfloat INVUL[4]     = {0.4157f, 0.3529f, 0.8039f, 1.f};
 constexpr static GLfloat WATER[4]     = {0.f,     0.6039f, 0.8039f, 1.f};
+constexpr static GLfloat EXTRA[4]     = {0.5137f, 0.4353f, 1.f,     1.f};
+constexpr static GLfloat YOGURT[4]    = {1.f,     0.9608f, 0.9333f, 1.f};
+constexpr static GLfloat ZYGOTE[4]    = {0.8039f, 0.f,     0.f,     1.f};
 
 }
 

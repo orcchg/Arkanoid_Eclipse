@@ -24,18 +24,31 @@ enum class Block : int {
   DEATH = 4,       // 'D' - one impact to destroy, lost ball automatically
   ELECTRO = 5,     // 'E' - one impact to destroy, destroys nearest blocks
   FOG = 6,         // 'F' - one impact to destroy, not disturbing
-  GLASS = 7,         // 'G' - one impact to destroy, not disturbing
+  GLASS = 7,       // 'G' - one impact to destroy, not disturbing
   HYPER = 8,       // 'H' - one impact to destroy, teleports ball randomly (not lost)
   IRON = 9,        // 'I' - three impacts to destroy
   JELLY = 10,      // 'J' - one impact to destroy, large disturbing
-  // XXX: add new
-  STEEL = 11,      // 'L' - three impacts to destroy
-  // XXX: add new
-  ROLLING = 12,    // 'R' - one impact to destroy, random disturbing
-  SIMPLE = 13,     // 'S' - one impact to destroy
-  TITAN = 14,      // 'T' - invulnerable
-  // XXX: add new
-  WATER = 15,      // 'W' - one impact to destroy, small disturbing
+  KNOCK = 11,      // 'K' - one impact to destroy, destroys blocks behind
+  STEEL = 12,      // 'L' - three impacts to destroy
+  MAGIC = 13,      // 'M' - one impact to destroy, transforms nearest blocks
+  NETWORK = 14,    // 'N' - two impacts to destroy, destroys all other NETWORK blocks
+  ORIGIN = 15,     // 'O' - one impact to destroy, puts ball into initial position
+  PLUMBUM = 16,    // 'P' - four impacts to destroy
+  QUICK = 17,      // 'Q' - three impacts to destroy, transform all other blocks
+  ROLLING = 18,    // 'R' - one impact to destroy, random disturbing
+  SIMPLE = 19,     // 'S' - one impact to destroy
+  TITAN = 20,      // 'T' - invulnerable
+  ULTRA = 21,      // 'U' - five impacts to destroy, win level
+  INVUL = 22,      // 'V' - invulnerable
+  WATER = 23,      // 'W' - one impact to destroy, small disturbing
+  EXTRA = 24,      // 'X' - one impact to destroy, transforms to invulnerable
+  YOGURT = 25,     // 'Y' - one impact to destroy, small disturbing
+  ZYGOTE = 26,     // 'Z' - two impacts to destroy, produces additional blocks
+
+  NETWORK_1 = 27,
+  QUICK_2 = 28, QUICK_1 = 29,
+  ULTRA_4 = 30, ULTRA_3 = 31, ULTRA_2 = 32, ULTRA_1 = 33,
+  ZYGOTE_1 = 34
 };
 
 Block charToBlock(char ch);
@@ -115,8 +128,6 @@ public:
   /// @brief Decrements recorded cardinality due to impact of some block.
   /// @return Updated cardinality.
   inline int blockImpact() { return --initial_cardinality; }
-  /// @brief Calculates current cardinality of this Level instance.
-  int calculateCardinality() const;
   /// @brief Updates specified block after single impact.
   /// @param row Row index of impacted block.
   /// @param col Column index of impacted block.
@@ -126,6 +137,9 @@ public:
 
 private:
   Level(size_t rows, size_t cols);
+
+  /// @brief Calculates current cardinality of this Level instance.
+  int calculateCardinality() const;
 
   size_t rows, cols;
   int initial_cardinality;
