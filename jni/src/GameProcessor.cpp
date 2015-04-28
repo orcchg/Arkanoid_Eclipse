@@ -25,7 +25,7 @@ GameProcessor::GameProcessor(JavaVM* jvm, jobject master_object)
   , m_ball()
   , m_bite()
   , m_bite_upper_border(-BiteParams::neg_biteElevation)
-  , m_level_dimens(0, 0, 0.0f, 0.0f)
+  , m_level_dimens(0, 0, 0.0f, 0.0f, 0.0f, 0.0f)
   , m_total_lives(3)
   , m_generator()
   , m_angle_distribution(util::PI12, util::PI30)
@@ -359,16 +359,21 @@ bool GameProcessor::collideBlocks(GLfloat new_x, GLfloat new_y) {
     GLfloat top_border = 0.0f, bottom_border = 0.0f, left_border = 0.0f, right_border = 0.0f;
     m_level_dimens.getBlockDimens(row, col, &top_border, &bottom_border, &left_border, &right_border);
 
-    Direction direction = Direction::NONE;
-    if (m_ball.pose.y >= new_y) {
-      direction = Direction::DOWN;
-    } else {
-      direction = Direction::UP;
+    Direction vertical_direction = Direction::NONE;
+    Direction horizontal_direction = Direction::NONE;
+    if (m_ball.pose.x + 1.0f > left_border &&
+        m_ball.pose.x + 1.0f < right_border) {
+      ERR("DIR: %lf t=%lf b=%lf", m_ball.pose.y + 1.0f, top_border, bottom_border);
+      if (m_ball.pose.y + 1.0f >= top_border) {
+        vertical_direction = Direction::DOWN;
+      } else if (m_ball.pose.y + 1.0f <= bottom_border) {
+        vertical_direction = Direction::UP;
+      }
     }
-    if (m_ball.pose.x >= new_x) {
-      direction = Direction::LEFT;
-    } else {
-      direction = Direction::RIGHT;
+    if (m_ball.pose.x + 1.0f <= left_border) {
+      horizontal_direction = Direction::RIGHT;
+    } else if (m_ball.pose.x + 1.0f >= right_border) {
+      horizontal_direction = Direction::LEFT;
     }
     std::vector<RowCol> affected_blocks;
     affected_blocks.reserve(12);
@@ -400,9 +405,16 @@ bool GameProcessor::collideBlocks(GLfloat new_x, GLfloat new_y) {
           block_impact_event.notifyListeners(item);
         }
         break;
-      case Block::KNOCK:
+      case Block::KNOCK_VERTICAL:
         elasticBlockCollision(top_border, bottom_border, left_border, right_border);
-        m_level->destroyBlocksBehind(row, col, direction, &affected_blocks);
+        m_level->destroyBlocksBehind(row, col, vertical_direction, &affected_blocks);
+        for (auto& item : affected_blocks) {
+          block_impact_event.notifyListeners(item);
+        }
+        break;
+      case Block::KNOCK_HORIZONTAL:
+        elasticBlockCollision(top_border, bottom_border, left_border, right_border);
+        m_level->destroyBlocksBehind(row, col, horizontal_direction, &affected_blocks);
         for (auto& item : affected_blocks) {
           block_impact_event.notifyListeners(item);
         }

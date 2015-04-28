@@ -18,8 +18,8 @@ struct LevelDimens {
       int cols,
       GLfloat w,
       GLfloat h,
-      GLfloat bw = blockWidth,
-      GLfloat bh = blockHeight)
+      GLfloat bw,
+      GLfloat bh)
     : rows(rows)
     , cols(cols)
     , width(w)

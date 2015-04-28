@@ -49,7 +49,9 @@ Block charToBlock(char ch) {
       return Block::JELLY;
     case 'k':
     case 'K':
-      return Block::KNOCK;
+      return Block::KNOCK_VERTICAL;
+    case '#':
+      return Block::KNOCK_HORIZONTAL;
     case 'l':
     case 'L':
       return Block::STEEL;
@@ -122,8 +124,10 @@ char blockToChar(Block block) {
       return 'I';
     case Block::JELLY:
       return 'J';
-    case Block::KNOCK:
+    case Block::KNOCK_VERTICAL:
       return 'K';
+    case Block::KNOCK_HORIZONTAL:
+      return '#';
     case Block::STEEL:
       return 'L';
     case Block::MAGIC:
@@ -258,7 +262,8 @@ void Level::fillColorArrayAtBlock(GLfloat* const array, int row, int col) const 
     case Block::JELLY:
       bgra = util::BGRA<GLfloat>(util::JELLY);
       break;
-    case Block::KNOCK:
+    case Block::KNOCK_VERTICAL:
+    case Block::KNOCK_HORIZONTAL:
       bgra = util::BGRA<GLfloat>(util::KNOCK);
       break;
     case Block::STEEL:
@@ -321,6 +326,13 @@ void Level::fillColorArrayAtBlock(GLfloat* const array, int row, int col) const 
   util::setColor(bgra, &array[lower_right_i], 4);
 }
 
+void Level::setVulnerableBlock(int row, int col, Block value) {
+  if (blocks[row][col] != Block::TITAN &&
+      blocks[row][col] != Block::INVUL) {
+    setBlock(row, col, value);
+  }
+}
+
 int Level::getCardinalityCost(Block block) {
   switch (block) {
     case Block::ULTRA:
@@ -347,7 +359,8 @@ int Level::getCardinalityCost(Block block) {
     case Block::GLASS:
     case Block::HYPER:
     case Block::JELLY:
-    case Block::KNOCK:
+    case Block::KNOCK_VERTICAL:
+    case Block::KNOCK_HORIZONTAL:
     case Block::MAGIC:
     case Block::ORIGIN:
     case Block::ROLLING:
@@ -420,7 +433,8 @@ void Level::setBlockImpacted(int row, int col) {
     case Block::GLASS:
     case Block::HYPER:
     case Block::JELLY:
-    case Block::KNOCK:
+    case Block::KNOCK_VERTICAL:
+    case Block::KNOCK_HORIZONTAL:
     case Block::MAGIC:
     case Block::ORIGIN:
     case Block::ROLLING:
@@ -451,67 +465,67 @@ void Level::setBlockImpacted(int row, int col) {
 void Level::destroyBlocksAround(int row, int col, std::vector<RowCol>* output) {
   if (row - 2 >= 0) {
     initial_cardinality -= getCardinalityCost(getBlock(row - 2, col));
-    setBlock(row - 2, col, Block::NONE);
+    setVulnerableBlock(row - 2, col, Block::NONE);
     output->emplace_back(row - 2, col);
   }
 
   if (row - 1 >= 0) {
     initial_cardinality -= getCardinalityCost(getBlock(row - 1, col));
-    setBlock(row - 1, col, Block::NONE);
+    setVulnerableBlock(row - 1, col, Block::NONE);
     output->emplace_back(row - 1, col);
     if (col - 1 >= 0) {
       initial_cardinality -= getCardinalityCost(getBlock(row - 1, col - 1));
-      setBlock(row - 1, col - 1, Block::NONE);
+      setVulnerableBlock(row - 1, col - 1, Block::NONE);
       output->emplace_back(row - 1, col - 1);
     }
     if (col + 1 < cols) {
       initial_cardinality -= getCardinalityCost(getBlock(row - 1, col + 1));
-      setBlock(row - 1, col + 1, Block::NONE);
+      setVulnerableBlock(row - 1, col + 1, Block::NONE);
       output->emplace_back(row - 1, col + 1);
     }
   }
 
   if (row + 1 < rows) {
     initial_cardinality -= getCardinalityCost(getBlock(row + 1, col));
-    setBlock(row + 1, col, Block::NONE);
+    setVulnerableBlock(row + 1, col, Block::NONE);
     output->emplace_back(row + 1, col);
     if (col - 1 >= 0) {
       initial_cardinality -= getCardinalityCost(getBlock(row + 1, col - 1));
-      setBlock(row + 1, col - 1, Block::NONE);
+      setVulnerableBlock(row + 1, col - 1, Block::NONE);
       output->emplace_back(row + 1, col - 1);
     }
     if (col + 1 < cols) {
       initial_cardinality -= getCardinalityCost(getBlock(row + 1, col + 1));
-      setBlock(row + 1, col + 1, Block::NONE);
+      setVulnerableBlock(row + 1, col + 1, Block::NONE);
       output->emplace_back(row + 1, col + 1);
     }
   }
 
   if (row + 2 < rows) {
     initial_cardinality -= getCardinalityCost(getBlock(row + 2, col));
-    setBlock(row + 2, col, Block::NONE);
+    setVulnerableBlock(row + 2, col, Block::NONE);
     output->emplace_back(row + 2, col);
   }
 
   // ------------------------
   if (col - 2 >= 0) {
     initial_cardinality -= getCardinalityCost(getBlock(row, col - 2));
-    setBlock(row, col - 2, Block::NONE);
+    setVulnerableBlock(row, col - 2, Block::NONE);
     output->emplace_back(row, col - 2);
   }
   if (col - 1 >= 0) {
     initial_cardinality -= getCardinalityCost(getBlock(row, col - 1));
-    setBlock(row, col - 1, Block::NONE);
+    setVulnerableBlock(row, col - 1, Block::NONE);
     output->emplace_back(row, col - 1);
   }
   if (col + 1 < cols) {
     initial_cardinality -= getCardinalityCost(getBlock(row, col + 1));
-    setBlock(row, col + 1, Block::NONE);
+    setVulnerableBlock(row, col + 1, Block::NONE);
     output->emplace_back(row, col + 1);
   }
   if (col + 2 < cols) {
     initial_cardinality -= getCardinalityCost(getBlock(row, col + 2));
-    setBlock(row, col + 2, Block::NONE);
+    setVulnerableBlock(row, col + 2, Block::NONE);
     output->emplace_back(row, col + 2);
   }
 }
@@ -519,19 +533,21 @@ void Level::destroyBlocksAround(int row, int col, std::vector<RowCol>* output) {
 void Level::destroyBlocksBehind(int row, int col, Direction direction, std::vector<RowCol>* output) {
   switch (direction) {
     case Direction::UP:
+      ERR("UP");
       --row;
       while (row >= 0) {
         initial_cardinality -= getCardinalityCost(getBlock(row, col));
-        setBlock(row, col, Block::NONE);
+        setVulnerableBlock(row, col, Block::NONE);
         output->emplace_back(row, col);
         --row;
       }
       break;
     case Direction::DOWN:
+      WRN("DOWN");
       ++row;
       while (row < rows) {
         initial_cardinality -= getCardinalityCost(getBlock(row, col));
-        setBlock(row, col, Block::NONE);
+        setVulnerableBlock(row, col, Block::NONE);
         output->emplace_back(row, col);
         ++row;
       }
@@ -540,7 +556,7 @@ void Level::destroyBlocksBehind(int row, int col, Direction direction, std::vect
       ++col;
       while (col < cols) {
         initial_cardinality -= getCardinalityCost(getBlock(row, col));
-        setBlock(row, col, Block::NONE);
+        setVulnerableBlock(row, col, Block::NONE);
         output->emplace_back(row, col);
         ++col;
       }
@@ -549,7 +565,7 @@ void Level::destroyBlocksBehind(int row, int col, Direction direction, std::vect
       --col;
       while (col >= 0) {
         initial_cardinality -= getCardinalityCost(getBlock(row, col));
-        setBlock(row, col, Block::NONE);
+        setVulnerableBlock(row, col, Block::NONE);
         output->emplace_back(row, col);
         --col;
       }
@@ -619,7 +635,8 @@ int Level::calculateCardinality() const {
         case Block::GLASS:
         case Block::HYPER:
         case Block::JELLY:
-        case Block::KNOCK:
+        case Block::KNOCK_VERTICAL:
+        case Block::KNOCK_HORIZONTAL:
         case Block::MAGIC:
         case Block::ORIGIN:
         case Block::ROLLING:

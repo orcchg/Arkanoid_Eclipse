@@ -30,27 +30,28 @@ enum class Block : int {
   HYPER = 8,       // 'H' - [ 1 ] teleports ball randomly (not lost)
   IRON = 9,        //! 'I' - [ 3 ]
   JELLY = 10,      //! 'J' - [ 1 ] large disturbing
-  KNOCK = 11,      // 'K' - [ 1 ] destroys blocks behind
-  STEEL = 12,      //! 'L' - [ 3 ]
-  MAGIC = 13,      // 'M' - [ 1 ] transforms nearest blocks
-  NETWORK = 14,    // 'N' - [ 2 ] destroys all other NETWORK blocks
-  ORIGIN = 15,     //! 'O' - [ 1 ] puts ball into initial position
-  PLUMBUM = 16,    //! 'P' - [ 4 ]
-  QUICK = 17,      // 'Q' - [ 3 ] transform all other blocks
-  ROLLING = 18,    //! 'R' - [ 1 ] random disturbing
-  SIMPLE = 19,     //! 'S' - [ 1 ]
-  TITAN = 20,      //! 'T' - invulnerable
-  ULTRA = 21,      //! 'U' - [ 5 ] win level
-  INVUL = 22,      //! 'V' - invulnerable
-  WATER = 23,      //! 'W' - [ 1 ] small disturbing
-  EXTRA = 24,      //! 'X' - [ 1 ] transforms to invulnerable
-  YOGURT = 25,     //! 'Y' - [ 1 ] small disturbing
-  ZYGOTE = 26,     // 'Z' - [ 2 ] produces additional blocks
+  KNOCK_VERTICAL = 11,      // 'K' - [ 1 ] destroys blocks behind
+  KNOCK_HORIZONTAL = 12,    // '#' - [ 1 ] destroys blocks behind
+  STEEL = 13,      //! 'L' - [ 3 ]
+  MAGIC = 14,      // 'M' - [ 1 ] transforms nearest blocks
+  NETWORK = 15,    // 'N' - [ 2 ] destroys all other NETWORK blocks
+  ORIGIN = 16,     //! 'O' - [ 1 ] puts ball into initial position
+  PLUMBUM = 17,    //! 'P' - [ 4 ]
+  QUICK = 18,      // 'Q' - [ 3 ] transform all other blocks
+  ROLLING = 19,    //! 'R' - [ 1 ] random disturbing
+  SIMPLE = 20,     //! 'S' - [ 1 ]
+  TITAN = 21,      //! 'T' - invulnerable
+  ULTRA = 22,      //! 'U' - [ 5 ] win level
+  INVUL = 23,      //! 'V' - invulnerable
+  WATER = 24,      //! 'W' - [ 1 ] small disturbing
+  EXTRA = 25,      //! 'X' - [ 1 ] transforms to invulnerable
+  YOGURT = 26,     //! 'Y' - [ 1 ] small disturbing
+  ZYGOTE = 27,     // 'Z' - [ 2 ] produces additional blocks
 
-  NETWORK_1 = 27,
-  QUICK_2 = 28, QUICK_1 = 29,
-  ULTRA_4 = 30, ULTRA_3 = 31, ULTRA_2 = 32, ULTRA_1 = 33,
-  ZYGOTE_1 = 34
+  NETWORK_1 = 28,
+  QUICK_2 = 29, QUICK_1 = 30,
+  ULTRA_4 = 31, ULTRA_3 = 32, ULTRA_2 = 33, ULTRA_1 = 34,
+  ZYGOTE_1 = 35
 };
 
 Block charToBlock(char ch);
@@ -133,6 +134,9 @@ public:
   inline Block getBlock(int row, int col) const { return blocks[row][col]; }
   /// @brief Sets the block by row and column indices.
   inline void setBlock(int row, int col, Block value) { blocks[row][col] = value; }
+  /// @brief Sets the block by row and column indices only
+  /// in case it is vulnerable.
+  void setVulnerableBlock(int row, int col, Block value);
   /// @brief Gets recorded cardinality.
   inline int getCardinality() const { return initial_cardinality; }
   /// @brief Forced way to drop cardinality for instant victory.
