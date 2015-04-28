@@ -177,11 +177,7 @@ void GameProcessor::process_throwBall() {
 
 void GameProcessor::process_initBall() {
   std::unique_lock<std::mutex> lock(m_init_ball_position_mutex);
-  // restore ball's initial velocity
-//  std::normal_distribution<float> init_angle_distribution(util::PI4, util::PI12);
-//  m_ball.angle = init_angle_distribution(m_generator);  // BallParams::ballAngle;
-//  m_ball.angle += m_direction_distribution(m_generator) ? 0.0f : util::PI2;
-//  m_ball.angle = std::fmod(m_ball.angle, util::_2PI);
+  // no-op
 }
 
 void GameProcessor::process_initBite() {
@@ -493,6 +489,13 @@ void GameProcessor::smallAngleAvoid() {
   } else if (m_ball.angle < util::_3PI2 && m_ball.angle >= util::_3PI2 - util::PI12) {
     m_ball.angle -= util::PI16;
   }
+}
+
+void GameProcessor::randomAngle() {
+  std::normal_distribution<float> init_angle_distribution(util::PI4, util::PI12);
+  m_ball.angle = init_angle_distribution(m_generator);
+  m_ball.angle += m_direction_distribution(m_generator) ? 0.0f : util::PI2;
+  m_ball.angle = std::fmod(m_ball.angle, util::_2PI);
 }
 
 }

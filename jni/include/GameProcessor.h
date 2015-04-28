@@ -256,6 +256,8 @@ private:
   void correctBallPosition(GLfloat new_x, GLfloat new_y);
   /// @brief Slightly disturbs ball's angle to avoid small declines.
   void smallAngleAvoid();
+  /// @brief Sets random value for ball's angle.
+  void randomAngle();
   /** @} */  // end of Maths group
 };
 
