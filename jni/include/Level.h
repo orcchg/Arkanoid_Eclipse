@@ -17,32 +17,32 @@
 namespace game {
 
 enum class Block : int {
-  NONE = 0,        // ' ' - not disturbing
-  ALUMINIUM = 1,   // 'A' - [ 1 ]
-  BRICK = 2,       // 'B' - [ 2 ]
-  CLAY = 3,        // 'C' - [ 1 ] small disturbing
+  NONE = 0,        //! ' ' - not disturbing
+  ALUMINIUM = 1,   //! 'A' - [ 1 ]
+  BRICK = 2,       //! 'B' - [ 2 ]
+  CLAY = 3,        //! 'C' - [ 1 ] small disturbing
   DEATH = 4,       // 'D' - [ 1 ] lost ball automatically
   ELECTRO = 5,     // 'E' - [ 1 ] destroys nearest blocks
-  FOG = 6,         // 'F' - [ 1 ] not disturbing
-  GLASS = 7,       // 'G' - [ 1 ], not disturbing
+  FOG = 6,         //! 'F' - [ 1 ] not disturbing
+  GLASS = 7,       //! 'G' - [ 1 ], not disturbing
   HYPER = 8,       // 'H' - [ 1 ] teleports ball randomly (not lost)
-  IRON = 9,        // 'I' - [ 3 ]
-  JELLY = 10,      // 'J' - [ 1 ] large disturbing
+  IRON = 9,        //! 'I' - [ 3 ]
+  JELLY = 10,      //! 'J' - [ 1 ] large disturbing
   KNOCK = 11,      // 'K' - [ 1 ] destroys blocks behind
-  STEEL = 12,      // 'L' - [ 3 ]
+  STEEL = 12,      //! 'L' - [ 3 ]
   MAGIC = 13,      // 'M' - [ 1 ] transforms nearest blocks
   NETWORK = 14,    // 'N' - [ 2 ] destroys all other NETWORK blocks
   ORIGIN = 15,     // 'O' - [ 1 ] puts ball into initial position
-  PLUMBUM = 16,    // 'P' - [ 4 ]
+  PLUMBUM = 16,    //! 'P' - [ 4 ]
   QUICK = 17,      // 'Q' - [ 3 ] transform all other blocks
-  ROLLING = 18,    // 'R' - [ 1 ] random disturbing
-  SIMPLE = 19,     // 'S' - [ 1 ]
-  TITAN = 20,      // 'T' - invulnerable
+  ROLLING = 18,    //! 'R' - [ 1 ] random disturbing
+  SIMPLE = 19,     //! 'S' - [ 1 ]
+  TITAN = 20,      //! 'T' - invulnerable
   ULTRA = 21,      // 'U' - [ 5 ] win level
-  INVUL = 22,      // 'V' - invulnerable
-  WATER = 23,      // 'W' - [ 1 ] small disturbing
-  EXTRA = 24,      // 'X' - [ 1 ] transforms to invulnerable
-  YOGURT = 25,     // 'Y' - [ 1 ] small disturbing
+  INVUL = 22,      //! 'V' - invulnerable
+  WATER = 23,      //! 'W' - [ 1 ] small disturbing
+  EXTRA = 24,      //! 'X' - [ 1 ] transforms to invulnerable
+  YOGURT = 25,     //! 'Y' - [ 1 ] small disturbing
   ZYGOTE = 26,     // 'Z' - [ 2 ] produces additional blocks
 
   NETWORK_1 = 27,

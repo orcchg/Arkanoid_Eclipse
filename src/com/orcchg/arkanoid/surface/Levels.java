@@ -274,12 +274,18 @@ public class Levels {
                                                     "        GG",
                                                     "         G"};
   
-//  private static final String[] L17 = new String[] {"          ",
-//                                                    "          ",
-//                                                    "          ",
-//                                                    "          ",
-//                                                    "          "};
-//  
+  private static final String[] L17 = new String[] {"          ",
+                                                    "          ",
+                                                    "  SSSSSS  ",
+                                                    "  SSSSSS  ",
+                                                    "  SSSSSS  ",
+                                                    "          ",
+                                                    "          ",
+                                                    "          ",
+                                                    "          ",
+                                                    "    OB    ",
+                                                    "  O    O  "};
+  
 //  private static final String[] L18 = new String[] {"          ",
 //                                                    "          ",
 //                                                    "          ",
@@ -299,7 +305,7 @@ public class Levels {
 //                                                    "          "};
   
   private static final String[][] levels = {L0, L1, L2, L3, L4, L5, L6, L7, L8, L9,
-                                          L10, L11, L12, L13, L14, L15, L16/*, L17, L18,
+                                          L10, L11, L12, L13, L14, L15, L16, L17/*, L18,
                                           L19, L20*/};
   
   public static final int TOTAL_LEVELS = levels.length;

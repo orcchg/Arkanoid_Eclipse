@@ -359,29 +359,75 @@ bool GameProcessor::collideBlocks(GLfloat new_x, GLfloat new_y) {
       case Block::NONE:
         // no impact and disturbance
         return false;
+      // --------------------
       case Block::DEATH:
         // XXX: lost ball perform
+        elasticBlockCollision(top_border, bottom_border, left_border, right_border);
         break;
-        // TODO: ELECTRO implement
+      case Block::ULTRA:
+        // XXX:
+        elasticBlockCollision(top_border, bottom_border, left_border, right_border);
+        break;
+      // --------------------
       case Block::FOG:
       case Block::GLASS:
         // fly without disturbance
         break;
+      // --------------------
+      case Block::ELECTRO:
+        // XXX:
+        elasticBlockCollision(top_border, bottom_border, left_border, right_border);
+        break;
+      case Block::KNOCK:
+        // XXX:
+        elasticBlockCollision(top_border, bottom_border, left_border, right_border);
+        break;
+      case Block::NETWORK:
+        // XXX:
+        elasticBlockCollision(top_border, bottom_border, left_border, right_border);
+        break;
+      // --------------------
+      case Block::HYPER:
+        // XXX: correctBallPosition();
+        elasticBlockCollision(top_border, bottom_border, left_border, right_border);
+        break;
+      case Block::ORIGIN:
+        elasticBlockCollision(top_border, bottom_border, left_border, right_border);
+        m_ball_is_flying = false;
+        correctBallPosition(m_bite.x_pose, m_bite_upper_border + m_ball.dimens.halfHeight());
+        break;
+      // --------------------
       case Block::ROLLING:
         viscosity = m_viscosity_distribution(m_generator);
         viscousBlockCollision(top_border, bottom_border, left_border, right_border, viscosity);
         break;
+      // --------------------
       case Block::JELLY:
-        viscosity += 35;  // intend no break
+        viscosity += 35;
+        // intend no break
       case Block::WATER:
-        viscosity += 20;  // intend no break
+        viscosity += 20;
+        // intend no break
+      case Block::YOGURT:
+        viscosity += 10;
+        // intend no break;
       case Block::CLAY:
         viscosity += 10;
         viscousBlockCollision(top_border, bottom_border, left_border, right_border, viscosity);
         break;
-      case Block::HYPER:
-        // XXX: teleport
-        // intend no break
+      // --------------------
+      case Block::MAGIC:
+        // XXX:
+        elasticBlockCollision(top_border, bottom_border, left_border, right_border);
+        break;
+      case Block::QUICK:
+        // XXX:
+        elasticBlockCollision(top_border, bottom_border, left_border, right_border);
+        break;
+      case Block::ZYGOTE:
+        // XXX:
+        // intend no break;
+      // --------------------
       default:
         elasticBlockCollision(top_border, bottom_border, left_border, right_border);
         break;

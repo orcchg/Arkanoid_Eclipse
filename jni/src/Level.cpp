@@ -378,7 +378,6 @@ void Level::setBlockImpacted(size_t row, size_t col) {
     case Block::ROLLING:
     case Block::SIMPLE:
     case Block::WATER:
-    case Block::EXTRA:
     case Block::YOGURT:
     // ----------------------
     case Block::NETWORK_1:
@@ -386,6 +385,10 @@ void Level::setBlockImpacted(size_t row, size_t col) {
     case Block::ULTRA_1:
     case Block::ZYGOTE_1:
       setBlock(row, col, Block::NONE);
+      break;
+    // ----------------------
+    case Block::EXTRA:
+      setBlock(row, col, Block::INVUL);
       break;
     // ----------------------
     case Block::TITAN:
