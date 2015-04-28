@@ -488,7 +488,8 @@ bool GameProcessor::collideBlocks(GLfloat new_x, GLfloat new_y) {
         break;
     }
     block_impact_event.notifyListeners(RowCol(row, col));
-    return (block != Block::TITAN &&
+    return (block != Block::NONE &&
+            block != Block::TITAN &&
             block != Block::INVUL &&
             block != Block::EXTRA);
 
@@ -507,12 +508,27 @@ void GameProcessor::elasticBlockCollision(
 
   if (m_ball.pose.x + 1.0f > left_border &&
       m_ball.pose.x + 1.0f < right_border &&
-      (m_ball.pose.y + 1.0f >= top_border || m_ball.pose.y + 1.0f <= bottom_border)) {
+      (m_ball.pose.y + 1.0f >= 2.0f - top_border || m_ball.pose.y + 1.0f <= 2.0f - bottom_border)) {
     collideHorizontalSurface();
-  } else if (m_ball.pose.x + 1.0f <= left_border) {
+    ERR("ELASTIC: x=%lf y=%lf left=%lf right=%lf top=%lf bot=%lf",
+        m_ball.pose.x, m_ball.pose.y, left_border, right_border, top_border, bottom_border);
+    return;
+  }
+  if (m_ball.pose.x + 1.0f <= left_border &&
+      m_ball.pose.y + 1.0f >= 2.0f - bottom_border &&
+      m_ball.pose.y + 1.0f <= 2.0f - top_border) {
+    WRN("LEFT ELASTIC: x=%lf y=%lf left=%lf right=%lf top=%lf bot=%lf",
+        m_ball.pose.x, m_ball.pose.y, left_border, right_border, top_border, bottom_border);
     collideRightBorder();
-  } else if (m_ball.pose.x + 1.0f >= right_border) {
+    return;
+  }
+  if (m_ball.pose.x + 1.0f >= right_border &&
+      m_ball.pose.y + 1.0f >= 2.0f - bottom_border &&
+      m_ball.pose.y + 1.0f <= 2.0f - top_border) {
+    WRN("RIGHT ELASTIC: x=%lf y=%lf left=%lf right=%lf top=%lf bot=%lf",
+        m_ball.pose.x, m_ball.pose.y, left_border, right_border, top_border, bottom_border);
     collideLeftBorder();
+    return;
   }
 }
 
@@ -532,17 +548,25 @@ void GameProcessor::viscousBlockCollision(
 
   if (m_ball.pose.x + 1.0f > left_border &&
       m_ball.pose.x + 1.0f < right_border &&
-      (m_ball.pose.y + 1.0f >= top_border || m_ball.pose.y + 1.0f <= bottom_border)) {
+      (m_ball.pose.y + 1.0f >= 2.0f - top_border || m_ball.pose.y + 1.0f <= 2.0f - bottom_border)) {
     collideHorizontalSurface();
-  } else if (m_ball.pose.x + 1.0f <= left_border) {
-    collideRightBorder();
-  } else if (m_ball.pose.x + 1.0f >= right_border) {
-    collideLeftBorder();
+    viscousAngleDisturbance(viscosity);
+    return;
   }
-  GLfloat direction = m_direction_distribution(m_generator) ? 1.0f : -1.0f;
-  m_ball.angle += direction * m_angle_distribution(m_generator) / 100.0f * viscosity;
-  GLfloat sign = m_ball.angle >= 0.0f ? 1.0f : -1.0f;
-  m_ball.angle = sign * std::fmod(std::fabs(m_ball.angle), util::_2PI);
+  if (m_ball.pose.x + 1.0f <= left_border &&
+      m_ball.pose.y + 1.0f >= 2.0f - bottom_border &&
+      m_ball.pose.y + 1.0f <= 2.0f - top_border) {
+    collideRightBorder();
+    viscousAngleDisturbance(viscosity);
+    return;
+  }
+  if (m_ball.pose.x + 1.0f >= right_border &&
+      m_ball.pose.y + 1.0f >= 2.0f - bottom_border &&
+      m_ball.pose.y + 1.0f <= 2.0f - top_border) {
+    collideLeftBorder();
+    viscousAngleDisturbance(viscosity);
+    return;
+  }
 }
 
 bool GameProcessor::getImpactedBlock(
@@ -563,7 +587,8 @@ bool GameProcessor::getImpactedBlock(
     *row = static_cast<int>(std::floor((1.0f - m_ball.dimens.halfHeight() - ball_y) / m_level_dimens.block_height));
   }
 
-  if (*row >= m_level->numRows() || *col >= m_level->numCols()) {
+  if (*row < 0 || *row >= m_level->numRows() ||
+      *col < 0 || *col >= m_level->numCols()) {
     return false;
   }
   return true;
@@ -599,6 +624,13 @@ void GameProcessor::randomAngle() {
   m_ball.angle = init_angle_distribution(m_generator);
   m_ball.angle += m_direction_distribution(m_generator) ? 0.0f : util::PI2;
   m_ball.angle = std::fmod(m_ball.angle, util::_2PI);
+}
+
+void GameProcessor::viscousAngleDisturbance(float viscosity) {
+  GLfloat direction = m_direction_distribution(m_generator) ? 1.0f : -1.0f;
+  m_ball.angle += direction * m_angle_distribution(m_generator) / 100.0f * viscosity;
+  GLfloat sign = m_ball.angle >= 0.0f ? 1.0f : -1.0f;
+  m_ball.angle = sign * std::fmod(std::fabs(m_ball.angle), util::_2PI);
 }
 
 }

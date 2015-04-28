@@ -14,6 +14,7 @@
 
 #include <GLES/gl.h>
 
+#include "logger.h"
 #include "RowCol.h"
 
 namespace game {
@@ -118,7 +119,7 @@ public:
   /// @brief Fills input array with color values at position corresponding
   /// to the specified block in this Level instance.
   /// @param array Output color array.
-  /// @param row Row index of specified block.
+  /// @param row Row index of specified block.block != Block::
   /// @param col Column index of specified block.
   /// @details Memory for output array should be allocated manually
   /// by Client, required size for allocation is 16 * cols * rows.

@@ -269,6 +269,9 @@ private:
   void smallAngleAvoid();
   /// @brief Sets random value for ball's angle.
   void randomAngle();
+  /// @brief Slightly disturbs angle according to viscosity.
+  /// @param viscosity 0 viscosity - no disturbance, 100 - elastic collision
+  void viscousAngleDisturbance(float viscosity);
   /** @} */  // end of Maths group
 };
 
