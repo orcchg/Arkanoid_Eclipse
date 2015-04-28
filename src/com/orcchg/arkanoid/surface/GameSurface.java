@@ -72,23 +72,25 @@ public class GameSurface extends SurfaceView implements SurfaceHolder.Callback {
 
   @Override
   public boolean onTouchEvent(MotionEvent event) {
-    switch (event.getAction()) {
+    switch (event.getActionMasked()) {
       case MotionEvent.ACTION_DOWN:
         touchCurrentX = event.getX() * event.getXPrecision();
         touchCurrentY = event.getY() * event.getYPrecision();
         break;
       case MotionEvent.ACTION_POINTER_DOWN:
-        float pointerTwoTouchXdiff = event.getX() * event.getXPrecision() - touchCurrentX;
-        float pointerTwoTouchYdiff = event.getY() * event.getYPrecision() - touchCurrentY;
-        if (pointerTwoTouchYdiff <= 0.0f) {
-          break;
-        }
-        float angle = (float) Math.atan(Math.abs(pointerTwoTouchYdiff) / pointerTwoTouchXdiff);
-        angle = angle >= 0 ? angle : (float) (Math.PI - angle);
-        if (mAsyncContextRef != null) {
-          AsyncContext acontext = mAsyncContextRef.get();
-          if (acontext != null) {
-            acontext.throwBall(angle);
+        if (event.getPointerCount() == 2) {
+          float pointerTwoTouchXdiff = event.getX() * event.getXPrecision() - touchCurrentX;
+          float pointerTwoTouchYdiff = event.getY() * event.getYPrecision() - touchCurrentY;
+          if (pointerTwoTouchYdiff <= 0.0f) {
+            break;
+          }
+          float angle = (float) Math.atan(Math.abs(pointerTwoTouchYdiff) / pointerTwoTouchXdiff);
+          angle = angle >= 0 ? angle : (float) (Math.PI - angle);
+          if (mAsyncContextRef != null) {
+            AsyncContext acontext = mAsyncContextRef.get();
+            if (acontext != null) {
+              acontext.throwBall(angle);
+            }
           }
         }
         break;
