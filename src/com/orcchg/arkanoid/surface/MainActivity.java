@@ -61,6 +61,9 @@ public class MainActivity extends FragmentActivity {
       case R.id.throwBall:
         mAsyncContext.throwBall(60.0f);
         break;
+      case R.id.nextLevel:
+        mAsyncContext.fireJavaEvent_levelFinished();
+        break;
     }
     return true;
   }
