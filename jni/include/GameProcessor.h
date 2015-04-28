@@ -225,6 +225,8 @@ private:
   void collideRightBorder();
   /// @brief Recalculates ball's angle when it faces any horizontal surface.
   void collideHorizontalSurface();
+  /// @brief Recalculates ball's angle when it faces convex corner.
+  void collideCorner();
   /// @brief Recalculates ball's angle when it faces the bite.
   /// @param new_x Position of ball's center along X axis in the next frame.
   /// @return TRUE in case ball collides bite, FALSE if ball misses the bite.

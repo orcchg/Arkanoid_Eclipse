@@ -316,6 +316,10 @@ void GameProcessor::collideHorizontalSurface() {
   m_ball.angle = sign * std::fmod(std::fabs(m_ball.angle), util::_2PI);
 }
 
+void GameProcessor::collideCorner() {
+  // TODO: impls
+}
+
 bool GameProcessor::collideBite(GLfloat new_x) {
   if (new_x >= -(BiteParams::biteHalfWidth + BallParams::ballHalfSize) + m_bite.x_pose &&
       new_x <= (BiteParams::biteHalfWidth + BallParams::ballHalfSize) + m_bite.x_pose) {
