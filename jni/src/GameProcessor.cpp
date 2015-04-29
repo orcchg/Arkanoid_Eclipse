@@ -445,21 +445,21 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
         break;
       // --------------------
       case Block::ELECTRO:
-        /*elasticBlockCollision*/collideBlock(new_x, new_y, top_border, bottom_border, left_border, right_border, 100);
+        collideBlock(new_x, new_y, top_border, bottom_border, left_border, right_border, 100 /* elastic */);
         m_level->destroyBlocksAround(row, col, &affected_blocks);
         for (auto& item : affected_blocks) {
           block_impact_event.notifyListeners(item);
         }
         break;
       case Block::KNOCK_VERTICAL:
-        /*elasticBlockCollision*/collideBlock(new_x, new_y, top_border, bottom_border, left_border, right_border, 100);
+        collideBlock(new_x, new_y, top_border, bottom_border, left_border, right_border, 100 /* elastic */);
         m_level->destroyBlocksBehind(row, col, vertical_direction, &affected_blocks);
         for (auto& item : affected_blocks) {
           block_impact_event.notifyListeners(item);
         }
         break;
       case Block::KNOCK_HORIZONTAL:
-        /*elasticBlockCollision*/collideBlock(new_x, new_y, top_border, bottom_border, left_border, right_border, 100);
+        collideBlock(new_x, new_y, top_border, bottom_border, left_border, right_border, 100 /* elastic */);
         m_level->destroyBlocksBehind(row, col, horizontal_direction, &affected_blocks);
         for (auto& item : affected_blocks) {
           block_impact_event.notifyListeners(item);
@@ -467,22 +467,22 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
         break;
       case Block::NETWORK_1:
         // XXX:
-        /*elasticBlockCollision*/collideBlock(new_x, new_y, top_border, bottom_border, left_border, right_border, 100);
+        collideBlock(new_x, new_y, top_border, bottom_border, left_border, right_border, 100 /* elastic */);
         break;
       // --------------------
       case Block::HYPER:
         // XXX: correctBallPosition();
-        /*elasticBlockCollision*/collideBlock(new_x, new_y, top_border, bottom_border, left_border, right_border, 100);
+        collideBlock(new_x, new_y, top_border, bottom_border, left_border, right_border, 100 /* elastic */);
         break;
       case Block::ORIGIN:
-        /*elasticBlockCollision*/collideBlock(new_x, new_y, top_border, bottom_border, left_border, right_border, 100);
+        collideBlock(new_x, new_y, top_border, bottom_border, left_border, right_border, 100 /* elastic */);
         m_ball_is_flying = false;
         correctBallPosition(m_bite.x_pose, m_bite_upper_border + m_ball.dimens.halfHeight());
         break;
       // --------------------
       case Block::ROLLING:
         viscosity = m_viscosity_distribution(m_generator);
-        /*viscousBlockCollision*/collideBlock(new_x, new_y, top_border, bottom_border, left_border, right_border, viscosity);
+        collideBlock(new_x, new_y, top_border, bottom_border, left_border, right_border, viscosity);
         break;
       // --------------------
       case Block::JELLY:
@@ -496,23 +496,23 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
         // intend no break;
       case Block::CLAY:
         viscosity += 10;
-        /*viscousBlockCollision*/collideBlock(new_x, new_y, top_border, bottom_border, left_border, right_border, viscosity);
+        collideBlock(new_x, new_y, top_border, bottom_border, left_border, right_border, viscosity);
         break;
       // --------------------
       case Block::MAGIC:
         // XXX:
-        /*elasticBlockCollision*/collideBlock(new_x, new_y, top_border, bottom_border, left_border, right_border, 100);
+        collideBlock(new_x, new_y, top_border, bottom_border, left_border, right_border, 100 /* elastic */);
         break;
       case Block::QUICK_1:
         // XXX:
-        /*elasticBlockCollision*/collideBlock(new_x, new_y, top_border, bottom_border, left_border, right_border, 100);
+        collideBlock(new_x, new_y, top_border, bottom_border, left_border, right_border, 100 /* elastic */);
         break;
       case Block::ZYGOTE_1:
         // XXX:
         // intend no break;
       // --------------------
       default:
-        /*elasticBlockCollision*/collideBlock(new_x, new_y, top_border, bottom_border, left_border, right_border, 100);
+        collideBlock(new_x, new_y, top_border, bottom_border, left_border, right_border, 100 /* elastic */);
         break;
     }
     block_impact_event.notifyListeners(RowCol(row, col));
