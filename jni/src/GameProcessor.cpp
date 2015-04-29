@@ -245,11 +245,13 @@ void GameProcessor::moveBall() {
   }
 
   if (new_x >= 1.0f - m_ball.dimens.halfWidth()) {  // right border
+    WRN("RIGHT");
     collideRightBorder();
     correctBallPosition(1.0f - m_ball.dimens.halfWidth(), new_y);
-  } else if (new_x <= -1.0f + m_ball.dimens.halfWidth()) {  // left border
+  } else if (new_x <= -0.99f + m_ball.dimens.halfWidth()) {  // left border
+    ERR("LEFT");
     collideLeftBorder();
-    correctBallPosition(-1.0f + m_ball.dimens.halfWidth(), new_y);
+    correctBallPosition(-0.99f + m_ball.dimens.halfWidth(), new_y);
   }
 
   if (new_y <= m_bite_upper_border + m_ball.dimens.halfHeight()) {
@@ -323,24 +325,24 @@ bool GameProcessor::collideCorner(
     GLfloat left_border,
     GLfloat right_border) {
 
-  if (((new_x + 1.0f <= left_border && new_x + 1.0f >= left_border - BallParams::ballSize) ||
-      (new_x + 1.0f >= right_border && new_x + 1.0f <= right_border + BallParams::ballSize)) &&
-      (m_ball.pose.y + 1.0f >= 2.0f - top_border || m_ball.pose.y + 1.0f <= 2.0f - bottom_border)) {
-    collideHorizontalSurface();
-    return true;
-  }
-  if (m_ball.pose.x + 1.0f <= left_border &&
-      ((new_y + 1.0f >= 2.0f - top_border && new_y + 1.0f <= 2.0f - top_border + BallParams::ballSize) ||
-       (new_y + 1.0f <= 2.0f - bottom_border && new_y + 1.0f >= 2.0f - top_border - BallParams::ballSize))) {
-    collideRightBorder();
-    return true;
-  }
-  if (m_ball.pose.x + 1.0f >= right_border &&
-      ((new_y + 1.0f >= 2.0f - top_border && new_y + 1.0f <= 2.0f - top_border + BallParams::ballSize) ||
-       (new_y + 1.0f <= 2.0f - bottom_border && new_y + 1.0f >= 2.0f - top_border - BallParams::ballSize))) {
-    collideLeftBorder();
-    return true;
-  }
+//  if (((new_x + 1.0f <= left_border && new_x + 1.0f >= left_border - BallParams::ballHalfSize) ||
+//      (new_x + 1.0f >= right_border && new_x + 1.0f <= right_border + BallParams::ballHalfSize)) &&
+//      (m_ball.pose.y + 1.0f >= 2.0f - top_border || m_ball.pose.y + 1.0f <= 2.0f - bottom_border)) {
+//    collideHorizontalSurface();
+//    return true;
+//  }
+//  if (m_ball.pose.x + 1.0f <= left_border &&
+//      ((new_y + 1.0f >= 2.0f - top_border && new_y + 1.0f <= 2.0f - top_border + BallParams::ballHalfSize) ||
+//       (new_y + 1.0f <= 2.0f - bottom_border && new_y + 1.0f >= 2.0f - top_border - BallParams::ballHalfSize))) {
+//    collideRightBorder();
+//    return true;
+//  }
+//  if (m_ball.pose.x + 1.0f >= right_border &&
+//      ((new_y + 1.0f >= 2.0f - top_border && new_y + 1.0f <= 2.0f - top_border + BallParams::ballHalfSize) ||
+//       (new_y + 1.0f <= 2.0f - bottom_border && new_y + 1.0f >= 2.0f - top_border - BallParams::ballHalfSize))) {
+//    collideLeftBorder();
+//    return true;
+//  }
   return false;
 }
 
