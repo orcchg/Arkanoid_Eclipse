@@ -34,7 +34,6 @@
 #include "android/asset_manager.h"
 #include "android/asset_manager_jni.h"
 
-
 class AssetStorage {
 public:
   typedef std::shared_ptr<AssetStorage> Ptr;

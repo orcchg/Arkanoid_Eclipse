@@ -55,6 +55,8 @@ enum class Block : int {
   ZYGOTE_1 = 35
 };
 
+constexpr static int totalBlockTypes = 36;
+
 Block charToBlock(char ch);
 char blockToChar(Block block);
 
