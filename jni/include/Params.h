@@ -1,8 +1,6 @@
 #ifndef __ARKANOID_PARAMS__H__
 #define __ARKANOID_PARAMS__H__
 
-#include "utils.h"
-
 namespace game {
 
 struct BiteParams {
