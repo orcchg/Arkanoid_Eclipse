@@ -245,13 +245,11 @@ void GameProcessor::moveBall() {
   }
 
   if (new_x >= 1.0f - m_ball.dimens.halfWidth()) {  // right border
-    WRN("RIGHT");
     collideRightBorder();
     correctBallPosition(1.0f - m_ball.dimens.halfWidth(), new_y);
-  } else if (new_x <= -0.99f + m_ball.dimens.halfWidth()) {  // left border
-    ERR("LEFT");
+  } else if (new_x <= -1.0f + m_ball.dimens.halfWidth()) {  // left border
     collideLeftBorder();
-    correctBallPosition(-0.99f + m_ball.dimens.halfWidth(), new_y);
+    correctBallPosition(-1.0f + m_ball.dimens.halfWidth(), new_y);
   }
 
   if (new_y <= m_bite_upper_border + m_ball.dimens.halfHeight()) {
