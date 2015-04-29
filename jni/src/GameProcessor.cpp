@@ -635,21 +635,21 @@ void GameProcessor::correctBallPosition(GLfloat new_x, GLfloat new_y) {
 }
 
 void GameProcessor::smallAngleAvoid() {
-  if (m_ball.angle <= util::PI8) {
-    m_ball.angle += util::PI10;
-  } else if (m_ball.angle >= util::_2PI - util::PI8) {
-    m_ball.angle -= util::PI10;
-  } else if (m_ball.angle >= util::PI - util::PI8 && m_ball.angle <= util::PI) {
-    m_ball.angle -= util::PI10;
-  } else if (m_ball.angle > util::PI && m_ball.angle <= util::PI + util::PI8) {
-    m_ball.angle += util::PI10;
-  } else if (m_ball.angle <= util::PI2 + util::PI12 && m_ball.angle >= util::PI2) {
+  if (m_ball.angle <= util::PI16) {
     m_ball.angle += util::PI16;
-  } else if (m_ball.angle >= util::PI2 - util::PI12 && m_ball.angle < util::PI2) {
+  } else if (m_ball.angle >= util::_2PI - util::PI16) {
     m_ball.angle -= util::PI16;
-  } else if (m_ball.angle >= util::_3PI2 && m_ball.angle <= util::_3PI2 + util::PI12) {
+  } else if (m_ball.angle >= util::PI - util::PI16 && m_ball.angle <= util::PI) {
+    m_ball.angle -= util::PI16;
+  } else if (m_ball.angle > util::PI && m_ball.angle <= util::PI + util::PI16) {
     m_ball.angle += util::PI16;
-  } else if (m_ball.angle < util::_3PI2 && m_ball.angle >= util::_3PI2 - util::PI12) {
+  } else if (m_ball.angle <= util::PI2 + util::PI16 && m_ball.angle >= util::PI2) {
+    m_ball.angle += util::PI16;
+  } else if (m_ball.angle >= util::PI2 - util::PI16 && m_ball.angle < util::PI2) {
+    m_ball.angle -= util::PI16;
+  } else if (m_ball.angle >= util::_3PI2 && m_ball.angle <= util::_3PI2 + util::PI16) {
+    m_ball.angle += util::PI16;
+  } else if (m_ball.angle < util::_3PI2 && m_ball.angle >= util::_3PI2 - util::PI16) {
     m_ball.angle -= util::PI16;
   }
 }
