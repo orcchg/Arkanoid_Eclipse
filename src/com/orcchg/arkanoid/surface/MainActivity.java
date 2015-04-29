@@ -19,6 +19,7 @@ public class MainActivity extends FragmentActivity {
   
   private AsyncContext mAsyncContext;
   private GameSurface mSurface;
+  private NativeResources mNativeResources;
   
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -27,6 +28,7 @@ public class MainActivity extends FragmentActivity {
     mAsyncContext = new AsyncContext();
     mAsyncContext.setCoreEventListener(new CoreEventHandler(this));
     mSurface = (GameSurface) findViewById(R.id.surface_view);
+    mNativeResources = new NativeResources(getAssets());
   }
   
   @Override
@@ -46,6 +48,7 @@ public class MainActivity extends FragmentActivity {
   @Override
   protected void onDestroy() {
     mAsyncContext.destroy();
+    mNativeResources.release();
     super.onDestroy();
   }
   
