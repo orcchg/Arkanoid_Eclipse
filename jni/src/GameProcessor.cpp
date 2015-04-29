@@ -258,7 +258,6 @@ void GameProcessor::moveBall() {
       correctBallPosition(new_x, m_bite_upper_border + m_ball.dimens.halfHeight());
     }
   } else if (collideBlocks(new_x, new_y)) {
-    DBG("Cardinality before impact: %i", m_level->getCardinality());
     m_level_finished = (m_level->blockImpact() == 0);
   }
 
@@ -403,9 +402,6 @@ bool GameProcessor::collideBlocks(GLfloat new_x, GLfloat new_y) {
     int viscosity = 0;
     Block block = m_level->getBlock(row, col);
     m_level->setBlockImpacted(row, col);
-    if (block != Block::NONE) {
-      DBG("Impacted block: row = %i, col = %i", row, col);
-    }
     switch (block) {
       case Block::NONE:
         // no impact and disturbance
