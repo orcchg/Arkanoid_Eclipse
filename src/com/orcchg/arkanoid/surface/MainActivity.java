@@ -1,5 +1,6 @@
 package com.orcchg.arkanoid.surface;
 
+import java.io.IOException;
 import java.lang.ref.WeakReference;
 
 import com.orcchg.arkanoid.R;
@@ -29,6 +30,15 @@ public class MainActivity extends FragmentActivity {
     mAsyncContext.setCoreEventListener(new CoreEventHandler(this));
     mSurface = (GameSurface) findViewById(R.id.surface_view);
     mNativeResources = new NativeResources(getAssets());
+    try {
+      String[] resources = getAssets().list("");
+      for (String resource : resources) {
+        mNativeResources.read(resource);
+      }
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    
   }
   
   @Override

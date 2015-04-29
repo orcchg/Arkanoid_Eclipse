@@ -1,3 +1,4 @@
+#include "logger.h"
 #include "Resources.h"
 
 /* Init */
@@ -44,6 +45,7 @@ Resources::~Resources() {
 bool Resources::read(jstring filename) {
   const char* raw_name = m_jenv->GetStringUTFChars(filename, nullptr);
   native::Texture* texture = new native::PNGTexture(m_assets, raw_name);
+  DBG("Read resource: %s", raw_name);
   m_jenv->ReleaseStringUTFChars(filename, raw_name);
   m_textures[raw_name] = texture;
   return true;
