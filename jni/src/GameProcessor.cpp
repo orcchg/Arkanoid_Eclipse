@@ -257,7 +257,7 @@ void GameProcessor::moveBall() {
       m_is_ball_lost = !collideBite(new_x);
       correctBallPosition(new_x, m_bite_upper_border + m_ball.dimens.halfHeight());
     }
-  } else if (collideBlocks(new_x, new_y)) {
+  } else if (collideBlock(new_x, new_y)) {
     m_level_finished = (m_level->blockImpact() == 0);
   }
 
@@ -287,7 +287,7 @@ void GameProcessor::onLevelFinished(bool /* dummy */) {
   m_jenv->CallVoidMethod(master_object, fireJavaEvent_levelFinished_id);
 }
 
-/* Maths group */
+/* Collision group */
 // ----------------------------------------------------------------------------
 void GameProcessor::collideLeftBorder() {
   if (m_ball.angle >= util::PI) {
@@ -315,8 +315,33 @@ void GameProcessor::collideHorizontalSurface() {
   m_ball.angle = sign * std::fmod(std::fabs(m_ball.angle), util::_2PI);
 }
 
-void GameProcessor::collideCorner() {
-  // TODO: impls
+bool GameProcessor::collideCorner(
+    GLfloat new_x,
+    GLfloat new_y,
+    GLfloat top_border,
+    GLfloat bottom_border,
+    GLfloat left_border,
+    GLfloat right_border) {
+
+  if (((new_x + 1.0f <= left_border && new_x + 1.0f >= left_border - BallParams::ballSize) ||
+      (new_x + 1.0f >= right_border && new_x + 1.0f <= right_border + BallParams::ballSize)) &&
+      (m_ball.pose.y + 1.0f >= 2.0f - top_border || m_ball.pose.y + 1.0f <= 2.0f - bottom_border)) {
+    collideHorizontalSurface();
+    return true;
+  }
+  if (m_ball.pose.x + 1.0f <= left_border &&
+      ((new_y + 1.0f >= 2.0f - top_border && new_y + 1.0f <= 2.0f - top_border + BallParams::ballSize) ||
+       (new_y + 1.0f <= 2.0f - bottom_border && new_y + 1.0f >= 2.0f - top_border - BallParams::ballSize))) {
+    collideRightBorder();
+    return true;
+  }
+  if (m_ball.pose.x + 1.0f >= right_border &&
+      ((new_y + 1.0f >= 2.0f - top_border && new_y + 1.0f <= 2.0f - top_border + BallParams::ballSize) ||
+       (new_y + 1.0f <= 2.0f - bottom_border && new_y + 1.0f >= 2.0f - top_border - BallParams::ballSize))) {
+    collideLeftBorder();
+    return true;
+  }
+  return false;
 }
 
 bool GameProcessor::collideBite(GLfloat new_x) {
@@ -370,7 +395,7 @@ bool GameProcessor::collideBite(GLfloat new_x) {
   return true;
 }
 
-bool GameProcessor::collideBlocks(GLfloat new_x, GLfloat new_y) {
+bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
   if (new_y >= 1.0f - m_ball.dimens.halfHeight() - m_level_dimens.height &&
       new_y < 1.0f - m_ball.dimens.halfHeight()) {
     int row = 0, col = 0;
@@ -420,21 +445,21 @@ bool GameProcessor::collideBlocks(GLfloat new_x, GLfloat new_y) {
         break;
       // --------------------
       case Block::ELECTRO:
-        elasticBlockCollision(top_border, bottom_border, left_border, right_border);
+        /*elasticBlockCollision*/collideBlock(new_x, new_y, top_border, bottom_border, left_border, right_border, 100);
         m_level->destroyBlocksAround(row, col, &affected_blocks);
         for (auto& item : affected_blocks) {
           block_impact_event.notifyListeners(item);
         }
         break;
       case Block::KNOCK_VERTICAL:
-        elasticBlockCollision(top_border, bottom_border, left_border, right_border);
+        /*elasticBlockCollision*/collideBlock(new_x, new_y, top_border, bottom_border, left_border, right_border, 100);
         m_level->destroyBlocksBehind(row, col, vertical_direction, &affected_blocks);
         for (auto& item : affected_blocks) {
           block_impact_event.notifyListeners(item);
         }
         break;
       case Block::KNOCK_HORIZONTAL:
-        elasticBlockCollision(top_border, bottom_border, left_border, right_border);
+        /*elasticBlockCollision*/collideBlock(new_x, new_y, top_border, bottom_border, left_border, right_border, 100);
         m_level->destroyBlocksBehind(row, col, horizontal_direction, &affected_blocks);
         for (auto& item : affected_blocks) {
           block_impact_event.notifyListeners(item);
@@ -442,22 +467,22 @@ bool GameProcessor::collideBlocks(GLfloat new_x, GLfloat new_y) {
         break;
       case Block::NETWORK_1:
         // XXX:
-        elasticBlockCollision(top_border, bottom_border, left_border, right_border);
+        /*elasticBlockCollision*/collideBlock(new_x, new_y, top_border, bottom_border, left_border, right_border, 100);
         break;
       // --------------------
       case Block::HYPER:
         // XXX: correctBallPosition();
-        elasticBlockCollision(top_border, bottom_border, left_border, right_border);
+        /*elasticBlockCollision*/collideBlock(new_x, new_y, top_border, bottom_border, left_border, right_border, 100);
         break;
       case Block::ORIGIN:
-        elasticBlockCollision(top_border, bottom_border, left_border, right_border);
+        /*elasticBlockCollision*/collideBlock(new_x, new_y, top_border, bottom_border, left_border, right_border, 100);
         m_ball_is_flying = false;
         correctBallPosition(m_bite.x_pose, m_bite_upper_border + m_ball.dimens.halfHeight());
         break;
       // --------------------
       case Block::ROLLING:
         viscosity = m_viscosity_distribution(m_generator);
-        viscousBlockCollision(top_border, bottom_border, left_border, right_border, viscosity);
+        /*viscousBlockCollision*/collideBlock(new_x, new_y, top_border, bottom_border, left_border, right_border, viscosity);
         break;
       // --------------------
       case Block::JELLY:
@@ -471,23 +496,23 @@ bool GameProcessor::collideBlocks(GLfloat new_x, GLfloat new_y) {
         // intend no break;
       case Block::CLAY:
         viscosity += 10;
-        viscousBlockCollision(top_border, bottom_border, left_border, right_border, viscosity);
+        /*viscousBlockCollision*/collideBlock(new_x, new_y, top_border, bottom_border, left_border, right_border, viscosity);
         break;
       // --------------------
       case Block::MAGIC:
         // XXX:
-        elasticBlockCollision(top_border, bottom_border, left_border, right_border);
+        /*elasticBlockCollision*/collideBlock(new_x, new_y, top_border, bottom_border, left_border, right_border, 100);
         break;
       case Block::QUICK_1:
         // XXX:
-        elasticBlockCollision(top_border, bottom_border, left_border, right_border);
+        /*elasticBlockCollision*/collideBlock(new_x, new_y, top_border, bottom_border, left_border, right_border, 100);
         break;
       case Block::ZYGOTE_1:
         // XXX:
         // intend no break;
       // --------------------
       default:
-        elasticBlockCollision(top_border, bottom_border, left_border, right_border);
+        /*elasticBlockCollision*/collideBlock(new_x, new_y, top_border, bottom_border, left_border, right_border, 100);
         break;
     }
     block_impact_event.notifyListeners(RowCol(row, col));
@@ -503,7 +528,7 @@ bool GameProcessor::collideBlocks(GLfloat new_x, GLfloat new_y) {
   return false;
 }
 
-void GameProcessor::elasticBlockCollision(
+bool GameProcessor::elasticBlockCollision(
     GLfloat top_border,
     GLfloat bottom_border,
     GLfloat left_border,
@@ -511,21 +536,23 @@ void GameProcessor::elasticBlockCollision(
 
   if (m_ball.pose.x + 1.0f > left_border &&
       m_ball.pose.x + 1.0f < right_border &&
-      (m_ball.pose.y + 1.0f >= 2.0f - top_border || m_ball.pose.y + 1.0f <= 2.0f - bottom_border)) {
+      (m_ball.pose.y + 1.0f >= 2.0f - top_border ||
+       m_ball.pose.y + 1.0f <= 2.0f - bottom_border)) {
     collideHorizontalSurface();
-    return;
+    return true;
   }
   if (m_ball.pose.x + 1.0f <= left_border) {
     collideRightBorder();
-    return;
+    return true;
   }
   if (m_ball.pose.x + 1.0f >= right_border) {
     collideLeftBorder();
-    return;
+    return true;
   }
+  return false;
 }
 
-void GameProcessor::viscousBlockCollision(
+bool GameProcessor::viscousBlockCollision(
     GLfloat top_border,
     GLfloat bottom_border,
     GLfloat left_border,
@@ -534,30 +561,49 @@ void GameProcessor::viscousBlockCollision(
 
   if (viscosity == 100) {
     elasticBlockCollision(top_border, bottom_border, left_border, right_border);
-    return;
+    return true;
   } else if (viscosity == 0) {
-    return;
+    return true;
   }
 
   if (m_ball.pose.x + 1.0f > left_border &&
       m_ball.pose.x + 1.0f < right_border &&
-      (m_ball.pose.y + 1.0f >= 2.0f - top_border || m_ball.pose.y + 1.0f <= 2.0f - bottom_border)) {
+      (m_ball.pose.y + 1.0f >= 2.0f - top_border ||
+       m_ball.pose.y + 1.0f <= 2.0f - bottom_border)) {
     collideHorizontalSurface();
     viscousAngleDisturbance(viscosity);
-    return;
+    return true;
   }
   if (m_ball.pose.x + 1.0f <= left_border) {
     collideRightBorder();
     viscousAngleDisturbance(viscosity);
-    return;
+    return true;
   }
   if (m_ball.pose.x + 1.0f >= right_border) {
     collideLeftBorder();
     viscousAngleDisturbance(viscosity);
-    return;
+    return true;
   }
+  return false;
 }
 
+void GameProcessor::collideBlock(
+    GLfloat new_x,
+    GLfloat new_y,
+    GLfloat top_border,
+    GLfloat bottom_border,
+    GLfloat left_border,
+    GLfloat right_border,
+    int viscosity) {
+
+  if (collideCorner(new_x, new_y, top_border, bottom_border, left_border, right_border)) {
+    return;
+  }
+  viscousBlockCollision(top_border, bottom_border, left_border, right_border, viscosity);
+}
+
+/* Maths group */
+// ----------------------------------------------------------------------------
 bool GameProcessor::getImpactedBlock(
     GLfloat ball_x,
     GLfloat ball_y,

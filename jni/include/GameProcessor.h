@@ -216,7 +216,7 @@ private:
   void onLevelFinished(bool /* dummy */);
   /** @} */  // end of LogicFunc group
 
-  /** @addtogroup Maths
+  /** @defgroup Collision Functions to perform various collisions.
    * @{
    */
   /// @brief Recalculates ball's angle when it faces left border of any object.
@@ -226,24 +226,32 @@ private:
   /// @brief Recalculates ball's angle when it faces any horizontal surface.
   void collideHorizontalSurface();
   /// @brief Recalculates ball's angle when it faces convex corner.
-  void collideCorner();
+  /// @param new_x Position of ball's center along X axis in the next frame.
+  /// @param new_y Position of ball's center along Y axis in the next frame.
+  /// @param top_border Top border of collided block.
+  /// @param bottom_border Bottom border of collided block.
+  /// @param left_border Left border of collided block.
+  /// @param right_border Right border of collided block.
+  /// @return TRUE if corner has actually been collided, FALSE otherwise.
+  bool collideCorner(GLfloat new_x, GLfloat new_y, GLfloat top_border, GLfloat bottom_border, GLfloat left_border, GLfloat right_border);
   /// @brief Recalculates ball's angle when it faces the bite.
   /// @param new_x Position of ball's center along X axis in the next frame.
   /// @return TRUE in case ball collides bite, FALSE if ball misses the bite.
   bool collideBite(GLfloat new_x);
-  /// @brief Processing of collision between ball and level's blocks.
+  /// @brief Processing of collision between ball and level's block.
   /// @param new_x Position of ball's center along X axis in the next frame.
   /// @param new_y Position of ball's center along Y axis in the next frame.
   /// @return TRUE in case ball collides level's lower border,
   /// FALSE if ball misses such border.
-  bool collideBlocks(GLfloat new_x, GLfloat new_y);
+  bool collideBlock(GLfloat new_x, GLfloat new_y);
   /// @brief Performs elastic block collision from certain side of block
   /// depending on previous ball's position.
   /// @param top_border Top border of collided block.
   /// @param bottom_border Bottom border of collided block.
   /// @param left_border Left border of collided block.
   /// @param right_border Right border of collided block.
-  void elasticBlockCollision(GLfloat top_border, GLfloat bottom_border, GLfloat left_border, GLfloat right_border);
+  /// @return TRUE if block has actually been collided, FALSE otherwise.
+  bool elasticBlockCollision(GLfloat top_border, GLfloat bottom_border, GLfloat left_border, GLfloat right_border);
   /// @brief Performs viscous block collision from certain side of block
   /// depending on previous ball's position.
   /// @param top_border Top border of collided block.
@@ -251,8 +259,24 @@ private:
   /// @param left_border Left border of collided block.
   /// @param right_border Right border of collided block.
   /// @param viscosity Percentage of viscosity (from 0 to 100)
+  /// @return TRUE if block has actually been collided, FALSE otherwise.
   /// @details 0 viscosity - no disturbance, 100 - elastic collision
-  void viscousBlockCollision(GLfloat top_border, GLfloat bottom_border, GLfloat left_border, GLfloat right_border, int viscosity);
+  bool viscousBlockCollision(GLfloat top_border, GLfloat bottom_border, GLfloat left_border, GLfloat right_border, int viscosity);
+  /// @brief Processing if collision between ball and level's block with
+  /// decision about sided or corner collision and viscosity.
+  /// @param new_x Position of ball's center along X axis in the next frame.
+  /// @param new_y Position of ball's center along Y axis in the next frame.
+  /// @param top_border Top border of collided block.
+  /// @param bottom_border Bottom border of collided block.
+  /// @param left_border Left border of collided block.
+  /// @param right_border Right border of collided block.
+  /// @param viscosity Percentage of viscosity (from 0 to 100)
+  void collideBlock(GLfloat new_x, GLfloat new_y, GLfloat top_border, GLfloat bottom_border, GLfloat left_border, GLfloat right_border, int viscosity);
+  /** @} */  // end of Collision group
+
+  /** @addtogroup Maths
+   * @{
+   */
   /// @brief Calculates row- and column- index of block which is impacted
   /// with the ball at given location.
   /// @param ball_x Position of ball's center along X axis.
