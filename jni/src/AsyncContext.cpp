@@ -32,7 +32,7 @@ AsyncContext::AsyncContext(JavaVM* jvm)
   , m_ball_vertex_buffer(new GLfloat[16])
   , m_ball_color_buffer(new GLfloat[16])
   , m_rectangle_index_buffer(new GLushort[6]{0, 3, 2, 0, 1, 3})
-  , m_rectangle_texCoord_buffer(new GLfloat[12]{1.f,1.f,0.f,1.f,0.f,0.f,1.f,0.f,1.f,1.f}/*new GLfloat[8]{0.f, 0.f, 0.f, 1.f, 1.f, 1.f, 1.f, 0.f}*/)
+  , m_rectangle_texCoord_buffer(new GLfloat[12]{1.f,1.f,0.f,1.f,0.f,0.f,1.f,0.f,1.f,1.f})
   , m_level(nullptr)
   , m_level_vertex_buffer(nullptr)
   , m_level_color_buffer(nullptr)
@@ -469,6 +469,7 @@ void AsyncContext::glOptionsConfig() {
 //  glDepthMask(GL_TRUE);
 //  glEnable(GL_DEPTH_TEST);
 //  glEnable(GL_NORMALIZE);
+  glEnable(GL_TEXTURE);
 }
 
 void AsyncContext::destroyDisplay() {
@@ -490,6 +491,7 @@ void AsyncContext::destroyDisplay() {
 void AsyncContext::render() {
   if (m_egl_display != EGL_NO_DISPLAY) {
     glClear(GL_COLOR_BUFFER_BIT);
+//    drawRectangle();  // XXX
 #if USE_TEXTURE
     for (int r = 0; r < m_level->numRows(); ++r) {
       for (int c = 0; c < m_level->numCols(); ++c) {
@@ -509,7 +511,6 @@ void AsyncContext::render() {
 /* Drawings group */
 // ----------------------------------------------------------------------------
 void AsyncContext::drawLevel() {
-//  if (m_level == nullptr) { return; }
   m_level_shader->useProgram();
 
   GLuint a_position = m_level_shader->getVertexAttribLocation();
@@ -528,7 +529,6 @@ void AsyncContext::drawLevel() {
 }
 
 void AsyncContext::drawBlock(int row, int col) {
-//  if (m_level == nullptr) { return; }
   m_level_shader->useProgram();
 
   GLuint a_position = m_level_shader->getVertexAttribLocation();
@@ -601,6 +601,56 @@ void AsyncContext::drawBall() {
 
   glDisableVertexAttribArray(a_position);
   glDisableVertexAttribArray(a_color);
+}
+
+void AsyncContext::drawRectangle() {
+//  m_ball_shader->useProgram();
+
+//  GLuint a_position = m_ball_shader->getVertexAttribLocation();
+//  GLuint a_color = m_ball_shader->getColorAttribLocation();
+//  GLuint a_texCoord = m_ball_shader->getTexCoordAttribLocation();
+  GLuint a_position = m_level_shader->getVertexAttribLocation();
+  GLuint a_color = m_level_shader->getColorAttribLocation();
+  GLuint a_texCoord = m_level_shader->getTexCoordAttribLocation();
+
+  GLfloat* vertex_buffer = new GLfloat[16]{-0.5f, -0.5f, 0.0f, 1.0f,
+                                          0.5f, -0.5f, 0.0f, 1.0f,
+                                          -0.5f, 0.5f, 0.0f, 1.0f,
+                                          0.5f, 0.5f, 0.0f, 1.0f};
+
+  GLfloat* texCoord_buffer = new GLfloat[8]{0.f, 0.f, 0.f, 1.f, 1.f, 1.f, 1.f, 0.f};
+
+  GLfloat* color_buffer = new GLfloat[16]{1.f, 0.f, 0.f, 1.f,
+                                          1.f, 0.f, 0.f, 1.f,
+                                          1.f, 0.f, 0.f, 1.f,
+                                          1.f, 0.f, 0.f, 1.f};
+
+  m_resources->getTexture("brick_tex.png")->apply();
+  GLint sampler = m_level_shader->getSampler2DUniformLocation();
+  glUniform1i(sampler, 0);
+
+  glEnableVertexAttribArray(a_position);
+  glEnableVertexAttribArray(a_texCoord);
+//  glEnableVertexAttribArray(a_color);
+
+  m_level_shader->useProgram();
+
+  glVertexAttribPointer(a_position, 4, GL_FLOAT, GL_FALSE, 0, &vertex_buffer[0]);
+  glVertexAttribPointer(a_texCoord, 2, GL_FLOAT, GL_FALSE, 0, &texCoord_buffer[0]);
+//  glVertexAttribPointer(a_color, 4, GL_FLOAT, GL_FALSE, 0, &color_buffer[0]);
+
+
+
+//  glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, &m_rectangle_index_buffer[0]);
+  glDrawArrays(GL_TRIANGLES, 0, 4);
+
+  glDisableVertexAttribArray(a_position);
+  glDisableVertexAttribArray(a_texCoord);
+//  glDisableVertexAttribArray(a_color);
+
+  delete [] vertex_buffer;
+  delete [] texCoord_buffer;
+  delete [] color_buffer;
 }
 
 }  // namespace game

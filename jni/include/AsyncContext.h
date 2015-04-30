@@ -305,6 +305,8 @@ private:
   void drawBite();
   /// @brief Draw ball at it's current position.
   void drawBall();
+  /// @brief Draw sample rectangle.
+  void drawRectangle();
   /** @} */  // end of Drawings group
 };
 
