@@ -25,6 +25,8 @@ class AsyncContext {
   void stop() { stop(descriptor); }
   void destroy() { destroy(descriptor); }
   void setSurface(Surface surface) { setSurface(descriptor, surface); }
+  void setResourcesPtr(long resources) { setResourcesPtr(descriptor, resources); }
+  void loadResources() { loadResources(descriptor); }
   
   /* User actions */
   void shiftGamepad(float position) { shiftGamepad(descriptor, position); }
@@ -63,6 +65,8 @@ class AsyncContext {
   private native void stop(long descriptor);
   private native void destroy(long descriptor);
   private native void setSurface(long descriptor, Surface surface);
+  private native void setResourcesPtr(long descriptor, long resources);
+  private native void loadResources(long descriptor);
   
   /* User actions */
   private native void shiftGamepad(long descriptor, float position);

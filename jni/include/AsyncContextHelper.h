@@ -46,12 +46,28 @@ JNIEXPORT void JNICALL Java_com_orcchg_arkanoid_surface_AsyncContext_destroy
   (JNIEnv *, jobject, jlong);
 
 /*
- * Class:     com_orcchg_arkanoid_surface_AsyncContext
+ * Class:     com_orcchg_arkanload_resources_eventoid_surface_AsyncContext
  * Method:    setSurface
  * Signature: (JLandroid/view/Surface;)V
  */
 JNIEXPORT void JNICALL Java_com_orcchg_arkanoid_surface_AsyncContext_setSurface
   (JNIEnv *, jobject, jlong, jobject);
+
+/*
+ * Class:     com_orcchg_arkanoid_surface_AsyncContext
+ * Method:    setResourcesPtr
+ * Signature: (JJ)V
+ */
+JNIEXPORT void JNICALL Java_com_orcchg_arkanoid_surface_AsyncContext_setResourcesPtr
+  (JNIEnv *, jobject, jlong, jlong);
+
+/*
+ * Class:     com_orcchg_arkanoid_surface_AsyncContext
+ * Method:    loadResources
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL Java_com_orcchg_arkanoid_surface_AsyncContext_loadResources
+  (JNIEnv *, jobject, jlong);
 
 /* User actions */
 // ----------------------------------------------------------------------------
@@ -138,6 +154,7 @@ struct AsyncContextHelper {
    * @{
    */
   Event<ANativeWindow*> surface_received_event;  //!< When surface has been prepared.
+  Event<bool> load_resources_event;  //!< Requested load resources.
   Event<float> shift_gesture_event;  //!< When user does a motion gesture.
   Event<float> throw_ball_event;  //<! When user sends a throw ball command.
   Event<game::Level::Ptr> load_level_event;  //<! When user's requested to load level.

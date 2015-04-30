@@ -46,7 +46,6 @@ Texture::Texture(AssetStorage* assets, const char* filename)
   , m_width(0)
   , m_height(0)
   , m_error_code(0) {
-  DBG("Texture::ctor(assets)");
   strcpy(m_filename, filename);
 }
 
@@ -60,12 +59,10 @@ Texture::Texture(const char* filepath)
   , m_width(0)
   , m_height(0)
   , m_error_code(0) {
-  DBG("Texture::ctor(file system)");
   strcpy(m_filename, filepath);
 }
 
 Texture::~Texture() {
-  DBG("Texture::~dtor");
   m_assets = nullptr;
   delete [] m_filename;  m_filename = nullptr;
   unload();
@@ -96,11 +93,11 @@ bool Texture::load() {
 
   glGenTextures(1, &m_id);
   glBindTexture(GL_TEXTURE_2D, m_id);
-  glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
-//  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-//  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-//  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-//  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+//  glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
   glTexImage2D(GL_TEXTURE_2D, 0, m_format, m_width, m_height, 0, m_format, m_type, image_buffer);
   delete [] image_buffer;  image_buffer = nullptr;
   glBindTexture(GL_TEXTURE_2D, 0);
@@ -125,7 +122,7 @@ void Texture::unload() {
   m_height = 0;
 }
 
-void Texture::apply() {
+void Texture::apply() const {
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, m_id);
 }
@@ -133,16 +130,13 @@ void Texture::apply() {
 // ----------------------------------------------------------------------------
 PNGTexture::PNGTexture(AssetStorage* assets, const char* filename)
   : Texture(assets, filename) {
-  DBG("PNGTexture::ctor(assets)");
 }
 
 PNGTexture::PNGTexture(const char* filepath)
   : Texture(filepath) {
-  DBG("PNGTexture::ctor(file system)");
 }
 
 PNGTexture::~PNGTexture() {
-  DBG("PNGTexture::~dtor");
 }
 
 const uint8_t* PNGTexture::loadImage() {

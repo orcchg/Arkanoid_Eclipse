@@ -44,6 +44,8 @@ public:
   /// and hence corresponding event has occurred.
   /// @param window Pointer to a window associated with the rendering surface.
   void callback_setWindow(ANativeWindow* window);
+  /// @brief Called when load resources requested.
+  void callback_loadResources(bool /* dummy */);
   /// @brief Called when user makes a motion gesture within the surface.
   /// @param distance Distance the user's pointer has passed.
   void callback_shiftGamepad(float distance);
@@ -58,7 +60,8 @@ public:
   /// @brief Called when block has been impacted.
   void callback_blockImpact(RowCol block);
   /// @brief Called when level has been successfully finished.
-  void callback_levelFinished(bool is_finished);
+  void callback_levelFinished(bool is_finished);  /// @brief Loads resources into Graphic memory.
+  void loadResources();
   /** @} */  // end of Callbacks group
 
   /** @defgroup GameStat Get game statistics
@@ -72,9 +75,7 @@ public:
    * @{
    */
   /// @brief Sets the pointer to external resources.
-  void setResourcesPtr(Resources::Ptr resources);
-  /// @brief Loads resources into Graphic memory.
-  void loadResources();
+  void setResourcesPtr(Resources* resources);
   /** @} */  // end of Resources group
 
 // ----------------------------------------------
@@ -98,6 +99,8 @@ public:
    */
   /// @brief Listens for event which occurs when surface will be prepared.
   EventListener<ANativeWindow*> surface_received_listener;
+  /// @brief Listens for load resources request.
+  EventListener<bool> load_resources_listener;
   /// @brief Listens for event which occurs when user performs a motion gesture.
   EventListener<float> shift_gesture_listener;
   /// @brief Listens for event which occurs when user sends throw ball command.
@@ -164,10 +167,10 @@ private:
   GLfloat* m_ball_vertex_buffer;  //!< Re-usable buffer for vertices of ball.
   GLfloat* m_ball_color_buffer;   //!< Re-usable buffer for color of ball.
   GLushort* m_rectangle_index_buffer;  //!< Re-usable buffer for indices of rectangle.
+  GLfloat* m_rectangle_texCoord_buffer;  //!< Re-usable buffer for texture coords of rectangle.
 
   Level::Ptr m_level;  //!< Last loaded game level.
   GLfloat* m_level_vertex_buffer;  //!< Re-usable buffer for vertices of level.
-  GLfloat* m_level_texCoord_buffer;  //!< Re-usable buffer for texture coords of level.
   GLfloat* m_level_color_buffer;   //!< Re-usable buffer for colors of level.
   GLushort* m_level_index_buffer;  //!< Re-usable buffer for indices of level's blocks.
   /** @} */  // end of LogicData group
@@ -185,6 +188,7 @@ private:
    */
   std::mutex m_jnienvironment_mutex;  //!< Sentinel for thread attach to JVM.
   std::mutex m_surface_mutex;  //!< Sentinel for window setting.
+  std::mutex m_load_resources_mutex;  //!< Sentinel for load resources.
   std::mutex m_shift_gamepad_mutex;  //!< Sentinel for shifting gesture event.
   std::mutex m_throw_ball_mutex;  //!< Sentinel for throw ball user command.
   std::mutex m_load_level_mutex;  //!< Sentinel for load level user request.
@@ -193,6 +197,7 @@ private:
   std::mutex m_block_impact_mutex;  //!< Sentinel for block impact event.
   std::mutex m_level_finished_mutex;  //!< Sentinel for level has been successfully finished.
   std::atomic_bool m_surface_received;  //!< Window has been set.
+  std::atomic_bool m_load_resources_received;  //!< Load resources requested.
   std::atomic_bool m_shift_gamepad_received;  //!< Shift gesture has occurred.
   std::atomic_bool m_throw_ball_received;  //!< Throw ball command has been received.
   std::atomic_bool m_load_level_received;  //!< Load level request has been received.
@@ -211,7 +216,7 @@ private:
   /** @addtogroup Resources
    * @{
    */
-  Resources::Ptr m_resources;
+  Resources* m_resources;
   /** @} */  // end of Resources group
 
 // ----------------------------------------------
@@ -238,6 +243,8 @@ private:
   /// @brief Given a rendering surface in Java, performs setting of native
   /// window to interact with during actual rendering.
   void process_setWindow();
+  /// @brief Loads external resources into Graphic memory.
+  void process_loadResources();
   /// @brief Performs visual translation of the gamepad by given distance.
   void process_shiftGamepad();
   /// @brief Performs visual ball throwing.
@@ -294,7 +301,7 @@ private:
   void drawLevel();
   /// @brief Draws block of current level.
   void drawBlock(int row, int col);
-  /// @brief Draws bite at it's current position.
+  /// @brief Draws bite at it's current position.m_load_resources_received
   void drawBite();
   /// @brief Draw ball at it's current position.
   void drawBall();

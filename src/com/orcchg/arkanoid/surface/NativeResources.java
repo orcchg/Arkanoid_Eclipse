@@ -11,6 +11,8 @@ public class NativeResources {
     descriptor = init(assets);
   }
   
+  long getPtr() { return descriptor; }
+  
   /* Package API */
   // --------------------------------------------------------------------------
   boolean read(String filename) { return read(descriptor, filename); }

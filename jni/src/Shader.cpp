@@ -27,8 +27,8 @@ ShaderHelper::ShaderHelper(const Shader& shader)
 
   // bind a_position to attribute with index m_vertex_location
   glBindAttribLocation(m_program, m_vertex_location, "a_position");
-  glBindAttribLocation(m_program, m_color_location, "a_color");
-  glBindAttribLocation(m_program, m_texCoord_location, "a_texCoord");
+  shader.bindColorAttribLocation(m_program, m_color_location);
+  shader.bindTexCoordAttribLocation(m_program, m_texCoord_location);
   glLinkProgram(m_program);
 
   glDeleteShader(vertex_shader);
@@ -42,7 +42,12 @@ ShaderHelper::ShaderHelper(const Shader& shader)
     if (infoLen > 1) {
       char* infoLog = new char[infoLen];
       glGetProgramInfoLog(m_program, infoLen, nullptr, infoLog);
-      ERR("Error linking program:\n%s\n", infoLog);
+      ERR("Error linking program: %s", infoLog);
+      if (strcmp(infoLog, "--From Vertex Shader:\n--From Fragment Shader:\nLink was successful.")) {
+        INF("No linker error !");
+        delete [] infoLog;
+        return;
+      }
       delete [] infoLog;
     }
     glDeleteProgram(m_program);
@@ -57,6 +62,9 @@ ShaderHelper::~ShaderHelper() {
 }
 
 void ShaderHelper::useProgram() const {
+  if (m_program == 0) {
+    ERR("Invalid program object !");
+  }
   glUseProgram(m_program);
 }
 
@@ -80,7 +88,7 @@ GLuint ShaderHelper::loadShader(GLenum type, const char* shader_src) {
     if (infoLen > 1) {
       char* infoLog = new char[infoLen];
       glGetShaderInfoLog(shader, infoLen, nullptr, infoLog);
-      ERR("Error compiling shader:\n%s\n", infoLog);
+      ERR("Error compiling shader: %s", infoLog);
       delete [] infoLog;
     }
     glDeleteShader(shader);
@@ -90,7 +98,7 @@ GLuint ShaderHelper::loadShader(GLenum type, const char* shader_src) {
   return shader;
 }
 
-GLuint ShaderHelper::getSampler2DUniformLocation() const {
+GLint ShaderHelper::getSampler2DUniformLocation() const {
   return glGetUniformLocation(m_program, "s_texture");
 }
 
@@ -125,6 +133,14 @@ SimpleShader::SimpleShader()
       "  }                            \n") {
 }
 
+void SimpleShader::bindColorAttribLocation(GLuint program, GLuint color_location) const {
+  glBindAttribLocation(program, color_location, "a_color");
+}
+
+void SimpleShader::bindTexCoordAttribLocation(GLuint program, GLuint texCoord_location) const {
+  // no-op
+}
+
 SimpleTextureShader::SimpleTextureShader()
   : Shader(
       "  attribute vec4 a_position;   \n"
@@ -145,6 +161,14 @@ SimpleTextureShader::SimpleTextureShader()
       "  void main() {                \n"
       "    gl_FragColor = texture2D(s_texture, v_texCoord); \n"
       "  }                            \n") {
+}
+
+void SimpleTextureShader::bindColorAttribLocation(GLuint program, GLuint color_location) const {
+  // no-op
+}
+
+void SimpleTextureShader::bindTexCoordAttribLocation(GLuint program, GLuint texCoord_location) const {
+  glBindAttribLocation(program, texCoord_location, "a_texCoord");
 }
 
 }

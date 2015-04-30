@@ -65,7 +65,7 @@ public:
 
   virtual bool load();
   virtual void unload();
-  virtual void apply();
+  virtual void apply() const;
 
 protected:
   virtual const uint8_t* loadImage() = 0;

@@ -32,15 +32,16 @@ AsyncContext::AsyncContext(JavaVM* jvm)
   , m_ball_vertex_buffer(new GLfloat[16])
   , m_ball_color_buffer(new GLfloat[16])
   , m_rectangle_index_buffer(new GLushort[6]{0, 3, 2, 0, 1, 3})
+  , m_rectangle_texCoord_buffer(new GLfloat[12]{1.f,1.f,0.f,1.f,0.f,0.f,1.f,0.f,1.f,1.f}/*new GLfloat[8]{0.f, 0.f, 0.f, 1.f, 1.f, 1.f, 1.f, 0.f}*/)
   , m_level(nullptr)
   , m_level_vertex_buffer(nullptr)
-  , m_level_texCoord_buffer(nullptr)
   , m_level_color_buffer(nullptr)
   , m_level_index_buffer(nullptr)
   , m_level_shader(nullptr) {
 
   DBG("enter AsyncContext ctor");
   m_surface_received.store(false);
+  m_load_resources_received.store(false);
   m_shift_gamepad_received.store(false);
   m_throw_ball_received.store(false);
   m_load_level_received.store(false);
@@ -67,10 +68,10 @@ AsyncContext::~AsyncContext() {
   delete [] m_ball_vertex_buffer; m_ball_vertex_buffer = nullptr;
   delete [] m_ball_color_buffer; m_ball_color_buffer = nullptr;
   delete [] m_rectangle_index_buffer; m_rectangle_index_buffer = nullptr;
+  delete [] m_rectangle_texCoord_buffer; m_rectangle_texCoord_buffer = nullptr;
 
   m_level = nullptr;
   delete [] m_level_vertex_buffer; m_level_vertex_buffer = nullptr;
-  delete [] m_level_texCoord_buffer; m_level_texCoord_buffer = nullptr;
   delete [] m_level_color_buffer; m_level_color_buffer = nullptr;
   delete [] m_level_index_buffer; m_level_index_buffer = nullptr;
 
@@ -84,6 +85,12 @@ void AsyncContext::callback_setWindow(ANativeWindow* window) {
   std::unique_lock<std::mutex> lock(m_surface_mutex);
   m_surface_received.store(true);
   m_window = window;
+  interrupt();
+}
+
+void AsyncContext::callback_loadResources(bool /* dummy */) {
+  std::unique_lock<std::mutex> lock(m_load_resources_mutex);
+  m_load_resources_received.store(true);
   interrupt();
 }
 
@@ -139,16 +146,8 @@ Level::Ptr AsyncContext::getCurrentLevelState() {
   return m_level;
 }
 
-void AsyncContext::setResourcesPtr(Resources::Ptr resources) {
+void AsyncContext::setResourcesPtr(Resources* resources) {
   m_resources = resources;
-}
-
-void AsyncContext::loadResources() {
-  if (m_resources != nullptr) {
-    for (auto it = m_resources->begin(); it != m_resources->end(); ++it) {
-      it->second->load();
-    }
-  }
 }
 
 /* *** Private methods *** */
@@ -174,12 +173,16 @@ void AsyncContext::onStart() {
   attachToJVM();
 }
 
+void AsyncContext::loadResources() {
+
+}
 void AsyncContext::onStop() {
   detachFromJVM();
 }
 
 bool AsyncContext::checkForWakeUp() {
   return m_surface_received.load() ||
+      m_load_resources_received.load() ||
       m_shift_gamepad_received.load() ||
       m_throw_ball_received.load() ||
       m_load_level_received.load() ||
@@ -196,6 +199,10 @@ void AsyncContext::eventHandler() {
     initGame();
   }
   if (m_window_set) {
+    if (m_load_resources_received.load()) {
+      m_load_resources_received.store(false);
+      process_loadResources();
+    }
     if (m_shift_gamepad_received.load()) {
       m_shift_gamepad_received.store(false);
       process_shiftGamepad();
@@ -250,6 +257,17 @@ void AsyncContext::process_setWindow() {
   DBG("exit AsyncContext::process_setWindow()");
 }
 
+void AsyncContext::process_loadResources() {
+  std::unique_lock<std::mutex> lock(m_load_resources_mutex);
+  if (m_resources != nullptr) {
+    for (auto it = m_resources->begin(); it != m_resources->end(); ++it) {
+      it->second->load();
+    }
+  } else {
+    ERR("Resources pointer was not set !");
+  }
+}
+
 void AsyncContext::process_shiftGamepad() {
   std::unique_lock<std::mutex> lock(m_shift_gamepad_mutex);
   moveBite(m_position);
@@ -283,7 +301,6 @@ void AsyncContext::process_loadLevel() {
       LevelDimens::blockHeight * m_aspect);
 
   m_level->toVertexArray(dimens.getBlockWidth(), dimens.getBlockHeight(), -1.0f, 1.0f, &m_level_vertex_buffer[0]);
-  // TODO: fill m_level_texCoord_buffer
   m_level->fillColorArray(&m_level_color_buffer[0]);
   util::rectangleIndices(&m_level_index_buffer[0], m_level->size() * 6);
 
@@ -524,8 +541,7 @@ void AsyncContext::drawBlock(int row, int col) {
   int rci = col * 16 + row * m_level->numCols() * 16;
   glVertexAttribPointer(a_position, 4, GL_FLOAT, GL_FALSE, 0, &m_level_vertex_buffer[rci]);
 #if USE_TEXTURE
-  int rci_tex = col * 8 + row * m_level->numCols() * 8;
-  glVertexAttribPointer(a_texCoord, 2, GL_FLOAT, GL_FALSE, 0, &m_level_texCoord_buffer[rci_tex]);
+  glVertexAttribPointer(a_texCoord, 2, GL_FLOAT, GL_FALSE, 0, &m_rectangle_texCoord_buffer[0]);
 #else
   glVertexAttribPointer(a_color, 4, GL_FLOAT, GL_FALSE, 0, &m_level_color_buffer[rci]);
 #endif
@@ -533,6 +549,10 @@ void AsyncContext::drawBlock(int row, int col) {
   glEnableVertexAttribArray(a_position);
 #if USE_TEXTURE
   glEnableVertexAttribArray(a_texCoord);
+  // TODO: apply texture for specified block
+  m_resources->getTexture("brick_tex.png")->apply();
+  GLint sampler = m_level_shader->getSampler2DUniformLocation();
+  glUniform1i(sampler, 0);
 #else
   glEnableVertexAttribArray(a_color);
 #endif

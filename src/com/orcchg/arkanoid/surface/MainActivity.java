@@ -33,18 +33,22 @@ public class MainActivity extends FragmentActivity {
     try {
       String[] resources = getAssets().list("");
       for (String resource : resources) {
-        mNativeResources.read(resource);
+        if (!resource.equals("webkit") && !resource.equals("webkitsec") &&
+            !resource.equals("sounds") && !resource.equals("images")) {
+          mNativeResources.read(resource);
+        }
       }
     } catch (IOException e) {
       e.printStackTrace();
     }
-    
+    mAsyncContext.setResourcesPtr(mNativeResources.getPtr());
   }
   
   @Override
   protected void onResume() {
     mAsyncContext.start();
     mSurface.setAsyncContext(mAsyncContext);
+    mAsyncContext.loadResources();
     mAsyncContext.loadLevel(Levels.get(INITIAL_LEVEL));
     super.onResume();
   }

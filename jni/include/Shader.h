@@ -34,13 +34,13 @@ public:
     return m_texCoord_location;
   }
 
-  GLuint getSampler2DUniformLocation() const;
+  GLint getSampler2DUniformLocation() const;
 
 private:
   GLuint m_program;  //!< Linked program.
   GLuint m_vertex_location;  //!< Location of vertex attribute.
   GLuint m_color_location;  //!< Location of color attribute.
-  GLuint m_texCoord_location;  //!< Location of texCoord attribute.
+  GLuint m_texCoord_location;  //!< LocatbindColorAttribLocationion of texCoord attribute.
 
   GLuint loadShader(GLenum type, const char* shader_src);
 };
@@ -56,14 +56,24 @@ public:
 protected:
   const char* vertex;
   const char* fragment;
+
+protected:
+  virtual void bindColorAttribLocation(GLuint program, GLuint color_location) const = 0;
+  virtual void bindTexCoordAttribLocation(GLuint program, GLuint texCoord_location) const = 0;
 };
 
 struct SimpleShader : public Shader {
   SimpleShader();
+
+  void bindColorAttribLocation(GLuint program, GLuint color_location) const override final;
+  void bindTexCoordAttribLocation(GLuint program, GLuint texCoord_location) const override final;
 };
 
 struct SimpleTextureShader : public Shader {
   SimpleTextureShader();
+
+  void bindColorAttribLocation(GLuint program, GLuint color_location) const override final;
+  void bindTexCoordAttribLocation(GLuint program, GLuint texCoord_location) const override final;
 };
 
 }

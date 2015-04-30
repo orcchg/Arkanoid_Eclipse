@@ -2,6 +2,7 @@
 
 #include "AsyncContextHelper.h"
 #include "Level.h"
+#include "Resources.h"
 
 static JavaVM* jvm = nullptr;
 static jclass String_clazz = nullptr;
@@ -22,6 +23,7 @@ JNIEXPORT jlong JNICALL Java_com_orcchg_arkanoid_surface_AsyncContext_init
 
   /* Subscribe on events incoming from outside */
   ptr->acontext->surface_received_listener = ptr->surface_received_event.createListener(&game::AsyncContext::callback_setWindow, ptr->acontext);
+  ptr->acontext->load_resources_listener = ptr->load_resources_event.createListener(&game::AsyncContext::callback_loadResources, ptr->acontext);
   ptr->acontext->shift_gesture_listener = ptr->shift_gesture_event.createListener(&game::AsyncContext::callback_shiftGamepad, ptr->acontext);
   ptr->acontext->throw_ball_listener = ptr->throw_ball_event.createListener(&game::AsyncContext::callback_throwBall, ptr->acontext);
   ptr->acontext->load_level_listener = ptr->load_level_event.createListener(&game::AsyncContext::callback_loadLevel, ptr->acontext);
@@ -76,6 +78,19 @@ JNIEXPORT void JNICALL Java_com_orcchg_arkanoid_surface_AsyncContext_setSurface
   }
 
   ptr->surface_received_event.notifyListeners(ptr->window);
+}
+
+JNIEXPORT void JNICALL Java_com_orcchg_arkanoid_surface_AsyncContext_setResourcesPtr
+  (JNIEnv *, jobject, jlong descriptor, jlong resources) {
+  AsyncContextHelper* ptr = (AsyncContextHelper*) descriptor;
+  game::Resources* res_ptr = (game::Resources*) resources;
+  ptr->acontext->setResourcesPtr(res_ptr);
+}
+
+JNIEXPORT void JNICALL Java_com_orcchg_arkanoid_surface_AsyncContext_loadResources
+  (JNIEnv *, jobject, jlong descriptor) {
+  AsyncContextHelper* ptr = (AsyncContextHelper*) descriptor;
+  ptr->load_resources_event.notifyListeners(true);
 }
 
 /* User actions */
