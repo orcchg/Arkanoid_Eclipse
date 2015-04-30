@@ -24,7 +24,7 @@ enum class Block : int {
 
   /* Action blocks */
   DEATH = 1,               //! 'D' - [ 1 ] lost ball automatically
-  ELECTRO = 2,             // 'E' - [ 1 ] destroys nearest blocks
+  ELECTRO = 2,             //! 'E' - [ 1 ] destroys nearest blocks
   HYPER = 3,               // 'H' - [ 1 ] teleports ball randomly (not lost)
   KNOCK_VERTICAL = 4,      //! 'K' - [ 1 ] destroys blocks behind
   KNOCK_HORIZONTAL = 5,    //! '#' - [ 1 ] destroys blocks behind
@@ -33,7 +33,7 @@ enum class Block : int {
   ORIGIN = 8,              //! 'O' - [ 1 ] puts ball into initial position
   QUICK = 9,               // 'Q' - [ 3 ] transform all other blocks
   ULTRA = 10,              //! 'U' - [ 5 ] win level
-  YOGURT = 11,             //! 'Y' - [ 1 ] transforms nearest to YOUGURT blocks
+  YOGURT = 11,             // 'Y' - [ 1 ] transforms nearest to YOUGURT blocks
   ZYGOTE = 12,             // 'Z' - [ 2 ] produces additional blocks
 
   /* Invulnerable blocks */
