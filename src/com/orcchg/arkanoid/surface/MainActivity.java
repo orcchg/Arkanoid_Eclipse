@@ -72,7 +72,7 @@ public class MainActivity extends FragmentActivity {
   public boolean onOptionsItemSelected(MenuItem item) {
     switch (item.getItemId()) {
       case R.id.throwBall:
-        mAsyncContext.throwBall(60.0f);
+        mAsyncContext.throwBall(3.1415926f * 0.5f);
         break;
       case R.id.nextLevel:
         mAsyncContext.fireJavaEvent_levelFinished();

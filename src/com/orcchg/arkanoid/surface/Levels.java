@@ -8,12 +8,21 @@ public class Levels {
     return levels[index];
   }
   
+//  private static final String[] L0 = new String[] {"TTTTTTTTTT",
+//                                                   "          ",
+//                                                   "          ",
+//                                                   "          ",
+//                                                   "          ",
+//                                                   "  VVVVVVVV"};
+  
   private static final String[] L0 = new String[] {"TTTTTTTTTT",
                                                    "          ",
                                                    "          ",
                                                    "          ",
                                                    "          ",
-                                                   "  VVVVVVVV"};
+                                                   "  T    T  ",
+                                                   "   T  T   ",
+                                                   "    TT    "};
   
   private static final String[] L1 = new String[]{"          ",
                                                   "   SSSS   ",

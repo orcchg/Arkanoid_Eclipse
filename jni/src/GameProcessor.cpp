@@ -315,35 +315,6 @@ void GameProcessor::collideHorizontalSurface() {
   m_ball.setAngle(sign * std::fmod(std::fabs(m_ball.getAngle()), util::_2PI));
 }
 
-bool GameProcessor::collideCorner(
-    GLfloat new_x,
-    GLfloat new_y,
-    GLfloat top_border,
-    GLfloat bottom_border,
-    GLfloat left_border,
-    GLfloat right_border) {
-
-//  if (((new_x + 1.0f <= left_border && new_x + 1.0f >= left_border - BallParams::ballHalfSize) ||
-//      (new_x + 1.0f >= right_border && new_x + 1.0f <= right_border + BallParams::ballHalfSize)) &&
-//      (m_ball.pose.y + 1.0f >= 2.0f - top_border || m_ball.pose.y + 1.0f <= 2.0f - bottom_border)) {
-//    collideHorizontalSurface();
-//    return true;
-//  }
-//  if (m_ball.pose.x + 1.0f <= left_border &&
-//      ((new_y + 1.0f >= 2.0f - top_border && new_y + 1.0f <= 2.0f - top_border + BallParams::ballHalfSize) ||
-//       (new_y + 1.0f <= 2.0f - bottom_border && new_y + 1.0f >= 2.0f - top_border - BallParams::ballHalfSize))) {
-//    collideRightBorder();
-//    return true;
-//  }
-//  if (m_ball.pose.x + 1.0f >= right_border &&
-//      ((new_y + 1.0f >= 2.0f - top_border && new_y + 1.0f <= 2.0f - top_border + BallParams::ballHalfSize) ||
-//       (new_y + 1.0f <= 2.0f - bottom_border && new_y + 1.0f >= 2.0f - top_border - BallParams::ballHalfSize))) {
-//    collideLeftBorder();
-//    return true;
-//  }
-  return false;
-}
-
 bool GameProcessor::collideBite(GLfloat new_x) {
   if (new_x >= -(m_bite.getDimens().halfWidth() + m_ball.getDimens().halfWidth()) + m_bite.getXPose() &&
       new_x <= (m_bite.getDimens().halfWidth() + m_ball.getDimens().halfWidth()) + m_bite.getXPose()) {
@@ -535,25 +506,27 @@ bool GameProcessor::blockCollision(
     GLfloat right_border,
     int viscosity) {
 
-  if (m_ball.getPose().getX() + 1.0f > left_border &&
-      m_ball.getPose().getX() + 1.0f < right_border &&
-      (m_ball.getPose().getY() + 1.0f >= 2.0f - top_border ||
-       m_ball.getPose().getY() + 1.0f <= 2.0f - bottom_border)) {
+  if (m_ball.getPose().getX() + 1.0f > left_border - m_ball.getDimens().halfWidth() &&
+      m_ball.getPose().getX() + 1.0f < right_border + m_ball.getDimens().halfWidth() &&
+      (m_ball.getPose().getY() + 1.0f >= 2.0f - top_border - m_ball.getDimens().halfWidth() ||
+       m_ball.getPose().getY() + 1.0f <= 2.0f - bottom_border + m_ball.getDimens().halfWidth())) {
     collideHorizontalSurface();
     viscousAngleDisturbance(viscosity);
     return true;
   }
-  if (m_ball.getPose().getX() + 1.0f <= left_border/* - m_ball.getDimens().halfWidth()*/) {
+  if (m_ball.getPose().getX() + 1.0f <= left_border - m_ball.getDimens().halfWidth()) {
     collideRightBorder();
     viscousAngleDisturbance(viscosity);
     return true;
   }
-  if (m_ball.getPose().getX() + 1.0f >= right_border/* + m_ball.getDimens().halfWidth()*/) {
+  if (m_ball.getPose().getX() + 1.0f >= right_border + m_ball.getDimens().halfWidth()) {
     collideLeftBorder();
     viscousAngleDisturbance(viscosity);
     return true;
   }
-  return false;
+  INF("Corner collision");
+  randomAngle();
+  return true;
 }
 
 /* Maths group */

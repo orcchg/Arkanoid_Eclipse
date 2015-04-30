@@ -225,15 +225,6 @@ private:
   void collideRightBorder();
   /// @brief Recalculates ball's angle when it faces any horizontal surface.
   void collideHorizontalSurface();
-  /// @brief Recalculates ball's angle when it faces convex corner.
-  /// @param new_x Position of ball's center along X axis in the next frame.
-  /// @param new_y Position of ball's center along Y axis in the next frame.
-  /// @param top_border Top border of collided block.
-  /// @param bottom_border Bottom border of collided block.
-  /// @param left_border Left border of collided block.
-  /// @param right_border Right border of collided block.
-  /// @return TRUE if corner has actually been collided, FALSE otherwise.
-  bool collideCorner(GLfloat new_x, GLfloat new_y, GLfloat top_border, GLfloat bottom_border, GLfloat left_border, GLfloat right_border);
   /// @brief Recalculates ball's angle when it faces the bite.
   /// @param new_x Position of ball's center along X axis in the next frame.
   /// @return TRUE in case ball collides bite, FALSE if ball misses the bite.
