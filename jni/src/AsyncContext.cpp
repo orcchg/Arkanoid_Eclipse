@@ -524,6 +524,7 @@ void AsyncContext::drawBlock(int row, int col) {
   int rci = col * 16 + row * m_level->numCols() * 16;
   glVertexAttribPointer(a_position, 4, GL_FLOAT, GL_FALSE, 0, &m_level_vertex_buffer[rci]);
 #if USE_TEXTURE
+  int rci_tex = col * 8 + row * m_level->numCols() * 8;
   glVertexAttribPointer(a_texCoord, 2, GL_FLOAT, GL_FALSE, 0, &m_level_texCoord_buffer[rci_tex]);
 #else
   glVertexAttribPointer(a_color, 4, GL_FLOAT, GL_FALSE, 0, &m_level_color_buffer[rci]);
