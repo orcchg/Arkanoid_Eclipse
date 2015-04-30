@@ -481,6 +481,9 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
         break;
       case Block::ZYGOTE_1:
         // XXX:
+        break;
+      case Block::MIDAS:
+        // XXX:
         // intend no break;
       // --------------------
       default:
@@ -489,6 +492,7 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
     }
     block_impact_event.notifyListeners(RowCol(row, col));
     return (block != Block::NONE &&
+            block != Block::MIDAS &&
             block != Block::TITAN &&
             block != Block::INVUL &&
             block != Block::EXTRA);

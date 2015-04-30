@@ -21,39 +21,47 @@ namespace game {
 
 enum class Block : int {
   NONE = 0,        //! ' ' - not disturbing
-  ALUMINIUM = 1,   //! 'A' - [ 1 ]
-  BRICK = 2,       //! 'B' - [ 2 ]
-  CLAY = 3,        //! 'C' - [ 1 ] small disturbing
-  DEATH = 4,       //! 'D' - [ 1 ] lost ball automatically
-  ELECTRO = 5,     // 'E' - [ 1 ] destroys nearest blocks
-  FOG = 6,         //! 'F' - [ 1 ] not disturbing
-  GLASS = 7,       //! 'G' - [ 2 ], not disturbing
-  HYPER = 8,       // 'H' - [ 1 ] teleports ball randomly (not lost)
-  IRON = 9,        //! 'I' - [ 3 ]
-  JELLY = 10,      //! 'J' - [ 1 ] large disturbing
-  KNOCK_VERTICAL = 11,      //! 'K' - [ 1 ] destroys blocks behind
-  KNOCK_HORIZONTAL = 12,    //! '#' - [ 1 ] destroys blocks behind
-  STEEL = 13,      //! 'L' - [ 3 ]
-  MAGIC = 14,      // 'M' - [ 1 ] transforms nearest blocks
-  NETWORK = 15,    // 'N' - [ 2 ] destroys all other NETWORK blocks
-  ORIGIN = 16,     //! 'O' - [ 1 ] puts ball into initial position
-  PLUMBUM = 17,    //! 'P' - [ 4 ]
-  QUICK = 18,      // 'Q' - [ 3 ] transform all other blocks
-  ROLLING = 19,    //! 'R' - [ 1 ] random disturbing
-  SIMPLE = 20,     //! 'S' - [ 1 ]
-  TITAN = 21,      //! 'T' - invulnerable
-  ULTRA = 22,      //! 'U' - [ 5 ] win level
-  INVUL = 23,      //! 'V' - invulnerable
-  WATER = 24,      //! 'W' - [ 1 ] small disturbing
-  EXTRA = 25,      //! 'X' - [ 1 ] transforms to invulnerable
-  YOGURT = 26,     //! 'Y' - [ 1 ] small disturbing
-  ZYGOTE = 27,     // 'Z' - [ 2 ] produces additional blocks
 
-  GLASS_1 = 28,
-  NETWORK_1 = 29,
-  QUICK_2 = 30, QUICK_1 = 31,
-  ULTRA_4 = 32, ULTRA_3 = 33, ULTRA_2 = 34, ULTRA_1 = 35,
-  ZYGOTE_1 = 36
+  /* Action blocks */
+  DEATH = 1,               //! 'D' - [ 1 ] lost ball automatically
+  ELECTRO = 2,             // 'E' - [ 1 ] destroys nearest blocks
+  HYPER = 3,               // 'H' - [ 1 ] teleports ball randomly (not lost)
+  KNOCK_VERTICAL = 4,      //! 'K' - [ 1 ] destroys blocks behind
+  KNOCK_HORIZONTAL = 5,    //! '#' - [ 1 ] destroys blocks behind
+  MAGIC = 6,               // 'M' - [ 1 ] transforms nearest blocks
+  NETWORK = 7,             // 'N' - [ 2 ] destroys all other NETWORK blocks
+  ORIGIN = 8,              //! 'O' - [ 1 ] puts ball into initial position
+  QUICK = 9,               // 'Q' - [ 3 ] transform all other blocks
+  ULTRA = 10,              //! 'U' - [ 5 ] win level
+  YOGURT = 11,             //! 'Y' - [ 1 ] transforms nearest to YOUGURT blocks
+  ZYGOTE = 12,             // 'Z' - [ 2 ] produces additional blocks
+
+  /* Invulnerable blocks */
+  TITAN = 13,      //! 'T' - invulnerable
+  INVUL = 14,      //! 'V' - invulnerable
+  EXTRA = 15,      //! 'X' - [ 1 ] transforms to INVUL
+  MIDAS = 16,      // '$' - [ 1 ] transforms nearest to TITAN
+
+  /* Auxiliary blocks */
+  GLASS_1 = 17,
+  NETWORK_1 = 18,
+  QUICK_2 = 19, QUICK_1 = 20,
+  ULTRA_4 = 21, ULTRA_3 = 22, ULTRA_2 = 23, ULTRA_1 = 24,
+  ZYGOTE_1 = 25,
+
+  /* Ordinary blocks */
+  ALUMINIUM = 26,   //! 'A' - [ 1 ]
+  BRICK = 27,       //! 'B' - [ 2 ]
+  CLAY = 28,        //! 'C' - [ 1 ] small disturbing
+  FOG = 29,         //! 'F' - [ 1 ] not disturbing
+  GLASS = 30,       //! 'G' - [ 2 ], not disturbing
+  IRON = 31,        //! 'I' - [ 3 ]
+  JELLY = 32,       //! 'J' - [ 1 ] large disturbing
+  STEEL = 33,       //! 'L' - [ 3 ]
+  PLUMBUM = 34,     //! 'P' - [ 4 ]
+  ROLLING = 35,     //! 'R' - [ 1 ] random disturbing
+  SIMPLE = 36,      //! 'S' - [ 1 ]
+  WATER = 37,       //! 'W' - [ 1 ] small disturbing
 };
 
 constexpr static int totalBlockTypes = 36;

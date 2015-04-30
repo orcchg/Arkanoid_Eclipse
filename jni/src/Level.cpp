@@ -58,6 +58,8 @@ Block charToBlock(char ch) {
     case 'm':
     case 'M':
       return Block::MAGIC;
+    case '$':
+      return Block::MIDAS;
     case 'n':
     case 'N':
       return Block::NETWORK;
@@ -132,6 +134,8 @@ char blockToChar(Block block) {
       return 'L';
     case Block::MAGIC:
       return 'M';
+    case Block::MIDAS:
+      return '$';
     case Block::NETWORK:
       return 'N';
     case Block::ORIGIN:
@@ -273,6 +277,9 @@ void Level::fillColorArrayAtBlock(GLfloat* const array, int row, int col) const 
     case Block::MAGIC:
       bgra = util::BGRA<GLfloat>(util::MAGIC);
       break;
+    case Block::MIDAS:
+      bgra = util::BGRA<GLfloat>(util::MIDAS);
+      break;
     case Block::NETWORK:
     case Block::NETWORK_1:
       bgra = util::BGRA<GLfloat>(util::NETWORK);
@@ -376,6 +383,7 @@ int Level::getCardinalityCost(Block block) {
       return 1;
 
     default:
+    case Block::MIDAS:
     case Block::TITAN:
     case Block::INVUL:
     case Block::EXTRA:
@@ -454,6 +462,9 @@ void Level::setBlockImpacted(int row, int col) {
       setBlock(row, col, Block::NONE);
       break;
     // ----------------------
+    case Block::MIDAS:
+      setBlock(row, col, Block::TITAN);
+      break;
     case Block::EXTRA:
       setBlock(row, col, Block::INVUL);
       break;
@@ -650,6 +661,7 @@ int Level::calculateCardinality() const {
           break;
 
         default:
+        case Block::MIDAS:
         case Block::TITAN:
         case Block::INVUL:
         case Block::EXTRA:

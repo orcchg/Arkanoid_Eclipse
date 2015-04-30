@@ -58,6 +58,7 @@ constexpr static GLfloat JELLY[4]     = {0.8039f, 0.2f,    0.2f,    1.f};
 constexpr static GLfloat KNOCK[4]     = {1.f,     0.4980f, 0.1412f, 1.f};
 constexpr static GLfloat STEEL[4]     = {0.3255f, 0.5255f, 0.5451f, 1.f};
 constexpr static GLfloat MAGIC[4]     = {0.6039f, 0.1961f, 0.8039f, 1.f};
+constexpr static GLfloat MIDAS[4]     = {0.5451f, 0.4588f, 0.f,     1.f};
 constexpr static GLfloat NETWORK[4]   = {1.f,     0.8431f, 0.f,     1.f};
 constexpr static GLfloat ORIGIN[4]    = {0.f,     0.5451f, 0.2706f, 1.f};
 constexpr static GLfloat PLUMBUM[4]   = {0.5451f, 0.4824f, 0.5451f, 1.f};
