@@ -98,10 +98,6 @@ GLuint ShaderHelper::loadShader(GLenum type, const char* shader_src) {
   return shader;
 }
 
-GLint ShaderHelper::getSampler2DUniformLocation() const {
-  return glGetUniformLocation(m_program, "s_texture");
-}
-
 /* Pre-made shaders */
 // ----------------------------------------------------------------------------
 Shader::Shader(const char* vertex, const char* fragment)

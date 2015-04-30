@@ -35,7 +35,9 @@ public:
     return glGetAttribLocation(m_program, "a_texCoord");  // m_texCoord_location;
   }
 
-  GLint getSampler2DUniformLocation() const;
+  inline GLint getSampler2DUniformLocation() const {
+    return glGetUniformLocation(m_program, "s_texture");
+  }
 
 private:
   GLuint m_program;  //!< Linked program.
