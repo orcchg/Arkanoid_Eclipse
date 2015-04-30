@@ -338,6 +338,7 @@ void Level::setVulnerableBlock(int row, int col, Block value) {
   if (blocks[row][col] != Block::TITAN &&
       blocks[row][col] != Block::INVUL) {
     setBlock(row, col, value);
+    initial_cardinality += getCardinalityCost(value);
   }
 }
 

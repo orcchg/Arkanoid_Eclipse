@@ -8,13 +8,6 @@ public class Levels {
     return levels[index];
   }
   
-//  private static final String[] L0 = new String[] {"TTTTTTTTTT",
-//                                                   "          ",
-//                                                   "          ",
-//                                                   "          ",
-//                                                   "          ",
-//                                                   "  VVVVVVVV"};
-  
   private static final String[] L0 = new String[] {"TTTTTTTTTT",
                                                    "          ",
                                                    "          ",
@@ -345,9 +338,24 @@ public class Levels {
                                                     "SSSSSSSSSS",
                                                     "SSSSSSSSSS"};
   
+  private static final String[] L23 = new String[] {"          ",
+                                                    "          ",
+                                                    "          ",
+                                                    "          ",
+                                                    "          ",
+                                                    "          ",
+                                                    "    $     "};
+  
+  private static final String[] L24 = new String[] {"TTTTTTTTTT",
+                                                    "          ",
+                                                    "          ",
+                                                    "          ",
+                                                    "          ",
+                                                    "  VVVVVVVV"};
+  
   private static final String[][] levels = {L0, L1, L2, L3, L4, L5, L6, L7, L8, L9,
                                           L10, L11, L12, L13, L14, L15, L16, L17, L18,
-                                          L19, L20, L21, L22};
+                                          L19, L20, L21, L22, L23, L24};
   
   public static final int TOTAL_LEVELS = levels.length;
 }

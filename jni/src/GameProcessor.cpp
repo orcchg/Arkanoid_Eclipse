@@ -437,6 +437,13 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
           block_impact_event.notifyListeners(item);
         }
         break;
+      case Block::MIDAS:
+        blockCollision(top_border, bottom_border, left_border, right_border, 100 /* elastic */);
+        m_level->modifyBlocksAround(row, col, Block::SIMPLE, &affected_blocks);
+        for (auto& item : affected_blocks) {
+          block_impact_event.notifyListeners(item);
+        }
+        break;
       case Block::NETWORK_1:
         // XXX:
         blockCollision(top_border, bottom_border, left_border, right_border, 100 /* elastic */);
@@ -480,9 +487,6 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
         blockCollision(top_border, bottom_border, left_border, right_border, 100 /* elastic */);
         break;
       case Block::ZYGOTE_1:
-        // XXX:
-        break;
-      case Block::MIDAS:
         // XXX:
         // intend no break;
       // --------------------
