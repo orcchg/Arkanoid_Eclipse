@@ -3,28 +3,26 @@
 
 #include <GLES/gl.h>
 
-#include "Params.h"
-
 namespace game {
 
 /// @brief Measured bite dimensions.
-struct BiteDimens {
-  GLfloat width, height;
-
-private:
-  GLfloat aspect;
-
+class BiteDimens {
 public:
-  BiteDimens(GLfloat aspect = 1.0f, GLfloat w = BiteParams::biteWidth, GLfloat h = BiteParams::biteHeight)
-    : aspect(aspect)
-    , width(w)
-    , height(h * aspect) {
+  BiteDimens(GLfloat w, GLfloat h)
+    : m_width(w)
+    , m_height(h) {
   }
 
-  inline GLfloat halfWidth() { return width * 0.5f; }
-  inline GLfloat halfHeight() { return height * 0.5f; }
-  inline GLfloat quarterWidth() { return width * 0.25f; }
-  inline GLfloat quarterHeight() { return height * 0.25f; }
+  inline GLfloat width() const { return m_width; }
+  inline GLfloat height() const { return m_height; }
+  inline GLfloat halfWidth() const { return m_width * 0.5f; }
+  inline GLfloat halfHeight() const { return m_height * 0.5f; }
+  inline GLfloat quarterWidth() const { return m_width * 0.25f; }
+  inline GLfloat quarterHeight() const { return m_height * 0.25f; }
+
+private:
+  GLfloat m_width;
+  GLfloat m_height;
 };
 
 }

@@ -244,14 +244,6 @@ private:
   /// @return TRUE in case ball collides level's lower border,
   /// FALSE if ball misses such border.
   bool collideBlock(GLfloat new_x, GLfloat new_y);
-  /// @brief Performs elastic block collision from certain side of block
-  /// depending on previous ball's position.
-  /// @param top_border Top border of collided block.
-  /// @param bottom_border Bottom border of collided block.
-  /// @param left_border Left border of collided block.
-  /// @param right_border Right border of collided block.
-  /// @return TRUE if block has actually been collided, FALSE otherwise.
-  bool elasticBlockCollision(GLfloat top_border, GLfloat bottom_border, GLfloat left_border, GLfloat right_border);
   /// @brief Performs viscous block collision from certain side of block
   /// depending on previous ball's position.
   /// @param top_border Top border of collided block.
@@ -261,17 +253,7 @@ private:
   /// @param viscosity Percentage of viscosity (from 0 to 100)
   /// @return TRUE if block has actually been collided, FALSE otherwise.
   /// @details 0 viscosity - no disturbance, 100 - elastic collision
-  bool viscousBlockCollision(GLfloat top_border, GLfloat bottom_border, GLfloat left_border, GLfloat right_border, int viscosity);
-  /// @brief Processing if collision between ball and level's block with
-  /// decision about sided or corner collision and viscosity.
-  /// @param new_x Position of ball's center along X axis in the next frame.
-  /// @param new_y Position of ball's center along Y axis in the next frame.
-  /// @param top_border Top border of collided block.
-  /// @param bottom_border Bottom border of collided block.
-  /// @param left_border Left border of collided block.
-  /// @param right_border Right border of collided block.
-  /// @param viscosity Percentage of viscosity (from 0 to 100)
-  void collideBlock(GLfloat new_x, GLfloat new_y, GLfloat top_border, GLfloat bottom_border, GLfloat left_border, GLfloat right_border, int viscosity);
+  bool blockCollision(GLfloat top_border, GLfloat bottom_border, GLfloat left_border, GLfloat right_border, int viscosity);
   /** @} */  // end of Collision group
 
   /** @addtogroup Maths
@@ -297,7 +279,7 @@ private:
   void randomAngle();
   /// @brief Slightly disturbs angle according to viscosity.
   /// @param viscosity 0 viscosity - no disturbance, 100 - elastic collision
-  void viscousAngleDisturbance(float viscosity);
+  void viscousAngleDisturbance(int viscosity);
   /** @} */  // end of Maths group
 };
 

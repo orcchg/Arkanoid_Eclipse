@@ -187,7 +187,7 @@ void GameProcessor::process_loadLevel() {
 void GameProcessor::process_throwBall() {
   std::unique_lock<std::mutex> lock(m_throw_ball_mutex);
   if (!m_ball_is_flying) {
-    m_ball.angle = m_throw_angle;
+    m_ball.setAngle(m_throw_angle);
     m_level_finished = false;
     m_ball_is_flying = true;
     m_is_ball_lost = false;
@@ -215,7 +215,7 @@ void GameProcessor::process_levelDimens() {
 void GameProcessor::process_biteMoved() {
   std::unique_lock<std::mutex> lock(m_bite_location_mutex);
   if (!m_ball_is_flying) {  // move ball following the bite
-    shiftBall(m_bite.x_pose, m_ball.pose.y /* unchanged */);
+    shiftBall(m_bite.getXPose(), m_ball.getPose().getY() /* unchanged */);
   }
 }
 
@@ -232,10 +232,10 @@ void GameProcessor::moveBall() {
   }
 
   // ball's position in the next frame
-  GLfloat old_x = m_ball.pose.x;
-  GLfloat old_y = m_ball.pose.y;
-  GLfloat new_x = m_ball.pose.x + m_ball.velocity * cos(m_ball.angle);
-  GLfloat new_y = m_ball.pose.y + m_ball.velocity * sin(m_ball.angle);
+  GLfloat old_x = m_ball.getPose().getX();
+  GLfloat old_y = m_ball.getPose().getY();
+  GLfloat new_x = m_ball.getPose().getX() + m_ball.getVelocity() * cos(m_ball.getAngle());
+  GLfloat new_y = m_ball.getPose().getY() + m_ball.getVelocity() * sin(m_ball.getAngle());
 
   if ((m_is_ball_lost && new_y <= -1.0f) || m_is_ball_death) {
     m_ball_is_flying = false;  // stop flying before notify to avoid bugs
@@ -244,34 +244,34 @@ void GameProcessor::moveBall() {
     return;
   }
 
-  if (new_x >= 1.0f - m_ball.dimens.halfWidth()) {  // right border
+  if (new_x >= 1.0f - m_ball.getDimens().halfWidth()) {  // right border
     collideRightBorder();
-    correctBallPosition(1.0f - m_ball.dimens.halfWidth(), new_y);
-  } else if (new_x <= -1.0f + m_ball.dimens.halfWidth()) {  // left border
+    correctBallPosition(1.0f - m_ball.getDimens().halfWidth(), new_y);
+  } else if (new_x <= -1.0f + m_ball.getDimens().halfWidth()) {  // left border
     collideLeftBorder();
-    correctBallPosition(-1.0f + m_ball.dimens.halfWidth(), new_y);
+    correctBallPosition(-1.0f + m_ball.getDimens().halfWidth(), new_y);
   }
 
-  if (new_y <= m_bite_upper_border + m_ball.dimens.halfHeight()) {
+  if (new_y <= m_bite_upper_border + m_ball.getDimens().halfHeight()) {
     if (!m_is_ball_lost) {
       m_is_ball_lost = !collideBite(new_x);
-      correctBallPosition(new_x, m_bite_upper_border + m_ball.dimens.halfHeight());
+      correctBallPosition(new_x, m_bite_upper_border + m_ball.getDimens().halfHeight());
     }
   } else if (collideBlock(new_x, new_y)) {
     m_level_finished = (m_level->blockImpact() == 0);
   }
 
   if (!m_ball_pose_corrected) {
-    new_x = old_x + m_ball.velocity * cos(m_ball.angle);
-    new_y = old_y + m_ball.velocity * sin(m_ball.angle);
+    new_x = old_x + m_ball.getVelocity() * cos(m_ball.getAngle());
+    new_y = old_y + m_ball.getVelocity() * sin(m_ball.getAngle());
     shiftBall(new_x, new_y);
   }
   std::this_thread::sleep_for (std::chrono::milliseconds(ProcessorParams::milliDelay));
 }
 
 void GameProcessor::shiftBall(GLfloat new_x, GLfloat new_y) {
-  m_ball.pose.x = new_x;
-  m_ball.pose.y = new_y;
+  m_ball.setXPose(new_x);
+  m_ball.setYPose(new_y);
   move_ball_event.notifyListeners(m_ball);
 }
 
@@ -290,29 +290,29 @@ void GameProcessor::onLevelFinished(bool /* dummy */) {
 /* Collision group */
 // ----------------------------------------------------------------------------
 void GameProcessor::collideLeftBorder() {
-  if (m_ball.angle >= util::PI) {
-    m_ball.angle = util::_3PI - m_ball.angle;
-  } else if (m_ball.angle >= util::PI2) {
-    m_ball.angle = util::PI - m_ball.angle;
+  if (m_ball.getAngle() >= util::PI) {
+    m_ball.setAngle(util::_3PI - m_ball.getAngle());
+  } else if (m_ball.getAngle() >= util::PI2) {
+    m_ball.setAngle(util::PI - m_ball.getAngle());
   }
-  GLfloat sign = m_ball.angle >= 0.0f ? 1.0f : -1.0f;
-  m_ball.angle = sign * std::fmod(std::fabs(m_ball.angle), util::_2PI);
+  GLfloat sign = m_ball.getAngle() >= 0.0f ? 1.0f : -1.0f;
+  m_ball.setAngle(sign * std::fmod(std::fabs(m_ball.getAngle()), util::_2PI));
 }
 
 void GameProcessor::collideRightBorder() {
-  if (m_ball.angle <= util::PI2) {
-    m_ball.angle = util::PI - m_ball.angle;
-  } else if (m_ball.angle >= util::_3PI2) {
-    m_ball.angle = util::_3PI - m_ball.angle;
+  if (m_ball.getAngle() <= util::PI2) {
+    m_ball.setAngle(util::PI - m_ball.getAngle());
+  } else if (m_ball.getAngle() >= util::_3PI2) {
+    m_ball.setAngle(util::_3PI - m_ball.getAngle());
   }
-  GLfloat sign = m_ball.angle >= 0.0f ? 1.0f : -1.0f;
-  m_ball.angle = sign * std::fmod(std::fabs(m_ball.angle), util::_2PI);
+  GLfloat sign = m_ball.getAngle() >= 0.0f ? 1.0f : -1.0f;
+  m_ball.setAngle(sign * std::fmod(std::fabs(m_ball.getAngle()), util::_2PI));
 }
 
 void GameProcessor::collideHorizontalSurface() {
-  m_ball.angle = util::_2PI - m_ball.angle;
-  GLfloat sign = m_ball.angle >= 0.0f ? 1.0f : -1.0f;
-  m_ball.angle = sign * std::fmod(std::fabs(m_ball.angle), util::_2PI);
+  m_ball.setAngle(util::_2PI - m_ball.getAngle());
+  GLfloat sign = m_ball.getAngle() >= 0.0f ? 1.0f : -1.0f;
+  m_ball.setAngle(sign * std::fmod(std::fabs(m_ball.getAngle()), util::_2PI));
 }
 
 bool GameProcessor::collideCorner(
@@ -345,50 +345,50 @@ bool GameProcessor::collideCorner(
 }
 
 bool GameProcessor::collideBite(GLfloat new_x) {
-  if (new_x >= -(m_bite.dimens.halfWidth() + m_ball.dimens.halfWidth()) + m_bite.x_pose &&
-      new_x <= (m_bite.dimens.halfWidth() + m_ball.dimens.halfWidth()) + m_bite.x_pose) {
+  if (new_x >= -(m_bite.getDimens().halfWidth() + m_ball.getDimens().halfWidth()) + m_bite.getXPose() &&
+      new_x <= (m_bite.getDimens().halfWidth() + m_ball.getDimens().halfWidth()) + m_bite.getXPose()) {
 
-    GLfloat distance = std::fabs(new_x - m_bite.x_pose);
-    GLfloat beta = std::fabs(std::atan(distance / m_bite.radius));
+    GLfloat distance = std::fabs(new_x - m_bite.getXPose());
+    GLfloat beta = std::fabs(std::atan(distance / m_bite.getRadius()));
 
-    if (new_x >= m_bite.x_pose + m_bite.dimens.quarterWidth()) {
+    if (new_x >= m_bite.getXPose() + m_bite.getDimens().quarterWidth()) {
       GLfloat normal = std::fabs(util::PI2 - beta);
-      if (m_ball.angle >= util::_3PI2) {
+      if (m_ball.getAngle() >= util::_3PI2) {
         collideHorizontalSurface();
-      } else if (m_ball.angle >= util::PI) {
-        GLfloat gamma = util::_3PI2 - m_ball.angle;
+      } else if (m_ball.getAngle() >= util::PI) {
+        GLfloat gamma = util::_3PI2 - m_ball.getAngle();
         if (gamma <= beta) {
           GLfloat delta = std::fabs(gamma - 2 * beta + util::PI2);
-          m_ball.angle = delta;
+          m_ball.setAngle(delta);
           smallAngleAvoid();
         } else {
-          gamma = m_ball.angle - util::PI;
+          gamma = m_ball.getAngle() - util::PI;
           GLfloat delta = std::fabs(gamma + 2 * beta - util::PI2);
-          m_ball.angle = util::PI2 - delta;
+          m_ball.setAngle(util::PI2 - delta);
           smallAngleAvoid();
         }
       }
-    } else if (new_x <= m_bite.x_pose - m_bite.dimens.quarterWidth()) {
+    } else if (new_x <= m_bite.getXPose() - m_bite.getDimens().quarterWidth()) {
       GLfloat normal = std::fabs(util::PI2 + beta);
-      if (m_ball.angle >= util::_3PI2) {
-        GLfloat gamma = m_ball.angle - util::_3PI2;
+      if (m_ball.getAngle() >= util::_3PI2) {
+        GLfloat gamma = m_ball.getAngle() - util::_3PI2;
         if (gamma <= beta) {
           GLfloat delta = std::fabs(gamma - 2 * beta + util::PI2);
-          m_ball.angle = util::PI - delta;
+          m_ball.setAngle(util::PI - delta);
           smallAngleAvoid();
         } else {
-          gamma = util::_2PI - m_ball.angle;
+          gamma = util::_2PI - m_ball.getAngle();
           GLfloat delta = std::fabs(gamma + 2 * beta - util::PI2);
-          m_ball.angle = util::PI2 + delta;
+          m_ball.setAngle(util::PI2 + delta);
           smallAngleAvoid();
         }
-      } else if (m_ball.angle >= util::PI) {
+      } else if (m_ball.getAngle() >= util::PI) {
         collideHorizontalSurface();
       }
     } else {
       collideHorizontalSurface();
     }
-    m_ball.angle = std::fmod(std::fabs(m_ball.angle), util::_2PI);
+    m_ball.setAngle(std::fmod(std::fabs(m_ball.getAngle()), util::_2PI));
   } else {
     return false;  // ball missed the bite
   }
@@ -396,8 +396,8 @@ bool GameProcessor::collideBite(GLfloat new_x) {
 }
 
 bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
-  if (new_y >= 1.0f - m_ball.dimens.halfHeight() - m_level_dimens.height &&
-      new_y < 1.0f - m_ball.dimens.halfHeight()) {
+  if (new_y >= 1.0f - m_ball.getDimens().halfHeight() - m_level_dimens.height &&
+      new_y < 1.0f - m_ball.getDimens().halfHeight()) {
     int row = 0, col = 0;
     if (!getImpactedBlock(new_x, new_y, &row, &col)) {
       return false;  // ball has left level boundaries
@@ -408,17 +408,17 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
 
     Direction vertical_direction = Direction::NONE;
     Direction horizontal_direction = Direction::NONE;
-    if (m_ball.pose.x + 1.0f > left_border &&
-        m_ball.pose.x + 1.0f < right_border) {
-      if (m_ball.pose.y >= 1.0f - top_border) {
+    if (m_ball.getPose().getX() + 1.0f > left_border &&
+        m_ball.getPose().getX() + 1.0f < right_border) {
+      if (m_ball.getPose().getY() >= 1.0f - top_border) {
         vertical_direction = Direction::DOWN;
-      } else if (m_ball.pose.y <= 1.0f - bottom_border) {
+      } else if (m_ball.getPose().getY() <= 1.0f - bottom_border) {
         vertical_direction = Direction::UP;
       }
     }
-    if (m_ball.pose.x + 1.0f <= left_border) {
+    if (m_ball.getPose().getX() + 1.0f <= left_border) {
       horizontal_direction = Direction::RIGHT;
-    } else if (m_ball.pose.x + 1.0f >= right_border) {
+    } else if (m_ball.getPose().getX() + 1.0f >= right_border) {
       horizontal_direction = Direction::LEFT;
     }
     std::vector<RowCol> affected_blocks;
@@ -445,21 +445,21 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
         break;
       // --------------------
       case Block::ELECTRO:
-        collideBlock(new_x, new_y, top_border, bottom_border, left_border, right_border, 100 /* elastic */);
+        blockCollision(top_border, bottom_border, left_border, right_border, 100 /* elastic */);
         m_level->destroyBlocksAround(row, col, &affected_blocks);
         for (auto& item : affected_blocks) {
           block_impact_event.notifyListeners(item);
         }
         break;
       case Block::KNOCK_VERTICAL:
-        collideBlock(new_x, new_y, top_border, bottom_border, left_border, right_border, 100 /* elastic */);
+        blockCollision(top_border, bottom_border, left_border, right_border, 100 /* elastic */);
         m_level->destroyBlocksBehind(row, col, vertical_direction, &affected_blocks);
         for (auto& item : affected_blocks) {
           block_impact_event.notifyListeners(item);
         }
         break;
       case Block::KNOCK_HORIZONTAL:
-        collideBlock(new_x, new_y, top_border, bottom_border, left_border, right_border, 100 /* elastic */);
+        blockCollision(top_border, bottom_border, left_border, right_border, 100 /* elastic */);
         m_level->destroyBlocksBehind(row, col, horizontal_direction, &affected_blocks);
         for (auto& item : affected_blocks) {
           block_impact_event.notifyListeners(item);
@@ -467,22 +467,22 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
         break;
       case Block::NETWORK_1:
         // XXX:
-        collideBlock(new_x, new_y, top_border, bottom_border, left_border, right_border, 100 /* elastic */);
+        blockCollision(top_border, bottom_border, left_border, right_border, 100 /* elastic */);
         break;
       // --------------------
       case Block::HYPER:
         // XXX: correctBallPosition();
-        collideBlock(new_x, new_y, top_border, bottom_border, left_border, right_border, 100 /* elastic */);
+        blockCollision(top_border, bottom_border, left_border, right_border, 100 /* elastic */);
         break;
       case Block::ORIGIN:
-        collideBlock(new_x, new_y, top_border, bottom_border, left_border, right_border, 100 /* elastic */);
+        blockCollision(top_border, bottom_border, left_border, right_border, 100 /* elastic */);
         m_ball_is_flying = false;
-        correctBallPosition(m_bite.x_pose, m_bite_upper_border + m_ball.dimens.halfHeight());
+        correctBallPosition(m_bite.getXPose(), m_bite_upper_border + m_ball.getDimens().halfHeight());
         break;
       // --------------------
       case Block::ROLLING:
         viscosity = m_viscosity_distribution(m_generator);
-        collideBlock(new_x, new_y, top_border, bottom_border, left_border, right_border, viscosity);
+        blockCollision(top_border, bottom_border, left_border, right_border, viscosity);
         break;
       // --------------------
       case Block::JELLY:
@@ -496,23 +496,23 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
         // intend no break;
       case Block::CLAY:
         viscosity += 10;
-        collideBlock(new_x, new_y, top_border, bottom_border, left_border, right_border, viscosity);
+        blockCollision(top_border, bottom_border, left_border, right_border, viscosity);
         break;
       // --------------------
       case Block::MAGIC:
         // XXX:
-        collideBlock(new_x, new_y, top_border, bottom_border, left_border, right_border, 100 /* elastic */);
+        blockCollision(top_border, bottom_border, left_border, right_border, 100 /* elastic */);
         break;
       case Block::QUICK_1:
         // XXX:
-        collideBlock(new_x, new_y, top_border, bottom_border, left_border, right_border, 100 /* elastic */);
+        blockCollision(top_border, bottom_border, left_border, right_border, 100 /* elastic */);
         break;
       case Block::ZYGOTE_1:
         // XXX:
         // intend no break;
       // --------------------
       default:
-        collideBlock(new_x, new_y, top_border, bottom_border, left_border, right_border, 100 /* elastic */);
+        blockCollision(top_border, bottom_border, left_border, right_border, 100 /* elastic */);
         break;
     }
     block_impact_event.notifyListeners(RowCol(row, col));
@@ -521,85 +521,39 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
             block != Block::INVUL &&
             block != Block::EXTRA);
 
-  } else if (new_y >= 1.0f - m_ball.dimens.halfHeight()) {
+  } else if (new_y >= 1.0f - m_ball.getDimens().halfHeight()) {
     collideHorizontalSurface();
-    correctBallPosition(new_x, 1.0f - m_ball.dimens.halfHeight());
+    correctBallPosition(new_x, 1.0f - m_ball.getDimens().halfHeight());
   }
   return false;
 }
 
-bool GameProcessor::elasticBlockCollision(
-    GLfloat top_border,
-    GLfloat bottom_border,
-    GLfloat left_border,
-    GLfloat right_border) {
-
-  if (m_ball.pose.x + 1.0f > left_border &&
-      m_ball.pose.x + 1.0f < right_border &&
-      (m_ball.pose.y + 1.0f >= 2.0f - top_border ||
-       m_ball.pose.y + 1.0f <= 2.0f - bottom_border)) {
-    collideHorizontalSurface();
-    return true;
-  }
-  if (m_ball.pose.x + 1.0f <= left_border - m_ball.dimens.halfWidth()) {
-    collideRightBorder();
-    return true;
-  }
-  if (m_ball.pose.x + 1.0f >= right_border + m_ball.dimens.halfWidth()) {
-    collideLeftBorder();
-    return true;
-  }
-  return false;
-}
-
-bool GameProcessor::viscousBlockCollision(
+bool GameProcessor::blockCollision(
     GLfloat top_border,
     GLfloat bottom_border,
     GLfloat left_border,
     GLfloat right_border,
     int viscosity) {
 
-  if (viscosity == 100) {
-    elasticBlockCollision(top_border, bottom_border, left_border, right_border);
-    return true;
-  } else if (viscosity == 0) {
-    return true;
-  }
-
-  if (m_ball.pose.x + 1.0f > left_border &&
-      m_ball.pose.x + 1.0f < right_border &&
-      (m_ball.pose.y + 1.0f >= 2.0f - top_border ||
-       m_ball.pose.y + 1.0f <= 2.0f - bottom_border)) {
+  if (m_ball.getPose().getX() + 1.0f > left_border &&
+      m_ball.getPose().getX() + 1.0f < right_border &&
+      (m_ball.getPose().getY() + 1.0f >= 2.0f - top_border ||
+       m_ball.getPose().getY() + 1.0f <= 2.0f - bottom_border)) {
     collideHorizontalSurface();
     viscousAngleDisturbance(viscosity);
     return true;
   }
-  if (m_ball.pose.x + 1.0f <= left_border) {
+  if (m_ball.getPose().getX() + 1.0f <= left_border/* - m_ball.getDimens().halfWidth()*/) {
     collideRightBorder();
     viscousAngleDisturbance(viscosity);
     return true;
   }
-  if (m_ball.pose.x + 1.0f >= right_border) {
+  if (m_ball.getPose().getX() + 1.0f >= right_border/* + m_ball.getDimens().halfWidth()*/) {
     collideLeftBorder();
     viscousAngleDisturbance(viscosity);
     return true;
   }
   return false;
-}
-
-void GameProcessor::collideBlock(
-    GLfloat new_x,
-    GLfloat new_y,
-    GLfloat top_border,
-    GLfloat bottom_border,
-    GLfloat left_border,
-    GLfloat right_border,
-    int viscosity) {
-
-  if (collideCorner(new_x, new_y, top_border, bottom_border, left_border, right_border)) {
-    return;
-  }
-  viscousBlockCollision(top_border, bottom_border, left_border, right_border, viscosity);
 }
 
 /* Maths group */
@@ -610,16 +564,16 @@ bool GameProcessor::getImpactedBlock(
     int* row,
     int* col) {
 
-  if (m_ball.pose.x >= ball_x) {  // from right
-    *col = static_cast<int>(std::floor((ball_x - m_ball.dimens.halfWidth() + 1.0f) / m_level_dimens.block_width));
+  if (m_ball.getPose().getX() >= ball_x) {  // from right
+    *col = static_cast<int>(std::floor((ball_x - m_ball.getDimens().halfWidth() + 1.0f) / m_level_dimens.block_width));
   } else {  // from left
-    *col = static_cast<int>(std::floor((ball_x + m_ball.dimens.halfWidth() + 1.0f) / m_level_dimens.block_width));
+    *col = static_cast<int>(std::floor((ball_x + m_ball.getDimens().halfWidth() + 1.0f) / m_level_dimens.block_width));
   }
 
-  if (m_ball.pose.y >= ball_y) {  // from top
-    *row = static_cast<int>(std::floor((1.0f + m_ball.dimens.halfHeight() - ball_y) / m_level_dimens.block_height));
+  if (m_ball.getPose().getY() >= ball_y) {  // from top
+    *row = static_cast<int>(std::floor((1.0f + m_ball.getDimens().halfHeight() - ball_y) / m_level_dimens.block_height));
   } else {  // from bottom
-    *row = static_cast<int>(std::floor((1.0f - m_ball.dimens.halfHeight() - ball_y) / m_level_dimens.block_height));
+    *row = static_cast<int>(std::floor((1.0f - m_ball.getDimens().halfHeight() - ball_y) / m_level_dimens.block_height));
   }
 
   if (*row < 0 || *row >= m_level->numRows() ||
@@ -635,37 +589,39 @@ void GameProcessor::correctBallPosition(GLfloat new_x, GLfloat new_y) {
 }
 
 void GameProcessor::smallAngleAvoid() {
-  if (m_ball.angle <= util::PI16) {
-    m_ball.angle += util::PI16;
-  } else if (m_ball.angle >= util::_2PI - util::PI16) {
-    m_ball.angle -= util::PI16;
-  } else if (m_ball.angle >= util::PI - util::PI16 && m_ball.angle <= util::PI) {
-    m_ball.angle -= util::PI16;
-  } else if (m_ball.angle > util::PI && m_ball.angle <= util::PI + util::PI16) {
-    m_ball.angle += util::PI16;
-  } else if (m_ball.angle <= util::PI2 + util::PI16 && m_ball.angle >= util::PI2) {
-    m_ball.angle += util::PI16;
-  } else if (m_ball.angle >= util::PI2 - util::PI16 && m_ball.angle < util::PI2) {
-    m_ball.angle -= util::PI16;
-  } else if (m_ball.angle >= util::_3PI2 && m_ball.angle <= util::_3PI2 + util::PI16) {
-    m_ball.angle += util::PI16;
-  } else if (m_ball.angle < util::_3PI2 && m_ball.angle >= util::_3PI2 - util::PI16) {
-    m_ball.angle -= util::PI16;
+  if (m_ball.getAngle() <= util::PI16) {
+    m_ball.setAngle(m_ball.getAngle() + util::PI16);
+  } else if (m_ball.getAngle() >= util::_2PI - util::PI16) {
+    m_ball.setAngle(m_ball.getAngle() - util::PI16);
+  } else if (m_ball.getAngle() >= util::PI - util::PI16 && m_ball.getAngle() <= util::PI) {
+    m_ball.setAngle(m_ball.getAngle() - util::PI16);
+  } else if (m_ball.getAngle() > util::PI && m_ball.getAngle() <= util::PI + util::PI16) {
+    m_ball.setAngle(m_ball.getAngle() + util::PI16);
+  } else if (m_ball.getAngle() <= util::PI2 + util::PI16 && m_ball.getAngle() >= util::PI2) {
+    m_ball.setAngle(m_ball.getAngle() + util::PI16);
+  } else if (m_ball.getAngle() >= util::PI2 - util::PI16 && m_ball.getAngle() < util::PI2) {
+    m_ball.setAngle(m_ball.getAngle() - util::PI16);
+  } else if (m_ball.getAngle() >= util::_3PI2 && m_ball.getAngle() <= util::_3PI2 + util::PI16) {
+    m_ball.setAngle(m_ball.getAngle() + util::PI16);
+  } else if (m_ball.getAngle() < util::_3PI2 && m_ball.getAngle() >= util::_3PI2 - util::PI16) {
+    m_ball.setAngle(m_ball.getAngle() - util::PI16);
   }
 }
 
 void GameProcessor::randomAngle() {
   std::normal_distribution<float> init_angle_distribution(util::PI4, util::PI12);
-  m_ball.angle = init_angle_distribution(m_generator);
-  m_ball.angle += m_direction_distribution(m_generator) ? 0.0f : util::PI2;
-  m_ball.angle = std::fmod(m_ball.angle, util::_2PI);
+  m_ball.setAngle(init_angle_distribution(m_generator));
+  m_ball.setAngle(m_ball.getAngle() + (m_direction_distribution(m_generator) ? 0.0f : util::PI2));
+  m_ball.setAngle(std::fmod(m_ball.getAngle(), util::_2PI));
 }
 
-void GameProcessor::viscousAngleDisturbance(float viscosity) {
-  GLfloat direction = m_direction_distribution(m_generator) ? 1.0f : -1.0f;
-  m_ball.angle += direction * m_angle_distribution(m_generator) / 100.0f * viscosity;
-  GLfloat sign = m_ball.angle >= 0.0f ? 1.0f : -1.0f;
-  m_ball.angle = sign * std::fmod(std::fabs(m_ball.angle), util::_2PI);
+void GameProcessor::viscousAngleDisturbance(int viscosity) {
+  if (viscosity != 0 && viscosity != 100) {
+    GLfloat direction = m_direction_distribution(m_generator) ? 1.0f : -1.0f;
+    m_ball.setAngle(m_ball.getAngle() + (direction * m_angle_distribution(m_generator) / 100.0f * viscosity));
+    GLfloat sign = m_ball.getAngle() >= 0.0f ? 1.0f : -1.0f;
+    m_ball.setAngle(sign * std::fmod(std::fabs(m_ball.getAngle()), util::_2PI));
+  }
 }
 
 }

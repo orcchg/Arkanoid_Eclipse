@@ -6,18 +6,24 @@
 
 namespace game {
 
-struct Bite {
-  BiteDimens dimens;
-  GLfloat radius;
-  GLfloat x_pose;
-  GLfloat x_velocity;
-
-  Bite(GLfloat aspect = 1.0f)
-    : dimens(aspect)
-    , radius(BiteParams::radius)
-    , x_pose(0.0f)
-    , x_velocity(0.0f) {
+class Bite {
+public:
+  Bite(GLfloat width = 0.f, GLfloat height = 0.f)
+    : m_dimens(width, height)
+    , m_radius(BiteParams::radius)
+    , m_pose(0.0f) {
   }
+
+  inline const BiteDimens& getDimens() const { return m_dimens; }
+  inline GLfloat getRadius() const { return m_radius; }
+  inline GLfloat getXPose() const { return m_pose; }
+
+  inline void setXPose(GLfloat pose) { m_pose = pose; }
+
+private:
+  BiteDimens m_dimens;
+  GLfloat m_radius;
+  GLfloat m_pose;
 };
 
 }

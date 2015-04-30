@@ -274,7 +274,7 @@ void AsyncContext::process_loadLevel() {
 
 void AsyncContext::process_moveBall() {
   std::unique_lock<std::mutex> lock(m_move_ball_mutex);
-  moveBall(m_ball.pose.x, m_ball.pose.y);
+  moveBall(m_ball.getPose().getX(), m_ball.getPose().getY());
 }
 
 void AsyncContext::process_lostBall() {
@@ -302,37 +302,35 @@ void AsyncContext::initGame() {
   aspect_ratio_event.notifyListeners(m_aspect);
 
   // ensure correct initial location
-  m_bite = Bite(m_aspect);
-  m_bite.dimens.height = BiteParams::biteHeight * m_aspect;
+  m_bite = Bite(BiteParams::biteWidth, BiteParams::biteHeight * m_aspect);
   moveBite(0.0f);
 
-  m_ball = Ball(m_aspect);
-  m_ball.dimens.height = BallParams::ballSize * m_aspect;
-  m_ball.pose.x = m_bite.x_pose;
-  m_ball.pose.y = -BiteParams::neg_biteElevation + m_ball.dimens.halfHeight();
-  moveBall(m_ball.pose.x, m_ball.pose.y);
+  m_ball = Ball(BallParams::ballSize, BallParams::ballSize * m_aspect);
+  m_ball.setXPose(m_bite.getXPose());
+  m_ball.setYPose(-BiteParams::neg_biteElevation + m_ball.getDimens().halfHeight());
+  moveBall(m_ball.getPose().getX(), m_ball.getPose().getY());
 
   init_ball_position_event.notifyListeners(m_ball);
   init_bite_event.notifyListeners(m_bite);
 }
 
 void AsyncContext::moveBite(float position) {
-  if (std::fabs(position - m_bite.x_pose) >= BiteParams::biteTouchArea) {
+  if (std::fabs(position - m_bite.getXPose()) >= BiteParams::biteTouchArea) {
     // finger position is out of bite's borders
     return;
   }
 
-  m_bite.x_pose = position;
-  if (m_bite.x_pose > 1.0f - m_bite.dimens.halfWidth()) {
-    m_bite.x_pose = 1.0f - m_bite.dimens.halfWidth();
-  } else if (m_bite.x_pose < m_bite.dimens.halfWidth() - 1.0f) {
-    m_bite.x_pose = m_bite.dimens.halfWidth() - 1.0f;
+  m_bite.setXPose(position);
+  if (m_bite.getXPose() > 1.0f - m_bite.getDimens().halfWidth()) {
+    m_bite.setXPose(1.0f - m_bite.getDimens().halfWidth());
+  } else if (m_bite.getXPose() < m_bite.getDimens().halfWidth() - 1.0f) {
+    m_bite.setXPose(m_bite.getDimens().halfWidth() - 1.0f);
   }
 
   util::setRectangleVertices(
       &m_bite_vertex_buffer[0],
-      BiteParams::biteWidth, m_bite.dimens.height,
-      -m_bite.dimens.halfWidth() + m_bite.x_pose,
+      BiteParams::biteWidth, m_bite.getDimens().height(),
+      -m_bite.getDimens().halfWidth() + m_bite.getXPose(),
       -BiteParams::neg_biteElevation,
       1, 1);
 
@@ -342,9 +340,9 @@ void AsyncContext::moveBite(float position) {
 void AsyncContext::moveBall(float x_position, float y_position) {
   util::setRectangleVertices(
       &m_ball_vertex_buffer[0],
-      BallParams::ballSize, m_ball.dimens.height,
-      -BallParams::ballHalfSize + x_position,
-      m_ball.dimens.halfHeight() + y_position,
+      m_ball.getDimens().width(), m_ball.getDimens().height(),
+      -m_ball.getDimens().halfWidth() + x_position,
+      m_ball.getDimens().halfHeight() + y_position,
       1, 1);
 }
 
