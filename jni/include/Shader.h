@@ -4,6 +4,7 @@
 #include <memory>
 
 #include <GLES/gl.h>
+#include <GLES2/gl2.h>
 
 namespace shader {
 
@@ -23,15 +24,15 @@ public:
   void useProgram() const;
 
   inline GLuint getVertexAttribLocation() const {
-    return m_vertex_location;
+    return glGetAttribLocation(m_program, "a_position");  // m_vertex_location;
   }
 
   inline GLuint getColorAttribLocation() const {
-    return m_color_location;
+    return glGetAttribLocation(m_program, "a_color");  // m_color_location;
   }
 
   inline GLuint getTexCoordAttribLocation() const {
-    return m_texCoord_location;
+    return glGetAttribLocation(m_program, "a_texCoord");  // m_texCoord_location;
   }
 
   GLint getSampler2DUniformLocation() const;
