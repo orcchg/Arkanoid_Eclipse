@@ -55,4 +55,19 @@ const native::Texture* const Resources::getTexture(const std::string& name) cons
   return m_textures.at(name);
 }
 
+Resources::iterator Resources::begin() {
+  return m_textures.begin();
+}
+Resources::iterator Resources::end() {
+  return m_textures.end();
+}
+
+Resources::const_iterator Resources::cbegin() const {
+  return m_textures.cbegin();
+}
+
+Resources::const_iterator Resources::cend() const {
+  return m_textures.cend();
+}
+
 }

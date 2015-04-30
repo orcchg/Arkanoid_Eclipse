@@ -18,6 +18,7 @@
 #include "Bite.h"
 #include "Level.h"
 #include "LevelDimens.h"
+#include "Resources.h"
 #include "RowCol.h"
 #include "Shader.h"
 
@@ -66,6 +67,15 @@ public:
   /// @brief Gets current state of last loaded level.
   Level::Ptr getCurrentLevelState();
   /** @} */  // end of GameStat group
+
+  /** @defgroup Resources Bind with external resources.
+   * @{
+   */
+  /// @brief Sets the pointer to external resources.
+  void setResourcesPtr(Resources::Ptr resources);
+  /// @brief Loads resources into Graphic memory.
+  void loadResources();
+  /** @} */  // end of Resources group
 
 // ----------------------------------------------
 /* Private member-functions */
@@ -157,6 +167,7 @@ private:
 
   Level::Ptr m_level;  //!< Last loaded game level.
   GLfloat* m_level_vertex_buffer;  //!< Re-usable buffer for vertices of level.
+  GLfloat* m_level_texCoord_buffer;  //!< Re-usable buffer for texture coords of level.
   GLfloat* m_level_color_buffer;   //!< Re-usable buffer for colors of level.
   GLushort* m_level_index_buffer;  //!< Re-usable buffer for indices of level's blocks.
   /** @} */  // end of LogicData group
@@ -196,6 +207,12 @@ private:
    */
   bool m_window_set;
   /** @} */  // end of SafetyFlag group
+
+  /** @addtogroup Resources
+   * @{
+   */
+  Resources::Ptr m_resources;
+  /** @} */  // end of Resources group
 
 // ----------------------------------------------
 /* Private member-functions */

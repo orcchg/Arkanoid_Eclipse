@@ -44,6 +44,7 @@ JNIEXPORT void JNICALL Java_com_orcchg_arkanoid_surface_NativeResources_release
 
 /* Core */
 // ----------------------------------------------------------------------------
+#include <memory>
 #include <string>
 #include <unordered_map>
 
@@ -54,11 +55,20 @@ namespace game {
 
 class Resources {
 public:
+  typedef std::shared_ptr<Resources> Ptr;
+  typedef std::unordered_map<std::string, native::Texture*>::iterator iterator;
+  typedef std::unordered_map<std::string, native::Texture*>::const_iterator const_iterator;
+
   Resources(JNIEnv* jenv, jobject assets);
   ~Resources() noexcept;
 
   bool read(jstring filename);
   const native::Texture* const getTexture(const std::string& name) const;
+
+  iterator begin();
+  iterator end();
+  const_iterator cbegin() const;
+  const_iterator cend() const;
 
 private:
   JNIEnv* m_jenv;

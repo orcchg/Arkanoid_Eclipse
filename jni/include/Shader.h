@@ -34,6 +34,8 @@ public:
     return m_texCoord_location;
   }
 
+  GLuint getSampler2DUniformLocation() const;
+
 private:
   GLuint m_program;  //!< Linked program.
   GLuint m_vertex_location;  //!< Location of vertex attribute.

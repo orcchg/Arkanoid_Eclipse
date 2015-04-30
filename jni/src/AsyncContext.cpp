@@ -6,6 +6,7 @@
 #include "EGLConfigChooser.h"
 #include "Exceptions.h"
 #include "logger.h"
+#include "Macro.h"
 #include "Params.h"
 #include "utils.h"
 
@@ -33,6 +34,7 @@ AsyncContext::AsyncContext(JavaVM* jvm)
   , m_rectangle_index_buffer(new GLushort[6]{0, 3, 2, 0, 1, 3})
   , m_level(nullptr)
   , m_level_vertex_buffer(nullptr)
+  , m_level_texCoord_buffer(nullptr)
   , m_level_color_buffer(nullptr)
   , m_level_index_buffer(nullptr)
   , m_level_shader(nullptr) {
@@ -47,6 +49,7 @@ AsyncContext::AsyncContext(JavaVM* jvm)
   m_block_impact_received.store(false);
   m_level_finished_received.store(false);
   m_window_set = false;
+  m_resources = nullptr;
 
   util::setColor(util::MAGENTA, &m_bite_color_buffer[0], 16);
   util::setColor(util::ORANGE, &m_ball_color_buffer[0], 16);
@@ -67,9 +70,11 @@ AsyncContext::~AsyncContext() {
 
   m_level = nullptr;
   delete [] m_level_vertex_buffer; m_level_vertex_buffer = nullptr;
+  delete [] m_level_texCoord_buffer; m_level_texCoord_buffer = nullptr;
   delete [] m_level_color_buffer; m_level_color_buffer = nullptr;
   delete [] m_level_index_buffer; m_level_index_buffer = nullptr;
 
+  m_resources = nullptr;
   DBG("exit AsyncContext ~dtor");
 }
 
@@ -132,6 +137,18 @@ void AsyncContext::callback_levelFinished(bool is_finished) {
 Level::Ptr AsyncContext::getCurrentLevelState() {
   std::unique_lock<std::mutex> lock(m_load_level_mutex);
   return m_level;
+}
+
+void AsyncContext::setResourcesPtr(Resources::Ptr resources) {
+  m_resources = resources;
+}
+
+void AsyncContext::loadResources() {
+  if (m_resources != nullptr) {
+    for (auto it = m_resources->begin(); it != m_resources->end(); ++it) {
+      it->second->load();
+    }
+  }
 }
 
 /* *** Private methods *** */
@@ -266,6 +283,7 @@ void AsyncContext::process_loadLevel() {
       LevelDimens::blockHeight * m_aspect);
 
   m_level->toVertexArray(dimens.getBlockWidth(), dimens.getBlockHeight(), -1.0f, 1.0f, &m_level_vertex_buffer[0]);
+  // TODO: fill m_level_texCoord_buffer
   m_level->fillColorArray(&m_level_color_buffer[0]);
   util::rectangleIndices(&m_level_index_buffer[0], m_level->size() * 6);
 
@@ -418,7 +436,11 @@ void AsyncContext::glOptionsConfig() {
   glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
   glViewport(-4, -4, m_width + 4, m_height + 4);
 
+#if USE_TEXTURE
+  m_level_shader = std::make_shared<shader::ShaderHelper>(shader::SimpleTextureShader());
+#else
   m_level_shader = std::make_shared<shader::ShaderHelper>(shader::SimpleShader());
+#endif  // USE_TEXTURE
   m_bite_shader = std::make_shared<shader::ShaderHelper>(shader::SimpleShader());
   m_ball_shader = std::make_shared<shader::ShaderHelper>(shader::SimpleShader());
 
@@ -451,7 +473,15 @@ void AsyncContext::destroyDisplay() {
 void AsyncContext::render() {
   if (m_egl_display != EGL_NO_DISPLAY) {
     glClear(GL_COLOR_BUFFER_BIT);
+#if USE_TEXTURE
+    for (int r = 0; r < m_level->numRows(); ++r) {
+      for (int c = 0; c < m_level->numCols(); ++c) {
+        drawBlock(r, c);
+      }
+    }
+#else
     drawLevel();
+#endif
     drawBite();
     drawBall();
     eglSwapInterval(m_egl_display, 0);
@@ -485,19 +515,35 @@ void AsyncContext::drawBlock(int row, int col) {
   m_level_shader->useProgram();
 
   GLuint a_position = m_level_shader->getVertexAttribLocation();
+#if USE_TEXTURE
+  GLuint a_texCoord = m_level_shader->getTexCoordAttribLocation();
+#else
   GLuint a_color = m_level_shader->getColorAttribLocation();
+#endif
 
   int rci = col * 16 + row * m_level->numCols() * 16;
   glVertexAttribPointer(a_position, 4, GL_FLOAT, GL_FALSE, 0, &m_level_vertex_buffer[rci]);
+#if USE_TEXTURE
+  glVertexAttribPointer(a_texCoord, 2, GL_FLOAT, GL_FALSE, 0, &m_level_texCoord_buffer[rci_tex]);
+#else
   glVertexAttribPointer(a_color, 4, GL_FLOAT, GL_FALSE, 0, &m_level_color_buffer[rci]);
+#endif
 
   glEnableVertexAttribArray(a_position);
+#if USE_TEXTURE
+  glEnableVertexAttribArray(a_texCoord);
+#else
   glEnableVertexAttribArray(a_color);
+#endif
 
   glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, &m_rectangle_index_buffer[0]);
 
   glDisableVertexAttribArray(a_position);
+#if USE_TEXTURE
+  glDisableVertexAttribArray(a_texCoord);
+#else
   glDisableVertexAttribArray(a_color);
+#endif
 }
 
 void AsyncContext::drawBite() {
