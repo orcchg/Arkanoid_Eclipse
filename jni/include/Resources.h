@@ -53,7 +53,7 @@ JNIEXPORT void JNICALL Java_com_orcchg_arkanoid_surface_NativeResources_release
 
 namespace game {
 
-class Resources {
+class Resources : public std::enable_shared_from_this<Resources> {
 public:
   typedef std::shared_ptr<Resources> Ptr;
   typedef std::unordered_map<std::string, native::Texture*>::iterator iterator;
@@ -69,6 +69,8 @@ public:
   iterator end();
   const_iterator cbegin() const;
   const_iterator cend() const;
+
+  Ptr getSharedPtr();
 
 private:
   JNIEnv* m_jenv;

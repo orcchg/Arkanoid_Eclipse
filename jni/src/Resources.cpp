@@ -46,8 +46,8 @@ bool Resources::read(jstring filename) {
   const char* raw_name = m_jenv->GetStringUTFChars(filename, nullptr);
   native::Texture* texture = new native::PNGTexture(m_assets, raw_name);
   DBG("Read resource: %s", raw_name);
-  m_jenv->ReleaseStringUTFChars(filename, raw_name);
   m_textures[raw_name] = texture;
+  m_jenv->ReleaseStringUTFChars(filename, raw_name);
   return true;
 }
 
@@ -68,6 +68,10 @@ Resources::const_iterator Resources::cbegin() const {
 
 Resources::const_iterator Resources::cend() const {
   return m_textures.cend();
+}
+
+Resources::Ptr Resources::getSharedPtr() {
+  return shared_from_this();
 }
 
 }
