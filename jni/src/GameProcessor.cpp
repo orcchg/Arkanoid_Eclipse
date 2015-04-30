@@ -367,7 +367,7 @@ bool GameProcessor::collideBite(GLfloat new_x) {
 }
 
 bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
-  if (new_y >= 1.0f - m_ball.getDimens().halfHeight() - m_level_dimens.height &&
+  if (new_y >= 1.0f - m_ball.getDimens().halfHeight() - m_level_dimens.getHeight() &&
       new_y < 1.0f - m_ball.getDimens().halfHeight()) {
     int row = 0, col = 0;
     if (!getImpactedBlock(new_x, new_y, &row, &col)) {
@@ -538,15 +538,15 @@ bool GameProcessor::getImpactedBlock(
     int* col) {
 
   if (m_ball.getPose().getX() >= ball_x) {  // from right
-    *col = static_cast<int>(std::floor((ball_x - m_ball.getDimens().halfWidth() + 1.0f) / m_level_dimens.block_width));
+    *col = static_cast<int>(std::floor((ball_x - m_ball.getDimens().halfWidth() + 1.0f) / m_level_dimens.getBlockWidth()));
   } else {  // from left
-    *col = static_cast<int>(std::floor((ball_x + m_ball.getDimens().halfWidth() + 1.0f) / m_level_dimens.block_width));
+    *col = static_cast<int>(std::floor((ball_x + m_ball.getDimens().halfWidth() + 1.0f) / m_level_dimens.getBlockWidth()));
   }
 
   if (m_ball.getPose().getY() >= ball_y) {  // from top
-    *row = static_cast<int>(std::floor((1.0f + m_ball.getDimens().halfHeight() - ball_y) / m_level_dimens.block_height));
+    *row = static_cast<int>(std::floor((1.0f + m_ball.getDimens().halfHeight() - ball_y) / m_level_dimens.getBlockHeight()));
   } else {  // from bottom
-    *row = static_cast<int>(std::floor((1.0f - m_ball.getDimens().halfHeight() - ball_y) / m_level_dimens.block_height));
+    *row = static_cast<int>(std::floor((1.0f - m_ball.getDimens().halfHeight() - ball_y) / m_level_dimens.getBlockHeight()));
   }
 
   if (*row < 0 || *row >= m_level->numRows() ||

@@ -265,7 +265,7 @@ void AsyncContext::process_loadLevel() {
       LevelDimens::blockWidth,
       LevelDimens::blockHeight * m_aspect);
 
-  m_level->toVertexArray(dimens.block_width, dimens.block_height, -1.0f, 1.0f, &m_level_vertex_buffer[0]);
+  m_level->toVertexArray(dimens.getBlockWidth(), dimens.getBlockHeight(), -1.0f, 1.0f, &m_level_vertex_buffer[0]);
   m_level->fillColorArray(&m_level_color_buffer[0]);
   util::rectangleIndices(&m_level_index_buffer[0], m_level->size() * 6);
 

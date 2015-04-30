@@ -6,12 +6,10 @@
 namespace game {
 
 /// @brief Measured level dimensions.
-struct LevelDimens {
+class LevelDimens {
+public:
   constexpr static float blockWidth = 0.2f;
   constexpr static float blockHeight = 0.1f;
-
-  int rows, cols;
-  GLfloat width, height, block_width, block_height;
 
   LevelDimens(
       int rows,
@@ -35,6 +33,18 @@ struct LevelDimens {
       GLfloat* bottom_border,
       GLfloat* left_border,
       GLfloat* right_border);
+
+  inline int getRows() const { return rows; }
+  inline int getCols() const { return cols; }
+  inline GLfloat getWidth() const { return width; }
+  inline GLfloat getHeight() const { return height; }
+  inline GLfloat getBlockWidth() const { return block_width; }
+  inline GLfloat getBlockHeight() const { return block_height; }
+
+private:
+  int rows, cols;
+  GLfloat width, height, block_width, block_height;
+
 };
 
 }
