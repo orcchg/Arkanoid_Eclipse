@@ -345,13 +345,13 @@ bool GameProcessor::collideCorner(
 }
 
 bool GameProcessor::collideBite(GLfloat new_x) {
-  if (new_x >= -(BiteParams::biteHalfWidth + BallParams::ballHalfSize) + m_bite.x_pose &&
-      new_x <= (BiteParams::biteHalfWidth + BallParams::ballHalfSize) + m_bite.x_pose) {
+  if (new_x >= -(m_bite.dimens.halfWidth() + m_ball.dimens.halfWidth()) + m_bite.x_pose &&
+      new_x <= (m_bite.dimens.halfWidth() + m_ball.dimens.halfWidth()) + m_bite.x_pose) {
 
     GLfloat distance = std::fabs(new_x - m_bite.x_pose);
     GLfloat beta = std::fabs(std::atan(distance / m_bite.radius));
 
-    if (new_x >= m_bite.x_pose + BiteParams::biteQuarterWidth) {
+    if (new_x >= m_bite.x_pose + m_bite.dimens.quarterWidth()) {
       GLfloat normal = std::fabs(util::PI2 - beta);
       if (m_ball.angle >= util::_3PI2) {
         collideHorizontalSurface();
@@ -368,7 +368,7 @@ bool GameProcessor::collideBite(GLfloat new_x) {
           smallAngleAvoid();
         }
       }
-    } else if (new_x <= m_bite.x_pose - BiteParams::biteQuarterWidth) {
+    } else if (new_x <= m_bite.x_pose - m_bite.dimens.quarterWidth()) {
       GLfloat normal = std::fabs(util::PI2 + beta);
       if (m_ball.angle >= util::_3PI2) {
         GLfloat gamma = m_ball.angle - util::_3PI2;
@@ -541,11 +541,11 @@ bool GameProcessor::elasticBlockCollision(
     collideHorizontalSurface();
     return true;
   }
-  if (m_ball.pose.x + 1.0f <= left_border) {
+  if (m_ball.pose.x + 1.0f <= left_border - m_ball.dimens.halfWidth()) {
     collideRightBorder();
     return true;
   }
-  if (m_ball.pose.x + 1.0f >= right_border) {
+  if (m_ball.pose.x + 1.0f >= right_border + m_ball.dimens.halfWidth()) {
     collideLeftBorder();
     return true;
   }

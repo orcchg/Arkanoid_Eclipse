@@ -323,16 +323,16 @@ void AsyncContext::moveBite(float position) {
   }
 
   m_bite.x_pose = position;
-  if (m_bite.x_pose > BiteParams::neg_biteHalfWidth) {
-    m_bite.x_pose = BiteParams::neg_biteHalfWidth;
-  } else if (m_bite.x_pose < -BiteParams::neg_biteHalfWidth) {
-    m_bite.x_pose = -BiteParams::neg_biteHalfWidth;
+  if (m_bite.x_pose > 1.0f - m_bite.dimens.halfWidth()) {
+    m_bite.x_pose = 1.0f - m_bite.dimens.halfWidth();
+  } else if (m_bite.x_pose < m_bite.dimens.halfWidth() - 1.0f) {
+    m_bite.x_pose = m_bite.dimens.halfWidth() - 1.0f;
   }
 
   util::setRectangleVertices(
       &m_bite_vertex_buffer[0],
       BiteParams::biteWidth, m_bite.dimens.height,
-      -BiteParams::biteHalfWidth + m_bite.x_pose,
+      -m_bite.dimens.halfWidth() + m_bite.x_pose,
       -BiteParams::neg_biteElevation,
       1, 1);
 

@@ -20,6 +20,11 @@ public:
     , width(w)
     , height(h * aspect) {
   }
+
+  inline GLfloat halfWidth() { return width * 0.5f; }
+  inline GLfloat halfHeight() { return height * 0.5f; }
+  inline GLfloat quarterWidth() { return width * 0.25f; }
+  inline GLfloat quarterHeight() { return height * 0.25f; }
 };
 
 }

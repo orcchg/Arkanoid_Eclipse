@@ -13,19 +13,16 @@ struct BallDimens {
 
 private:
   GLfloat aspect;
-  GLfloat half_width, half_height;
 
 public:
   BallDimens(GLfloat aspect = 1.0f, GLfloat w = BallParams::ballSize, GLfloat h = BallParams::ballSize)
     : aspect(aspect)
     , width(w)
-    , height(h * aspect)
-    , half_width(w * 0.5f)
-    , half_height(height * 0.5f) {
+    , height(h * aspect) {
   }
 
-  inline GLfloat halfWidth() { return half_width; }
-  inline GLfloat halfHeight() { return half_height; }
+  inline GLfloat halfWidth() { return width * 0.5f; }
+  inline GLfloat halfHeight() { return height * 0.5f; }
 };
 
 }

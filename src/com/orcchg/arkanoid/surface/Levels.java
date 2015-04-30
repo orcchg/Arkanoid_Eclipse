@@ -11,9 +11,9 @@ public class Levels {
   private static final String[] L0 = new String[] {"TTTTTTTTTT",
                                                    "          ",
                                                    "          ",
-                                                   "    S     ",
                                                    "          ",
-                                                   "          "};
+                                                   "          ",
+                                                   "  VVVVVVVV"};
   
   private static final String[] L1 = new String[]{"          ",
                                                   "   SSSS   ",
