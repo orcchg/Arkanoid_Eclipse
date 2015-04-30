@@ -30,10 +30,15 @@ public:
     return m_color_location;
   }
 
+  inline GLuint getTexCoordAttribLocation() const {
+    return m_texCoord_location;
+  }
+
 private:
   GLuint m_program;  //!< Linked program.
   GLuint m_vertex_location;  //!< Location of vertex attribute.
   GLuint m_color_location;  //!< Location of color attribute.
+  GLuint m_texCoord_location;  //!< Location of texCoord attribute.
 
   GLuint loadShader(GLenum type, const char* shader_src);
 };
@@ -53,6 +58,10 @@ protected:
 
 struct SimpleShader : public Shader {
   SimpleShader();
+};
+
+struct SimpleTextureShader : public Shader {
+  SimpleTextureShader();
 };
 
 }

@@ -28,6 +28,7 @@ ShaderHelper::ShaderHelper(const Shader& shader)
   // bind a_position to attribute with index m_vertex_location
   glBindAttribLocation(m_program, m_vertex_location, "a_position");
   glBindAttribLocation(m_program, m_color_location, "a_color");
+  glBindAttribLocation(m_program, m_texCoord_location, "a_texCoord");
   glLinkProgram(m_program);
 
   glDeleteShader(vertex_shader);
@@ -117,6 +118,28 @@ SimpleShader::SimpleShader()
       "                               \n"
       "  void main() {                \n"
       "    gl_FragColor = v_color;    \n"
+      "  }                            \n") {
+}
+
+SimpleTextureShader::SimpleTextureShader()
+  : Shader(
+      "  attribute vec4 a_position;   \n"
+      "  attribute vec2 a_texCoord;   \n"
+      "                               \n"
+      "  varying vec2 v_texCoord;     \n"
+      "                               \n"
+      "  void main() {                \n"
+      "    v_texCoord = a_texCoord;   \n"
+      "    gl_Position = a_position;  \n"
+      "  }                            \n"
+      ,
+      "  precision mediump float;     \n"
+      "                               \n"
+      "  varying vec2 v_texCoord;     \n"
+      "  uniform sampler2D s_texture; \n"
+      "                               \n"
+      "  void main() {                \n"
+      "    gl_FragColor = texture2D(s_texture, v_texCoord); \n"
       "  }                            \n") {
 }
 
