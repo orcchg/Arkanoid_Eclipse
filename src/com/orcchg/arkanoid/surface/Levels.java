@@ -338,13 +338,15 @@ public class Levels {
                                                     "SSSSSSSSSS",
                                                     "SSSSSSSSSS"};
   
-  private static final String[] L23 = new String[] {"          ",
+  private static final String[] L23 = new String[] {"   B      ",
                                                     "          ",
                                                     "          ",
                                                     "          ",
                                                     "          ",
                                                     "          ",
-                                                    "    $     "};
+                                                    "    $     ",
+                                                    "          ",
+                                                    "          "};
   
   private static final String[] L24 = new String[] {"TTTTTTTTTT",
                                                     "          ",

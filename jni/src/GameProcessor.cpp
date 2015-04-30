@@ -439,7 +439,7 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
         break;
       case Block::MIDAS:
         blockCollision(top_border, bottom_border, left_border, right_border, 100 /* elastic */);
-        m_level->modifyBlocksAround(row, col, Block::SIMPLE, &affected_blocks);
+        m_level->modifyBlocksAround(row, col, Block::TITAN, &affected_blocks);
         for (auto& item : affected_blocks) {
           block_impact_event.notifyListeners(item);
         }
