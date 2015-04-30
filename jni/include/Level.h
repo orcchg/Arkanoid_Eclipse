@@ -27,7 +27,7 @@ enum class Block : int {
   DEATH = 4,       //! 'D' - [ 1 ] lost ball automatically
   ELECTRO = 5,     // 'E' - [ 1 ] destroys nearest blocks
   FOG = 6,         //! 'F' - [ 1 ] not disturbing
-  GLASS = 7,       //! 'G' - [ 1 ], not disturbing
+  GLASS = 7,       //! 'G' - [ 2 ], not disturbing
   HYPER = 8,       // 'H' - [ 1 ] teleports ball randomly (not lost)
   IRON = 9,        //! 'I' - [ 3 ]
   JELLY = 10,      //! 'J' - [ 1 ] large disturbing
@@ -49,10 +49,11 @@ enum class Block : int {
   YOGURT = 26,     //! 'Y' - [ 1 ] small disturbing
   ZYGOTE = 27,     // 'Z' - [ 2 ] produces additional blocks
 
-  NETWORK_1 = 28,
-  QUICK_2 = 29, QUICK_1 = 30,
-  ULTRA_4 = 31, ULTRA_3 = 32, ULTRA_2 = 33, ULTRA_1 = 34,
-  ZYGOTE_1 = 35
+  GLASS_1 = 28,
+  NETWORK_1 = 29,
+  QUICK_2 = 30, QUICK_1 = 31,
+  ULTRA_4 = 32, ULTRA_3 = 33, ULTRA_2 = 34, ULTRA_1 = 35,
+  ZYGOTE_1 = 36
 };
 
 constexpr static int totalBlockTypes = 36;

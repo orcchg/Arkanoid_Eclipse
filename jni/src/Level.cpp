@@ -251,6 +251,7 @@ void Level::fillColorArrayAtBlock(GLfloat* const array, int row, int col) const 
       bgra = util::BGRA<GLfloat>(util::FOG);
       break;
     case Block::GLASS:
+    case Block::GLASS_1:
       bgra = util::BGRA<GLfloat>(util::GLASS);
       break;
     case Block::HYPER:
@@ -346,6 +347,7 @@ int Level::getCardinalityCost(Block block) {
     case Block::ULTRA_3:
       return 3;
     case Block::BRICK:
+    case Block::GLASS:
     case Block::NETWORK:
     case Block::ZYGOTE:
     case Block::QUICK_2:
@@ -356,7 +358,7 @@ int Level::getCardinalityCost(Block block) {
     case Block::DEATH:
     case Block::ELECTRO:
     case Block::FOG:
-    case Block::GLASS:
+    case Block::GLASS_1:
     case Block::HYPER:
     case Block::JELLY:
     case Block::KNOCK_VERTICAL:
@@ -417,6 +419,9 @@ void Level::setBlockImpacted(int row, int col) {
     case Block::BRICK:
       setBlock(row, col, Block::SIMPLE);
       break;
+    case Block::GLASS:
+      setBlock(row, col, Block::GLASS_1);
+      break;
     // ----------------------
     case Block::NETWORK:
       setBlock(row, col, Block::NETWORK_1);
@@ -430,7 +435,7 @@ void Level::setBlockImpacted(int row, int col) {
     case Block::DEATH:
     case Block::ELECTRO:
     case Block::FOG:
-    case Block::GLASS:
+    case Block::GLASS_1:
     case Block::HYPER:
     case Block::JELLY:
     case Block::KNOCK_VERTICAL:
@@ -621,6 +626,7 @@ int Level::calculateCardinality() const {
           cardinality += 3;
           break;
         case Block::BRICK:
+        case Block::GLASS:
         case Block::NETWORK:
         case Block::ZYGOTE:
           cardinality += 2;
@@ -630,7 +636,6 @@ int Level::calculateCardinality() const {
         case Block::DEATH:
         case Block::ELECTRO:
         case Block::FOG:
-        case Block::GLASS:
         case Block::HYPER:
         case Block::JELLY:
         case Block::KNOCK_VERTICAL:

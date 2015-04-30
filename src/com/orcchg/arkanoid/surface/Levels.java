@@ -20,9 +20,9 @@ public class Levels {
                                                    "          ",
                                                    "          ",
                                                    "          ",
-                                                   "  T    T  ",
-                                                   "   T  T   ",
-                                                   "    TT    "};
+                                                   "  G    G  ",
+                                                   "   G  G   ",
+                                                   "    GG    "};
   
   private static final String[] L1 = new String[]{"          ",
                                                   "   SSSS   ",

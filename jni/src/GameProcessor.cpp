@@ -412,6 +412,7 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
       // --------------------
       case Block::FOG:
       case Block::GLASS:
+      case Block::GLASS_1:
         // fly without disturbance
         break;
       // --------------------
