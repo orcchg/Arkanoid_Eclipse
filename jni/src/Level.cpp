@@ -230,79 +230,101 @@ void Level::fillColorArrayAtBlock(GLfloat* const array, int row, int col) const 
   int lower_left_i  = 8  + 16 * (row * cols + col);
   int lower_right_i = 12 + 16 * (row * cols + col);
 
-  util::BGRA<GLfloat> bgra;
+  util::BGRA<GLfloat> bgra, bgra_edge;
   switch (blocks[row][col]) {
     default:
     case Block::NONE:
       bgra = util::BGRA<GLfloat>(util::TRANSPARENT);
+      bgra_edge = util::BGRA<GLfloat>(util::TRANSPARENT);
       break;
     case Block::ALUMINIUM:
       bgra = util::BGRA<GLfloat>(util::ALUMINIUM);
+      bgra_edge = util::BGRA<GLfloat>(util::ALUMINIUM_EDGE);
       break;
     case Block::BRICK:
       bgra = util::BGRA<GLfloat>(util::BRICK);
+      bgra_edge = util::BGRA<GLfloat>(util::BRICK_EDGE);
       break;
     case Block::CLAY:
       bgra = util::BGRA<GLfloat>(util::CLAY);
+      bgra_edge = util::BGRA<GLfloat>(util::CLAY_EDGE);
       break;
     case Block::DEATH:
       bgra = util::BGRA<GLfloat>(util::DEATH);
+      bgra_edge = util::BGRA<GLfloat>(util::DEATH_EDGE);
       break;
     case Block::ELECTRO:
       bgra = util::BGRA<GLfloat>(util::ELECTRO);
+      bgra_edge = util::BGRA<GLfloat>(util::ELECTRO_EDGE);
       break;
     case Block::FOG:
       bgra = util::BGRA<GLfloat>(util::FOG);
+      bgra_edge = util::BGRA<GLfloat>(util::FOG_EDGE);
       break;
     case Block::GLASS:
     case Block::GLASS_1:
       bgra = util::BGRA<GLfloat>(util::GLASS);
+      bgra_edge = util::BGRA<GLfloat>(util::GLASS_EDGE);
       break;
     case Block::HYPER:
       bgra = util::BGRA<GLfloat>(util::HYPER);
+      bgra_edge = util::BGRA<GLfloat>(util::HYPER_EDGE);
       break;
     case Block::IRON:
       bgra = util::BGRA<GLfloat>(util::IRON);
+      bgra_edge = util::BGRA<GLfloat>(util::IRON_EDGE);
       break;
     case Block::JELLY:
       bgra = util::BGRA<GLfloat>(util::JELLY);
+      bgra_edge = util::BGRA<GLfloat>(util::JELLY_EDGE);
       break;
     case Block::KNOCK_VERTICAL:
     case Block::KNOCK_HORIZONTAL:
       bgra = util::BGRA<GLfloat>(util::KNOCK);
+      bgra_edge = util::BGRA<GLfloat>(util::KNOCK_EDGE);
       break;
     case Block::STEEL:
       bgra = util::BGRA<GLfloat>(util::STEEL);
+      bgra_edge = util::BGRA<GLfloat>(util::STEEL_EDGE);
       break;
     case Block::MAGIC:
       bgra = util::BGRA<GLfloat>(util::MAGIC);
+      bgra_edge = util::BGRA<GLfloat>(util::MAGIC_EDGE);
       break;
     case Block::MIDAS:
       bgra = util::BGRA<GLfloat>(util::MIDAS);
+      bgra_edge = util::BGRA<GLfloat>(util::MIDAS_EDGE);
       break;
     case Block::NETWORK:
     case Block::NETWORK_1:
       bgra = util::BGRA<GLfloat>(util::NETWORK);
+      bgra_edge = util::BGRA<GLfloat>(util::NETWORK_EDGE);
       break;
     case Block::ORIGIN:
       bgra = util::BGRA<GLfloat>(util::ORIGIN);
+      bgra_edge = util::BGRA<GLfloat>(util::ORIGIN_EDGE);
       break;
     case Block::PLUMBUM:
       bgra = util::BGRA<GLfloat>(util::PLUMBUM);
+      bgra_edge = util::BGRA<GLfloat>(util::PLUMBUM_EDGE);
       break;
     case Block::QUICK:
     case Block::QUICK_1:
     case Block::QUICK_2:
       bgra = util::BGRA<GLfloat>(util::QUICK);
+      bgra_edge = util::BGRA<GLfloat>(util::QUICK_EDGE);
       break;
     case Block::ROLLING:
       bgra = util::BGRA<GLfloat>(util::ROLLING);
+      bgra_edge = util::BGRA<GLfloat>(util::ROLLING_EDGE);
       break;
     case Block::SIMPLE:
       bgra = util::BGRA<GLfloat>(util::SIMPLE);
+      bgra_edge = util::BGRA<GLfloat>(util::SIMPLE_EDGE);
       break;
     case Block::TITAN:
       bgra = util::BGRA<GLfloat>(util::TITAN);
+      bgra_edge = util::BGRA<GLfloat>(util::TITAN_EDGE);
       break;
     case Block::ULTRA:
     case Block::ULTRA_1:
@@ -310,28 +332,34 @@ void Level::fillColorArrayAtBlock(GLfloat* const array, int row, int col) const 
     case Block::ULTRA_3:
     case Block::ULTRA_4:
       bgra = util::BGRA<GLfloat>(util::ULTRA);
+      bgra_edge = util::BGRA<GLfloat>(util::ULTRA_EDGE);
       break;
     case Block::INVUL:
       bgra = util::BGRA<GLfloat>(util::INVUL);
+      bgra_edge = util::BGRA<GLfloat>(util::INVUL_EDGE);
       break;
     case Block::WATER:
       bgra = util::BGRA<GLfloat>(util::WATER);
+      bgra_edge = util::BGRA<GLfloat>(util::WATER_EDGE);
       break;
     case Block::EXTRA:
       bgra = util::BGRA<GLfloat>(util::EXTRA);
+      bgra_edge = util::BGRA<GLfloat>(util::EXTRA_EDGE);
       break;
     case Block::YOGURT:
       bgra = util::BGRA<GLfloat>(util::YOGURT);
+      bgra_edge = util::BGRA<GLfloat>(util::YOGURT_EDGE);
       break;
     case Block::ZYGOTE:
     case Block::ZYGOTE_1:
       bgra = util::BGRA<GLfloat>(util::ZYGOTE);
+      bgra_edge = util::BGRA<GLfloat>(util::ZYGOTE_EDGE);
       break;
   }
   util::setColor(bgra, &array[upper_left_i], 4);
   util::setColor(bgra, &array[upper_right_i], 4);
   util::setColor(bgra, &array[lower_left_i], 4);
-  util::setColor(bgra, &array[lower_right_i], 4);
+  util::setColor(bgra_edge, &array[lower_right_i], 4);
 }
 
 void Level::setVulnerableBlock(int row, int col, Block value) {
