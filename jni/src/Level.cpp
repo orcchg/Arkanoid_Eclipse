@@ -357,8 +357,8 @@ void Level::fillColorArrayAtBlock(GLfloat* const array, int row, int col) const 
       break;
   }
   util::setColor(bgra, &array[upper_left_i], 4);
-  util::setColor(bgra, &array[upper_right_i], 4);
-  util::setColor(bgra, &array[lower_left_i], 4);
+  util::setColor(bgra_edge, &array[upper_right_i], 4);
+  util::setColor(bgra_edge, &array[lower_left_i], 4);
   util::setColor(bgra_edge, &array[lower_right_i], 4);
 }
 
