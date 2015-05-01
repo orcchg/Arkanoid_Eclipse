@@ -54,7 +54,7 @@ constexpr static GLfloat ALUMINIUM[4]      = {0.8509f, 0.8509f, 0.8509f, 1.f};  
 constexpr static GLfloat ALUMINIUM_EDGE[4] = {0.8f,    0.8f,    0.8f,    1.f};  // 204 204 204
 
 constexpr static GLfloat BRICK[4]      = {0.8039f, 0.1490f, 0.1490f, 1.f};  // 205 38 38
-constexpr static GLfloat BRICK_EDGE[4] = {0.6980f, 0.1333f, 0.1333f, 1.f};  // 178 34 34
+constexpr static GLfloat BRICK_EDGE[4] = {0.5451f, 0.1020f, 0.1020f, 1.f};  // 139 26 26
 
 constexpr static GLfloat CLAY[4]      = {1.f,     0.8275,  0.6078f, 1.f};  // 255 211 155
 constexpr static GLfloat CLAY_EDGE[4] = {0.8759f, 0.7216f, 0.5294f, 1.f};  // 222 184 135
