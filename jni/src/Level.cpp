@@ -99,6 +99,8 @@ Block charToBlock(char ch) {
     case 'z':
     case 'Z':
       return Block::ZYGOTE;
+    case '@':
+      return Block::ZYGOTE_SPAWN;
     default:
       return Block::NONE;
   }
@@ -162,6 +164,8 @@ char blockToChar(Block block) {
       return 'Y';
     case Block::ZYGOTE:
       return 'Z';
+    case Block::ZYGOTE_SPAWN:
+      return '@';
     case Block::NONE:
     default:
       return ' ';
@@ -356,6 +360,10 @@ void Level::fillColorArrayAtBlock(GLfloat* const array, int row, int col) const 
       bgra = util::BGRA<GLfloat>(util::ZYGOTE);
       bgra_edge = util::BGRA<GLfloat>(util::ZYGOTE_EDGE);
       break;
+    case Block::ZYGOTE_SPAWN:
+      bgra = util::BGRA<GLfloat>(util::ZYGOTE_SPAWN);
+      bgra_edge = util::BGRA<GLfloat>(util::ZYGOTE_SPAWN_EDGE);
+      break;
   }
   util::setColor(bgra, &array[upper_left_i], 4);
   util::setColor(bgra_edge, &array[upper_right_i], 4);
@@ -411,6 +419,7 @@ int Level::getCardinalityCost(Block block) {
     case Block::QUICK_1:
     case Block::ULTRA_1:
     case Block::ZYGOTE_1:
+    case Block::ZYGOTE_SPAWN:
       return 1;
 
     default:
@@ -493,6 +502,7 @@ void Level::setBlockImpacted(int row, int col) {
     case Block::ULTRA_1:
     case Block::YOGURT_1:
     case Block::ZYGOTE_1:
+    case Block::ZYGOTE_SPAWN:
       setBlock(row, col, Block::NONE);
       break;
     // ----------------------
@@ -632,6 +642,69 @@ void Level::destroyBlocksBehind(int row, int col, Direction direction, std::vect
   modifyBlocksBehind(row, col, Block::NONE, direction, output);
 }
 
+RowCol Level::modifyBlockNear(int row, int col, Block type) {
+  if (row - 1 >= 0) {
+    if (col - 1 >= 0) {
+      auto block = getBlock(row - 1, col - 1);
+      if (block == Block::NONE) {
+        setVulnerableBlock(row - 1, col - 1, type);
+        return RowCol(row - 1, col - 1);
+      }
+    }
+    if (col + 1 < cols) {
+      auto block = getBlock(row - 1, col + 1);
+      if (block == Block::NONE) {
+        setVulnerableBlock(row - 1, col + 1, type);
+        return RowCol(row - 1, col + 1);
+      }
+    }
+  }
+  if (row + 1 < rows) {
+    if (col - 1 >= 0) {
+      auto block = getBlock(row + 1, col - 1);
+      if (block == Block::NONE) {
+        setVulnerableBlock(row + 1, col - 1, type);
+        return RowCol(row + 1, col - 1);
+      }
+    }
+    if (col + 1 < cols) {
+      auto block = getBlock(row + 1, col + 1);
+      if (block == Block::NONE) {
+        setVulnerableBlock(row + 1, col + 1, type);
+        return RowCol(row + 1, col + 1);
+      }
+    }
+  }
+  if (row - 1 >= 0){
+    auto block = getBlock(row - 1, col);
+    if (block == Block::NONE) {
+      setVulnerableBlock(row - 1, col, type);
+      return RowCol(row - 1, col);
+    }
+  }
+  if (row + 1 < rows) {
+    auto block = getBlock(row + 1, col);
+    if (block == Block::NONE) {
+      setVulnerableBlock(row + 1, col, type);
+      return RowCol(row + 1, col);
+    }
+  }
+  if (col - 1 >= 0) {
+    auto block = getBlock(row, col - 1);
+    if (block == Block::NONE) {
+      setVulnerableBlock(row, col - 1, type);
+      return RowCol(row, col - 1);
+    }
+  }
+  if (col + 1 < cols) {
+    auto block = getBlock(row, col + 1);
+    if (block == Block::NONE) {
+      setVulnerableBlock(row, col + 1, type);
+      return RowCol(row, col + 1);
+    }
+  }
+}
+
 void Level::print() const {
   std::vector<std::string> array;
   array.reserve(rows);
@@ -699,6 +772,7 @@ int Level::calculateCardinality() const {
         case Block::SIMPLE:
         case Block::WATER:
         case Block::YOGURT:
+        case Block::ZYGOTE_SPAWN:
           ++cardinality;
           break;
 

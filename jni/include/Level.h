@@ -55,7 +55,7 @@ enum class Block : int {
   BRICK = 28,       //! 'B' - [ 2 ]
   CLAY = 29,        //! 'C' - [ 1 ] small disturbing
   FOG = 30,         //! 'F' - [ 1 ] not disturbing
-  GLASS = 31,       //! 'G' - [ 2 ], not disturbing
+  GLASS = 31,       //! 'G' - [ 2 ] not disturbing
   IRON = 32,        //! 'I' - [ 3 ]
   JELLY = 33,       //! 'J' - [ 1 ] large disturbing
   STEEL = 34,       //! 'L' - [ 3 ]
@@ -63,6 +63,7 @@ enum class Block : int {
   ROLLING = 36,     //! 'R' - [ 1 ] random disturbing
   SIMPLE = 37,      //! 'S' - [ 1 ]
   WATER = 38,       //! 'W' - [ 1 ] small disturbing
+  ZYGOTE_SPAWN = 39 //! '@' - [ 1 ] large disturbing
 };
 
 constexpr static int totalBlockTypes = 36;
@@ -184,6 +185,12 @@ public:
   void modifyBlocksBehind(int row, int col, Block type, Direction direction, std::vector<RowCol>* output);
   /// @brief Destroys blocks behind certain block.
   void destroyBlocksBehind(int row, int col, Direction direction, std::vector<RowCol>* output);
+  /// @brief Modifies one block near certain block where possible.
+  /// @param row Row index of certain block.
+  /// @param col Column index of certain block.
+  /// @param type Type the block will be modified to.
+  /// @return Valid indices of influenced block.
+  RowCol modifyBlockNear(int row, int col, Block type);
   /** @} */  // end of Modifiers group
 
   void print() const;

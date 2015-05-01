@@ -394,6 +394,7 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
     }
     std::vector<RowCol> affected_blocks;
     affected_blocks.reserve(12);
+    RowCol single_affected;
 
     int viscosity = 0;
     Block block = m_level->getBlock(row, col);
@@ -465,14 +466,17 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
         blockCollision(top_border, bottom_border, left_border, right_border, viscosity);
         break;
       // --------------------
+      case Block::ZYGOTE_SPAWN:
+        viscosity += 12;
+        // intend no break
       case Block::JELLY:
-        viscosity += 35;
+        viscosity += 27;
         // intend no break
       case Block::WATER:
-        viscosity += 20;
+        viscosity += 18;
         // intend no break
       case Block::YOGURT_1:
-        viscosity += 10;
+        viscosity += 12;
         // intend no break
       case Block::CLAY:
         viscosity += 10;
@@ -495,8 +499,10 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
         }
         break;
       case Block::ZYGOTE_1:
-        // XXX:
-        // intend no break;
+        blockCollision(top_border, bottom_border, left_border, right_border, 100 /* elastic */);
+        single_affected = m_level->modifyBlockNear(row, col, Block::ZYGOTE_SPAWN);
+        block_impact_event.notifyListeners(single_affected);
+        break;
       // --------------------
       default:
         blockCollision(top_border, bottom_border, left_border, right_border, 100 /* elastic */);

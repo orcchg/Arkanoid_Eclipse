@@ -131,6 +131,9 @@ constexpr static GLfloat YOGURT_EDGE[4] = {0.8039f, 0.7843f, 0.6941f, 1.f};  // 
 constexpr static GLfloat ZYGOTE[4]      = {0.2628f, 0.8039f, 0.5020f, 1.f};  // 67 205 128
 constexpr static GLfloat ZYGOTE_EDGE[4] = {0.1804f, 0.5451f, 0.3412f, 1.f};  // 46 139 87
 
+constexpr static GLfloat ZYGOTE_SPAWN[4]      = {0.4f,    0.8039f, 0.f,     1.f};  // 104 205 128
+constexpr static GLfloat ZYGOTE_SPAWN_EDGE[4] = {0.2706f, 0.5451f, 0.f, 1.f};  // 69  139 0
+
 }
 
 #endif  // __ARKANOID_RGBSTRUCT__H__
