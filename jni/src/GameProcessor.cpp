@@ -484,8 +484,11 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
         break;
       // --------------------
       case Block::MAGIC:
-        // XXX:
         blockCollision(top_border, bottom_border, left_border, right_border, 100 /* elastic */);
+        m_level->modifyBlocksAround(row, col, m_level->getGenerator().generateBlock(), &affected_blocks);
+        for (auto& item : affected_blocks) {
+          block_impact_event.notifyListeners(item);
+        }
         break;
       case Block::QUICK_1:
         // XXX:

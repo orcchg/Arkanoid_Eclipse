@@ -14,62 +14,11 @@
 
 #include <GLES/gl.h>
 
+#include "Block.h"
 #include "logger.h"
 #include "RowCol.h"
 
 namespace game {
-
-enum class Block : int {
-  NONE = 0,        //! ' ' - not disturbing
-
-  /* Action blocks */
-  DEATH = 1,               //! 'D' - [ 1 ] lost ball automatically
-  ELECTRO = 2,             //! 'E' - [ 1 ] destroys nearest blocks
-  HYPER = 3,               // 'H' - [ 1 ] teleports ball randomly (not lost)
-  KNOCK_VERTICAL = 4,      //! 'K' - [ 1 ] destroys blocks behind
-  KNOCK_HORIZONTAL = 5,    //! '#' - [ 1 ] destroys blocks behind
-  MAGIC = 6,               // 'M' - [ 1 ] transforms nearest blocks
-  NETWORK = 7,             // 'N' - [ 2 ] destroys all other NETWORK blocks
-  ORIGIN = 8,              //! 'O' - [ 1 ] puts ball into initial position
-  QUICK = 9,               // 'Q' - [ 3 ] transform all other blocks
-  ULTRA = 10,              //! 'U' - [ 5 ] win level
-  YOGURT = 11,             //! 'Y' - [ 1 ] transforms nearest to YOUGURT blocks
-  ZYGOTE = 12,             // 'Z' - [ 2 ] produces additional blocks
-
-  /* Invulnerable blocks */
-  TITAN = 13,      //! 'T' - invulnerable
-  INVUL = 14,      //! 'V' - invulnerable
-  EXTRA = 15,      //! 'X' - [ 1 ] transforms to INVUL
-  MIDAS = 16,      // '$' - [ 1 ] transforms nearest to TITAN
-
-  /* Auxiliary blocks */
-  GLASS_1 = 17,
-  NETWORK_1 = 18,
-  QUICK_2 = 19, QUICK_1 = 20,
-  ULTRA_4 = 21, ULTRA_3 = 22, ULTRA_2 = 23, ULTRA_1 = 24,
-  YOGURT_1 = 25,
-  ZYGOTE_1 = 26,
-
-  /* Ordinary blocks */
-  ALUMINIUM = 27,   //! 'A' - [ 1 ]
-  BRICK = 28,       //! 'B' - [ 2 ]
-  CLAY = 29,        //! 'C' - [ 1 ] small disturbing
-  FOG = 30,         //! 'F' - [ 1 ] not disturbing
-  GLASS = 31,       //! 'G' - [ 2 ] not disturbing
-  IRON = 32,        //! 'I' - [ 3 ]
-  JELLY = 33,       //! 'J' - [ 1 ] large disturbing
-  STEEL = 34,       //! 'L' - [ 3 ]
-  PLUMBUM = 35,     //! 'P' - [ 4 ]
-  ROLLING = 36,     //! 'R' - [ 1 ] random disturbing
-  SIMPLE = 37,      //! 'S' - [ 1 ]
-  WATER = 38,       //! 'W' - [ 1 ] small disturbing
-  ZYGOTE_SPAWN = 39 //! '@' - [ 1 ] large disturbing
-};
-
-constexpr static int totalBlockTypes = 36;
-
-Block charToBlock(char ch);
-char blockToChar(Block block);
 
 enum class Direction : int {
   NONE = 0,
@@ -144,6 +93,8 @@ public:
   inline int numCols() const { return cols; }
   /// @brief Returns total blocks of level.
   inline int size() const { return rows * cols; }
+  /// @brief Gets block generator instance.
+  inline BlockGenerator& getGenerator() { return generator; }
   /// @brief Gets block by row and column indices.
   inline Block getBlock(int row, int col) const { return blocks[row][col]; }
   /// @brief Sets the block by row and column indices.
@@ -204,6 +155,7 @@ private:
   int rows, cols;
   int initial_cardinality;
   Block** blocks;
+  BlockGenerator generator;
 };
 
 }  // namespace game
