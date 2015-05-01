@@ -17,7 +17,7 @@ enum class Block : int {
   MAGIC = 6,               //! 'M' - [ 1 ] transforms nearest blocks
   NETWORK = 7,             // 'N' - [ 2 ] destroys all other NETWORK blocks
   ORIGIN = 8,              //! 'O' - [ 1 ] puts ball into initial position
-  QUICK = 9,               // 'Q' - [ 3 ] transform all other blocks
+  QUICK = 9,               //! 'Q' - [ 3 ] degrades nearest blocks
   ULTRA = 10,              //! 'U' - [ 5 ] win level
   YOGURT = 11,             //! 'Y' - [ 1 ] transforms nearest to YOUGURT blocks
   ZYGOTE = 12,             //! 'Z' - [ 2 ] produces additional blocks

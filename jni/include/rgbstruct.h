@@ -83,8 +83,8 @@ constexpr static GLfloat JELLY_EDGE[4] = {0.5451f, 0.0392f, 0.3137f, 1.f};  // 1
 constexpr static GLfloat KNOCK[4]      = {1.f,     0.6471f, 0.f, 1.f};  // 255 165 0
 constexpr static GLfloat KNOCK_EDGE[4] = {0.8039f, 0.5216f, 0.f, 1.f};  // 205 133 0
 
-constexpr static GLfloat STEEL[4]      = {0.2745f, 0.5098f, 0.7059f, 1.f};  // 70 130 180
-constexpr static GLfloat STEEL_EDGE[4] = {0.2118f, 0.3922f, 0.5451f, 1.f};  // 54 100 139
+constexpr static GLfloat STEEL[4]      = {0.6902f, 0.7686f, 0.8706f, 1.f};  // 176 196 222
+constexpr static GLfloat STEEL_EDGE[4] = {0.4314f, 0.4824f, 0.5451f, 1.f};  // 110 123 139
 
 constexpr static GLfloat MAGIC[4]      = {0.8157f, 0.1255f, 0.5647f, 1.f};  // 208 32 144
 constexpr static GLfloat MAGIC_EDGE[4] = {0.4902f, 0.1490f, 0.8039f, 1.f};  // 125 38 205
