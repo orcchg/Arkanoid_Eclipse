@@ -43,6 +43,15 @@ void setRectangleVertices(
     size_t cols,
     size_t rows);
 
+void setOctagonVertices(
+    GLfloat* const vertices,
+    GLfloat width,
+    GLfloat height,
+    GLfloat x_offset,
+    GLfloat y_offset,
+    size_t cols,
+    size_t rows);
+
 void rectangleIndices(GLushort* const indices, size_t size);
 
 void printBuffer2D(const GLfloat* const buffer, size_t size);

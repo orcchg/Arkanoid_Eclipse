@@ -167,6 +167,7 @@ private:
   GLfloat* m_ball_vertex_buffer;  //!< Re-usable buffer for vertices of ball.
   GLfloat* m_ball_color_buffer;   //!< Re-usable buffer for color of ball.
   GLushort* m_rectangle_index_buffer;  //!< Re-usable buffer for indices of rectangle.
+  GLushort* m_octagon_index_buffer;  //!< Re-usable buffer for indices of octagon.
   GLfloat* m_rectangle_texCoord_buffer;  //!< Re-usable buffer for texture coords of rectangle.
 
   Level::Ptr m_level;  //!< Last loaded game level.

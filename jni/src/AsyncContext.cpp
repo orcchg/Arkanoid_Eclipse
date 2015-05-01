@@ -29,10 +29,11 @@ AsyncContext::AsyncContext(JavaVM* jvm)
   , m_impact_queue()
   , m_bite_vertex_buffer(new GLfloat[16])
   , m_bite_color_buffer(new GLfloat[16])
-  , m_ball_vertex_buffer(new GLfloat[16])
-  , m_ball_color_buffer(new GLfloat[16])
+  , m_ball_vertex_buffer(new GLfloat[36])
+  , m_ball_color_buffer(new GLfloat[36])
   , m_rectangle_index_buffer(new GLushort[6]{0, 3, 2, 0, 1, 3})
-  , m_rectangle_texCoord_buffer(new GLfloat[12]{1.f,1.f,0.f,1.f,0.f,0.f,1.f,0.f,1.f,1.f})
+  , m_octagon_index_buffer(new GLushort[24]{0, 1, 2, 0, 2, 3, 0, 3, 4, 0, 4, 5, 0, 5, 6, 0, 6, 7, 0, 7, 8, 0, 8, 1})
+  , m_rectangle_texCoord_buffer(new GLfloat[12]{1.f, 1.f, 0.f, 1.f, 0.f, 0.f, 1.f, 0.f, 1.f, 1.f})
   , m_level(nullptr)
   , m_level_vertex_buffer(nullptr)
   , m_level_color_buffer(nullptr)
@@ -52,8 +53,14 @@ AsyncContext::AsyncContext(JavaVM* jvm)
   m_window_set = false;
   m_resources = nullptr;
 
-  util::setColor(util::MAGENTA, &m_bite_color_buffer[0], 16);
-  util::setColor(util::ORANGE, &m_ball_color_buffer[0], 16);
+  util::setColor(util::SALMON, &m_bite_color_buffer[0], 8);
+  util::setColor(util::BROWN, &m_bite_color_buffer[8], 8);
+
+  util::setColor(util::ORANGE, &m_ball_color_buffer[0], 4);
+  util::setColor(util::SIENNA_LIGHT, &m_ball_color_buffer[4], 16);
+  util::setColor(util::SIENNA, &m_ball_color_buffer[20], 4);
+  util::setColor(util::SIENNA_DARK, &m_ball_color_buffer[24], 12);
+  util::setColor(util::SIENNA, &m_ball_color_buffer[32], 4);
   DBG("exit AsyncContext ctor");
 }
 
@@ -68,6 +75,7 @@ AsyncContext::~AsyncContext() {
   delete [] m_ball_vertex_buffer; m_ball_vertex_buffer = nullptr;
   delete [] m_ball_color_buffer; m_ball_color_buffer = nullptr;
   delete [] m_rectangle_index_buffer; m_rectangle_index_buffer = nullptr;
+  delete [] m_octagon_index_buffer; m_octagon_index_buffer = nullptr;
   delete [] m_rectangle_texCoord_buffer; m_rectangle_texCoord_buffer = nullptr;
 
   m_level = nullptr;
@@ -373,7 +381,7 @@ void AsyncContext::moveBite(float position) {
 }
 
 void AsyncContext::moveBall(float x_position, float y_position) {
-  util::setRectangleVertices(
+  util::setOctagonVertices(
       &m_ball_vertex_buffer[0],
       m_ball.getDimens().width(), m_ball.getDimens().height(),
       -m_ball.getDimens().halfWidth() + x_position,
@@ -597,7 +605,7 @@ void AsyncContext::drawBall() {
   glEnableVertexAttribArray(a_position);
   glEnableVertexAttribArray(a_color);
 
-  glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, &m_rectangle_index_buffer[0]);
+  glDrawElements(GL_TRIANGLES, 24, GL_UNSIGNED_SHORT, &m_octagon_index_buffer[0]);
 
   glDisableVertexAttribArray(a_position);
   glDisableVertexAttribArray(a_color);
