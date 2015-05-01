@@ -347,6 +347,7 @@ void Level::fillColorArrayAtBlock(GLfloat* const array, int row, int col) const 
       bgra_edge = util::BGRA<GLfloat>(util::EXTRA_EDGE);
       break;
     case Block::YOGURT:
+    case Block::YOGURT_1:
       bgra = util::BGRA<GLfloat>(util::YOGURT);
       bgra_edge = util::BGRA<GLfloat>(util::YOGURT_EDGE);
       break;
@@ -405,6 +406,7 @@ int Level::getCardinalityCost(Block block) {
     case Block::SIMPLE:
     case Block::WATER:
     case Block::YOGURT:
+    case Block::YOGURT_1:
     case Block::NETWORK_1:
     case Block::QUICK_1:
     case Block::ULTRA_1:
@@ -463,6 +465,9 @@ void Level::setBlockImpacted(int row, int col) {
     case Block::NETWORK:
       setBlock(row, col, Block::NETWORK_1);
       break;
+    case Block::YOGURT:
+      setBlock(row, col, Block::YOGURT_1);
+      break;
     case Block::ZYGOTE:
       setBlock(row, col, Block::ZYGOTE_1);
       break;
@@ -482,11 +487,11 @@ void Level::setBlockImpacted(int row, int col) {
     case Block::ROLLING:
     case Block::SIMPLE:
     case Block::WATER:
-    case Block::YOGURT:
     // ----------------------
     case Block::NETWORK_1:
     case Block::QUICK_1:
     case Block::ULTRA_1:
+    case Block::YOGURT_1:
     case Block::ZYGOTE_1:
       setBlock(row, col, Block::NONE);
       break;

@@ -33,7 +33,7 @@ enum class Block : int {
   ORIGIN = 8,              //! 'O' - [ 1 ] puts ball into initial position
   QUICK = 9,               // 'Q' - [ 3 ] transform all other blocks
   ULTRA = 10,              //! 'U' - [ 5 ] win level
-  YOGURT = 11,             // 'Y' - [ 1 ] transforms nearest to YOUGURT blocks
+  YOGURT = 11,             //! 'Y' - [ 1 ] transforms nearest to YOUGURT blocks
   ZYGOTE = 12,             // 'Z' - [ 2 ] produces additional blocks
 
   /* Invulnerable blocks */
@@ -47,21 +47,22 @@ enum class Block : int {
   NETWORK_1 = 18,
   QUICK_2 = 19, QUICK_1 = 20,
   ULTRA_4 = 21, ULTRA_3 = 22, ULTRA_2 = 23, ULTRA_1 = 24,
-  ZYGOTE_1 = 25,
+  YOGURT_1 = 25,
+  ZYGOTE_1 = 26,
 
   /* Ordinary blocks */
-  ALUMINIUM = 26,   //! 'A' - [ 1 ]
-  BRICK = 27,       //! 'B' - [ 2 ]
-  CLAY = 28,        //! 'C' - [ 1 ] small disturbing
-  FOG = 29,         //! 'F' - [ 1 ] not disturbing
-  GLASS = 30,       //! 'G' - [ 2 ], not disturbing
-  IRON = 31,        //! 'I' - [ 3 ]
-  JELLY = 32,       //! 'J' - [ 1 ] large disturbing
-  STEEL = 33,       //! 'L' - [ 3 ]
-  PLUMBUM = 34,     //! 'P' - [ 4 ]
-  ROLLING = 35,     //! 'R' - [ 1 ] random disturbing
-  SIMPLE = 36,      //! 'S' - [ 1 ]
-  WATER = 37,       //! 'W' - [ 1 ] small disturbing
+  ALUMINIUM = 27,   //! 'A' - [ 1 ]
+  BRICK = 28,       //! 'B' - [ 2 ]
+  CLAY = 29,        //! 'C' - [ 1 ] small disturbing
+  FOG = 30,         //! 'F' - [ 1 ] not disturbing
+  GLASS = 31,       //! 'G' - [ 2 ], not disturbing
+  IRON = 32,        //! 'I' - [ 3 ]
+  JELLY = 33,       //! 'J' - [ 1 ] large disturbing
+  STEEL = 34,       //! 'L' - [ 3 ]
+  PLUMBUM = 35,     //! 'P' - [ 4 ]
+  ROLLING = 36,     //! 'R' - [ 1 ] random disturbing
+  SIMPLE = 37,      //! 'S' - [ 1 ]
+  WATER = 38,       //! 'W' - [ 1 ] small disturbing
 };
 
 constexpr static int totalBlockTypes = 36;

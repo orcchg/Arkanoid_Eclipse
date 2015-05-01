@@ -443,6 +443,7 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
         for (auto& item : affected_blocks) {
           block_impact_event.notifyListeners(item);
         }
+        // TODO: avoid ball stuck
         break;
       case Block::NETWORK_1:
         // XXX:
@@ -470,9 +471,9 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
       case Block::WATER:
         viscosity += 20;
         // intend no break
-      case Block::YOGURT:
+      case Block::YOGURT_1:
         viscosity += 10;
-        // intend no break;
+        // intend no break
       case Block::CLAY:
         viscosity += 10;
         blockCollision(top_border, bottom_border, left_border, right_border, viscosity);
@@ -485,6 +486,13 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
       case Block::QUICK_1:
         // XXX:
         blockCollision(top_border, bottom_border, left_border, right_border, 100 /* elastic */);
+        break;
+      case Block::YOGURT:
+        blockCollision(top_border, bottom_border, left_border, right_border, 50);
+        m_level->modifyBlocksAround(row, col, Block::YOGURT_1, &affected_blocks);
+        for (auto& item : affected_blocks) {
+          block_impact_event.notifyListeners(item);
+        }
         break;
       case Block::ZYGOTE_1:
         // XXX:

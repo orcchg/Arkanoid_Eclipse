@@ -126,7 +126,7 @@ constexpr static GLfloat EXTRA[4]      = {0.6078f, 0.8039f, 0.6078f, 1.f};  // 1
 constexpr static GLfloat EXTRA_EDGE[4] = {0.4118f, 0.5451f, 0.4118f, 1.f};  // 105 139 105
 
 constexpr static GLfloat YOGURT[4]      = {1.f,     0.9726f, 0.8628f, 1.f};  // 255 248 220
-constexpr static GLfloat YOGURT_EDGE[4] = {0.9333f, 0.9098f, 0.8039f, 1.f};  // 238 232 205
+constexpr static GLfloat YOGURT_EDGE[4] = {0.8039f, 0.7843f, 0.6941f, 1.f};  // 205 200 177
 
 constexpr static GLfloat ZYGOTE[4]      = {0.2628f, 0.8039f, 0.5020f, 1.f};  // 67 205 128
 constexpr static GLfloat ZYGOTE_EDGE[4] = {0.1804f, 0.5451f, 0.3412f, 1.f};  // 46 139 87
