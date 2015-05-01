@@ -5,6 +5,8 @@ import java.lang.ref.WeakReference;
 
 import com.orcchg.arkanoid.R;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
@@ -12,7 +14,10 @@ import android.view.MenuItem;
 
 public class MainActivity extends FragmentActivity {
   private static final String TAG = "Arkanoid_MainActivity";
+  private static final String PreferencesName = "com.orcchg.arkanoid.surface";
+  private static final String bundleKey_startLevel = "bundleKey_startLevel";
   private static final int INITIAL_LEVEL = 0;
+  private int mStartLevel;
   
   static {
     System.loadLibrary("Arkanoid");
@@ -25,6 +30,7 @@ public class MainActivity extends FragmentActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    Log.d(TAG, "onCreate");
     setContentView(R.layout.activity_main);
     mAsyncContext = new AsyncContext();
     mAsyncContext.setCoreEventListener(new CoreEventHandler(this));
@@ -42,25 +48,33 @@ public class MainActivity extends FragmentActivity {
       e.printStackTrace();
     }
     mAsyncContext.setResourcesPtr(mNativeResources.getPtr());
+    
+    SharedPreferences prefs = getSharedPreferences(PreferencesName, Context.MODE_PRIVATE);
+    mStartLevel = prefs.getInt(bundleKey_startLevel, INITIAL_LEVEL);
   }
   
   @Override
   protected void onResume() {
+    Log.d(TAG, "onResume");
     mAsyncContext.start();
     mSurface.setAsyncContext(mAsyncContext);
     mAsyncContext.loadResources();
-    mAsyncContext.loadLevel(Levels.get(INITIAL_LEVEL));
+    mAsyncContext.loadLevel(Levels.get(mStartLevel));
     super.onResume();
   }
   
   @Override
   protected void onPause() {
+    Log.d(TAG, "onPause");
     mAsyncContext.stop();
+    SharedPreferences prefs = getSharedPreferences("com.orcchg.arkanoid.surface", Context.MODE_PRIVATE);
+    prefs.edit().putInt(bundleKey_startLevel, mStartLevel);
     super.onPause();
   }
   
   @Override
   protected void onDestroy() {
+    Log.d(TAG, "onDestroy");
     mAsyncContext.destroy();
     mNativeResources.release();
     super.onDestroy();
@@ -85,7 +99,11 @@ public class MainActivity extends FragmentActivity {
     return true;
   }
   
-  AsyncContext getAsyncContext() { return mAsyncContext; }
+  AsyncContext getAsyncContext() { return mAsyncContext; }    
+  void setLevel(int level) {
+    mStartLevel = level;
+    Log.i(TAG, "Current level: " + mStartLevel);
+  }
   
   /* Core event listeners */
   // --------------------------------------------------------------------------
@@ -124,6 +142,7 @@ public class MainActivity extends FragmentActivity {
           Thread.interrupted();
           e.printStackTrace();
         }
+        activity.setLevel(currentLevel);
         activity.mAsyncContext.loadLevel(Levels.get(currentLevel)); 
       }
     }
