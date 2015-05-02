@@ -640,6 +640,7 @@ void GameProcessor::viscousAngleDisturbance(int viscosity) {
     m_ball.setAngle(m_ball.getAngle() + (direction * m_angle_distribution(m_generator) / 100.0f * viscosity));
     GLfloat sign = m_ball.getAngle() >= 0.0f ? 1.0f : -1.0f;
     m_ball.setAngle(sign * std::fmod(std::fabs(m_ball.getAngle()), util::_2PI));
+    smallAngleAvoid();
   }
 }
 
