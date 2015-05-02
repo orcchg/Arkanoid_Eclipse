@@ -355,91 +355,91 @@ void Level::setBlockImpacted(int row, int col) {
 int Level::modifyBlocksAround(int row, int col, Block type, std::vector<RowCol>* output) {
   int score = 0;
   if (row - 2 >= 0) {
-    int cost = getCardinalityCost(getBlock(row - 2, col));
-    initial_cardinality -= cost;
-    score += cost;
+    Block block = getBlock(row - 2, col);
+    initial_cardinality -= getCardinalityCost(block);
+    score += getBlockScore(block);
     setVulnerableBlock(row - 2, col, type);
     output->emplace_back(row - 2, col);
   }
 
   if (row - 1 >= 0) {
-    int cost = getCardinalityCost(getBlock(row - 1, col));
-    initial_cardinality -= cost;
-    score += cost;
+    Block block = getBlock(row - 1, col);
+    initial_cardinality -= getCardinalityCost(block);
+    score += getBlockScore(block);
     setVulnerableBlock(row - 1, col, type);
     output->emplace_back(row - 1, col);
     if (col - 1 >= 0) {
-      int cost = getCardinalityCost(getBlock(row - 1, col - 1));
-      initial_cardinality -= cost;
-      score += cost;
+      Block block = getBlock(row - 1, col - 1);
+      initial_cardinality -= getCardinalityCost(block);
+      score += getBlockScore(block);
       setVulnerableBlock(row - 1, col - 1, type);
       output->emplace_back(row - 1, col - 1);
     }
     if (col + 1 < cols) {
-      int cost = getCardinalityCost(getBlock(row - 1, col + 1));
-      initial_cardinality -= cost;
-      score += cost;
+      Block block = getBlock(row - 1, col + 1);
+      initial_cardinality -= getCardinalityCost(block);
+      score += getBlockScore(block);
       setVulnerableBlock(row - 1, col + 1, type);
       output->emplace_back(row - 1, col + 1);
     }
   }
 
   if (row + 1 < rows) {
-    int cost = getCardinalityCost(getBlock(row + 1, col));
-    initial_cardinality -= cost;
-    score += cost;
+    Block block = getBlock(row + 1, col);
+    initial_cardinality -= getCardinalityCost(block);
+    score += getBlockScore(block);
     setVulnerableBlock(row + 1, col, type);
     output->emplace_back(row + 1, col);
     if (col - 1 >= 0) {
-      int cost = getCardinalityCost(getBlock(row + 1, col - 1));
-      initial_cardinality -= cost;
-      score += cost;
+      Block block = getBlock(row + 1, col - 1);
+      initial_cardinality -= getCardinalityCost(block);
+      score += getBlockScore(block);
       setVulnerableBlock(row + 1, col - 1, type);
       output->emplace_back(row + 1, col - 1);
     }
     if (col + 1 < cols) {
-      int cost = getCardinalityCost(getBlock(row + 1, col + 1));
-      initial_cardinality -= cost;
-      score += cost;
+      Block block = getBlock(row + 1, col + 1);
+      initial_cardinality -= getCardinalityCost(block);
+      score += getBlockScore(block);
       setVulnerableBlock(row + 1, col + 1, type);
       output->emplace_back(row + 1, col + 1);
     }
   }
 
   if (row + 2 < rows) {
-    int cost = getCardinalityCost(getBlock(row + 2, col));
-    initial_cardinality -= cost;
-    score += cost;
+    Block block = getBlock(row + 2, col);
+    initial_cardinality -= getCardinalityCost(block);
+    score += getBlockScore(block);
     setVulnerableBlock(row + 2, col, type);
     output->emplace_back(row + 2, col);
   }
 
   // ------------------------
   if (col - 2 >= 0) {
-    int cost = getCardinalityCost(getBlock(row, col - 2));
-    initial_cardinality -= cost;
-    score += cost;
+    Block block = getBlock(row, col - 2);
+    initial_cardinality -= getCardinalityCost(block);
+    score += getBlockScore(block);
     setVulnerableBlock(row, col - 2, type);
     output->emplace_back(row, col - 2);
   }
   if (col - 1 >= 0) {
-    int cost = getCardinalityCost(getBlock(row, col - 1));
-    initial_cardinality -= cost;
-    score += cost;
+    Block block = getBlock(row, col - 1);
+    initial_cardinality -= getCardinalityCost(block);
+    score += getBlockScore(block);
     setVulnerableBlock(row, col - 1, type);
     output->emplace_back(row, col - 1);
   }
   if (col + 1 < cols) {
-    int cost = getCardinalityCost(getBlock(row, col + 1));
-    initial_cardinality -= cost;
-    score += cost;
+    Block block = getBlock(row, col + 1);
+    initial_cardinality -= getCardinalityCost(block);
+    score += getBlockScore(block);
     setVulnerableBlock(row, col + 1, type);
     output->emplace_back(row, col + 1);
   }
   if (col + 2 < cols) {
-    int cost = getCardinalityCost(getBlock(row, col + 2));
-    initial_cardinality -= cost;
-    score += cost;
+    Block block = getBlock(row, col + 2);
+    initial_cardinality -= getCardinalityCost(block);
+    score += getBlockScore(block);
     setVulnerableBlock(row, col + 2, type);
     output->emplace_back(row, col + 2);
   }
@@ -449,91 +449,91 @@ int Level::modifyBlocksAround(int row, int col, Block type, std::vector<RowCol>*
 int Level::changeBlocksAround(int row, int col, Mode mode, std::vector<RowCol>* output) {
   int score = 0;
   if (row - 2 >= 0) {
-    int cost = getCardinalityCost(getBlock(row - 2, col));
-    initial_cardinality -= cost;
-    score += cost;
+    Block block = getBlock(row - 2, col);
+    initial_cardinality -= getCardinalityCost(block);
+    score += getBlockScore(block);
     changeVulnerableBlock(mode, row - 2, col);
     output->emplace_back(row - 2, col);
   }
 
   if (row - 1 >= 0) {
-    int cost = getCardinalityCost(getBlock(row - 1, col));
-    initial_cardinality -= cost;
-    score += cost;
+    Block block = getBlock(row - 1, col);
+    initial_cardinality -= getCardinalityCost(block);
+    score += getBlockScore(block);
     changeVulnerableBlock(mode, row - 1, col);
     output->emplace_back(row - 1, col);
     if (col - 1 >= 0) {
-      int cost = getCardinalityCost(getBlock(row - 1, col - 1));
-      initial_cardinality -= cost;
-      score += cost;
+      Block block = getBlock(row - 1, col - 1);
+      initial_cardinality -= getCardinalityCost(block);
+      score += getBlockScore(block);
       changeVulnerableBlock(mode, row - 1, col - 1);
       output->emplace_back(row - 1, col - 1);
     }
     if (col + 1 < cols) {
-      int cost = getCardinalityCost(getBlock(row - 1, col + 1));
-      initial_cardinality -= cost;
-      score += cost;
+      Block block = getBlock(row - 1, col + 1);
+      initial_cardinality -= getCardinalityCost(block);
+      score += getBlockScore(block);
       changeVulnerableBlock(mode, row - 1, col + 1);
       output->emplace_back(row - 1, col + 1);
     }
   }
 
   if (row + 1 < rows) {
-    int cost = getCardinalityCost(getBlock(row + 1, col));
-    initial_cardinality -= cost;
-    score += cost;
+    Block block = getBlock(row + 1, col);
+    initial_cardinality -= getCardinalityCost(block);
+    score += getBlockScore(block);
     changeVulnerableBlock(mode, row + 1, col);
     output->emplace_back(row + 1, col);
     if (col - 1 >= 0) {
-      int cost = getCardinalityCost(getBlock(row + 1, col - 1));
-      initial_cardinality -= cost;
-      score += cost;
+      Block block = getBlock(row + 1, col - 1);
+      initial_cardinality -= getCardinalityCost(block);
+      score += getBlockScore(block);
       changeVulnerableBlock(mode, row + 1, col - 1);
       output->emplace_back(row + 1, col - 1);
     }
     if (col + 1 < cols) {
-      int cost = getCardinalityCost(getBlock(row + 1, col + 1));
-      initial_cardinality -= cost;
-      score += cost;
+      Block block = getBlock(row + 1, col + 1);
+      initial_cardinality -= getCardinalityCost(block);
+      score += getBlockScore(block);
       changeVulnerableBlock(mode, row + 1, col + 1);
       output->emplace_back(row + 1, col + 1);
     }
   }
 
   if (row + 2 < rows) {
-    int cost = getCardinalityCost(getBlock(row + 2, col));
-    initial_cardinality -= cost;
-    score += cost;
+    Block block = getBlock(row + 2, col);
+    initial_cardinality -= getCardinalityCost(block);
+    score += getBlockScore(block);
     changeVulnerableBlock(mode, row + 2, col);
     output->emplace_back(row + 2, col);
   }
 
   // ------------------------
   if (col - 2 >= 0) {
-    int cost = getCardinalityCost(getBlock(row, col - 2));
-    initial_cardinality -= cost;
-    score += cost;
+    Block block = getBlock(row, col - 2);
+    initial_cardinality -= getCardinalityCost(block);
+    score += getBlockScore(block);
     changeVulnerableBlock(mode, row, col - 2);
     output->emplace_back(row, col - 2);
   }
   if (col - 1 >= 0) {
-    int cost = getCardinalityCost(getBlock(row, col - 1));
-    initial_cardinality -= cost;
-    score += cost;
+    Block block = getBlock(row, col - 1);
+    initial_cardinality -= getCardinalityCost(block);
+    score += getBlockScore(block);
     changeVulnerableBlock(mode, row, col - 1);
     output->emplace_back(row, col - 1);
   }
   if (col + 1 < cols) {
-    int cost = getCardinalityCost(getBlock(row, col + 1));
-    initial_cardinality -= cost;
-    score += cost;
+    Block block = getBlock(row, col + 1);
+    initial_cardinality -= getCardinalityCost(block);
+    score += getBlockScore(block);
     changeVulnerableBlock(mode, row, col + 1);
     output->emplace_back(row, col + 1);
   }
   if (col + 2 < cols) {
-    int cost = getCardinalityCost(getBlock(row, col + 2));
-    initial_cardinality -= cost;
-    score += cost;
+    Block block = getBlock(row, col + 2);
+    initial_cardinality -= getCardinalityCost(block);
+    score += getBlockScore(block);
     changeVulnerableBlock(mode, row, col + 2);
     output->emplace_back(row, col + 2);
   }
@@ -550,9 +550,9 @@ int Level::modifyBlocksBehind(int row, int col, Block type, Direction direction,
     case Direction::UP:
       --row;
       while (row >= 0) {
-        int cost = getCardinalityCost(getBlock(row, col));
-        initial_cardinality -= cost;
-        score += cost;
+        Block block = getBlock(row, col);
+        initial_cardinality -= getCardinalityCost(block);
+        score += getBlockScore(block);
         setVulnerableBlock(row, col, type);
         output->emplace_back(row, col);
         --row;
@@ -561,9 +561,9 @@ int Level::modifyBlocksBehind(int row, int col, Block type, Direction direction,
     case Direction::DOWN:
       ++row;
       while (row < rows) {
-        int cost = getCardinalityCost(getBlock(row, col));
-        initial_cardinality -= cost;
-        score += cost;
+        Block block = getBlock(row, col);
+        initial_cardinality -= getCardinalityCost(block);
+        score += getBlockScore(block);
         setVulnerableBlock(row, col, type);
         output->emplace_back(row, col);
         ++row;
@@ -572,9 +572,9 @@ int Level::modifyBlocksBehind(int row, int col, Block type, Direction direction,
     case Direction::RIGHT:
       ++col;
       while (col < cols) {
-        int cost = getCardinalityCost(getBlock(row, col));
-        initial_cardinality -= cost;
-        score += cost;
+        Block block = getBlock(row, col);
+        initial_cardinality -= getCardinalityCost(block);
+        score += getBlockScore(block);
         setVulnerableBlock(row, col, type);
         output->emplace_back(row, col);
         ++col;
@@ -583,9 +583,9 @@ int Level::modifyBlocksBehind(int row, int col, Block type, Direction direction,
     case Direction::LEFT:
       --col;
       while (col >= 0) {
-        int cost = getCardinalityCost(getBlock(row, col));
-        initial_cardinality -= cost;
-        score += cost;
+        Block block = getBlock(row, col);
+        initial_cardinality -= getCardinalityCost(block);
+        score += getBlockScore(block);
         setVulnerableBlock(row, col, type);
         output->emplace_back(row, col);
         --col;
