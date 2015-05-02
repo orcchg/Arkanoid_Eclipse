@@ -684,6 +684,7 @@ void AsyncContext::drawExplosion(GLfloat x, GLfloat y, const util::BGRA<GLfloat>
 
 /* Misc */
 // ----------------------------------------------------------------------------
+//https://github.com/danginsburg/opengles-book-samples/blob/master/Android/Ch13_ParticleSystem/src/com/openglesbook/particlesystem/ParticleSystemRenderer.java
 void AsyncContext::drawRectangle() {
 //  m_ball_shader->useProgram();
 
