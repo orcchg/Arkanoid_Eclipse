@@ -187,6 +187,7 @@ public class MainActivity extends FragmentActivity {
       if (activity != null) {
         activity.setLives(currentLives);
       }
+      onScoreUpdated(-250);  // lost ball decreases score
     }
 
     @Override
@@ -213,6 +214,9 @@ public class MainActivity extends FragmentActivity {
     @Override
     public void onScoreUpdated(int score) {
       currentScore += score;
+      if (currentScore < 0) {
+        currentScore = 0;
+      }
       final MainActivity activity = activityRef.get();
       if (activity != null) {
         activity.runOnUiThread(new Runnable() {
