@@ -57,6 +57,8 @@ constexpr static int totalOrdinaryBlocks = 13;
 
 Block charToBlock(char ch);
 char blockToChar(Block block);
+int getCardinalityCost(Block block);
+int getBlockScore(Block block);
 
 class BlockGenerator {
 public:

@@ -117,8 +117,6 @@ public:
   inline int getCardinality() const { return initial_cardinality; }
   /// @brief Forced way to drop cardinality for instant victory.
   inline void forceDropCardinality() { initial_cardinality = 1; }
-  /// @brief Gets cardinality of block.
-  static int getCardinalityCost(Block block);
   /// @brief Decrements recorded cardinality due to impact of some block.
   /// @return Updated cardinality.
   inline int blockImpact() { return --initial_cardinality; }
@@ -135,30 +133,35 @@ public:
   /// @param col Column index of certain block.
   /// @param type Type the block will be modified to.
   /// @param output Array of valid indices of influenced blocks.
-  void modifyBlocksAround(int row, int col, Block type, std::vector<RowCol>* output);
+  /// @return Score of affected blocks.
+  int modifyBlocksAround(int row, int col, Block type, std::vector<RowCol>* output);
   /// @brief Upgrades or degrades blocks around certain block.
   /// @param row Row index of certain block.
   /// @param col Column index of certain block.
   /// @param mode Upgrade or degrade nearest blocks.
   /// @param output Array of valid indices of influenced blocks.
-  void changeBlocksAround(int row, int col, Mode mode, std::vector<RowCol>* output);
+  /// @return Score of affected blocks.
+  int changeBlocksAround(int row, int col, Mode mode, std::vector<RowCol>* output);
   /// @brief Destroys blocks around certain block.
-  void destroyBlocksAround(int row, int col, std::vector<RowCol>* output);
+  /// @return Score of affected blocks.
+  int destroyBlocksAround(int row, int col, std::vector<RowCol>* output);
   /// @brief Modifies blocks behind certain block.
   /// @param row Row index of certain block.
   /// @param col Column index of certain block.
   /// @param type Type the block will be modified to.
   /// @param direction Direction behind the block.
   /// @param output Array of valid indices of influenced blocks.
-  void modifyBlocksBehind(int row, int col, Block type, Direction direction, std::vector<RowCol>* output);
+  /// @return Score of affected blocks.
+  int modifyBlocksBehind(int row, int col, Block type, Direction direction, std::vector<RowCol>* output);
   /// @brief Destroys blocks behind certain block.
-  void destroyBlocksBehind(int row, int col, Direction direction, std::vector<RowCol>* output);
+  /// @return Score of affected blocks.
+  int destroyBlocksBehind(int row, int col, Direction direction, std::vector<RowCol>* output);
   /// @brief Modifies one block near certain block where possible.
   /// @param row Row index of certain block.
   /// @param col Column index of certain block.
   /// @param type Type the block will be modified to.
-  /// @return Valid indices of influenced block.
-  RowCol modifyBlockNear(int row, int col, Block type);
+  /// @param output Valid indices of influenced block.
+  void modifyBlockNear(int row, int col, Block type, RowCol* output);
   /** @} */  // end of Modifiers group
 
   void print() const;

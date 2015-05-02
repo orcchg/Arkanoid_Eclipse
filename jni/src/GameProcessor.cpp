@@ -28,7 +28,6 @@ GameProcessor::GameProcessor(JavaVM* jvm, jobject master_object)
   , m_bite()
   , m_bite_upper_border(-BiteParams::neg_biteElevation)
   , m_level_dimens(0, 0, 0.0f, 0.0f, 0.0f, 0.0f)
-  , m_total_lives(3)
   , m_generator()
   , m_angle_distribution(util::PI12, util::PI30)
   , m_direction_distribution(0.25f)
@@ -281,13 +280,16 @@ void GameProcessor::shiftBall(GLfloat new_x, GLfloat new_y) {
 void GameProcessor::onLostBall(bool /* dummy */) {
   m_is_ball_lost = false;
   m_is_ball_death = false;
-  --m_total_lives;
-  m_jenv->CallVoidMethod(master_object, fireJavaEvent_lostBall_id, m_total_lives);
+  m_jenv->CallVoidMethod(master_object, fireJavaEvent_lostBall_id);
 }
 
 void GameProcessor::onLevelFinished(bool /* dummy */) {
   m_level_finished = false;
   m_jenv->CallVoidMethod(master_object, fireJavaEvent_levelFinished_id);
+}
+
+void GameProcessor::onScoreUpdated(int score) {
+  m_jenv->CallVoidMethod(master_object, fireJavaEvent_scoreUpdated_id, score);
 }
 
 void GameProcessor::onAngleChanged() {
@@ -428,6 +430,8 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
     int viscosity = 0;
     Block block = m_level->getBlock(row, col);
     m_level->setBlockImpacted(row, col);
+    int score = getBlockScore(block);
+
     switch (block) {
       case Block::NONE:
         // no impact and disturbance
@@ -448,28 +452,28 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
       // --------------------
       case Block::ELECTRO:
         external_collision = blockCollision(top_border, bottom_border, left_border, right_border, 100 /* elastic */);
-        m_level->destroyBlocksAround(row, col, &affected_blocks);
+        score += m_level->destroyBlocksAround(row, col, &affected_blocks);
         for (auto& item : affected_blocks) {
           block_impact_event.notifyListeners(item);
         }
         break;
       case Block::KNOCK_VERTICAL:
         external_collision = blockCollision(top_border, bottom_border, left_border, right_border, 100 /* elastic */);
-        m_level->destroyBlocksBehind(row, col, vertical_direction, &affected_blocks);
+        score += m_level->destroyBlocksBehind(row, col, vertical_direction, &affected_blocks);
         for (auto& item : affected_blocks) {
           block_impact_event.notifyListeners(item);
         }
         break;
       case Block::KNOCK_HORIZONTAL:
         external_collision = blockCollision(top_border, bottom_border, left_border, right_border, 100 /* elastic */);
-        m_level->destroyBlocksBehind(row, col, horizontal_direction, &affected_blocks);
+        score += m_level->destroyBlocksBehind(row, col, horizontal_direction, &affected_blocks);
         for (auto& item : affected_blocks) {
           block_impact_event.notifyListeners(item);
         }
         break;
       case Block::MIDAS:
         external_collision = blockCollision(top_border, bottom_border, left_border, right_border, 100 /* elastic */);
-        m_level->modifyBlocksAround(row, col, Block::TITAN, &affected_blocks);
+        score += m_level->modifyBlocksAround(row, col, Block::TITAN, &affected_blocks);
         for (auto& item : affected_blocks) {
           block_impact_event.notifyListeners(item);
         }
@@ -514,28 +518,28 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
       // --------------------
       case Block::MAGIC:
         external_collision = blockCollision(top_border, bottom_border, left_border, right_border, 100 /* elastic */);
-        m_level->modifyBlocksAround(row, col, m_level->getGenerator().generateBlock(), &affected_blocks);
+        score += m_level->modifyBlocksAround(row, col, m_level->getGenerator().generateBlock(), &affected_blocks);
         for (auto& item : affected_blocks) {
           block_impact_event.notifyListeners(item);
         }
         break;
       case Block::QUICK_1:
         external_collision = blockCollision(top_border, bottom_border, left_border, right_border, 100 /* elastic */);
-        m_level->changeBlocksAround(row, col, (m_direction_distribution(m_generator) ? Mode::DEGRADE : Mode::UPGRADE), &affected_blocks);
+        score += m_level->changeBlocksAround(row, col, (m_direction_distribution(m_generator) ? Mode::DEGRADE : Mode::UPGRADE), &affected_blocks);
         for (auto& item : affected_blocks) {
           block_impact_event.notifyListeners(item);
         }
         break;
       case Block::YOGURT:
         external_collision = blockCollision(top_border, bottom_border, left_border, right_border, 50);
-        m_level->modifyBlocksAround(row, col, Block::YOGURT_1, &affected_blocks);
+        score += m_level->modifyBlocksAround(row, col, Block::YOGURT_1, &affected_blocks);
         for (auto& item : affected_blocks) {
           block_impact_event.notifyListeners(item);
         }
         break;
       case Block::ZYGOTE_1:
         external_collision = blockCollision(top_border, bottom_border, left_border, right_border, 100 /* elastic */);
-        single_affected = m_level->modifyBlockNear(row, col, Block::ZYGOTE_SPAWN);
+        m_level->modifyBlockNear(row, col, Block::ZYGOTE_SPAWN, &single_affected);
         block_impact_event.notifyListeners(single_affected);
         break;
       // --------------------
@@ -544,6 +548,7 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
         break;
     }
     block_impact_event.notifyListeners(RowCol(row, col));
+    onScoreUpdated(score);
     return (external_collision &&
             block != Block::NONE &&
             block != Block::MIDAS &&

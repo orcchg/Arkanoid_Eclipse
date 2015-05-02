@@ -9,8 +9,9 @@ class AsyncContext {
   
   interface CoreEventListener {
     void onThrowBall();
-    void onLostBall(int lives_rest);
+    void onLostBall();
     void onLevelFinished();
+    void onScoreUpdated(int score);
     void onAngleChanged(int angle);
     void onCardinalityChanged(int new_cardinality);
   }
@@ -48,15 +49,21 @@ class AsyncContext {
     }
   }
   
-  void fireJavaEvent_lostBall(int lives_rest) {
+  void fireJavaEvent_lostBall() {
     if (mListener != null) {
-      mListener.onLostBall(lives_rest);
+      mListener.onLostBall();
     }
   }
   
   void fireJavaEvent_levelFinished() {
     if (mListener != null) {
       mListener.onLevelFinished();
+    }
+  }
+  
+  void fireJavaEvent_onScoreUpdated(int score) {
+    if (mListener != null) {
+      mListener.onScoreUpdated(score);
     }
   }
   

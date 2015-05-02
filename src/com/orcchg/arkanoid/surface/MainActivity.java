@@ -15,8 +15,13 @@ import android.widget.TextView;
 
 public class MainActivity extends FragmentActivity {
   private static final String TAG = "Arkanoid_MainActivity";
+  private static final int PLAYER_ID = 0;  // TODO: support multiple players
+  private static final int INITIAL_LIVES = 3;
   private static final int INITIAL_LEVEL = 0;
+  private static final int INITIAL_SCORE = 0;
+  private int currentLives = INITIAL_LIVES;
   private int currentLevel = INITIAL_LEVEL;
+  private int currentScore = INITIAL_SCORE;
   
   static {
     System.loadLibrary("Arkanoid");
@@ -25,7 +30,7 @@ public class MainActivity extends FragmentActivity {
   private AsyncContext mAsyncContext;
   private GameSurface mSurface;
   private NativeResources mNativeResources;
-  private TextView mAngleTextView;
+  private TextView mInfoTextView;
   private TextView mCardinalityTextView;
   
   @Override
@@ -36,7 +41,7 @@ public class MainActivity extends FragmentActivity {
     mAsyncContext = new AsyncContext();
     mAsyncContext.setCoreEventListener(new CoreEventHandler(this));
     mSurface = (GameSurface) findViewById(R.id.surface_view);
-    mAngleTextView = (TextView) findViewById(R.id.angle_textview);
+    mInfoTextView = (TextView) findViewById(R.id.info_textview);
     mCardinalityTextView = (TextView) findViewById(R.id.cardinality_textview);
     
     mNativeResources = new NativeResources(getAssets());
@@ -60,8 +65,12 @@ public class MainActivity extends FragmentActivity {
     mAsyncContext.start();
     mSurface.setAsyncContext(mAsyncContext);
     mAsyncContext.loadResources();
+    
     ArkanoidApplication app = (ArkanoidApplication) getApplication();
-    currentLevel = app.DATABASE.getStat(0).level;
+    GameStat game_stat = app.DATABASE.getStat(PLAYER_ID);
+    setLives(game_stat.lives);
+    setLevel(game_stat.level);
+    setScore(game_stat.score);
     mAsyncContext.loadLevel(Levels.get(currentLevel));
     super.onResume();
   }
@@ -69,7 +78,7 @@ public class MainActivity extends FragmentActivity {
   @Override
   protected void onPause() {
     Log.d(TAG, "onPause");
-    setStat(0, 0, currentLevel, 0);  // TODO: other stat
+    setStat(PLAYER_ID, currentLives, currentLevel, currentScore);
     mAsyncContext.stop();
     super.onPause();
   }
@@ -99,8 +108,10 @@ public class MainActivity extends FragmentActivity {
         break;
       case R.id.dropStat:
         ArkanoidApplication app = (ArkanoidApplication) getApplication();
-        app.DATABASE.clearStat(0);  // TODO more player ids support
-        currentLevel = INITIAL_LEVEL;
+        app.DATABASE.clearStat(PLAYER_ID);
+        setLives(INITIAL_LIVES);
+        setLevel(INITIAL_LEVEL);
+        setScore(INITIAL_SCORE);
         break;
     }
     return true;
@@ -115,19 +126,31 @@ public class MainActivity extends FragmentActivity {
   
   void setStat(long player_id, int lives, int level, int score) {
     ArkanoidApplication app = (ArkanoidApplication) getApplication();
-    try {
-      if (!app.DATABASE.updateStat(player_id, lives, level, score)) {
+    Log.i(TAG, "Stat to be stored: [" + lives + ", " + level + ", " + score + "]");
+    if (!app.DATABASE.updateStat(player_id, lives, level, score)) {
+      try {
         app.DATABASE.insertStat(player_id, lives, level, score);
+      } catch (DatabaseException e) {
+        e.printStackTrace();
       }
-    } catch (DatabaseException e) {
-      e.printStackTrace();
     }
+  }
+  
+  void setLives(int lives) {
+    currentLives = lives;
+  }
+  
+  void setLevel(int level) {
     currentLevel = level;
-    Log.i(TAG, "Current level: " + currentLevel);
+  }
+  
+  void setScore(int score) {
+    currentScore = score;
+    mInfoTextView.setText(Integer.toString(score));
   }
   
   void setAngleValue(int angle) {
-    mAngleTextView.setText(Integer.toString(angle));
+    mInfoTextView.setText(Integer.toString(angle));
   }
   
   void setCardinalityValue(int new_cardinality) {
@@ -139,26 +162,36 @@ public class MainActivity extends FragmentActivity {
   private static class CoreEventHandler implements AsyncContext.CoreEventListener {
     private static final String TAG = "CoreEvent";
     private WeakReference<MainActivity> activityRef;
+    private int currentLives = INITIAL_LIVES;
     private int currentLevel = INITIAL_LEVEL;
+    private int currentScore = INITIAL_SCORE;
     
     CoreEventHandler(final MainActivity activity) {
       activityRef = new WeakReference<MainActivity>(activity);
-      currentLevel = activity.getStat(0).level;  // TODO: multiple players
+      GameStat game_stat = activity.getStat(PLAYER_ID);
+      currentLives = game_stat.lives;
+      currentLevel = game_stat.level;
+      currentScore = game_stat.score;
     }
     
     @Override
     public void onThrowBall() {
-      Log.i(TAG, "Ball has been thrown !");
+      Log.i(TAG, "Ball has been thrown!");
     }
     
     @Override
-    public void onLostBall(int lives_rest) {
-      Log.i(TAG, "Ball has been lost ! Lives rest: " + lives_rest);
+    public void onLostBall() {
+      --currentLives;
+      Log.i(TAG, "Ball has been lost! Lives rest: " + currentLives);
+      MainActivity activity = activityRef.get();
+      if (activity != null) {
+        activity.setLives(currentLives);
+      }
     }
 
     @Override
     public void onLevelFinished() {
-      Log.i(TAG, "Level finished !");
+      Log.i(TAG, "Level finished!");
       MainActivity activity = activityRef.get();
       if (activity != null) {
         ++currentLevel;
@@ -172,21 +205,34 @@ public class MainActivity extends FragmentActivity {
           Thread.interrupted();
           e.printStackTrace();
         }
-        activity.setStat(0, 0, currentLevel, 0);  // TODO: other stat
+        activity.setLevel(currentLevel);
         activity.mAsyncContext.loadLevel(Levels.get(currentLevel)); 
       }
     }
     
     @Override
-    public void onAngleChanged(final int angle) {
+    public void onScoreUpdated(int score) {
+      currentScore += score;
       final MainActivity activity = activityRef.get();
       if (activity != null) {
         activity.runOnUiThread(new Runnable() {
-          @Override
-          public void run() {
-            activity.setAngleValue(angle);
-          }});
+        @Override
+        public void run() {
+          activity.setScore(currentScore);
+        }});
       }
+    }
+    
+    @Override
+    public void onAngleChanged(final int angle) {
+//      final MainActivity activity = activityRef.get();
+//      if (activity != null) {
+//        activity.runOnUiThread(new Runnable() {
+//          @Override
+//          public void run() {
+//            activity.setAngleValue(angle);
+//          }});
+//      }
     }
     
     @Override

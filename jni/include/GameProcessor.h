@@ -68,6 +68,7 @@ public:
   inline void setMasterObject(jobject object) { master_object = object; }
   inline void setOnLostBallMethodID(jmethodID id) { fireJavaEvent_lostBall_id = id; }
   inline void setOnLevelFinishedMethodID(jmethodID id) { fireJavaEvent_levelFinished_id = id; }
+  inline void setOnScoreUpdatedMethodID(jmethodID id) { fireJavaEvent_scoreUpdated_id = id; }
   inline void setOnAngleChangedMethodID(jmethodID id) { fireJavaEvent_angleChanged_id = id; }
   inline void setOnCardinalityChangedMethodID(jmethodID id) { fireJavaEvent_cardinalityChanged_id = id; }
   /** @} */  // end of JNIEnvironment group
@@ -114,6 +115,7 @@ private:
   jobject master_object;
   jmethodID fireJavaEvent_lostBall_id;
   jmethodID fireJavaEvent_levelFinished_id;
+  jmethodID fireJavaEvent_scoreUpdated_id;
   jmethodID fireJavaEvent_angleChanged_id;
   jmethodID fireJavaEvent_cardinalityChanged_id;
   /** @} */  // end of JNIEnvironment group
@@ -133,7 +135,6 @@ private:
   Bite m_bite;  //!< Physical bite's representation.
   GLfloat m_bite_upper_border;  //!< Upper border of bite.
   LevelDimens m_level_dimens;  //!< Measured level's dimensions.
-  int m_total_lives;  //!< Total number of available lives.
   /** @} */  // end of LogicData group
 
   /** @defgroup Maths Maths auxiliary members.
@@ -218,6 +219,8 @@ private:
   void onLostBall(bool /* dummy */);
   /// @brief Notifies Java layer level has been successfully finished.
   void onLevelFinished(bool /* dummy */);
+  /// @brief Notifies Java layer level with additive score value.
+  void onScoreUpdated(int score);
   /// @brief Notifies Java layer ball's angle has been changed.
   /// @details Angle re-calculated in degrees.
   void onAngleChanged();

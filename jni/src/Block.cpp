@@ -159,6 +159,121 @@ char blockToChar(Block block) {
   }
 }
 
+int getCardinalityCost(Block block) {
+  switch (block) {
+    case Block::ULTRA:
+      return 5;
+    case Block::PLUMBUM:
+    case Block::ULTRA_4:
+      return 4;
+    case Block::IRON:
+    case Block::STEEL:
+    case Block::QUICK:
+    case Block::ULTRA_3:
+      return 3;
+    case Block::BRICK:
+    case Block::GLASS:
+    case Block::NETWORK:
+    case Block::ZYGOTE:
+    case Block::QUICK_2:
+    case Block::ULTRA_2:
+      return 2;
+    case Block::ALUMINIUM:
+    case Block::CLAY:
+    case Block::DEATH:
+    case Block::ELECTRO:
+    case Block::FOG:
+    case Block::GLASS_1:
+    case Block::HYPER:
+    case Block::JELLY:
+    case Block::KNOCK_VERTICAL:
+    case Block::KNOCK_HORIZONTAL:
+    case Block::MAGIC:
+    case Block::ORIGIN:
+    case Block::ROLLING:
+    case Block::SIMPLE:
+    case Block::WATER:
+    case Block::YOGURT:
+    case Block::YOGURT_1:
+    case Block::NETWORK_1:
+    case Block::QUICK_1:
+    case Block::ULTRA_1:
+    case Block::ZYGOTE_1:
+    case Block::ZYGOTE_SPAWN:
+      return 1;
+
+    default:
+    case Block::MIDAS:
+    case Block::TITAN:
+    case Block::INVUL:
+    case Block::EXTRA:
+    case Block::NONE:
+      return 0;
+  }
+}
+
+int getBlockScore(Block block) {
+  int score = 0;
+  switch (block) {
+    case Block::ULTRA:     score += 127;
+    case Block::ULTRA_4:   score += 125;
+    case Block::ULTRA_3:   score += 122;
+    case Block::ULTRA_2:   score += 111;
+    case Block::ULTRA_1:   score += 100;
+      break;
+    case Block::PLUMBUM:   score += 47;
+    case Block::STEEL:     score += 39;
+    case Block::IRON:      score += 37;
+    case Block::ALUMINIUM: score += 25;
+      break;
+    case Block::QUICK:     score += 28;
+    case Block::QUICK_2:   score += 27;
+    case Block::QUICK_1:   score += 24;
+      break;
+    case Block::BRICK:     score += 24;
+      break;
+    case Block::ROLLING:   score += 5;
+    case Block::JELLY:     score += 11;
+    case Block::CLAY:      score += 12;
+      break;
+    case Block::WATER:     score += 5;
+    case Block::SIMPLE:    score += 4;
+      break;
+    case Block::KNOCK_VERTICAL:
+    case Block::KNOCK_HORIZONTAL:
+      score += 15;
+      break;
+    case Block::ZYGOTE:    score += 3;
+    case Block::ZYGOTE_1:  score += 2;
+    case Block::YOGURT:    score += 7;
+    case Block::YOGURT_1:  score += 1;
+    case Block::ZYGOTE_SPAWN: score += 1;
+      break;
+    case Block::GLASS:     score += 1;
+    case Block::GLASS_1:   score += 1;
+    case Block::FOG:       score += 1;
+      break;
+    case Block::NETWORK:   score += 11;
+    case Block::NETWORK_1: score += 1;
+    case Block::ELECTRO:   score += 9;
+      break;
+    case Block::HYPER:     score += 1;
+    case Block::MAGIC:     score += 8;
+    case Block::ORIGIN:    score += 2;
+      break;
+
+    default:
+    case Block::DEATH:
+    case Block::MIDAS:
+    case Block::TITAN:
+    case Block::INVUL:
+    case Block::EXTRA:
+    case Block::NONE:
+      break;
+  }
+  return score;
+}
+
 BlockGenerator::BlockGenerator()
   : m_generator()
   , m_distribution(0, totalOrdinaryBlocks - 1) {
