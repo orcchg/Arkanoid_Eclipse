@@ -543,13 +543,14 @@ bool GameProcessor::blockCollision(
     GLfloat right_border,
     int viscosity) {
 
-  if (m_ball.getPose().getX() + 1.0f >= left_border/* - m_ball.getDimens().halfWidth()*/ &&
-      m_ball.getPose().getX() + 1.0f <= right_border/* + m_ball.getDimens().halfWidth()*/ &&
-      m_ball.getPose().getY() + 1.0f <= 2.0f - top_border/* - m_ball.getDimens().halfWidth()*/ &&
-      m_ball.getPose().getY() + 1.0f >= 2.0f - bottom_border/* + m_ball.getDimens().halfWidth()*/) {
-    // inside block collision is erroneous
-    return false;
-  }
+//  if (m_ball.getPose().getX() + 1.0f >= left_border + m_ball.getDimens().halfWidth() &&
+//      m_ball.getPose().getX() + 1.0f <= right_border - m_ball.getDimens().halfWidth() &&
+//      m_ball.getPose().getY() + 1.0f <= 2.0f - top_border + m_ball.getDimens().halfWidth() &&
+//      m_ball.getPose().getY() + 1.0f >= 2.0f - bottom_border - m_ball.getDimens().halfWidth()) {
+//    // inside block collision is erroneous
+//    WRN("Erroneous inside block collision detected! Cardinality not affected twice");
+//    return false;
+//  }
 
   if (m_ball.getPose().getX() + 1.0f > left_border - m_ball.getDimens().halfWidth() &&
       m_ball.getPose().getX() + 1.0f < right_border + m_ball.getDimens().halfWidth() &&

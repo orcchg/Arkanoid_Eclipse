@@ -359,9 +359,9 @@ void Level::setBlockImpacted(int row, int col) {
     case Block::NETWORK:
       setBlock(row, col, Block::NETWORK_1);
       break;
-    case Block::YOGURT:
-      setBlock(row, col, Block::YOGURT_1);
-      break;
+//    case Block::YOGURT:
+//      setBlock(row, col, Block::YOGURT_1);
+//      break;
     case Block::ZYGOTE:
       setBlock(row, col, Block::ZYGOTE_1);
       break;
@@ -385,6 +385,7 @@ void Level::setBlockImpacted(int row, int col) {
     case Block::NETWORK_1:
     case Block::QUICK_1:
     case Block::ULTRA_1:
+    case Block::YOGURT:
     case Block::YOGURT_1:
     case Block::ZYGOTE_1:
     case Block::ZYGOTE_SPAWN:
