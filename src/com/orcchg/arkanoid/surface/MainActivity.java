@@ -11,12 +11,13 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 public class MainActivity extends FragmentActivity {
   private static final String TAG = "Arkanoid_MainActivity";
   private static final String PreferencesName = "com.orcchg.arkanoid.surface";
   private static final String bundleKey_startLevel = "bundleKey_startLevel";
-  private static final int INITIAL_LEVEL = 0;
+  private static final int INITIAL_LEVEL = 34;
   private int mStartLevel;
   
   static {
@@ -26,6 +27,7 @@ public class MainActivity extends FragmentActivity {
   private AsyncContext mAsyncContext;
   private GameSurface mSurface;
   private NativeResources mNativeResources;
+  private TextView mCardinalityTextView;
   
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +38,7 @@ public class MainActivity extends FragmentActivity {
     mAsyncContext.setCoreEventListener(new CoreEventHandler(this));
     mSurface = (GameSurface) findViewById(R.id.surface_view);
     mNativeResources = new NativeResources(getAssets());
+    mCardinalityTextView = (TextView) findViewById(R.id.cardinality_textview);
     try {
       String[] resources = getAssets().list("");
       for (String resource : resources) {
@@ -99,10 +102,15 @@ public class MainActivity extends FragmentActivity {
     return true;
   }
   
-  AsyncContext getAsyncContext() { return mAsyncContext; }    
+  AsyncContext getAsyncContext() { return mAsyncContext; }   
+  
   void setLevel(int level) {
     mStartLevel = level;
     Log.i(TAG, "Current level: " + mStartLevel);
+  }
+  
+  void setCardinalityValue(int new_cardinality) {
+    mCardinalityTextView.setText(Integer.toString(new_cardinality));
   }
   
   /* Core event listeners */
@@ -144,6 +152,19 @@ public class MainActivity extends FragmentActivity {
         }
         activity.setLevel(currentLevel);
         activity.mAsyncContext.loadLevel(Levels.get(currentLevel)); 
+      }
+    }
+    
+    @Override
+    public void onCardinalityChanged(final int new_cardinality) {
+      Log.i(TAG, "Cardinality updated");
+      final MainActivity activity = activityRef.get();
+      if (activity != null) {
+        activity.runOnUiThread(new Runnable() {
+          @Override
+          public void run() {
+            activity.setCardinalityValue(new_cardinality);
+          }});
       }
     }
   }

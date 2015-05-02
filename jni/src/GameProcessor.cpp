@@ -15,6 +15,7 @@ GameProcessor::GameProcessor(JavaVM* jvm, jobject master_object)
   , master_object(master_object)
   , fireJavaEvent_lostBall_id(nullptr)
   , fireJavaEvent_levelFinished_id(nullptr)
+  , fireJavaEvent_cardinalityChanged_id(nullptr)
   , m_level(nullptr)
   , m_throw_angle(60.0f)
   , m_aspect(1.0f)
@@ -258,6 +259,7 @@ void GameProcessor::moveBall() {
       correctBallPosition(new_x, m_bite_upper_border + m_ball.getDimens().halfHeight());
     }
   } else if (collideBlock(new_x, new_y)) {
+    onCardinalityChanged(m_level->getCardinality());
     m_level_finished = (m_level->blockImpact() == 0);
   }
 
@@ -285,6 +287,10 @@ void GameProcessor::onLostBall(bool /* dummy */) {
 void GameProcessor::onLevelFinished(bool /* dummy */) {
   m_level_finished = false;
   m_jenv->CallVoidMethod(master_object, fireJavaEvent_levelFinished_id);
+}
+
+void GameProcessor::onCardinalityChanged(int new_cardinality) {
+  m_jenv->CallVoidMethod(master_object, fireJavaEvent_cardinalityChanged_id, new_cardinality);
 }
 
 /* Collision group */

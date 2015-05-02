@@ -11,6 +11,7 @@ class AsyncContext {
     void onThrowBall();
     void onLostBall(int lives_rest);
     void onLevelFinished();
+    void onCardinalityChanged(int new_cardinality);
   }
   
   private CoreEventListener mListener;
@@ -55,6 +56,12 @@ class AsyncContext {
   void fireJavaEvent_levelFinished() {
     if (mListener != null) {
       mListener.onLevelFinished();
+    }
+  }
+  
+  void fireJavaEvent_cardinalityChanged(int new_cardinality) {
+    if (mListener != null) {
+      mListener.onCardinalityChanged(new_cardinality);
     }
   }
   
