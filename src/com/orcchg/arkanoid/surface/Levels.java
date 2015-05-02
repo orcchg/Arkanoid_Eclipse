@@ -8,6 +8,14 @@ public class Levels {
     return levels[index];
   }
   
+  public static String[] get(int index, String state) {
+    if (state.isEmpty()) {
+      return get(index);
+    } else {
+      return state.split("!+");
+    }
+  }
+  
   private static final String[] L0 = new String[] {"          ",
                                                    "          ",
                                                    "          ",

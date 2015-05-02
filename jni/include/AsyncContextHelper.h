@@ -140,6 +140,8 @@ struct AsyncContextHelper {
   JNIEnv* jenv;
   /// @brief Pointer to current object.
   jobject global_object;
+  /// @brief Global reference to java.lang.tring class.
+  jclass String_clazz;
 
   /// @brief Pointer to a windows associated with the rendering surface.
   ANativeWindow* window;

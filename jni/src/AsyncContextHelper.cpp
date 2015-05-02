@@ -5,7 +5,6 @@
 #include "Resources.h"
 
 static JavaVM* jvm = nullptr;
-static jclass String_clazz = nullptr;
 
 jint JNI_OnLoad(JavaVM* vm, void* reserved) {
   jvm = vm;
@@ -138,7 +137,7 @@ JNIEXPORT jobjectArray JNICALL Java_com_orcchg_arkanoid_surface_AsyncContext_sav
   jobjectArray out_level_Java =
       (jobjectArray) jenv->NewObjectArray(
           (jsize) size,
-          String_clazz,
+          ptr->String_clazz,
           jenv->NewStringUTF(""));
 
   std::vector<std::string> array;
@@ -171,6 +170,8 @@ AsyncContextHelper::AsyncContextHelper(JNIEnv* jenv, jobject object)
   processor = std::make_shared<game::GameProcessor>(jvm, object);
 
   global_object = jenv->NewGlobalRef(object);
+  jclass clazz = jenv->FindClass("java/lang/String");
+  String_clazz = (jclass) jenv->NewGlobalRef(clazz);
   jenv->DeleteLocalRef(object);
   jclass class_id = jenv->FindClass("com/orcchg/arkanoid/surface/AsyncContext");
   fireJavaEvent_lostBall_id = jenv->GetMethodID(class_id, "fireJavaEvent_lostBall", "()V");
@@ -190,6 +191,8 @@ AsyncContextHelper::AsyncContextHelper(JNIEnv* jenv, jobject object)
 AsyncContextHelper::~AsyncContextHelper() {
   jenv->DeleteGlobalRef(global_object);
   global_object = nullptr;
+  jenv->DeleteGlobalRef(String_clazz);
+  String_clazz = nullptr;
   acontext.reset();
   acontext = nullptr;
   processor.reset();

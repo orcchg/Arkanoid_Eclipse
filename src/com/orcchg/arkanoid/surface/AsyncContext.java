@@ -38,6 +38,18 @@ class AsyncContext {
   /* Tools */
   void loadLevel(final String[] level) { loadLevel(descriptor, level); }
   
+  String saveLevel() {
+    String[] tokens = saveLevel(descriptor);
+    StringBuilder builder = new StringBuilder();
+    char delim = '0';
+    for (String token : tokens) {
+      builder.append(delim);
+      delim = '!';
+      builder.append(token);
+    }
+    return builder.toString();
+  }
+  
   /* Events coming from native Core */
   void setCoreEventListener(CoreEventListener listener) {
     mListener = listener;

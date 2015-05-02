@@ -31,6 +31,7 @@ class Database {
       "'Lives' INTEGER DEFAULT 0, " +
       "'Level' INTEGER DEFAULT 0, " +
       "'Score' INTEGER DEFAULT 0, " +
+      "'LevelState' TEXT DEFAULT \"\", " +
       "FOREIGN KEY(PlayerID) REFERENCES " + PlayersTable + "(ID));";
   
   private static final int statID_columnIndex = 0;
@@ -38,6 +39,7 @@ class Database {
   private static final int statLives_columnIndex = 2;
   private static final int statLevel_columnIndex = 3;
   private static final int statScore_columnIndex = 4;
+  private static final int statLevelState_columnIndex = 5;
   private long lastStoredStatID = 0;
   
   Database(final Context context) {
@@ -85,30 +87,33 @@ class Database {
     final int lives;
     final int level;
     final int score;
+    final String state;
 
     GameStat() {
-      this(0, 0, 0, 0);
+      this(0, 0, 0, 0, "");
     }
     
-    GameStat(long player_id, int lives, int level, int score) {
+    GameStat(long player_id, int lives, int level, int score, String state) {
       this.player_id = player_id;
       this.lives = lives;
       this.level = level;
       this.score = score;
+      this.state = state;
     }
   }
   
-  long insertStat(long player_id, int lives, int level, int score) throws DatabaseException {
+  long insertStat(long player_id, int lives, int level, int score, String state) throws DatabaseException {
     ContentValues values = new ContentValues();
     values.put("ID", lastStoredStatID++);
     values.put("PlayerID", player_id);
     values.put("Lives", lives);
     values.put("Level", level);
     values.put("Score", score);
+    values.put("LevelState", state);
     return insert(StatTable, values);
   }
   
-  boolean updateStat(long player_id, int lives, int level, int score) {
+  boolean updateStat(long player_id, int lives, int level, int score, String state) {
     String statement = "SELECT * FROM '" + StatTable + "' WHERE PlayerID = '" + player_id + "';";
     Cursor cursor = mDbHandler.rawQuery(statement, null);
     long id = -1;
@@ -124,6 +129,7 @@ class Database {
     values.put("Lives", lives);
     values.put("Level", level);
     values.put("Score", score);
+    values.put("LevelState", state);
     return update(StatTable, id, values);
   }
   
@@ -134,7 +140,8 @@ class Database {
       int lives = cursor.getInt(statLives_columnIndex);
       int level = cursor.getInt(statLevel_columnIndex);
       int score = cursor.getInt(statScore_columnIndex);
-      return new GameStat(player_id, lives, level, score);
+      String state = cursor.getString(statLevelState_columnIndex);
+      return new GameStat(player_id, lives, level, score, state);
     } else {
       Log.w(TAG, "Table " + StatTable + " has no GameStat with requested PlayerID: " + player_id);
       return new GameStat();

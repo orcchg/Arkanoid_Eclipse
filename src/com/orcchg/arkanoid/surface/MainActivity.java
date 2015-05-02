@@ -71,7 +71,7 @@ public class MainActivity extends FragmentActivity {
     setLives(game_stat.lives);
     setLevel(game_stat.level);
     setScore(game_stat.score);
-    mAsyncContext.loadLevel(Levels.get(currentLevel));
+    mAsyncContext.loadLevel(Levels.get(currentLevel, game_stat.state));
     super.onResume();
   }
   
@@ -127,9 +127,11 @@ public class MainActivity extends FragmentActivity {
   void setStat(long player_id, int lives, int level, int score) {
     ArkanoidApplication app = (ArkanoidApplication) getApplication();
     Log.i(TAG, "Stat to be stored: [" + lives + ", " + level + ", " + score + "]");
-    if (!app.DATABASE.updateStat(player_id, lives, level, score)) {
+    String levelState = mAsyncContext.saveLevel();
+    Log.i(TAG, "Level: " + levelState);
+    if (!app.DATABASE.updateStat(player_id, lives, level, score, levelState)) {
       try {
-        app.DATABASE.insertStat(player_id, lives, level, score);
+        app.DATABASE.insertStat(player_id, lives, level, score, levelState);
       } catch (DatabaseException e) {
         e.printStackTrace();
       }
