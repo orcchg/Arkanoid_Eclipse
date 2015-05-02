@@ -3,10 +3,10 @@ package com.orcchg.arkanoid.surface;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 
-import com.orcchg.arkanoid.R;
+import com.orcchg.arkanoid.surface.Database.DatabaseException;
+import com.orcchg.arkanoid.surface.Database.GameStat;
+import com.orcchg.arkanoid.surface.R;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
@@ -15,10 +15,8 @@ import android.widget.TextView;
 
 public class MainActivity extends FragmentActivity {
   private static final String TAG = "Arkanoid_MainActivity";
-  private static final String PreferencesName = "com.orcchg.arkanoid.surface";
-  private static final String bundleKey_startLevel = "bundleKey_startLevel";
-  private static final int INITIAL_LEVEL = 34;
-  private int mStartLevel;
+  private static final int INITIAL_LEVEL = 0;
+  private int currentLevel = INITIAL_LEVEL;
   
   static {
     System.loadLibrary("Arkanoid");
@@ -27,6 +25,7 @@ public class MainActivity extends FragmentActivity {
   private AsyncContext mAsyncContext;
   private GameSurface mSurface;
   private NativeResources mNativeResources;
+  private TextView mAngleTextView;
   private TextView mCardinalityTextView;
   
   @Override
@@ -37,8 +36,10 @@ public class MainActivity extends FragmentActivity {
     mAsyncContext = new AsyncContext();
     mAsyncContext.setCoreEventListener(new CoreEventHandler(this));
     mSurface = (GameSurface) findViewById(R.id.surface_view);
-    mNativeResources = new NativeResources(getAssets());
+    mAngleTextView = (TextView) findViewById(R.id.angle_textview);
     mCardinalityTextView = (TextView) findViewById(R.id.cardinality_textview);
+    
+    mNativeResources = new NativeResources(getAssets());
     try {
       String[] resources = getAssets().list("");
       for (String resource : resources) {
@@ -51,9 +52,6 @@ public class MainActivity extends FragmentActivity {
       e.printStackTrace();
     }
     mAsyncContext.setResourcesPtr(mNativeResources.getPtr());
-    
-    SharedPreferences prefs = getSharedPreferences(PreferencesName, Context.MODE_PRIVATE);
-    mStartLevel = prefs.getInt(bundleKey_startLevel, INITIAL_LEVEL);
   }
   
   @Override
@@ -62,16 +60,17 @@ public class MainActivity extends FragmentActivity {
     mAsyncContext.start();
     mSurface.setAsyncContext(mAsyncContext);
     mAsyncContext.loadResources();
-    mAsyncContext.loadLevel(Levels.get(mStartLevel));
+    ArkanoidApplication app = (ArkanoidApplication) getApplication();
+    currentLevel = app.DATABASE.getStat(0).level;
+    mAsyncContext.loadLevel(Levels.get(currentLevel));
     super.onResume();
   }
   
   @Override
   protected void onPause() {
     Log.d(TAG, "onPause");
+    setStat(0, 0, currentLevel, 0);  // TODO: other stat
     mAsyncContext.stop();
-    SharedPreferences prefs = getSharedPreferences("com.orcchg.arkanoid.surface", Context.MODE_PRIVATE);
-    prefs.edit().putInt(bundleKey_startLevel, mStartLevel);
     super.onPause();
   }
   
@@ -98,15 +97,37 @@ public class MainActivity extends FragmentActivity {
       case R.id.nextLevel:
         mAsyncContext.fireJavaEvent_levelFinished();
         break;
+      case R.id.dropStat:
+        ArkanoidApplication app = (ArkanoidApplication) getApplication();
+        app.DATABASE.clearStat(0);  // TODO more player ids support
+        currentLevel = INITIAL_LEVEL;
+        break;
     }
     return true;
   }
   
-  AsyncContext getAsyncContext() { return mAsyncContext; }   
+  AsyncContext getAsyncContext() { return mAsyncContext; }
   
-  void setLevel(int level) {
-    mStartLevel = level;
-    Log.i(TAG, "Current level: " + mStartLevel);
+  GameStat getStat(long player_id) {
+    ArkanoidApplication app = (ArkanoidApplication) getApplication();
+    return app.DATABASE.getStat(player_id);
+  }
+  
+  void setStat(long player_id, int lives, int level, int score) {
+    ArkanoidApplication app = (ArkanoidApplication) getApplication();
+    try {
+      if (!app.DATABASE.updateStat(player_id, lives, level, score)) {
+        app.DATABASE.insertStat(player_id, lives, level, score);
+      }
+    } catch (DatabaseException e) {
+      e.printStackTrace();
+    }
+    currentLevel = level;
+    Log.i(TAG, "Current level: " + currentLevel);
+  }
+  
+  void setAngleValue(int angle) {
+    mAngleTextView.setText(Integer.toString(angle));
   }
   
   void setCardinalityValue(int new_cardinality) {
@@ -122,6 +143,7 @@ public class MainActivity extends FragmentActivity {
     
     CoreEventHandler(final MainActivity activity) {
       activityRef = new WeakReference<MainActivity>(activity);
+      currentLevel = activity.getStat(0).level;  // TODO: multiple players
     }
     
     @Override
@@ -150,14 +172,25 @@ public class MainActivity extends FragmentActivity {
           Thread.interrupted();
           e.printStackTrace();
         }
-        activity.setLevel(currentLevel);
+        activity.setStat(0, 0, currentLevel, 0);  // TODO: other stat
         activity.mAsyncContext.loadLevel(Levels.get(currentLevel)); 
       }
     }
     
     @Override
+    public void onAngleChanged(final int angle) {
+      final MainActivity activity = activityRef.get();
+      if (activity != null) {
+        activity.runOnUiThread(new Runnable() {
+          @Override
+          public void run() {
+            activity.setAngleValue(angle);
+          }});
+      }
+    }
+    
+    @Override
     public void onCardinalityChanged(final int new_cardinality) {
-      Log.i(TAG, "Cardinality updated");
       final MainActivity activity = activityRef.get();
       if (activity != null) {
         activity.runOnUiThread(new Runnable() {

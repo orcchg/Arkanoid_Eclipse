@@ -4,5 +4,6 @@
     <string name="app_name">Arkanoid</string>
     <string name="action_throw">Throw</string>
     <string name="action_nextLevel">Next level</string>
+    <string name="action_dropStat">Drop stat</string>
 
 </resources>
