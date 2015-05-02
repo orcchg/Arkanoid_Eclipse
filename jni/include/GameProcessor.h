@@ -68,6 +68,7 @@ public:
   inline void setMasterObject(jobject object) { master_object = object; }
   inline void setOnLostBallMethodID(jmethodID id) { fireJavaEvent_lostBall_id = id; }
   inline void setOnLevelFinishedMethodID(jmethodID id) { fireJavaEvent_levelFinished_id = id; }
+  inline void setOnAngleChangedMethodID(jmethodID id) { fireJavaEvent_angleChanged_id = id; }
   inline void setOnCardinalityChangedMethodID(jmethodID id) { fireJavaEvent_cardinalityChanged_id = id; }
   /** @} */  // end of JNIEnvironment group
 
@@ -113,6 +114,7 @@ private:
   jobject master_object;
   jmethodID fireJavaEvent_lostBall_id;
   jmethodID fireJavaEvent_levelFinished_id;
+  jmethodID fireJavaEvent_angleChanged_id;
   jmethodID fireJavaEvent_cardinalityChanged_id;
   /** @} */  // end of JNIEnvironment group
 
@@ -216,6 +218,9 @@ private:
   void onLostBall(bool /* dummy */);
   /// @brief Notifies Java layer level has been successfully finished.
   void onLevelFinished(bool /* dummy */);
+  /// @brief Notifies Java layer ball's angle has been changed.
+  /// @details Angle re-calculated in degrees.
+  void onAngleChanged();
   /// @brief Notifies Java layer cardinality value has been updated.
   void onCardinalityChanged(int new_cardinality);
   /** @} */  // end of LogicFunc group

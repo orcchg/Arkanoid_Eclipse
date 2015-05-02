@@ -162,6 +162,7 @@ struct AsyncContextHelper {
 
   jmethodID fireJavaEvent_lostBall_id;
   jmethodID fireJavaEvent_levelFinished_id;
+  jmethodID fireJavaEvent_angleChanged_id;
   jmethodID fireJavaEvent_cardinalityChanged_id;
 
   AsyncContextHelper(JNIEnv* jenv, jobject master_object);

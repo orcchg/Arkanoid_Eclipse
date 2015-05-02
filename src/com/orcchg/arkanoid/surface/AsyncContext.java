@@ -11,6 +11,7 @@ class AsyncContext {
     void onThrowBall();
     void onLostBall(int lives_rest);
     void onLevelFinished();
+    void onAngleChanged(int angle);
     void onCardinalityChanged(int new_cardinality);
   }
   
@@ -56,6 +57,12 @@ class AsyncContext {
   void fireJavaEvent_levelFinished() {
     if (mListener != null) {
       mListener.onLevelFinished();
+    }
+  }
+  
+  void fireJavaEvent_angleChanged(int angle) {
+    if (mListener != null) {
+      mListener.onAngleChanged(angle);
     }
   }
   

@@ -175,11 +175,13 @@ AsyncContextHelper::AsyncContextHelper(JNIEnv* jenv, jobject object)
   jclass class_id = jenv->FindClass("com/orcchg/arkanoid/surface/AsyncContext");
   fireJavaEvent_lostBall_id = jenv->GetMethodID(class_id, "fireJavaEvent_lostBall", "(I)V");
   fireJavaEvent_levelFinished_id = jenv->GetMethodID(class_id, "fireJavaEvent_levelFinished", "()V");
+  fireJavaEvent_angleChanged_id = jenv->GetMethodID(class_id, "fireJavaEvent_angleChanged", "(I)V");
   fireJavaEvent_cardinalityChanged_id = jenv->GetMethodID(class_id, "fireJavaEvent_cardinalityChanged", "(I)V");
 
   processor->setMasterObject(global_object);
   processor->setOnLostBallMethodID(fireJavaEvent_lostBall_id);
   processor->setOnLevelFinishedMethodID(fireJavaEvent_levelFinished_id);
+  processor->setOnAngleChangedMethodID(fireJavaEvent_angleChanged_id);
   processor->setOnCardinalityChangedMethodID(fireJavaEvent_cardinalityChanged_id);
 }
 

@@ -1,27 +1,40 @@
-<RelativeLayout 
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="${relativePackage}.${activityClass}" >
-
-    <FrameLayout
-        android:layout_width="match_parent"
+<FrameLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	tools:context="${relativePackage}.${activityClass}" >
+ 
+	<com.orcchg.arkanoid.surface.GameSurface
+	    xmlns:android="http://schemas.android.com/apk/res/android"
+	    android:id="@+id/surface_view"
+	    android:layout_width="match_parent"
+	    android:layout_height="match_parent" />
+	 
+	<RelativeLayout
+	    android:layout_width="match_parent"
 	    android:layout_height="match_parent" >
 	    
-	    <com.orcchg.arkanoid.surface.GameSurface
-	        xmlns:android="http://schemas.android.com/apk/res/android"
-	        android:id="@+id/surface_view"
-	        android:layout_width="match_parent"
-	        android:layout_height="match_parent" />
+		<TextView
+		    android:id="@+id/angle_textview"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:layout_alignParentLeft="true"
+		    android:layout_alignParentStart="true"
+		    android:layout_alignParentBottom="true"
+		    android:textColor="@android:color/white"
+		    android:textStyle="bold"
+		    android:textSize="20sp" />
 	    
-	    <TextView
-	        android:id="@+id/cardinality_textview"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:textColor="@android:color/white"
-	        android:textStyle="bold"
-	        android:textSize="20sp" />
-    </FrameLayout>
-    
-</RelativeLayout>
+		<TextView
+		    android:id="@+id/cardinality_textview"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:layout_alignParentRight="true"
+		    android:layout_alignParentEnd="true"
+		    android:layout_alignParentBottom="true"
+		    android:textColor="@android:color/white"
+		    android:textStyle="bold"
+		    android:textSize="20sp" />
+	</RelativeLayout>
+</FrameLayout>

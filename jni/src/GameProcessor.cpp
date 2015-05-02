@@ -194,6 +194,7 @@ void GameProcessor::process_throwBall() {
     m_is_ball_lost = false;
     m_is_ball_death = false;
     m_ball_pose_corrected = false;
+    onAngleChanged();
   }
   INF("Ball has been thrown");
 }
@@ -289,6 +290,11 @@ void GameProcessor::onLevelFinished(bool /* dummy */) {
   m_jenv->CallVoidMethod(master_object, fireJavaEvent_levelFinished_id);
 }
 
+void GameProcessor::onAngleChanged() {
+  int angle = static_cast<int>(m_ball.getAngle() / util::PI * 180);
+  m_jenv->CallVoidMethod(master_object, fireJavaEvent_angleChanged_id, angle);
+}
+
 void GameProcessor::onCardinalityChanged(int new_cardinality) {
   m_jenv->CallVoidMethod(master_object, fireJavaEvent_cardinalityChanged_id, new_cardinality);
 }
@@ -303,6 +309,7 @@ void GameProcessor::collideLeftBorder() {
   }
   GLfloat sign = m_ball.getAngle() >= 0.0f ? 1.0f : -1.0f;
   m_ball.setAngle(sign * std::fmod(std::fabs(m_ball.getAngle()), util::_2PI));
+  onAngleChanged();
 }
 
 void GameProcessor::collideRightBorder() {
@@ -313,12 +320,14 @@ void GameProcessor::collideRightBorder() {
   }
   GLfloat sign = m_ball.getAngle() >= 0.0f ? 1.0f : -1.0f;
   m_ball.setAngle(sign * std::fmod(std::fabs(m_ball.getAngle()), util::_2PI));
+  onAngleChanged();
 }
 
 void GameProcessor::collideHorizontalSurface() {
   m_ball.setAngle(util::_2PI - m_ball.getAngle());
   GLfloat sign = m_ball.getAngle() >= 0.0f ? 1.0f : -1.0f;
   m_ball.setAngle(sign * std::fmod(std::fabs(m_ball.getAngle()), util::_2PI));
+  onAngleChanged();
 }
 
 bool GameProcessor::collideBite(GLfloat new_x) {
@@ -366,6 +375,7 @@ bool GameProcessor::collideBite(GLfloat new_x) {
       collideHorizontalSurface();
     }
     m_ball.setAngle(std::fmod(std::fabs(m_ball.getAngle()), util::_2PI));
+    onAngleChanged();
   } else {
     return false;  // ball missed the bite
   }
@@ -451,7 +461,7 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
         for (auto& item : affected_blocks) {
           block_impact_event.notifyListeners(item);
         }
-        // TODO: avoid ball stuck
+        m_is_ball_death = true;
         break;
       case Block::NETWORK_1:
         // XXX:
@@ -625,6 +635,7 @@ void GameProcessor::smallAngleAvoid() {
   } else if (m_ball.getAngle() < util::_3PI2 && m_ball.getAngle() >= util::_3PI2 - util::PI16) {
     m_ball.setAngle(m_ball.getAngle() - util::PI16);
   }
+  onAngleChanged();
 }
 
 void GameProcessor::randomAngle() {
@@ -632,6 +643,7 @@ void GameProcessor::randomAngle() {
   m_ball.setAngle(init_angle_distribution(m_generator));
   m_ball.setAngle(m_ball.getAngle() + (m_direction_distribution(m_generator) ? 0.0f : util::PI2));
   m_ball.setAngle(std::fmod(m_ball.getAngle(), util::_2PI));
+  onAngleChanged();
 }
 
 void GameProcessor::viscousAngleDisturbance(int viscosity) {
@@ -641,6 +653,7 @@ void GameProcessor::viscousAngleDisturbance(int viscosity) {
     GLfloat sign = m_ball.getAngle() >= 0.0f ? 1.0f : -1.0f;
     m_ball.setAngle(sign * std::fmod(std::fabs(m_ball.getAngle()), util::_2PI));
     smallAngleAvoid();
+    onAngleChanged();
   }
 }
 
