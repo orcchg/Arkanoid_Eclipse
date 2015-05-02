@@ -189,7 +189,7 @@ public class MainActivity extends FragmentActivity {
       if (activity != null) {
         activity.setLives(currentLives);
       }
-      onScoreUpdated(-250);  // lost ball decreases score
+      onScoreUpdated(-11 * (currentLevel + 1));  // lost ball decreases score
     }
 
     @Override
