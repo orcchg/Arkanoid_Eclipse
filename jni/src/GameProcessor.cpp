@@ -182,7 +182,7 @@ void GameProcessor::process_aspectMeasured() {
 
 void GameProcessor::process_loadLevel() {
   std::unique_lock<std::mutex> lock(m_load_level_mutex);
-  // no-op
+  onCardinalityChanged(m_level->getCardinality());
 }
 
 void GameProcessor::process_throwBall() {
@@ -259,8 +259,8 @@ void GameProcessor::moveBall() {
       correctBallPosition(new_x, m_bite_upper_border + m_ball.getDimens().halfHeight());
     }
   } else if (collideBlock(new_x, new_y)) {
-    onCardinalityChanged(m_level->getCardinality());
     m_level_finished = (m_level->blockImpact() == 0);
+    onCardinalityChanged(m_level->getCardinality());
   }
 
   if (!m_ball_pose_corrected) {
@@ -402,6 +402,7 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
     affected_blocks.reserve(12);
     RowCol single_affected;
 
+    bool external_collision = true;
     int viscosity = 0;
     Block block = m_level->getBlock(row, col);
     m_level->setBlockImpacted(row, col);
@@ -424,28 +425,28 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
         break;
       // --------------------
       case Block::ELECTRO:
-        blockCollision(top_border, bottom_border, left_border, right_border, 100 /* elastic */);
+        external_collision = blockCollision(top_border, bottom_border, left_border, right_border, 100 /* elastic */);
         m_level->destroyBlocksAround(row, col, &affected_blocks);
         for (auto& item : affected_blocks) {
           block_impact_event.notifyListeners(item);
         }
         break;
       case Block::KNOCK_VERTICAL:
-        blockCollision(top_border, bottom_border, left_border, right_border, 100 /* elastic */);
+        external_collision = blockCollision(top_border, bottom_border, left_border, right_border, 100 /* elastic */);
         m_level->destroyBlocksBehind(row, col, vertical_direction, &affected_blocks);
         for (auto& item : affected_blocks) {
           block_impact_event.notifyListeners(item);
         }
         break;
       case Block::KNOCK_HORIZONTAL:
-        blockCollision(top_border, bottom_border, left_border, right_border, 100 /* elastic */);
+        external_collision = blockCollision(top_border, bottom_border, left_border, right_border, 100 /* elastic */);
         m_level->destroyBlocksBehind(row, col, horizontal_direction, &affected_blocks);
         for (auto& item : affected_blocks) {
           block_impact_event.notifyListeners(item);
         }
         break;
       case Block::MIDAS:
-        blockCollision(top_border, bottom_border, left_border, right_border, 100 /* elastic */);
+        external_collision = blockCollision(top_border, bottom_border, left_border, right_border, 100 /* elastic */);
         m_level->modifyBlocksAround(row, col, Block::TITAN, &affected_blocks);
         for (auto& item : affected_blocks) {
           block_impact_event.notifyListeners(item);
@@ -454,22 +455,22 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
         break;
       case Block::NETWORK_1:
         // XXX:
-        blockCollision(top_border, bottom_border, left_border, right_border, 100 /* elastic */);
+        external_collision = blockCollision(top_border, bottom_border, left_border, right_border, 100 /* elastic */);
         break;
       // --------------------
       case Block::HYPER:
         // XXX: correctBallPosition();
-        blockCollision(top_border, bottom_border, left_border, right_border, 100 /* elastic */);
+        external_collision = blockCollision(top_border, bottom_border, left_border, right_border, 100 /* elastic */);
         break;
       case Block::ORIGIN:
-        blockCollision(top_border, bottom_border, left_border, right_border, 100 /* elastic */);
+        external_collision = blockCollision(top_border, bottom_border, left_border, right_border, 100 /* elastic */);
         m_ball_is_flying = false;
         correctBallPosition(m_bite.getXPose(), m_bite_upper_border + m_ball.getDimens().halfHeight());
         break;
       // --------------------
       case Block::ROLLING:
         viscosity = m_viscosity_distribution(m_generator);
-        blockCollision(top_border, bottom_border, left_border, right_border, viscosity);
+        external_collision = blockCollision(top_border, bottom_border, left_border, right_border, viscosity);
         break;
       // --------------------
       case Block::ZYGOTE_SPAWN:
@@ -486,42 +487,43 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
         // intend no break
       case Block::CLAY:
         viscosity += 10;
-        blockCollision(top_border, bottom_border, left_border, right_border, viscosity);
+        external_collision = blockCollision(top_border, bottom_border, left_border, right_border, viscosity);
         break;
       // --------------------
       case Block::MAGIC:
-        blockCollision(top_border, bottom_border, left_border, right_border, 100 /* elastic */);
+        external_collision = blockCollision(top_border, bottom_border, left_border, right_border, 100 /* elastic */);
         m_level->modifyBlocksAround(row, col, m_level->getGenerator().generateBlock(), &affected_blocks);
         for (auto& item : affected_blocks) {
           block_impact_event.notifyListeners(item);
         }
         break;
       case Block::QUICK_1:
-        blockCollision(top_border, bottom_border, left_border, right_border, 100 /* elastic */);
+        external_collision = blockCollision(top_border, bottom_border, left_border, right_border, 100 /* elastic */);
         m_level->changeBlocksAround(row, col, (m_direction_distribution(m_generator) ? Mode::DEGRADE : Mode::UPGRADE), &affected_blocks);
         for (auto& item : affected_blocks) {
           block_impact_event.notifyListeners(item);
         }
         break;
       case Block::YOGURT:
-        blockCollision(top_border, bottom_border, left_border, right_border, 50);
+        external_collision = blockCollision(top_border, bottom_border, left_border, right_border, 50);
         m_level->modifyBlocksAround(row, col, Block::YOGURT_1, &affected_blocks);
         for (auto& item : affected_blocks) {
           block_impact_event.notifyListeners(item);
         }
         break;
       case Block::ZYGOTE_1:
-        blockCollision(top_border, bottom_border, left_border, right_border, 100 /* elastic */);
+        external_collision = blockCollision(top_border, bottom_border, left_border, right_border, 100 /* elastic */);
         single_affected = m_level->modifyBlockNear(row, col, Block::ZYGOTE_SPAWN);
         block_impact_event.notifyListeners(single_affected);
         break;
       // --------------------
       default:
-        blockCollision(top_border, bottom_border, left_border, right_border, 100 /* elastic */);
+        external_collision = blockCollision(top_border, bottom_border, left_border, right_border, 100 /* elastic */);
         break;
     }
     block_impact_event.notifyListeners(RowCol(row, col));
-    return (block != Block::NONE &&
+    return (external_collision &&
+            block != Block::NONE &&
             block != Block::MIDAS &&
             block != Block::TITAN &&
             block != Block::INVUL &&
@@ -540,6 +542,14 @@ bool GameProcessor::blockCollision(
     GLfloat left_border,
     GLfloat right_border,
     int viscosity) {
+
+  if (m_ball.getPose().getX() + 1.0f >= left_border/* - m_ball.getDimens().halfWidth()*/ &&
+      m_ball.getPose().getX() + 1.0f <= right_border/* + m_ball.getDimens().halfWidth()*/ &&
+      m_ball.getPose().getY() + 1.0f <= 2.0f - top_border/* - m_ball.getDimens().halfWidth()*/ &&
+      m_ball.getPose().getY() + 1.0f >= 2.0f - bottom_border/* + m_ball.getDimens().halfWidth()*/) {
+    // inside block collision is erroneous
+    return false;
+  }
 
   if (m_ball.getPose().getX() + 1.0f > left_border - m_ball.getDimens().halfWidth() &&
       m_ball.getPose().getX() + 1.0f < right_border + m_ball.getDimens().halfWidth() &&
