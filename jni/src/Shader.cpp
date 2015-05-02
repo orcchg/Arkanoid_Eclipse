@@ -167,4 +167,50 @@ void SimpleTextureShader::bindTexCoordAttribLocation(GLuint program, GLuint texC
   glBindAttribLocation(program, texCoord_location, "a_texCoord");
 }
 
+ParticleSystemShader::ParticleSystemShader()
+  : Shader(
+      "  uniform float u_time;                                                 \n"
+      "  uniform vec4 u_centerPosition;                                        \n"
+      "                                                                        \n"
+      "  attribute float a_lifetime;                                           \n"
+      "  attribute vec4 a_startPosition;                                       \n"
+      "  attribute vec4 a_endPosition;                                         \n"
+      "                                                                        \n"
+      "  varying float v_lifetime;                                             \n"
+      "                                                                        \n"
+      "  void main() {                                                         \n"
+      "    if (u_time <= a_lifetime) {                                         \n"
+      "      gl_Position.xyz = a_startPosition.xyz + (u_time * a_endPosition.xyz);     \n"
+      "      gl_Position.xyz += u_centerPosition.xyz;                                  \n"
+      "      gl_Position.w = 1.0;                                              \n"
+      "    } else {                                                            \n"
+      "      gl_Position = vec4(-1000, -1000, 0, 0);                           \n"
+      "    }                                                                   \n"
+      "    v_lifetime = 1.0 - (u_time / a_lifetime);                           \n"
+      "    v_lifetime = clamp(v_lifetime, 0.0, 1.0);                           \n"
+      "    gl_PointSize = (v_lifetime * v_lifetime) * 40.0;                    \n"
+      "  }                                                                     \n"
+      ,
+      "  precision mediump float;                          \n"
+      "                                                    \n"
+      "  uniform vec4 u_color;                             \n"
+      "  varying float v_lifetime;                         \n"
+      "  uniform sampler2D s_texture;                      \n"
+      "                                                    \n"
+      "  void main() {                                     \n"
+      "    vec4 texColor;                                  \n"
+      "    texColor = texture2D(s_texture, gl_PointCoord); \n"
+      "    gl_FragColor = vec4(u_color) * texColor;        \n"
+      "    gl_FragColor.a *= v_lifetime;                   \n"
+      "  }                                                 \n") {
+}
+
+void ParticleSystemShader::bindColorAttribLocation(GLuint program, GLuint color_location) const {
+  // no-op
+}
+
+void ParticleSystemShader::bindTexCoordAttribLocation(GLuint program, GLuint texCoord_location) const {
+  // no-op
+}
+
 }

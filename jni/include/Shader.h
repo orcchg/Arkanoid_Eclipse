@@ -22,22 +22,7 @@ public:
   virtual ~ShaderHelper() noexcept;
 
   void useProgram() const;
-
-  inline GLuint getVertexAttribLocation() const {
-    return glGetAttribLocation(m_program, "a_position");  // m_vertex_location;
-  }
-
-  inline GLuint getColorAttribLocation() const {
-    return glGetAttribLocation(m_program, "a_color");  // m_color_location;
-  }
-
-  inline GLuint getTexCoordAttribLocation() const {
-    return glGetAttribLocation(m_program, "a_texCoord");  // m_texCoord_location;
-  }
-
-  inline GLint getSampler2DUniformLocation() const {
-    return glGetUniformLocation(m_program, "s_texture");
-  }
+  inline GLuint getProgram() const { return m_program; }
 
 private:
   GLuint m_program;  //!< Linked program.
@@ -74,6 +59,13 @@ struct SimpleShader : public Shader {
 
 struct SimpleTextureShader : public Shader {
   SimpleTextureShader();
+
+  void bindColorAttribLocation(GLuint program, GLuint color_location) const override final;
+  void bindTexCoordAttribLocation(GLuint program, GLuint texCoord_location) const override final;
+};
+
+struct ParticleSystemShader : public Shader {
+  ParticleSystemShader();
 
   void bindColorAttribLocation(GLuint program, GLuint color_location) const override final;
   void bindTexCoordAttribLocation(GLuint program, GLuint texCoord_location) const override final;

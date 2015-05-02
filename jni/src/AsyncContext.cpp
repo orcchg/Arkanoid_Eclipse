@@ -31,6 +31,7 @@ AsyncContext::AsyncContext(JavaVM* jvm)
   , m_bite_color_buffer(new GLfloat[16])
   , m_ball_vertex_buffer(new GLfloat[36])
   , m_ball_color_buffer(new GLfloat[36])
+  , m_particle_buffer(nullptr)
   , m_rectangle_index_buffer(new GLushort[6]{0, 3, 2, 0, 1, 3})
   , m_octagon_index_buffer(new GLushort[24]{0, 1, 2, 0, 2, 3, 0, 3, 4, 0, 4, 5, 0, 5, 6, 0, 6, 7, 0, 7, 8, 0, 8, 1})
   , m_rectangle_texCoord_buffer(new GLfloat[12]{1.f, 1.f, 0.f, 1.f, 0.f, 0.f, 1.f, 0.f, 1.f, 1.f})
@@ -38,7 +39,14 @@ AsyncContext::AsyncContext(JavaVM* jvm)
   , m_level_vertex_buffer(nullptr)
   , m_level_color_buffer(nullptr)
   , m_level_index_buffer(nullptr)
-  , m_level_shader(nullptr) {
+  , m_level_shader(nullptr)
+  , m_bite_shader(nullptr)
+  , m_ball_shader(nullptr)
+  , m_explosion_shader(nullptr)
+  , m_generator()
+  , m_particle_distribution(0.0f, 1.0f)
+  , m_last_time(0)
+  , m_particle_time(0.0f) {
 
   DBG("enter AsyncContext ctor");
   m_surface_received.store(false);
@@ -61,6 +69,22 @@ AsyncContext::AsyncContext(JavaVM* jvm)
   util::setColor(util::SIENNA, &m_ball_color_buffer[20], 4);
   util::setColor(util::SIENNA_DARK, &m_ball_color_buffer[24], 12);
   util::setColor(util::SIENNA, &m_ball_color_buffer[32], 4);
+
+  m_particle_buffer = new GLfloat[particleSize * particleSystemSize];
+  for (int i = 0; i < particleSystemSize; ++i) {
+    // Lifetime of particle
+    m_particle_buffer[i * particleSize + 0] = m_particle_distribution(m_generator);
+    // Start position of particle
+    m_particle_buffer[i * particleSize + 5] = m_particle_distribution(m_generator) * 0.25f - 0.125f;
+    m_particle_buffer[i * particleSize + 6] = m_particle_distribution(m_generator) * 0.25f - 0.125f;
+    m_particle_buffer[i * particleSize + 7] = 0.0f;
+    m_particle_buffer[i * particleSize + 8] = 1.0f;
+    // End position of particle
+    m_particle_buffer[i * particleSize + 1] = m_particle_distribution(m_generator) * 2.0f - 1.0f;
+    m_particle_buffer[i * particleSize + 2] = m_particle_distribution(m_generator) * 2.0f - 1.0f;
+    m_particle_buffer[i * particleSize + 3] = 0.0f;
+    m_particle_buffer[i * particleSize + 4] = 1.0f;
+  }
   DBG("exit AsyncContext ctor");
 }
 
@@ -74,6 +98,7 @@ AsyncContext::~AsyncContext() {
   delete [] m_bite_color_buffer; m_bite_color_buffer = nullptr;
   delete [] m_ball_vertex_buffer; m_ball_vertex_buffer = nullptr;
   delete [] m_ball_color_buffer; m_ball_color_buffer = nullptr;
+  delete [] m_particle_buffer; m_particle_buffer = nullptr;
   delete [] m_rectangle_index_buffer; m_rectangle_index_buffer = nullptr;
   delete [] m_octagon_index_buffer; m_octagon_index_buffer = nullptr;
   delete [] m_rectangle_texCoord_buffer; m_rectangle_texCoord_buffer = nullptr;
@@ -468,16 +493,7 @@ void AsyncContext::glOptionsConfig() {
 #endif  // USE_TEXTURE
   m_bite_shader = std::make_shared<shader::ShaderHelper>(shader::SimpleShader());
   m_ball_shader = std::make_shared<shader::ShaderHelper>(shader::SimpleShader());
-
-  /* Rendering options */
-  // TODO: not need depth (and display config should exclude that) for 2D game
-//  glFrontFace(GL_CCW);
-//  glCullFace(GL_BACK);
-//  glDepthFunc(GL_LESS);
-//  glDepthMask(GL_TRUE);
-//  glEnable(GL_DEPTH_TEST);
-//  glEnable(GL_NORMALIZE);
-  glEnable(GL_TEXTURE);
+  m_explosion_shader = std::make_shared<shader::ShaderHelper>(shader::ParticleSystemShader());
 }
 
 void AsyncContext::destroyDisplay() {
@@ -499,7 +515,6 @@ void AsyncContext::destroyDisplay() {
 void AsyncContext::render() {
   if (m_egl_display != EGL_NO_DISPLAY) {
     glClear(GL_COLOR_BUFFER_BIT);
-//    drawRectangle();  // XXX
 #if USE_TEXTURE
     for (int r = 0; r < m_level->numRows(); ++r) {
       for (int c = 0; c < m_level->numCols(); ++c) {
@@ -511,6 +526,8 @@ void AsyncContext::render() {
 #endif
     drawBite();
     drawBall();
+//    drawExplosion(0.f, 0.f, util::TITAN);
+
     eglSwapInterval(m_egl_display, 0);
     eglSwapBuffers(m_egl_display, m_egl_surface);
   }
@@ -521,8 +538,8 @@ void AsyncContext::render() {
 void AsyncContext::drawLevel() {
   m_level_shader->useProgram();
 
-  GLuint a_position = m_level_shader->getVertexAttribLocation();
-  GLuint a_color = m_level_shader->getColorAttribLocation();
+  GLuint a_position = glGetAttribLocation(m_level_shader->getProgram(), "a_position");
+  GLuint a_color = glGetAttribLocation(m_level_shader->getProgram(), "a_color");
 
   glVertexAttribPointer(a_position, 4, GL_FLOAT, GL_FALSE, 0, &m_level_vertex_buffer[0]);
   glVertexAttribPointer(a_color, 4, GL_FLOAT, GL_FALSE, 0, &m_level_color_buffer[0]);
@@ -539,16 +556,16 @@ void AsyncContext::drawLevel() {
 void AsyncContext::drawBlock(int row, int col) {
   m_level_shader->useProgram();
 
-  GLuint a_position = m_level_shader->getVertexAttribLocation();
+  GLuint a_position = glGetAttribLocation(m_level_shader->getProgram(), "a_position");
 #if USE_TEXTURE
-  GLuint a_texCoord = m_level_shader->getTexCoordAttribLocation();
+  GLuint a_texCoord = glGetAttribLocation(m_level_shader->getProgram(), "a_texCoord");
 #else
-  GLuint a_color = m_level_shader->getColorAttribLocation();
+  GLuint a_color = glGetAttribLocation(m_level_shader->getProgram(), "a_color");
 #endif
 
   int rci = col * 16 + row * m_level->numCols() * 16;
   glVertexAttribPointer(a_position, 4, GL_FLOAT, GL_FALSE, 0, &m_level_vertex_buffer[rci]);
-#if USE_TEXTURE
+#if USE_TEXTUREm_program
   glVertexAttribPointer(a_texCoord, 2, GL_FLOAT, GL_FALSE, 0, &m_rectangle_texCoord_buffer[0]);
 #else
   glVertexAttribPointer(a_color, 4, GL_FLOAT, GL_FALSE, 0, &m_level_color_buffer[rci]);
@@ -578,8 +595,8 @@ void AsyncContext::drawBlock(int row, int col) {
 void AsyncContext::drawBite() {
   m_bite_shader->useProgram();
 
-  GLuint a_position = m_bite_shader->getVertexAttribLocation();
-  GLuint a_color = m_bite_shader->getColorAttribLocation();
+  GLuint a_position = glGetAttribLocation(m_level_shader->getProgram(), "a_position");
+  GLuint a_color = glGetAttribLocation(m_level_shader->getProgram(), "a_color");
 
   glVertexAttribPointer(a_position, 4, GL_FLOAT, GL_FALSE, 0, &m_bite_vertex_buffer[0]);
   glVertexAttribPointer(a_color, 4, GL_FLOAT, GL_FALSE, 0, &m_bite_color_buffer[0]);
@@ -596,8 +613,8 @@ void AsyncContext::drawBite() {
 void AsyncContext::drawBall() {
   m_ball_shader->useProgram();
 
-  GLuint a_position = m_ball_shader->getVertexAttribLocation();
-  GLuint a_color = m_ball_shader->getColorAttribLocation();
+  GLuint a_position = glGetAttribLocation(m_level_shader->getProgram(), "a_position");
+  GLuint a_color = glGetAttribLocation(m_level_shader->getProgram(), "a_color");
 
   glVertexAttribPointer(a_position, 4, GL_FLOAT, GL_FALSE, 0, &m_ball_vertex_buffer[0]);
   glVertexAttribPointer(a_color, 4, GL_FLOAT, GL_FALSE, 0, &m_ball_color_buffer[0]);
@@ -611,15 +628,71 @@ void AsyncContext::drawBall() {
   glDisableVertexAttribArray(a_color);
 }
 
+void AsyncContext::drawExplosion(GLfloat x, GLfloat y, const util::BGRA<GLfloat>& bgra) {
+  if (m_last_time == 0) {
+    m_last_time = clock();
+  }
+  clock_t currentTime = clock();
+  float delta_elapsed = static_cast<float>(currentTime - m_last_time) / CLOCKS_PER_SEC;
+  m_last_time = currentTime;
+  m_particle_time += delta_elapsed;
+  if (m_particle_time >= 1.0f) {
+    m_particle_time = 0.0f;
+  }
+
+  GLint u_time = glGetUniformLocation(m_level_shader->getProgram(), "u_time");
+  GLint u_centerPosition = glGetUniformLocation(m_level_shader->getProgram(), "u_centerPosition");
+  GLint u_color = glGetUniformLocation(m_level_shader->getProgram(), "u_color");
+
+  GLfloat* coord = new GLfloat[4]{x, y, 0.0f, 1.0f};
+  GLfloat* color = new GLfloat[4]{bgra.b, bgra.g, bgra.r, 0.5f};
+  glUniform4fv(u_centerPosition, 1, &coord[0]);
+  glUniform4fv(u_color, 1, &color[0]);
+  glUniform1f(u_time, m_particle_time);
+
+  GLuint a_lifetime = glGetAttribLocation(m_explosion_shader->getProgram(), "a_lifetime");
+  GLuint a_startPosition = glGetAttribLocation(m_explosion_shader->getProgram(), "a_startPosition");
+  GLuint a_endPosition = glGetAttribLocation(m_explosion_shader->getProgram(), "a_endPosition");
+
+  m_explosion_shader->useProgram();
+
+  glVertexAttribPointer(a_lifetime, 1, GL_FLOAT, GL_FALSE, particleSize * sizeof(GLfloat), &m_particle_buffer[0]);
+  glVertexAttribPointer(a_startPosition, 4, GL_FLOAT, GL_FALSE, particleSize * sizeof(GLfloat), &m_particle_buffer[5]);
+  glVertexAttribPointer(a_endPosition, 4, GL_FLOAT, GL_FALSE, particleSize * sizeof(GLfloat), &m_particle_buffer[1]);
+
+  glEnableVertexAttribArray(a_lifetime);
+  glEnableVertexAttribArray(a_startPosition);
+  glEnableVertexAttribArray(a_endPosition);
+
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+
+  m_resources->getTexture("smoke.png")->apply();
+  glEnable(GL_TEXTURE_2D);
+  GLint sampler = glGetUniformLocation(m_explosion_shader->getProgram(), "s_texture");
+  glUniform1i(sampler, 0);
+
+  glDrawArrays(GL_POINTS, 0, particleSystemSize);
+
+  delete [] coord;
+  delete [] color;
+
+  glDisableVertexAttribArray(a_lifetime);
+  glDisableVertexAttribArray(a_startPosition);
+  glDisableVertexAttribArray(a_endPosition);
+}
+
+/* Misc */
+// ----------------------------------------------------------------------------
 void AsyncContext::drawRectangle() {
 //  m_ball_shader->useProgram();
 
 //  GLuint a_position = m_ball_shader->getVertexAttribLocation();
 //  GLuint a_color = m_ball_shader->getColorAttribLocation();
 //  GLuint a_texCoord = m_ball_shader->getTexCoordAttribLocation();
-  GLuint a_position = m_level_shader->getVertexAttribLocation();
-  GLuint a_color = m_level_shader->getColorAttribLocation();
-  GLuint a_texCoord = m_level_shader->getTexCoordAttribLocation();
+  GLuint a_position = glGetAttribLocation(m_level_shader->getProgram(), "a_position");
+  GLuint a_color = glGetAttribLocation(m_level_shader->getProgram(), "a_color");
+  GLuint a_texCoord = glGetAttribLocation(m_level_shader->getProgram(), "a_texCoord");
 
   GLfloat* vertex_buffer = new GLfloat[16]{-0.5f, -0.5f, 0.0f, 1.0f,
                                           0.5f, -0.5f, 0.0f, 1.0f,
@@ -634,7 +707,7 @@ void AsyncContext::drawRectangle() {
                                           1.f, 0.f, 0.f, 1.f};
 
   m_resources->getTexture("brick_tex.png")->apply();
-  GLint sampler = m_level_shader->getSampler2DUniformLocation();
+  GLint sampler = glGetUniformLocation(m_level_shader->getProgram(), "s_texture");
   glUniform1i(sampler, 0);
 
   glEnableVertexAttribArray(a_position);

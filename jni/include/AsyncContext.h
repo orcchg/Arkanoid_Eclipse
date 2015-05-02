@@ -5,6 +5,7 @@
 #include <memory>
 #include <mutex>
 #include <queue>
+#include <random>
 #include <utility>
 
 #include <android/native_window.h>
@@ -19,6 +20,7 @@
 #include "Level.h"
 #include "LevelDimens.h"
 #include "Resources.h"
+#include "rgbstruct.h"
 #include "RowCol.h"
 #include "Shader.h"
 
@@ -157,6 +159,9 @@ private:
   /** @defgroup LogicData Game logic related data members.
    * @{
    */
+  constexpr static int particleSize = 8;
+  constexpr static int particleSystemSize = 1000;
+
   GLfloat m_position;  //!< Last received position value of user's motion gesture.
   Bite m_bite;  //!< Physical bite's representation.
   Ball m_ball;  //!< Physical ball's representation.
@@ -166,6 +171,7 @@ private:
   GLfloat* m_bite_color_buffer;   //!< Re-usable buffer for colors of bite.
   GLfloat* m_ball_vertex_buffer;  //!< Re-usable buffer for vertices of ball.
   GLfloat* m_ball_color_buffer;   //!< Re-usable buffer for color of ball.
+  GLfloat* m_particle_buffer;  //!< Re-usable buffer for particle system.
   GLushort* m_rectangle_index_buffer;  //!< Re-usable buffer for indices of rectangle.
   GLushort* m_octagon_index_buffer;  //!< Re-usable buffer for indices of octagon.
   GLfloat* m_rectangle_texCoord_buffer;  //!< Re-usable buffer for texture coords of rectangle.
@@ -174,6 +180,11 @@ private:
   GLfloat* m_level_vertex_buffer;  //!< Re-usable buffer for vertices of level.
   GLfloat* m_level_color_buffer;   //!< Re-usable buffer for colors of level.
   GLushort* m_level_index_buffer;  //!< Re-usable buffer for indices of level's blocks.
+
+  std::default_random_engine m_generator;
+  std::uniform_real_distribution<float> m_particle_distribution;
+  clock_t m_last_time;
+  float m_particle_time;
   /** @} */  // end of LogicData group
 
   /** @defgroup Shaders Shaders for rendering game components.
@@ -182,6 +193,7 @@ private:
   shader::ShaderHelper::Ptr m_level_shader;
   shader::ShaderHelper::Ptr m_bite_shader;
   shader::ShaderHelper::Ptr m_ball_shader;
+  shader::ShaderHelper::Ptr m_explosion_shader;
   /** @} */  // end of Shaders group
 
   /** @defgroup Mutex Thread-safety variables
@@ -306,6 +318,8 @@ private:
   void drawBite();
   /// @brief Draw ball at it's current position.
   void drawBall();
+  /// @brief Draw particle system explosion.
+  void drawExplosion(GLfloat x, GLfloat y, const util::BGRA<GLfloat>& bgra);
   /// @brief Draw sample rectangle.
   void drawRectangle();
   /** @} */  // end of Drawings group
