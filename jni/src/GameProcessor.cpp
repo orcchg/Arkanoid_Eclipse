@@ -340,36 +340,58 @@ bool GameProcessor::collideBite(GLfloat new_x) {
     if (new_x >= m_bite.getXPose() + m_bite.getDimens().quarterWidth()) {
       GLfloat normal = std::fabs(util::PI2 - beta);
       if (m_ball.getAngle() >= util::_3PI2) {
+        ERR("2");
         collideHorizontalSurface();
+        if (m_ball.getAngle() >= beta) {
+          m_ball.setAngle(m_ball.getAngle() - beta);
+        } else {
+          m_ball.setAngle(m_ball.getAngle() + beta);
+        }
+        smallAngleAvoid();
       } else if (m_ball.getAngle() >= util::PI) {
         GLfloat gamma = util::_3PI2 - m_ball.getAngle();
         if (gamma <= beta) {
+          ERR("3");
           GLfloat delta = std::fabs(gamma - 2 * beta + util::PI2);
           m_ball.setAngle(delta);
           smallAngleAvoid();
         } else {
+          ERR("4");
           gamma = m_ball.getAngle() - util::PI;
           GLfloat delta = std::fabs(gamma + 2 * beta - util::PI2);
           m_ball.setAngle(util::PI2 - delta);
           smallAngleAvoid();
         }
+      } else {
+        ERR("1");
       }
     } else if (new_x <= m_bite.getXPose() - m_bite.getDimens().quarterWidth()) {
       GLfloat normal = std::fabs(util::PI2 + beta);
       if (m_ball.getAngle() >= util::_3PI2) {
         GLfloat gamma = m_ball.getAngle() - util::_3PI2;
         if (gamma <= beta) {
+          ERR("-3");
           GLfloat delta = std::fabs(gamma - 2 * beta + util::PI2);
           m_ball.setAngle(util::PI - delta);
           smallAngleAvoid();
         } else {
+          ERR("-4");
           gamma = util::_2PI - m_ball.getAngle();
           GLfloat delta = std::fabs(gamma + 2 * beta - util::PI2);
           m_ball.setAngle(util::PI2 + delta);
           smallAngleAvoid();
         }
       } else if (m_ball.getAngle() >= util::PI) {
+        ERR("-2");
         collideHorizontalSurface();
+        if (m_ball.getAngle() >= beta + util::PI2) {
+          m_ball.setAngle(m_ball.getAngle() - beta);
+        } else {
+          m_ball.setAngle(m_ball.getAngle() + beta);
+        }
+        smallAngleAvoid();
+      } else {
+        ERR("-1");
       }
     } else {
       collideHorizontalSurface();
