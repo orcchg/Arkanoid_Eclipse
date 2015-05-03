@@ -26,15 +26,15 @@ enum class Block : int {
   TITAN = 13,      //! 'T' - invulnerable
   INVUL = 14,      //! 'V' - invulnerable
   EXTRA = 15,      //! 'X' - [ 1 ] transforms to INVUL
-  MIDAS = 16,      // '$' - [ 1 ] transforms nearest to TITAN
+  MIDAS = 16,      //! '$' - [ 1 ] transforms nearest to TITAN
 
   /* Auxiliary blocks */
-  GLASS_1 = 17,
-  NETWORK_1 = 18,
-  QUICK_2 = 19, QUICK_1 = 20,
-  ULTRA_4 = 21, ULTRA_3 = 22, ULTRA_2 = 23, ULTRA_1 = 24,
-  YOGURT_1 = 25,
-  ZYGOTE_1 = 26,
+  GLASS_1 = 17,    //! '['
+  NETWORK_1 = 18,  //! ']'
+  QUICK_2 = 19, QUICK_1 = 20,  //! '{' '}'
+  ULTRA_4 = 21, ULTRA_3 = 22, ULTRA_2 = 23, ULTRA_1 = 24,  //! '%' '^' '&' '*'
+  YOGURT_1 = 25,  //! '('
+  ZYGOTE_1 = 26,  //! ')'
 
   /* Ordinary blocks */
   ALUMINIUM = 27,   //! 'A' - [ 1 ]

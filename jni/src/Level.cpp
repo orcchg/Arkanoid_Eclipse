@@ -708,51 +708,7 @@ int Level::calculateCardinality() const {
   int cardinality = 0;
   for (int r = 0; r < rows; ++r) {
     for (int c = 0; c < cols; ++c) {
-      switch (blocks[r][c]) {
-        case Block::ULTRA:
-          cardinality += 5;
-          break;
-        case Block::PLUMBUM:
-          cardinality += 4;
-          break;
-        case Block::IRON:
-        case Block::STEEL:
-        case Block::QUICK:
-          cardinality += 3;
-          break;
-        case Block::BRICK:
-        case Block::GLASS:
-        case Block::NETWORK:
-        case Block::ZYGOTE:
-          cardinality += 2;
-          break;
-        case Block::ALUMINIUM:
-        case Block::CLAY:
-        case Block::DEATH:
-        case Block::ELECTRO:
-        case Block::FOG:
-        case Block::HYPER:
-        case Block::JELLY:
-        case Block::KNOCK_VERTICAL:
-        case Block::KNOCK_HORIZONTAL:
-        case Block::MAGIC:
-        case Block::ORIGIN:
-        case Block::ROLLING:
-        case Block::SIMPLE:
-        case Block::WATER:
-        case Block::YOGURT:
-        case Block::ZYGOTE_SPAWN:
-          ++cardinality;
-          break;
-
-        default:
-        case Block::MIDAS:
-        case Block::TITAN:
-        case Block::INVUL:
-        case Block::EXTRA:
-        case Block::NONE:
-          break;
-      }
+      cardinality += getCardinalityCost(blocks[r][c]);
     }
   }
   return cardinality;

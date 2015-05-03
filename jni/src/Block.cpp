@@ -88,6 +88,30 @@ Block charToBlock(char ch) {
       return Block::ZYGOTE;
     case '@':
       return Block::ZYGOTE_SPAWN;
+
+    // ------------------------------------------
+    case '[':
+      return Block::GLASS_1;
+    case ']':
+      return Block::NETWORK_1;
+    case '{':
+      return Block::QUICK_2;
+    case '}':
+      return Block::QUICK_1;
+    case '%':
+      return Block::ULTRA_4;
+    case '^':
+      return Block::ULTRA_3;
+    case '&':
+      return Block::ULTRA_2;
+    case '*':
+      return Block::ULTRA_1;
+    case '(':
+      return Block::YOGURT_1;
+    case ')':
+      return Block::ZYGOTE_1;
+
+    case ' ':
     default:
       return Block::NONE;
   }
@@ -153,6 +177,29 @@ char blockToChar(Block block) {
       return 'Z';
     case Block::ZYGOTE_SPAWN:
       return '@';
+
+    // ------------------------------------------
+    case Block::GLASS_1:
+      return '[';
+    case Block::NETWORK_1:
+      return ']';
+    case Block::QUICK_2:
+      return '{';
+    case Block::QUICK_1:
+      return '}';
+    case Block::ULTRA_4:
+      return '%';
+    case Block::ULTRA_3:
+      return '^';
+    case Block::ULTRA_2:
+      return '&';
+    case Block::ULTRA_1:
+      return '*';
+    case Block::YOGURT_1:
+      return '(';
+    case Block::ZYGOTE_1:
+      return ')';
+
     case Block::NONE:
     default:
       return ' ';

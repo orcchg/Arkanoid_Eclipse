@@ -7,6 +7,7 @@ import com.orcchg.arkanoid.surface.Database.DatabaseException;
 import com.orcchg.arkanoid.surface.Database.GameStat;
 import com.orcchg.arkanoid.surface.R;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
@@ -30,7 +31,7 @@ public class MainActivity extends FragmentActivity {
   private AsyncContext mAsyncContext;
   private GameSurface mSurface;
   private NativeResources mNativeResources;
-  private TextView mInfoTextView;
+  private TextView mInfoTextView, mAddInfoTextView;
   private TextView mCardinalityTextView;
   
   @Override
@@ -42,6 +43,7 @@ public class MainActivity extends FragmentActivity {
     mAsyncContext.setCoreEventListener(new CoreEventHandler(this));
     mSurface = (GameSurface) findViewById(R.id.surface_view);
     mInfoTextView = (TextView) findViewById(R.id.info_textview);
+    mAddInfoTextView = (TextView) findViewById(R.id.add_info_textview);
     mCardinalityTextView = (TextView) findViewById(R.id.cardinality_textview);
     
     mNativeResources = new NativeResources(getAssets());
@@ -151,6 +153,16 @@ public class MainActivity extends FragmentActivity {
     mInfoTextView.setText(Integer.toString(score));
   }
   
+  void setScoreUpdate(int score) {
+    if (score >= 0) {
+      mAddInfoTextView.setTextColor(Color.GREEN);
+      mAddInfoTextView.setText("+" + Integer.toString(score));
+    } else {
+      mAddInfoTextView.setTextColor(Color.RED);
+      mAddInfoTextView.setText(Integer.toString(score));
+    }
+  }
+  
   void setAngleValue(int angle) {
     mInfoTextView.setText(Integer.toString(angle));
   }
@@ -214,7 +226,7 @@ public class MainActivity extends FragmentActivity {
     }
     
     @Override
-    public void onScoreUpdated(int score) {
+    public void onScoreUpdated(final int score) {
       currentScore += score;
       if (currentScore < 0) {
         currentScore = 0;
@@ -225,6 +237,7 @@ public class MainActivity extends FragmentActivity {
         @Override
         public void run() {
           activity.setScore(currentScore);
+          activity.setScoreUpdate(score);
         }});
       }
     }

@@ -1,5 +1,7 @@
 package com.orcchg.arkanoid.surface;
 
+import java.util.Arrays;
+
 import android.view.Surface;
 
 class AsyncContext {
@@ -40,11 +42,12 @@ class AsyncContext {
   
   String saveLevel() {
     String[] tokens = saveLevel(descriptor);
+    android.util.Log.e(TAG, Arrays.toString(tokens));
     StringBuilder builder = new StringBuilder();
-    char delim = '0';
+    String delim = "";
     for (String token : tokens) {
       builder.append(delim);
-      delim = '!';
+      delim = "!";
       builder.append(token);
     }
     return builder.toString();
