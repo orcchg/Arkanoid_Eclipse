@@ -233,6 +233,10 @@ void Level::changeVulnerableBlock(Mode mode, int row, int col) {
           setBlock(row, col, Block::BRICK);
           initial_cardinality += getCardinalityCost(Block::BRICK);
           break;
+        case Block::FOG:
+          setBlock(row, col, Block::GLASS);
+          initial_cardinality += getCardinalityCost(Block::GLASS);
+          break;
         case Block::BRICK:
           setBlock(row, col, Block::IRON);
           initial_cardinality += getCardinalityCost(Block::IRON);
@@ -242,10 +246,25 @@ void Level::changeVulnerableBlock(Mode mode, int row, int col) {
           setBlock(row, col, Block::PLUMBUM);
           initial_cardinality += getCardinalityCost(Block::PLUMBUM);
           break;
+        case Block::WATER:
+          setBlock(row, col, Block::JELLY);
+          initial_cardinality += getCardinalityCost(Block::JELLY);
+          break;
+        case Block::JELLY:
+          setBlock(row, col, Block::ROLLING);
+          initial_cardinality += getCardinalityCost(Block::ROLLING);
+          break;
+        default:
+          initial_cardinality += getCardinalityCost(blocks[row][col]);
+          break;
       }
       break;
       case Mode::DEGRADE:
         switch (blocks[row][col]) {
+          case Block::GLASS:
+            setBlock(row, col, Block::FOG);
+            initial_cardinality += getCardinalityCost(Block::FOG);
+            break;
           case Block::BRICK:
             setBlock(row, col, Block::SIMPLE);
             initial_cardinality += getCardinalityCost(Block::SIMPLE);
@@ -258,6 +277,17 @@ void Level::changeVulnerableBlock(Mode mode, int row, int col) {
           case Block::PLUMBUM:
             setBlock(row, col, Block::IRON);
             initial_cardinality += getCardinalityCost(Block::IRON);
+            break;
+          case Block::ROLLING:
+            setBlock(row, col, Block::JELLY);
+            initial_cardinality += getCardinalityCost(Block::JELLY);
+            break;
+          case Block::JELLY:
+            setBlock(row, col, Block::WATER);
+            initial_cardinality += getCardinalityCost(Block::WATER);
+            break;
+          default:
+            initial_cardinality += getCardinalityCost(blocks[row][col]);
             break;
         }
         break;
