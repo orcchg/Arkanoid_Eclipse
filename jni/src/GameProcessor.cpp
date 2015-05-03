@@ -242,6 +242,7 @@ void GameProcessor::moveBall() {
     m_ball_is_flying = false;  // stop flying before notify to avoid bugs
     lost_ball_event.notifyListeners(true);
     onLostBall(true);
+    onCardinalityChanged(m_level->getCardinality());
     return;
   }
 
@@ -428,6 +429,7 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
 
     bool external_collision = true;
     int viscosity = 0;
+    Mode mode = m_direction_distribution(m_generator) ? Mode::DEGRADE : Mode::UPGRADE;
     Block block = m_level->getBlock(row, col);
     m_level->setBlockImpacted(row, col);
     int score = getBlockScore(block);
@@ -525,7 +527,7 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
         break;
       case Block::QUICK_1:
         external_collision = blockCollision(top_border, bottom_border, left_border, right_border, 100 /* elastic */);
-        score += m_level->changeBlocksAround(row, col, (m_direction_distribution(m_generator) ? Mode::DEGRADE : Mode::UPGRADE), &affected_blocks);
+        score += m_level->changeBlocksAround(row, col, mode, &affected_blocks);
         for (auto& item : affected_blocks) {
           block_impact_event.notifyListeners(item);
         }
