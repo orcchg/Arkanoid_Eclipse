@@ -107,6 +107,7 @@ public class MainActivity extends FragmentActivity {
         break;
       case R.id.nextLevel:
         mAsyncContext.fireJavaEvent_levelFinished();
+        mAsyncContext.fireJavaEvent_onScoreUpdated(-80 * currentLevel);
         break;
       case R.id.dropStat:
         ArkanoidApplication app = (ArkanoidApplication) getApplication();
