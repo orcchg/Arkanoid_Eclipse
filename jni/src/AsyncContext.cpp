@@ -562,11 +562,11 @@ void AsyncContext::initParticleSystem() {
     m_particle_buffer[i * particleSize + 0] = m_particle_distribution(m_generator);
     // Start position of particle
     m_particle_buffer[i * particleSize + 4] = m_particle_distribution(m_generator) * 0.25f - 0.125f;
-    m_particle_buffer[i * particleSize + 5] = m_particle_distribution(m_generator) * 0.25f - 0.125f * m_aspect;
+    m_particle_buffer[i * particleSize + 5] = (m_particle_distribution(m_generator) * 0.25f - 0.125f) * m_aspect;
     m_particle_buffer[i * particleSize + 6] = 0.0f;
     // End position of particle
     m_particle_buffer[i * particleSize + 1] = m_particle_distribution(m_generator) * 2.0f - 1.0f;
-    m_particle_buffer[i * particleSize + 2] = m_particle_distribution(m_generator) * 2.0f - 1.0f * m_aspect;
+    m_particle_buffer[i * particleSize + 2] = (m_particle_distribution(m_generator) * 2.0f - 1.0f) * m_aspect;
     m_particle_buffer[i * particleSize + 3] = 0.0f;
   }
 }
