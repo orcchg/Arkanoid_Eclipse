@@ -11,11 +11,11 @@ enum class Block : int {
   /* Action blocks */
   DESTROY = 1,             //! 'D' - [ 1 ] lost ball automatically
   ELECTRO = 2,             //! 'E' - [ 1 ] destroys nearest blocks
-  HYPER = 3,               // 'H' - [ 1 ] teleports ball randomly (not lost)
+  HYPER = 3,               //! 'H' - [ 1 ] teleports ball randomly (not lost)
   KNOCK_VERTICAL = 4,      //! 'K' - [ 1 ] destroys blocks behind
   KNOCK_HORIZONTAL = 5,    //! '#' - [ 1 ] destroys blocks behind
   MAGIC = 6,               //! 'M' - [ 1 ] transforms nearest blocks
-  NETWORK = 7,             // 'N' - [ 2 ] destroys all other NETWORK blocks
+  NETWORK = 7,             //! 'N' - [ 2 ] destroys all other NETWORK blocks
   ORIGIN = 8,              //! 'O' - [ 1 ] puts ball into initial position
   QUICK = 9,               //! 'Q' - [ 3 ] degrades nearest blocks
   ULTRA = 10,              //! 'U' - [ 5 ] win level

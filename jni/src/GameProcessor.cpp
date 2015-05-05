@@ -436,7 +436,6 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
     affected_blocks.reserve(12);
     network_blocks.reserve(12);
     RowCol single_affected;
-    RowCol ignored_block;
 
     bool external_collision = true;
     int viscosity = 0;
@@ -495,8 +494,7 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
         break;
       case Block::NETWORK_1:
         external_collision = blockCollision(top_border, bottom_border, left_border, right_border, 100 /* elastic */);
-        ignored_block = RowCol(row, col);
-        m_level->findBlocks(Block::NETWORK, ignored_block, &network_blocks);
+        m_level->findBlocks(Block::NETWORK, &network_blocks);
         if (!network_blocks.empty()) {
           random_index = util::getRandomElement(network_blocks);
           shiftBallIntoBlock(network_blocks[random_index].row, network_blocks[random_index].col);
@@ -504,8 +502,12 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
         break;
       // --------------------
       case Block::HYPER:
-        // XXX: correctBallPosition();
         external_collision = blockCollision(top_border, bottom_border, left_border, right_border, 100 /* elastic */);
+        m_level->findBlocks(m_level->generatePresentBlock(), &network_blocks);
+        if (!network_blocks.empty()) {
+          random_index = util::getRandomElement(network_blocks);
+          shiftBallIntoBlock(network_blocks[random_index].row, network_blocks[random_index].col);
+        }
         break;
       case Block::ORIGIN:
         external_collision = blockCollision(top_border, bottom_border, left_border, right_border, 100 /* elastic */);

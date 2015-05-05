@@ -160,7 +160,6 @@ class Database {
   
   void clearStat(long player_id) {
     int affected_number = mDbHandler.delete(StatTable, "PlayerID = '" + player_id + "'", null);
-    Log.e(TAG, "Affected: " + affected_number);
     if (affected_number == 0) {
       Log.d(TAG, "No rows were deleted.");
     }

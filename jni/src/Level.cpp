@@ -713,14 +713,20 @@ void Level::findBlocks(Block type, std::vector<RowCol>* output) {
   }
 }
 
-void Level::findBlocks(Block type, const RowCol& ignored, std::vector<RowCol>* output) {
-  for (int r = 0; r < rows; ++r) {
-    for (int c = 0; c < cols; ++c) {
-      if (blocks[r][c] == type && r != ignored.row && c != ignored.col) {
-        output->emplace_back(r, c);
+Block Level::generatePresentBlock() {
+  Block block = Block::NONE;
+  bool is_present = false;
+  do {
+    block = generator.generateBlock();
+    for (int r = 0; r < rows; ++r) {
+      for (int c = 0; c < cols; ++c) {
+        if (blocks[r][c] == block) {
+          is_present = true;
+        }
       }
     }
-  }
+  } while (!is_present);
+  return block;
 }
 
 void Level::print() const {
