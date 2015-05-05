@@ -9,7 +9,8 @@ namespace shader {
 ShaderHelper::ShaderHelper(const Shader& shader)
   : m_program(0)
   , m_vertex_location(0)
-  , m_color_location(1) {
+  , m_color_location(1)
+  , m_texCoord_location(2) {
 
   DBG("enter ShaderHelper::ctor");
   GLuint vertex_shader = loadShader(GL_VERTEX_SHADER, shader.vertex);
