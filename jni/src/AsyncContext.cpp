@@ -525,7 +525,6 @@ void AsyncContext::render() {
     drawBite();
     drawBall();
     drawExplosion(0.f, 0.f, util::TITAN);
-//    drawRectangle();
 
     eglSwapInterval(m_egl_display, 0);
     eglSwapBuffers(m_egl_display, m_egl_surface);
@@ -685,7 +684,7 @@ void AsyncContext::drawExplosion(GLfloat x, GLfloat y, const util::BGRA<GLfloat>
 // ----------------------------------------------------------------------------
 //https://github.com/danginsburg/opengles-book-samples/blob/master/Android/Ch13_ParticleSystem/src/com/openglesbook/particlesystem/ParticleSystemRenderer.java
 void AsyncContext::drawRectangle() {
-  m_sample_shader->useProgram();
+/*  m_sample_shader->useProgram();
 
   GLint a_position = glGetAttribLocation(m_sample_shader->getProgram(), "a_position");
   GLint a_color = glGetAttribLocation(m_sample_shader->getProgram(), "a_color");
@@ -728,7 +727,7 @@ void AsyncContext::drawRectangle() {
 
   delete [] vertex_buffer;
   delete [] texCoord_buffer;
-  delete [] color_buffer;
+  delete [] color_buffer;*/
 }
 
 }  // namespace game
