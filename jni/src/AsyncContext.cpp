@@ -43,6 +43,7 @@ AsyncContext::AsyncContext(JavaVM* jvm)
   , m_bite_shader(nullptr)
   , m_ball_shader(nullptr)
   , m_explosion_shader(nullptr)
+  , m_sample_shader(nullptr)
   , m_generator()
   , m_particle_distribution(0.0f, 1.0f)
   , m_last_time(0)
@@ -206,9 +207,6 @@ void AsyncContext::onStart() {
   attachToJVM();
 }
 
-void AsyncContext::loadResources() {
-
-}
 void AsyncContext::onStop() {
   detachFromJVM();
 }
@@ -294,6 +292,7 @@ void AsyncContext::process_loadResources() {
   std::unique_lock<std::mutex> lock(m_load_resources_mutex);
   if (m_resources != nullptr) {
     for (auto it = m_resources->begin(); it != m_resources->end(); ++it) {
+      DBG("Loading resources: %s %p", it->first.c_str(), it->second);
       it->second->load();
     }
   } else {
@@ -494,6 +493,7 @@ void AsyncContext::glOptionsConfig() {
   m_bite_shader = std::make_shared<shader::ShaderHelper>(shader::SimpleShader());
   m_ball_shader = std::make_shared<shader::ShaderHelper>(shader::SimpleShader());
   m_explosion_shader = std::make_shared<shader::ShaderHelper>(shader::ParticleSystemShader());
+  m_sample_shader = std::make_shared<shader::ShaderHelper>(shader::SimpleTextureShader());
 }
 
 void AsyncContext::destroyDisplay() {
@@ -527,7 +527,7 @@ void AsyncContext::render() {
     drawBite();
     drawBall();
 //    drawExplosion(0.f, 0.f, util::TITAN);
-//    drawRectangle();
+    drawRectangle();
 
     eglSwapInterval(m_egl_display, 0);
     eglSwapBuffers(m_egl_display, m_egl_surface);
@@ -539,8 +539,8 @@ void AsyncContext::render() {
 void AsyncContext::drawLevel() {
   m_level_shader->useProgram();
 
-  GLuint a_position = glGetAttribLocation(m_level_shader->getProgram(), "a_position");
-  GLuint a_color = glGetAttribLocation(m_level_shader->getProgram(), "a_color");
+  GLint a_position = glGetAttribLocation(m_level_shader->getProgram(), "a_position");
+  GLint a_color = glGetAttribLocation(m_level_shader->getProgram(), "a_color");
 
   glVertexAttribPointer(a_position, 4, GL_FLOAT, GL_FALSE, 0, &m_level_vertex_buffer[0]);
   glVertexAttribPointer(a_color, 4, GL_FLOAT, GL_FALSE, 0, &m_level_color_buffer[0]);
@@ -557,11 +557,11 @@ void AsyncContext::drawLevel() {
 void AsyncContext::drawBlock(int row, int col) {
   m_level_shader->useProgram();
 
-  GLuint a_position = glGetAttribLocation(m_level_shader->getProgram(), "a_position");
+  GLint a_position = glGetAttribLocation(m_level_shader->getProgram(), "a_position");
 #if USE_TEXTURE
-  GLuint a_texCoord = glGetAttribLocation(m_level_shader->getProgram(), "a_texCoord");
+  GLint a_texCoord = glGetAttribLocation(m_level_shader->getProgram(), "a_texCoord");
 #else
-  GLuint a_color = glGetAttribLocation(m_level_shader->getProgram(), "a_color");
+  GLint a_color = glGetAttribLocation(m_level_shader->getProgram(), "a_color");
 #endif
 
   int rci = col * 16 + row * m_level->numCols() * 16;
@@ -596,8 +596,8 @@ void AsyncContext::drawBlock(int row, int col) {
 void AsyncContext::drawBite() {
   m_bite_shader->useProgram();
 
-  GLuint a_position = glGetAttribLocation(m_bite_shader->getProgram(), "a_position");
-  GLuint a_color = glGetAttribLocation(m_bite_shader->getProgram(), "a_color");
+  GLint a_position = glGetAttribLocation(m_bite_shader->getProgram(), "a_position");
+  GLint a_color = glGetAttribLocation(m_bite_shader->getProgram(), "a_color");
 
   glVertexAttribPointer(a_position, 4, GL_FLOAT, GL_FALSE, 0, &m_bite_vertex_buffer[0]);
   glVertexAttribPointer(a_color, 4, GL_FLOAT, GL_FALSE, 0, &m_bite_color_buffer[0]);
@@ -614,8 +614,8 @@ void AsyncContext::drawBite() {
 void AsyncContext::drawBall() {
   m_ball_shader->useProgram();
 
-  GLuint a_position = glGetAttribLocation(m_ball_shader->getProgram(), "a_position");
-  GLuint a_color = glGetAttribLocation(m_ball_shader->getProgram(), "a_color");
+  GLint a_position = glGetAttribLocation(m_ball_shader->getProgram(), "a_position");
+  GLint a_color = glGetAttribLocation(m_ball_shader->getProgram(), "a_color");
 
   glVertexAttribPointer(a_position, 4, GL_FLOAT, GL_FALSE, 0, &m_ball_vertex_buffer[0]);
   glVertexAttribPointer(a_color, 4, GL_FLOAT, GL_FALSE, 0, &m_ball_color_buffer[0]);
@@ -651,9 +651,9 @@ void AsyncContext::drawExplosion(GLfloat x, GLfloat y, const util::BGRA<GLfloat>
   glUniform4fv(u_color, 1, &color[0]);
   glUniform1f(u_time, m_particle_time);
 
-  GLuint a_lifetime = glGetAttribLocation(m_explosion_shader->getProgram(), "a_lifetime");
-  GLuint a_startPosition = glGetAttribLocation(m_explosion_shader->getProgram(), "a_startPosition");
-  GLuint a_endPosition = glGetAttribLocation(m_explosion_shader->getProgram(), "a_endPosition");
+  GLint a_lifetime = glGetAttribLocation(m_explosion_shader->getProgram(), "a_lifetime");
+  GLint a_startPosition = glGetAttribLocation(m_explosion_shader->getProgram(), "a_startPosition");
+  GLint a_endPosition = glGetAttribLocation(m_explosion_shader->getProgram(), "a_endPosition");
 
   m_explosion_shader->useProgram();
 
@@ -687,14 +687,14 @@ void AsyncContext::drawExplosion(GLfloat x, GLfloat y, const util::BGRA<GLfloat>
 // ----------------------------------------------------------------------------
 //https://github.com/danginsburg/opengles-book-samples/blob/master/Android/Ch13_ParticleSystem/src/com/openglesbook/particlesystem/ParticleSystemRenderer.java
 void AsyncContext::drawRectangle() {
-  m_level_shader->useProgram();
+  m_sample_shader->useProgram();
 
 //  GLuint a_position = m_ball_shader->getVertexAttribLocation();
 //  GLuint a_color = m_ball_shader->getColorAttribLocation();
 //  GLuint a_texCoord = m_ball_shader->getTexCoordAttribLocation();
-  GLuint a_position = glGetAttribLocation(m_level_shader->getProgram(), "a_position");
-  GLuint a_color = glGetAttribLocation(m_level_shader->getProgram(), "a_color");
-  GLuint a_texCoord = glGetAttribLocation(m_level_shader->getProgram(), "a_texCoord");
+  GLint a_position = glGetAttribLocation(m_sample_shader->getProgram(), "a_position");
+  GLint a_color = glGetAttribLocation(m_sample_shader->getProgram(), "a_color");
+  GLint a_texCoord = glGetAttribLocation(m_sample_shader->getProgram(), "a_texCoord");
 
   GLfloat* vertex_buffer = new GLfloat[16]{-0.5f, -0.5f, 0.0f, 1.0f,
                                           0.5f, -0.5f, 0.0f, 1.0f,
@@ -709,7 +709,7 @@ void AsyncContext::drawRectangle() {
                                           1.f, 0.f, 0.f, 1.f};
 
   m_resources->getTexture("smoke.png")->apply();
-  GLint sampler = glGetUniformLocation(m_level_shader->getProgram(), "s_texture");
+  GLint sampler = glGetUniformLocation(m_sample_shader->getProgram(), "s_texture");
   glUniform1i(sampler, 0);
 
   glEnableVertexAttribArray(a_position);
@@ -719,8 +719,6 @@ void AsyncContext::drawRectangle() {
   glVertexAttribPointer(a_position, 4, GL_FLOAT, GL_FALSE, 0, &vertex_buffer[0]);
   glVertexAttribPointer(a_texCoord, 2, GL_FLOAT, GL_FALSE, 0, &texCoord_buffer[0]);
   glVertexAttribPointer(a_color, 4, GL_FLOAT, GL_FALSE, 0, &color_buffer[0]);
-
-
 
 //  glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, &m_rectangle_index_buffer[0]);
   glDrawArrays(GL_TRIANGLES, 0, 4);

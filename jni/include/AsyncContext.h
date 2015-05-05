@@ -62,8 +62,7 @@ public:
   /// @brief Called when block has been impacted.
   void callback_blockImpact(RowCol block);
   /// @brief Called when level has been successfully finished.
-  void callback_levelFinished(bool is_finished);  /// @brief Loads resources into Graphic memory.
-  void loadResources();
+  void callback_levelFinished(bool is_finished);
   /** @} */  // end of Callbacks group
 
   /** @defgroup GameStat Get game statistics
@@ -194,6 +193,7 @@ private:
   shader::ShaderHelper::Ptr m_bite_shader;
   shader::ShaderHelper::Ptr m_ball_shader;
   shader::ShaderHelper::Ptr m_explosion_shader;
+  shader::ShaderHelper::Ptr m_sample_shader;
   /** @} */  // end of Shaders group
 
   /** @defgroup Mutex Thread-safety variables
