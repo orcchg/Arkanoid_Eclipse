@@ -17,6 +17,7 @@
 #include "ActiveObject.h"
 #include "Ball.h"
 #include "Bite.h"
+#include "ExplosionPackage.h"
 #include "Level.h"
 #include "LevelDimens.h"
 #include "Resources.h"
@@ -63,6 +64,8 @@ public:
   void callback_blockImpact(RowCol block);
   /// @brief Called when level has been successfully finished.
   void callback_levelFinished(bool is_finished);
+  /// @brief Called when requested to draw particle system explosion.
+  void callback_explosion(ExplosionPackage package);
   /** @} */  // end of Callbacks group
 
   /** @defgroup GameStat Get game statistics
@@ -116,6 +119,8 @@ public:
   EventListener<RowCol> block_impact_listener;
   /// @brief Listens for event which occurs when level has been successfully finished.
   EventListener<bool> level_finished_listener;
+  /// @brief Listens for event which occurs when particle system explosion has been requested.
+  EventListener<ExplosionPackage> explosion_listener;
 
   /// @brief Notifies for measured aspect ratio.
   Event<float> aspect_ratio_event;
@@ -184,6 +189,8 @@ private:
   std::uniform_real_distribution<float> m_particle_distribution;
   clock_t m_last_time;
   float m_particle_time;
+  ExplosionPackage m_explosion_package;
+  bool m_render_explosion;
   /** @} */  // end of LogicData group
 
   /** @defgroup Shaders Shaders for rendering game components.
@@ -209,6 +216,7 @@ private:
   std::mutex m_lost_ball_mutex;  //!< Sentinel for lost ball flag.
   std::mutex m_block_impact_mutex;  //!< Sentinel for block impact event.
   std::mutex m_level_finished_mutex;  //!< Sentinel for level has been successfully finished.
+  std::mutex m_explosion_mutex;  //!< Sentinel for particle system explosion.
   std::atomic_bool m_surface_received;  //!< Window has been set.
   std::atomic_bool m_load_resources_received;  //!< Load resources requested.
   std::atomic_bool m_shift_gamepad_received;  //!< Shift gesture has occurred.
@@ -218,6 +226,7 @@ private:
   std::atomic_bool m_lost_ball_received;  //!< Ball has been lost received.
   std::atomic_bool m_block_impact_received;  //!< Block impact has been received.
   std::atomic_bool m_level_finished_received;  //!< Level has been successfully finished.
+  std::atomic_bool m_explosion_received;  //!< Request for explosion received.
   /** @} */  // end of Mutex group
 
   /** @defgroup SafetyFlag Logic-safety variables
@@ -272,6 +281,8 @@ private:
   void process_blockImpact();
   /// @brief Performs visual level finalization.
   void process_levelFinished();
+  /// @brief Performs visual particle system explosion.
+  void process_explosion();
   /** @} */  // end of Processors group
 
 private:

@@ -47,7 +47,9 @@ AsyncContext::AsyncContext(JavaVM* jvm)
   , m_generator()
   , m_particle_distribution(0.0f, 1.0f)
   , m_last_time(0)
-  , m_particle_time(0.0f) {
+  , m_particle_time(0.0f)
+  , m_explosion_package()
+  , m_render_explosion(false) {
 
   DBG("enter AsyncContext ctor");
   m_surface_received.store(false);
@@ -59,6 +61,7 @@ AsyncContext::AsyncContext(JavaVM* jvm)
   m_lost_ball_received.store(false);
   m_block_impact_received.store(false);
   m_level_finished_received.store(false);
+  m_explosion_received.store(false);
   m_window_set = false;
   m_resources = nullptr;
 
@@ -172,6 +175,13 @@ void AsyncContext::callback_levelFinished(bool is_finished) {
   interrupt();
 }
 
+void AsyncContext::callback_explosion(ExplosionPackage package) {
+  std::unique_lock<std::mutex> lock(m_explosion_mutex);
+  m_explosion_received.store(true);
+  m_explosion_package = package;
+  interrupt();
+}
+
 // ----------------------------------------------
 Level::Ptr AsyncContext::getCurrentLevelState() {
   std::unique_lock<std::mutex> lock(m_load_level_mutex);
@@ -218,7 +228,8 @@ bool AsyncContext::checkForWakeUp() {
       m_move_ball_received.load() ||
       m_lost_ball_received.load() ||
       m_block_impact_received.load() ||
-      m_level_finished_received.load();
+      m_level_finished_received.load() ||
+      m_explosion_received.load();
 }
 
 void AsyncContext::eventHandler() {
@@ -235,6 +246,10 @@ void AsyncContext::eventHandler() {
     if (m_shift_gamepad_received.load()) {
       m_shift_gamepad_received.store(false);
       process_shiftGamepad();
+    }
+    if (m_explosion_received.load()) {
+      m_explosion_received.store(false);
+      process_explosion();
     }
     if (m_block_impact_received.load()) {
       m_block_impact_received.store(false);
@@ -359,6 +374,12 @@ void AsyncContext::process_blockImpact() {
 void AsyncContext::process_levelFinished() {
   std::unique_lock<std::mutex> lock(m_level_finished_mutex);
   initGame();
+}
+
+void AsyncContext::process_explosion() {
+  std::unique_lock<std::mutex> lock(m_explosion_mutex);
+  m_last_time = 0;
+  m_render_explosion = true;
 }
 
 /* LogicFunc group */
@@ -524,7 +545,13 @@ void AsyncContext::render() {
 #endif
     drawBite();
     drawBall();
-    drawExplosion(0.f, 0.f, util::TITAN);
+
+    if (m_render_explosion) {
+      drawExplosion(
+          m_explosion_package.getX(),
+          m_explosion_package.getY(),
+          m_explosion_package.getColor());
+    }
 
     eglSwapInterval(m_egl_display, 0);
     eglSwapBuffers(m_egl_display, m_egl_surface);
@@ -638,6 +665,7 @@ void AsyncContext::drawExplosion(GLfloat x, GLfloat y, const util::BGRA<GLfloat>
   m_particle_time += delta_elapsed;
   if (m_particle_time >= 1.0f) {
     m_particle_time = 0.0f;
+    m_render_explosion = false;
   }
 
   GLint u_time = glGetUniformLocation(m_explosion_shader->getProgram(), "u_time");

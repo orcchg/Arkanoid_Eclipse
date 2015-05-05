@@ -12,6 +12,7 @@
 #include "ActiveObject.h"
 #include "Ball.h"
 #include "Bite.h"
+#include "ExplosionPackage.h"
 #include "Level.h"
 #include "LevelDimens.h"
 #include "RowCol.h"
@@ -102,6 +103,8 @@ public:
   Event<RowCol> block_impact_event;
   /// @brief Notifies level has been successfully finished.
   Event<bool> level_finished_event;
+  /// @brief Notifies particle system has exploded.
+  Event<ExplosionPackage> explosion_event;
   /** @} */  // end of Event group
 
 // ----------------------------------------------
@@ -231,6 +234,15 @@ private:
   void onAngleChanged();
   /// @brief Notifies Java layer cardinality value has been updated.
   void onCardinalityChanged(int new_cardinality);
+  /// @brief Notifies block explosion has occurred.
+  /// @param x Center of explosion along X axis.
+  /// @param y Center of explosion along Y axis.
+  /// @param color Color of explosion.
+  void explode(GLfloat x, GLfloat y, const util::BGRA<GLfloat>& color);
+  /// @brief Explodes specified block.
+  /// @param row Row index of specified block.
+  /// @param col Column index of specified block.
+  void explodeBlock(int row, int col);
   /** @} */  // end of LogicFunc group
 
   /** @defgroup Collision Functions to perform various collisions.
@@ -276,6 +288,12 @@ private:
   /// @return TRUE is some block has been impacted, FALSE if ball has left level's boundaries
   /// in order to avoid index of block out of bounds.
   bool getImpactedBlock(GLfloat ball_x, GLfloat ball_y, int* row, int* col);
+  /// @brief Gets measured center of specified block.
+  /// @param row Row index of specified block.
+  /// @param col Column index of specified block.
+  /// @param x Output X coordinate of block's center.
+  /// @param y Output Y coordinate of block's center.
+  void getCenterOfBlock(int row, int col, GLfloat* x, GLfloat* y);
   /// @brief Corrects ball's visual position after collision and notifies
   /// rendering thread.
   /// @param new_x Corrected ball's center position along X axis.
