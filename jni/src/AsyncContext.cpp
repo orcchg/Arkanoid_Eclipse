@@ -302,6 +302,7 @@ void AsyncContext::process_loadResources() {
   } else {
     ERR("Resources pointer was not set !");
   }
+  m_bg_texture = m_resources->getRandomTexture("bg");
 }
 
 void AsyncContext::process_shiftGamepad() {
@@ -368,6 +369,7 @@ void AsyncContext::process_levelFinished() {
   std::unique_lock<std::mutex> lock(m_level_finished_mutex);
   moveBall(0.0f, 1000.f);
   delay(50);
+  m_bg_texture = m_resources->getRandomTexture("bg");
   initGame();
 }
 
@@ -748,7 +750,7 @@ void AsyncContext::drawBackground() {
   glVertexAttribPointer(a_position, 4, GL_FLOAT, GL_FALSE, 0, &m_bg_vertex_buffer[0]);
   glVertexAttribPointer(a_texCoord, 2, GL_FLOAT, GL_FALSE, 0, &m_rectangle_texCoord_buffer[0]);
 
-  m_resources->getTexture("bg_nebula.png")->apply();
+  m_bg_texture->apply();
   GLint sampler = glGetUniformLocation(m_sample_shader->getProgram(), "s_texture");
   glUniform1i(sampler, 0);
 

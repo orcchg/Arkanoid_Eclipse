@@ -47,6 +47,7 @@ JNIEXPORT void JNICALL Java_com_orcchg_arkanoid_surface_NativeResources_release
 #include <memory>
 #include <string>
 #include <unordered_map>
+#include <cstdlib>
 
 #include "Level.h"
 #include "Texture.h"
@@ -64,6 +65,7 @@ public:
 
   bool read(jstring filename);
   const native::Texture* const getTexture(const std::string& name) const;
+  const native::Texture* const getRandomTexture(const std::string& prefix) const;
 
   iterator begin();
   iterator end();

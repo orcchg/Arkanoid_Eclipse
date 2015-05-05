@@ -55,6 +55,21 @@ const native::Texture* const Resources::getTexture(const std::string& name) cons
   return m_textures.at(name);
 }
 
+const native::Texture* const Resources::getRandomTexture(const std::string& prefix) const {
+  native::Texture* texture = nullptr;
+  bool success = false;
+  do {
+    size_t random_index = std::rand() % m_textures.size();
+    auto shift = m_textures.begin();
+    for (int i = 0; i < random_index; ++i) {
+      ++shift;
+    }
+    success = (shift->first.find(prefix) == 0);
+    texture = shift->second;
+  } while (!success);
+  return texture;
+}
+
 Resources::iterator Resources::begin() {
   return m_textures.begin();
 }

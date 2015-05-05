@@ -240,6 +240,7 @@ private:
    * @{
    */
   Resources* m_resources;
+  const native::Texture* m_bg_texture;
   /** @} */  // end of Resources group
 
 // ----------------------------------------------

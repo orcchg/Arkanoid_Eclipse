@@ -603,6 +603,7 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
     onScoreUpdated(score);
     return (external_collision &&
             block != Block::NONE &&
+            block != Block::DESTROY &&
             block != Block::MIDAS &&
             block != Block::TITAN &&
             block != Block::INVUL &&
