@@ -16,7 +16,7 @@ import android.widget.TextView;
 
 public class MainActivity extends FragmentActivity {
   private static final String TAG = "Arkanoid_MainActivity";
-  private static final int PLAYER_ID = 0;  // TODO: support multiple players
+  private static final int PLAYER_ID = 1;  // TODO: support multiple players
   private static final int INITIAL_LIVES = 3;
   private static final int INITIAL_LEVEL = 0;
   private static final int INITIAL_SCORE = 0;
@@ -59,6 +59,15 @@ public class MainActivity extends FragmentActivity {
       e.printStackTrace();
     }
     mAsyncContext.setResourcesPtr(mNativeResources.getPtr());
+    
+    ArkanoidApplication app = (ArkanoidApplication) getApplication();
+    if (!app.DATABASE.updatePlayer(PLAYER_ID, "Player")) {
+      try {
+        app.DATABASE.insertPlayer("Player");
+      } catch (DatabaseException e) {
+        e.printStackTrace();
+      }
+    }
   }
   
   @Override
@@ -107,7 +116,7 @@ public class MainActivity extends FragmentActivity {
         break;
       case R.id.nextLevel:
         mAsyncContext.fireJavaEvent_levelFinished();
-        mAsyncContext.fireJavaEvent_onScoreUpdated(-80 * currentLevel);
+        mAsyncContext.fireJavaEvent_onScoreUpdated(-25 * (int) Math.pow(currentLevel + 1, 2));
         break;
       case R.id.dropStat:
         ArkanoidApplication app = (ArkanoidApplication) getApplication();
@@ -115,6 +124,7 @@ public class MainActivity extends FragmentActivity {
         setLives(INITIAL_LIVES);
         setLevel(INITIAL_LEVEL);
         setScore(INITIAL_SCORE);
+        mAsyncContext.loadLevel(Levels.get(currentLevel));
         break;
     }
     return true;
@@ -202,7 +212,7 @@ public class MainActivity extends FragmentActivity {
       if (activity != null) {
         activity.setLives(currentLives);
       }
-      onScoreUpdated(-11 * (currentLevel + 1));  // lost ball decreases score
+      onScoreUpdated(-10 * (int) Math.pow(currentLevel + 1, 2));  // lost ball decreases score
     }
 
     @Override
