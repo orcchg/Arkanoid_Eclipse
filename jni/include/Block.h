@@ -2,6 +2,7 @@
 #define __ARKANOID_BLOCK__H__
 
 #include <random>
+#include "rgbstruct.h"
 
 namespace game {
 
@@ -52,13 +53,17 @@ enum class Block : int {
   ZYGOTE_SPAWN = 39 //! '@' - [ 1 ] large disturbing
 };
 
-constexpr static int ordinaryBlockOffset = 27;
-constexpr static int totalOrdinaryBlocks = 13;
+class BlockUtils {
+public:
+  constexpr static int ordinaryBlockOffset = 27;
+  constexpr static int totalOrdinaryBlocks = 13;
 
-Block charToBlock(char ch);
-char blockToChar(Block block);
-int getCardinalityCost(Block block);
-int getBlockScore(Block block);
+  static Block charToBlock(char ch);
+  static char blockToChar(Block block);
+  static int getCardinalityCost(Block block);
+  static int getBlockScore(Block block);
+  static util::BGRA<GLfloat> getBlockColor(Block block);
+};
 
 class BlockGenerator {
 public:

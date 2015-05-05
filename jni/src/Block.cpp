@@ -2,7 +2,7 @@
 
 namespace game {
 
-Block charToBlock(char ch) {
+Block BlockUtils::charToBlock(char ch) {
   switch (ch) {
     case 'a':
     case 'A':
@@ -117,7 +117,7 @@ Block charToBlock(char ch) {
   }
 }
 
-char blockToChar(Block block) {
+char BlockUtils::blockToChar(Block block) {
   switch (block) {
     case Block::ALUMINIUM:
       return 'A';
@@ -206,7 +206,7 @@ char blockToChar(Block block) {
   }
 }
 
-int getCardinalityCost(Block block) {
+int BlockUtils::getCardinalityCost(Block block) {
   switch (block) {
     case Block::ULTRA:
       return 5;
@@ -259,7 +259,7 @@ int getCardinalityCost(Block block) {
   }
 }
 
-int getBlockScore(Block block) {
+int BlockUtils::getBlockScore(Block block) {
   int score = 0;
   switch (block) {
     case Block::ULTRA:     score += 127;
@@ -321,13 +321,19 @@ int getBlockScore(Block block) {
   return score;
 }
 
+util::BGRA<GLfloat> BlockUtils::getBlockColor(Block block) {
+  switch (block) {
+    //
+  }
+}
+
 BlockGenerator::BlockGenerator()
   : m_generator()
-  , m_distribution(0, totalOrdinaryBlocks - 1) {
+  , m_distribution(0, BlockUtils::totalOrdinaryBlocks - 1) {
 }
 
 Block BlockGenerator::generateBlock() {
-  int value = ordinaryBlockOffset + m_distribution(m_generator);
+  int value = BlockUtils::ordinaryBlockOffset + m_distribution(m_generator);
   return static_cast<Block>(value);
 }
 
