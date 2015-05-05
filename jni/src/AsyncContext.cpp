@@ -506,9 +506,6 @@ void AsyncContext::glOptionsConfig() {
   m_ball_shader = std::make_shared<shader::ShaderHelper>(shader::SimpleShader());
   m_explosion_shader = std::make_shared<shader::ShaderHelper>(shader::ParticleSystemShader());
   m_sample_shader = std::make_shared<shader::ShaderHelper>(shader::SimpleTextureShader());
-
-  glEnable(GL_TEXTURE_2D);
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 }
 
 void AsyncContext::destroyDisplay() {
@@ -530,8 +527,8 @@ void AsyncContext::destroyDisplay() {
 void AsyncContext::render() {
   if (m_egl_display != EGL_NO_DISPLAY) {
     glClear(GL_COLOR_BUFFER_BIT);
-    glEnable(GL_BLEND);
-    drawBackground();
+//    glEnable(GL_BLEND);
+//    drawBackground();
 #if USE_TEXTURE
     for (int r = 0; r < m_level->numRows(); ++r) {
       for (int c = 0; c < m_level->numCols(); ++c) {
@@ -541,11 +538,13 @@ void AsyncContext::render() {
 #else
     drawLevel();
 #endif
-    glDisable(GL_BLEND);
+
+//    glDisable(GL_BLEND);
     drawBite();
     drawBall();
 
     if (m_render_explosion) {
+//      glEnable(GL_BLEND);
       drawExplosion(
           m_explosion_package.getX(),
           m_explosion_package.getY(),
@@ -714,6 +713,10 @@ void AsyncContext::drawExplosion(GLfloat x, GLfloat y, const util::BGRA<GLfloat>
   glEnableVertexAttribArray(a_lifetime);
   glEnableVertexAttribArray(a_startPosition);
   glEnableVertexAttribArray(a_endPosition);
+
+  glEnable(GL_TEXTURE_2D);
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 
   glDrawArrays(GL_POINTS, 0, particleSystemSize);
 
