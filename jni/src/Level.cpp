@@ -96,9 +96,9 @@ void Level::fillColorArrayAtBlock(GLfloat* const array, int row, int col) const 
       bgra = util::BGRA<GLfloat>(util::CLAY);
       bgra_edge = util::BGRA<GLfloat>(util::CLAY_EDGE);
       break;
-    case Block::DEATH:
-      bgra = util::BGRA<GLfloat>(util::DEATH);
-      bgra_edge = util::BGRA<GLfloat>(util::DEATH_EDGE);
+    case Block::DESTROY:
+      bgra = util::BGRA<GLfloat>(util::DESTROY);
+      bgra_edge = util::BGRA<GLfloat>(util::DESTROY_EDGE);
       break;
     case Block::ELECTRO:
       bgra = util::BGRA<GLfloat>(util::ELECTRO);
@@ -342,7 +342,7 @@ void Level::setBlockImpacted(int row, int col) {
     // ----------------------
     case Block::ALUMINIUM:
     case Block::CLAY:
-    case Block::DEATH:
+    case Block::DESTROY:
     case Block::ELECTRO:
     case Block::FOG:
     case Block::GLASS_1:

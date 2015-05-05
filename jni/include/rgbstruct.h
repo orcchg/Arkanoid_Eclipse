@@ -59,8 +59,8 @@ constexpr static GLfloat BRICK_EDGE[4] = {0.5451f, 0.1020f, 0.1020f, 1.f};  // 1
 constexpr static GLfloat CLAY[4]      = {1.f,     0.8275,  0.6078f, 1.f};  // 255 211 155
 constexpr static GLfloat CLAY_EDGE[4] = {0.8759f, 0.7216f, 0.5294f, 1.f};  // 222 184 135
 
-constexpr static GLfloat DEATH[4]      = {0.8039f, 0.8039f, 0.f, 1.f};  // 205 205 0
-constexpr static GLfloat DEATH_EDGE[4] = {0.8039f, 0.f,     0.f, 1.f};  // 205 0 0
+constexpr static GLfloat DESTROY[4]      = {0.8039f, 0.8039f, 0.f, 1.f};  // 205 205 0
+constexpr static GLfloat DESTROY_EDGE[4] = {0.8039f, 0.f,     0.f, 1.f};  // 205 0 0
 
 constexpr static GLfloat ELECTRO[4]      = {1.f,     0.4980f, 0.f,     1.f};  // 255 127 0
 constexpr static GLfloat ELECTRO_EDGE[4] = {0.9333f, 0.1726f, 0.1726f, 1.f};  // 238 44 44

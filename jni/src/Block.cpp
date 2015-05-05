@@ -15,7 +15,7 @@ Block charToBlock(char ch) {
       return Block::CLAY;
     case 'd':
     case 'D':
-      return Block::DEATH;
+      return Block::DESTROY;
     case 'e':
     case 'E':
       return Block::ELECTRO;
@@ -125,7 +125,7 @@ char blockToChar(Block block) {
       return 'B';
     case Block::CLAY:
       return 'C';
-    case Block::DEATH:
+    case Block::DESTROY:
       return 'D';
     case Block::ELECTRO:
       return 'E';
@@ -227,7 +227,7 @@ int getCardinalityCost(Block block) {
       return 2;
     case Block::ALUMINIUM:
     case Block::CLAY:
-    case Block::DEATH:
+    case Block::DESTROY:
     case Block::ELECTRO:
     case Block::FOG:
     case Block::GLASS_1:
@@ -310,7 +310,7 @@ int getBlockScore(Block block) {
       break;
 
     default:
-    case Block::DEATH:
+    case Block::DESTROY:
     case Block::MIDAS:
     case Block::TITAN:
     case Block::INVUL:

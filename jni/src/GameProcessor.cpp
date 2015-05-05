@@ -439,7 +439,7 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
         // no impact and disturbance
         return false;
       // --------------------
-      case Block::DEATH:
+      case Block::DESTROY:
         m_is_ball_death = true;
         break;
       case Block::ULTRA_1:

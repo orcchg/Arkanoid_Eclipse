@@ -9,7 +9,7 @@ enum class Block : int {
   NONE = 0,        //! ' ' - not disturbing
 
   /* Action blocks */
-  DEATH = 1,               //! 'D' - [ 1 ] lost ball automatically
+  DESTROY = 1,             //! 'D' - [ 1 ] lost ball automatically
   ELECTRO = 2,             //! 'E' - [ 1 ] destroys nearest blocks
   HYPER = 3,               // 'H' - [ 1 ] teleports ball randomly (not lost)
   KNOCK_VERTICAL = 4,      //! 'K' - [ 1 ] destroys blocks behind
