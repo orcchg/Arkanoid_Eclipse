@@ -227,7 +227,6 @@ int getCardinalityCost(Block block) {
       return 2;
     case Block::ALUMINIUM:
     case Block::CLAY:
-    case Block::DESTROY:
     case Block::ELECTRO:
     case Block::FOG:
     case Block::GLASS_1:
@@ -250,6 +249,7 @@ int getCardinalityCost(Block block) {
       return 1;
 
     default:
+    case Block::DESTROY:
     case Block::MIDAS:
     case Block::TITAN:
     case Block::INVUL:
