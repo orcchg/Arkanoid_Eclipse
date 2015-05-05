@@ -527,8 +527,15 @@ void AsyncContext::destroyDisplay() {
 void AsyncContext::render() {
   if (m_egl_display != EGL_NO_DISPLAY) {
     glClear(GL_COLOR_BUFFER_BIT);
-//    glEnable(GL_BLEND);
-//    drawBackground();
+    drawBackground();
+
+    if (m_render_explosion) {
+      drawExplosion(
+          m_explosion_package.getX(),
+          m_explosion_package.getY(),
+          m_explosion_package.getColor());
+    }
+
 #if USE_TEXTURE
     for (int r = 0; r < m_level->numRows(); ++r) {
       for (int c = 0; c < m_level->numCols(); ++c) {
@@ -538,18 +545,8 @@ void AsyncContext::render() {
 #else
     drawLevel();
 #endif
-
-//    glDisable(GL_BLEND);
     drawBite();
     drawBall();
-
-    if (m_render_explosion) {
-//      glEnable(GL_BLEND);
-      drawExplosion(
-          m_explosion_package.getX(),
-          m_explosion_package.getY(),
-          m_explosion_package.getColor());
-    }
 
     eglSwapInterval(m_egl_display, 0);
     eglSwapBuffers(m_egl_display, m_egl_surface);
@@ -648,6 +645,7 @@ void AsyncContext::drawBite() {
 
   glEnableVertexAttribArray(a_position);
   glEnableVertexAttribArray(a_color);
+  glDisable(GL_BLEND);
 
   glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, &m_rectangle_index_buffer[0]);
 
@@ -666,6 +664,7 @@ void AsyncContext::drawBall() {
 
   glEnableVertexAttribArray(a_position);
   glEnableVertexAttribArray(a_color);
+  glDisable(GL_BLEND);
 
   glDrawElements(GL_TRIANGLES, 24, GL_UNSIGNED_SHORT, &m_octagon_index_buffer[0]);
 
@@ -734,9 +733,8 @@ void AsyncContext::drawBackground() {
   GLint a_position = glGetAttribLocation(m_sample_shader->getProgram(), "a_position");
   GLint a_texCoord = glGetAttribLocation(m_sample_shader->getProgram(), "a_texCoord");
 
-  glEnable(GL_TEXTURE);
-  glEnable(GL_BLEND);
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+  glVertexAttribPointer(a_position, 4, GL_FLOAT, GL_FALSE, 0, &m_bg_vertex_buffer[0]);
+  glVertexAttribPointer(a_texCoord, 2, GL_FLOAT, GL_FALSE, 0, &m_rectangle_texCoord_buffer[0]);
 
   m_resources->getTexture("bg_nebula.png")->apply();
   GLint sampler = glGetUniformLocation(m_sample_shader->getProgram(), "s_texture");
@@ -745,10 +743,10 @@ void AsyncContext::drawBackground() {
   glEnableVertexAttribArray(a_position);
   glEnableVertexAttribArray(a_texCoord);
 
-  glVertexAttribPointer(a_position, 4, GL_FLOAT, GL_FALSE, 0, &m_bg_vertex_buffer[0]);
-  glVertexAttribPointer(a_texCoord, 2, GL_FLOAT, GL_FALSE, 0, &m_rectangle_texCoord_buffer[0]);
+  glEnable(GL_TEXTURE_2D);
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 
-//  glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, &m_rectangle_index_buffer[0]);
   glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
   glDisableVertexAttribArray(a_position);
