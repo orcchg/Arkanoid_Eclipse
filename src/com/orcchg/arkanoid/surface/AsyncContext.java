@@ -42,7 +42,6 @@ class AsyncContext {
   
   String saveLevel() {
     String[] tokens = saveLevel(descriptor);
-    android.util.Log.e(TAG, Arrays.toString(tokens));
     StringBuilder builder = new StringBuilder();
     String delim = "";
     for (String token : tokens) {
