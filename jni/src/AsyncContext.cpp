@@ -48,7 +48,7 @@ AsyncContext::AsyncContext(JavaVM* jvm)
   , m_particle_distribution(0.0f, 1.0f)
   , m_last_time(0)
   , m_particle_time(0.0f)
-  , m_explosion_queue()
+  , m_explosion_package()
   , m_render_explosion(false) {
 
   DBG("enter AsyncContext ctor");
@@ -75,18 +75,6 @@ AsyncContext::AsyncContext(JavaVM* jvm)
   util::setColor(util::SIENNA, &m_ball_color_buffer[32], 4);
 
   m_particle_buffer = new GLfloat[particleSize * particleSystemSize];
-  for (int i = 0; i < particleSystemSize; ++i) {
-    // Lifetime of particle
-    m_particle_buffer[i * particleSize + 0] = m_particle_distribution(m_generator);
-    // Start position of particle
-    m_particle_buffer[i * particleSize + 4] = m_particle_distribution(m_generator) * 0.25f - 0.125f;
-    m_particle_buffer[i * particleSize + 5] = m_particle_distribution(m_generator) * 0.25f - 0.125f;
-    m_particle_buffer[i * particleSize + 6] = 0.0f;
-    // End position of particle
-    m_particle_buffer[i * particleSize + 1] = m_particle_distribution(m_generator) * 2.0f - 1.0f;
-    m_particle_buffer[i * particleSize + 2] = m_particle_distribution(m_generator) * 2.0f - 1.0f;
-    m_particle_buffer[i * particleSize + 3] = 0.0f;
-  }
   DBG("exit AsyncContext ctor");
 }
 
@@ -178,7 +166,7 @@ void AsyncContext::callback_levelFinished(bool is_finished) {
 void AsyncContext::callback_explosion(ExplosionPackage package) {
   std::unique_lock<std::mutex> lock(m_explosion_mutex);
   m_explosion_received.store(true);
-  m_explosion_queue.push(package);
+  m_explosion_package = package;
   interrupt();
 }
 
@@ -297,6 +285,7 @@ void AsyncContext::process_setWindow() {
     throw GraphicsNotConfiguredException();
   }
   glOptionsConfig();
+  initParticleSystem();
   m_window_set = true;
   DBG("exit AsyncContext::process_setWindow()");
 }
@@ -359,6 +348,8 @@ void AsyncContext::process_moveBall() {
 
 void AsyncContext::process_lostBall() {
   std::unique_lock<std::mutex> lock(m_lost_ball_mutex);
+  moveBall(0.0f, 1000.f);
+  delay(50);
   initGame();
 }
 
@@ -547,16 +538,36 @@ void AsyncContext::render() {
     drawBall();
 
     if (m_render_explosion) {
-//      drawExplosion(0.f,0.f, util::ZYGOTE);  working well
-//      while (!m_explosion_queue.empty()) {
-        auto& package = m_explosion_queue.front();
-        drawExplosion(package.getX(), package.getY(), package.getColor());
-//        m_explosion_queue.pop();
-//      }
+      drawExplosion(
+          m_explosion_package.getX(),
+          m_explosion_package.getY(),
+          m_explosion_package.getColor());
     }
 
     eglSwapInterval(m_egl_display, 0);
     eglSwapBuffers(m_egl_display, m_egl_surface);
+  }
+}
+
+void AsyncContext::delay(int ms) {
+  for (int i = 0; i < ms; ++i) {
+    render();
+    std::this_thread::sleep_for (std::chrono::milliseconds(ProcessorParams::milliDelay));
+  }
+}
+
+void AsyncContext::initParticleSystem() {
+  for (int i = 0; i < particleSystemSize; ++i) {
+    // Lifetime of particle
+    m_particle_buffer[i * particleSize + 0] = m_particle_distribution(m_generator);
+    // Start position of particle
+    m_particle_buffer[i * particleSize + 4] = m_particle_distribution(m_generator) * 0.25f - 0.125f;
+    m_particle_buffer[i * particleSize + 5] = m_particle_distribution(m_generator) * 0.25f - 0.125f * m_aspect;
+    m_particle_buffer[i * particleSize + 6] = 0.0f;
+    // End position of particle
+    m_particle_buffer[i * particleSize + 1] = m_particle_distribution(m_generator) * 2.0f - 1.0f;
+    m_particle_buffer[i * particleSize + 2] = m_particle_distribution(m_generator) * 2.0f - 1.0f * m_aspect;
+    m_particle_buffer[i * particleSize + 3] = 0.0f;
   }
 }
 

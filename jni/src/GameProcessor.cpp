@@ -455,11 +455,13 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
 
     bool external_collision = true;
     int viscosity = 0;
+    size_t random_index = 0;
     Mode mode = m_direction_distribution(m_generator) ? Mode::DEGRADE : Mode::UPGRADE;
+    Block generated_block = m_level->getGenerator().generateBlock();
+
     Block block = m_level->getBlock(row, col);
     m_level->setBlockImpacted(row, col);
     int score = BlockUtils::getBlockScore(block);
-    size_t random_index = 0;
 
     switch (block) {
       case Block::NONE:
@@ -467,6 +469,7 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
         return false;
       // --------------------
       case Block::DESTROY:
+        explodeBlock(row, col, BlockUtils::getBlockColor(Block::DESTROY));
         m_is_ball_death = true;
         break;
       case Block::ULTRA_1:
@@ -484,25 +487,26 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
         score += m_level->destroyBlocksAround(row, col, &affected_blocks);
         explodeBlock(row, col, BlockUtils::getBlockColor(Block::ELECTRO));
         for (auto& item : affected_blocks) {
-          explodeBlock(item.row, item.col);
           block_impact_event.notifyListeners(item);
         }
         break;
       case Block::KNOCK_VERTICAL:
         external_collision = blockCollision(top_border, bottom_border, left_border, right_border, 100 /* elastic */);
         score += m_level->destroyBlocksBehind(row, col, vertical_direction, &affected_blocks);
-        explodeBlock(row, col, BlockUtils::getBlockColor(Block::KNOCK_VERTICAL));
+        if (vertical_direction != Direction::NONE) {
+          explodeBlock(row, col, BlockUtils::getBlockColor(Block::KNOCK_VERTICAL));
+        }
         for (auto& item : affected_blocks) {
-          explodeBlock(item.row, item.col);
           block_impact_event.notifyListeners(item);
         }
         break;
       case Block::KNOCK_HORIZONTAL:
         external_collision = blockCollision(top_border, bottom_border, left_border, right_border, 100 /* elastic */);
         score += m_level->destroyBlocksBehind(row, col, horizontal_direction, &affected_blocks);
-        explodeBlock(row, col, BlockUtils::getBlockColor(Block::KNOCK_HORIZONTAL));
+        if (horizontal_direction != Direction::NONE) {
+          explodeBlock(row, col, BlockUtils::getBlockColor(Block::KNOCK_HORIZONTAL));
+        }
         for (auto& item : affected_blocks) {
-          explodeBlock(item.row, item.col);
           block_impact_event.notifyListeners(item);
         }
         break;
@@ -511,7 +515,6 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
         score += m_level->modifyBlocksAround(row, col, Block::TITAN, &affected_blocks);
         explodeBlock(row, col, BlockUtils::getBlockColor(Block::MIDAS));
         for (auto& item : affected_blocks) {
-          explodeBlock(item.row, item.col);
           block_impact_event.notifyListeners(item);
         }
         m_is_ball_death = true;
@@ -564,10 +567,9 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
       // --------------------
       case Block::MAGIC:
         external_collision = blockCollision(top_border, bottom_border, left_border, right_border, 100 /* elastic */);
-        score += m_level->modifyBlocksAround(row, col, m_level->getGenerator().generateBlock(), &affected_blocks);
-        explodeBlock(row, col, BlockUtils::getBlockColor(Block::MAGIC));
+        score += m_level->modifyBlocksAround(row, col, generated_block, &affected_blocks);
+        explodeBlock(row, col, BlockUtils::getBlockColor(generated_block));
         for (auto& item : affected_blocks) {
-          explodeBlock(item.row, item.col);
           block_impact_event.notifyListeners(item);
         }
         break;
@@ -576,7 +578,6 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
         score += m_level->changeBlocksAround(row, col, mode, &affected_blocks);
         explodeBlock(row, col, BlockUtils::getBlockColor(Block::QUICK_1));
         for (auto& item : affected_blocks) {
-          explodeBlock(item.row, item.col);
           block_impact_event.notifyListeners(item);
         }
         break;
@@ -585,7 +586,6 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
         score += m_level->modifyBlocksAround(row, col, Block::YOGURT_1, &affected_blocks);
         explodeBlock(row, col, BlockUtils::getBlockColor(Block::YOGURT));
         for (auto& item : affected_blocks) {
-          explodeBlock(item.row, item.col);
           block_impact_event.notifyListeners(item);
         }
         break;

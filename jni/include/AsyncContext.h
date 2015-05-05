@@ -189,7 +189,7 @@ private:
   std::uniform_real_distribution<float> m_particle_distribution;
   clock_t m_last_time;
   float m_particle_time;
-  std::queue<ExplosionPackage> m_explosion_queue;
+  ExplosionPackage m_explosion_package;
   bool m_render_explosion;
   /** @} */  // end of LogicData group
 
@@ -316,6 +316,11 @@ private:
   void destroyDisplay();
   /// @brief Render a frame.
   void render();
+  /// @brief Initializes particle system.
+  void initParticleSystem();
+  /// @brief Continue rendering for specified delay in ms.
+  /// @param ms Time in ms.
+  void delay(int ms);
   /** @} */  // end of GraphicsContext group
 
   /** @defgroup Drawings Draw routines.
