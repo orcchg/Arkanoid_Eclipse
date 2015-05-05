@@ -143,7 +143,7 @@ private:
   std::default_random_engine m_generator;
   std::normal_distribution<float> m_angle_distribution;
   std::bernoulli_distribution m_direction_distribution;
-  std::binomial_distribution<int> m_viscosity_distribution;
+  std::uniform_int_distribution<int> m_viscosity_distribution;
   /** @} */  // Maths
 
   /** @defgroup Mutex Thread-safety variables
@@ -215,6 +215,11 @@ private:
   /// @param new_y New ball's center position along Y axis.
   /// @note Forces ball's movement with notification, only internal uses.
   void shiftBall(GLfloat new_x, GLfloat new_y);
+  /// @brief Shifts the ball to the center of specified block.
+  /// @param row Row index of specified block.
+  /// @param col Column index of specified block.
+  /// @note Forces ball's movement with notification, only internal uses.
+  void shiftBallIntoBlock(int row, int col);
   /// @brief Notifies Java layer the ball has been lost.
   void onLostBall(bool /* dummy */);
   /// @brief Notifies Java layer level has been successfully finished.

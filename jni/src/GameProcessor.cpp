@@ -31,7 +31,7 @@ GameProcessor::GameProcessor(JavaVM* jvm, jobject master_object)
   , m_generator()
   , m_angle_distribution(util::PI12, util::PI30)
   , m_direction_distribution(0.25f)
-  , m_viscosity_distribution(101, 0.5) {
+  , m_viscosity_distribution(0, 100) {
 
   DBG("enter GameProcessor ctor");
   m_aspect_ratio_received.store(false);
@@ -278,6 +278,14 @@ void GameProcessor::shiftBall(GLfloat new_x, GLfloat new_y) {
   move_ball_event.notifyListeners(m_ball);
 }
 
+void GameProcessor::shiftBallIntoBlock(int row, int col) {
+  GLfloat top_border = 0.0f, bottom_border = 0.0f, left_border = 0.0f, right_border = 0.0f;
+  m_level_dimens.getBlockDimens(row, col, &top_border, &bottom_border, &left_border, &right_border);
+  GLfloat new_x = 1.0f - (0.5f * (right_border - left_border) + 2.0f - right_border);
+  GLfloat new_y = -1.0f + (0.5f * (bottom_border - top_border) + 2.0f - bottom_border);
+  correctBallPosition(new_x, new_y);
+}
+
 void GameProcessor::onLostBall(bool /* dummy */) {
   m_is_ball_lost = false;
   m_is_ball_death = false;
@@ -424,8 +432,11 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
       horizontal_direction = Direction::LEFT;
     }
     std::vector<RowCol> affected_blocks;
+    std::vector<RowCol> network_blocks;
     affected_blocks.reserve(12);
+    network_blocks.reserve(12);
     RowCol single_affected;
+    RowCol ignored_block;
 
     bool external_collision = true;
     int viscosity = 0;
@@ -433,6 +444,7 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
     Block block = m_level->getBlock(row, col);
     m_level->setBlockImpacted(row, col);
     int score = getBlockScore(block);
+    size_t random_index = 0;
 
     switch (block) {
       case Block::NONE:
@@ -482,8 +494,13 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
         m_is_ball_death = true;
         break;
       case Block::NETWORK_1:
-        // XXX:
         external_collision = blockCollision(top_border, bottom_border, left_border, right_border, 100 /* elastic */);
+        ignored_block = RowCol(row, col);
+        m_level->findBlocks(Block::NETWORK, ignored_block, &network_blocks);
+        if (!network_blocks.empty()) {
+          random_index = util::getRandomElement(network_blocks);
+          shiftBallIntoBlock(network_blocks[random_index].row, network_blocks[random_index].col);
+        }
         break;
       // --------------------
       case Block::HYPER:

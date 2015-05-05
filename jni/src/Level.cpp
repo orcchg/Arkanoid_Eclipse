@@ -703,6 +703,26 @@ void Level::modifyBlockNear(int row, int col, Block type, RowCol* output) {
   }
 }
 
+void Level::findBlocks(Block type, std::vector<RowCol>* output) {
+  for (int r = 0; r < rows; ++r) {
+    for (int c = 0; c < cols; ++c) {
+      if (blocks[r][c] == type) {
+        output->emplace_back(r, c);
+      }
+    }
+  }
+}
+
+void Level::findBlocks(Block type, const RowCol& ignored, std::vector<RowCol>* output) {
+  for (int r = 0; r < rows; ++r) {
+    for (int c = 0; c < cols; ++c) {
+      if (blocks[r][c] == type && r != ignored.row && c != ignored.col) {
+        output->emplace_back(r, c);
+      }
+    }
+  }
+}
+
 void Level::print() const {
   std::vector<std::string> array;
   array.reserve(rows);

@@ -162,6 +162,15 @@ public:
   /// @param type Type the block will be modified to.
   /// @param output Valid indices of influenced block.
   void modifyBlockNear(int row, int col, Block type, RowCol* output);
+  /// @brief Finds all blocks of given type.
+  /// @param type Type of block to be found.
+  /// @param output Array of valid indices of found blocks.
+  void findBlocks(Block type, std::vector<RowCol>* output);
+  /// @brief Finds all blocks of given type except those which indices are passed.
+  /// @param type Type of block to be found.
+  /// @param ignored Ignore block at this index.
+  /// @param output Array of valid indices of found blocks.
+  void findBlocks(Block type, const RowCol& ignored, std::vector<RowCol>* output);
   /** @} */  // end of Modifiers group
 
   void print() const;

@@ -1,6 +1,9 @@
 #ifndef __ARKANOID_UTILS__H__
 #define __ARKANOID_UTILS__H__
 
+#include <vector>
+#include <cstdlib>
+
 #include "logger.h"
 #include "rgbstruct.h"
 
@@ -57,6 +60,11 @@ void rectangleIndices(GLushort* const indices, size_t size);
 void printBuffer2D(const GLfloat* const buffer, size_t size);
 void printBuffer3D(const GLfloat* const buffer, size_t size);
 void printBuffer4D(const GLfloat* const buffer, size_t size);
+
+template <typename T>
+size_t getRandomElement(const std::vector<T>& array) {
+  return std::rand() % array.size();
+}
 
 }
 
