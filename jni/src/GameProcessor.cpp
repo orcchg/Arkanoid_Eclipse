@@ -281,8 +281,8 @@ void GameProcessor::shiftBall(GLfloat new_x, GLfloat new_y) {
 void GameProcessor::shiftBallIntoBlock(int row, int col) {
   GLfloat top_border = 0.0f, bottom_border = 0.0f, left_border = 0.0f, right_border = 0.0f;
   m_level_dimens.getBlockDimens(row, col, &top_border, &bottom_border, &left_border, &right_border);
-  GLfloat new_x = 1.0f - (0.5f * (right_border - left_border) + 2.0f - right_border);
-  GLfloat new_y = -1.0f + (0.5f * (bottom_border - top_border) + 2.0f - bottom_border);
+  GLfloat new_x = 0.5f * (right_border + left_border) - 1.0f;
+  GLfloat new_y = -0.5f * (bottom_border + top_border) + 1.0f;
   correctBallPosition(new_x, new_y);
 }
 
