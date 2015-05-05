@@ -243,6 +243,8 @@ private:
   /// @param row Row index of specified block.
   /// @param col Column index of specified block.
   void explodeBlock(int row, int col);
+  /// @brief Same as above but with specified color.
+  void explodeBlock(int row, int col, const util::BGRA<GLfloat>& color);
   /** @} */  // end of LogicFunc group
 
   /** @defgroup Collision Functions to perform various collisions.

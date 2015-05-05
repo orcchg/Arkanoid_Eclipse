@@ -48,7 +48,7 @@ AsyncContext::AsyncContext(JavaVM* jvm)
   , m_particle_distribution(0.0f, 1.0f)
   , m_last_time(0)
   , m_particle_time(0.0f)
-  , m_explosion_package()
+  , m_explosion_queue()
   , m_render_explosion(false) {
 
   DBG("enter AsyncContext ctor");
@@ -178,7 +178,7 @@ void AsyncContext::callback_levelFinished(bool is_finished) {
 void AsyncContext::callback_explosion(ExplosionPackage package) {
   std::unique_lock<std::mutex> lock(m_explosion_mutex);
   m_explosion_received.store(true);
-  m_explosion_package = package;
+  m_explosion_queue.push(package);
   interrupt();
 }
 
@@ -547,10 +547,12 @@ void AsyncContext::render() {
     drawBall();
 
     if (m_render_explosion) {
-      drawExplosion(
-          m_explosion_package.getX(),
-          m_explosion_package.getY(),
-          m_explosion_package.getColor());
+//      drawExplosion(0.f,0.f, util::ZYGOTE);
+//      while (!m_explosion_queue.empty()) {
+        auto& package = m_explosion_queue.front();
+        drawExplosion(package.getX(), package.getY(), package.getColor());
+//        m_explosion_queue.pop();
+//      }
     }
 
     eglSwapInterval(m_egl_display, 0);
