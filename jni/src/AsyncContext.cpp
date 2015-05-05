@@ -659,16 +659,9 @@ void AsyncContext::drawExplosion(GLfloat x, GLfloat y, const util::BGRA<GLfloat>
   glVertexAttribPointer(a_startPosition, 3, GL_FLOAT, GL_FALSE, particleSize * 4, &m_particle_buffer[4]);
   glVertexAttribPointer(a_endPosition, 3, GL_FLOAT, GL_FALSE, particleSize * 4, &m_particle_buffer[1]);
 
-//  for (int i = 0; i < particleSystemSize; ++i) {
-//    if (m_particle_time <= m_particle_buffer[i * particleSize]) {
-//      ERR("YES: %lf %lf", m_particle_time, m_particle_buffer[i * particleSize]);
-//    }
-//  }
-
-//  glEnable(GL_TEXTURE);
-//  glEnable(GL_TEXTURE_2D);
-//  glEnable(GL_BLEND);
-//  glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+  glEnable(GL_TEXTURE_2D);
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 
   m_resources->getTexture("smoke.png")->apply();
   GLint sampler = glGetUniformLocation(m_explosion_shader->getProgram(), "s_texture");
