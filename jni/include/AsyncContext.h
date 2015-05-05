@@ -158,7 +158,7 @@ private:
   /** @defgroup LogicData Game logic related data members.
    * @{
    */
-  constexpr static int particleSize = 8;
+  constexpr static int particleSize = 7;
   constexpr static int particleSystemSize = 1000;
 
   GLfloat m_position;  //!< Last received position value of user's motion gesture.

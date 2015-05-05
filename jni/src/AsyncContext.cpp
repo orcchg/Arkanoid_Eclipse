@@ -76,15 +76,13 @@ AsyncContext::AsyncContext(JavaVM* jvm)
     // Lifetime of particle
     m_particle_buffer[i * particleSize + 0] = m_particle_distribution(m_generator);
     // Start position of particle
+    m_particle_buffer[i * particleSize + 4] = m_particle_distribution(m_generator) * 0.25f - 0.125f;
     m_particle_buffer[i * particleSize + 5] = m_particle_distribution(m_generator) * 0.25f - 0.125f;
-    m_particle_buffer[i * particleSize + 6] = m_particle_distribution(m_generator) * 0.25f - 0.125f;
-    m_particle_buffer[i * particleSize + 7] = 0.0f;
-    m_particle_buffer[i * particleSize + 8] = 1.0f;
+    m_particle_buffer[i * particleSize + 6] = 0.0f;
     // End position of particle
     m_particle_buffer[i * particleSize + 1] = m_particle_distribution(m_generator) * 2.0f - 1.0f;
     m_particle_buffer[i * particleSize + 2] = m_particle_distribution(m_generator) * 2.0f - 1.0f;
     m_particle_buffer[i * particleSize + 3] = 0.0f;
-    m_particle_buffer[i * particleSize + 4] = 1.0f;
   }
   DBG("exit AsyncContext ctor");
 }
@@ -526,8 +524,8 @@ void AsyncContext::render() {
 #endif
     drawBite();
     drawBall();
-//    drawExplosion(0.f, 0.f, util::TITAN);
-    drawRectangle();
+    drawExplosion(0.f, 0.f, util::TITAN);
+//    drawRectangle();
 
     eglSwapInterval(m_egl_display, 0);
     eglSwapBuffers(m_egl_display, m_egl_surface);
@@ -630,6 +628,8 @@ void AsyncContext::drawBall() {
 }
 
 void AsyncContext::drawExplosion(GLfloat x, GLfloat y, const util::BGRA<GLfloat>& bgra) {
+  m_explosion_shader->useProgram();
+
   if (m_last_time == 0) {
     m_last_time = clock();
   }
@@ -641,13 +641,13 @@ void AsyncContext::drawExplosion(GLfloat x, GLfloat y, const util::BGRA<GLfloat>
     m_particle_time = 0.0f;
   }
 
-  GLint u_time = glGetUniformLocation(m_level_shader->getProgram(), "u_time");
-  GLint u_centerPosition = glGetUniformLocation(m_level_shader->getProgram(), "u_centerPosition");
-  GLint u_color = glGetUniformLocation(m_level_shader->getProgram(), "u_color");
+  GLint u_time = glGetUniformLocation(m_explosion_shader->getProgram(), "u_time");
+  GLint u_centerPosition = glGetUniformLocation(m_explosion_shader->getProgram(), "u_centerPosition");
+  GLint u_color = glGetUniformLocation(m_explosion_shader->getProgram(), "u_color");
 
-  GLfloat* coord = new GLfloat[4]{x, y, 0.0f, 1.0f};
+  GLfloat* coord = new GLfloat[3]{x, y, 0.0f};
   GLfloat* color = new GLfloat[4]{bgra.b, bgra.g, bgra.r, 0.5f};
-  glUniform4fv(u_centerPosition, 1, &coord[0]);
+  glUniform3fv(u_centerPosition, 1, &coord[0]);
   glUniform4fv(u_color, 1, &color[0]);
   glUniform1f(u_time, m_particle_time);
 
@@ -655,23 +655,28 @@ void AsyncContext::drawExplosion(GLfloat x, GLfloat y, const util::BGRA<GLfloat>
   GLint a_startPosition = glGetAttribLocation(m_explosion_shader->getProgram(), "a_startPosition");
   GLint a_endPosition = glGetAttribLocation(m_explosion_shader->getProgram(), "a_endPosition");
 
-  m_explosion_shader->useProgram();
+  glVertexAttribPointer(a_lifetime, 1, GL_FLOAT, GL_FALSE, particleSize * 4, &m_particle_buffer[0]);
+  glVertexAttribPointer(a_startPosition, 3, GL_FLOAT, GL_FALSE, particleSize * 4, &m_particle_buffer[4]);
+  glVertexAttribPointer(a_endPosition, 3, GL_FLOAT, GL_FALSE, particleSize * 4, &m_particle_buffer[1]);
 
-  glVertexAttribPointer(a_lifetime, 1, GL_FLOAT, GL_FALSE, particleSize * sizeof(GLfloat), &m_particle_buffer[0]);
-  glVertexAttribPointer(a_startPosition, 4, GL_FLOAT, GL_FALSE, particleSize * sizeof(GLfloat), &m_particle_buffer[5]);
-  glVertexAttribPointer(a_endPosition, 4, GL_FLOAT, GL_FALSE, particleSize * sizeof(GLfloat), &m_particle_buffer[1]);
+//  for (int i = 0; i < particleSystemSize; ++i) {
+//    if (m_particle_time <= m_particle_buffer[i * particleSize]) {
+//      ERR("YES: %lf %lf", m_particle_time, m_particle_buffer[i * particleSize]);
+//    }
+//  }
+
+//  glEnable(GL_TEXTURE);
+//  glEnable(GL_TEXTURE_2D);
+//  glEnable(GL_BLEND);
+//  glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+
+  m_resources->getTexture("smoke.png")->apply();
+  GLint sampler = glGetUniformLocation(m_explosion_shader->getProgram(), "s_texture");
+  glUniform1i(sampler, 0);
 
   glEnableVertexAttribArray(a_lifetime);
   glEnableVertexAttribArray(a_startPosition);
   glEnableVertexAttribArray(a_endPosition);
-
-  glEnable(GL_BLEND);
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-
-  m_resources->getTexture("smoke.png")->apply();
-  glEnable(GL_TEXTURE_2D);
-  GLint sampler = glGetUniformLocation(m_explosion_shader->getProgram(), "s_texture");
-  glUniform1i(sampler, 0);
 
   glDrawArrays(GL_POINTS, 0, particleSystemSize);
 
@@ -689,9 +694,6 @@ void AsyncContext::drawExplosion(GLfloat x, GLfloat y, const util::BGRA<GLfloat>
 void AsyncContext::drawRectangle() {
   m_sample_shader->useProgram();
 
-//  GLuint a_position = m_ball_shader->getVertexAttribLocation();
-//  GLuint a_color = m_ball_shader->getColorAttribLocation();
-//  GLuint a_texCoord = m_ball_shader->getTexCoordAttribLocation();
   GLint a_position = glGetAttribLocation(m_sample_shader->getProgram(), "a_position");
   GLint a_color = glGetAttribLocation(m_sample_shader->getProgram(), "a_color");
   GLint a_texCoord = glGetAttribLocation(m_sample_shader->getProgram(), "a_texCoord");
@@ -707,6 +709,10 @@ void AsyncContext::drawRectangle() {
                                           1.f, 0.f, 0.f, 1.f,
                                           1.f, 0.f, 0.f, 1.f,
                                           1.f, 0.f, 0.f, 1.f};
+
+//  glEnable(GL_TEXTURE);
+//  glEnable(GL_BLEND);
+//  glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 
   m_resources->getTexture("smoke.png")->apply();
   GLint sampler = glGetUniformLocation(m_sample_shader->getProgram(), "s_texture");
