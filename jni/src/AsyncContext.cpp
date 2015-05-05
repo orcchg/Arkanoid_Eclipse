@@ -351,7 +351,7 @@ void AsyncContext::process_moveBall() {
 void AsyncContext::process_lostBall() {
   std::unique_lock<std::mutex> lock(m_lost_ball_mutex);
   moveBall(0.0f, 1000.f);
-  delay(70);
+  delay(50);
   initGame();
 }
 
@@ -366,6 +366,8 @@ void AsyncContext::process_blockImpact() {
 
 void AsyncContext::process_levelFinished() {
   std::unique_lock<std::mutex> lock(m_level_finished_mutex);
+  moveBall(0.0f, 1000.f);
+  delay(50);
   initGame();
 }
 
@@ -529,13 +531,6 @@ void AsyncContext::render() {
     glClear(GL_COLOR_BUFFER_BIT);
     drawBackground();
 
-    if (m_render_explosion) {
-      drawExplosion(
-          m_explosion_package.getX(),
-          m_explosion_package.getY(),
-          m_explosion_package.getColor());
-    }
-
 #if USE_TEXTURE
     for (int r = 0; r < m_level->numRows(); ++r) {
       for (int c = 0; c < m_level->numCols(); ++c) {
@@ -543,10 +538,27 @@ void AsyncContext::render() {
       }
     }
 #else
-    drawLevel();
+//    drawLevel();
+    for (int r = 0; r < m_level->numRows(); ++r) {
+      for (int c = 0; c < m_level->numCols(); ++c) {
+        if (m_level->getBlock(r, c) == Block::NONE) {
+          glEnable(GL_BLEND);
+        } else {
+          glDisable(GL_BLEND);
+        }
+        drawBlock(r, c);
+      }
+    }
 #endif
     drawBite();
     drawBall();
+
+    if (m_render_explosion) {
+      drawExplosion(
+          m_explosion_package.getX(),
+          m_explosion_package.getY(),
+          m_explosion_package.getColor());
+    }
 
     eglSwapInterval(m_egl_display, 0);
     eglSwapBuffers(m_egl_display, m_egl_surface);
