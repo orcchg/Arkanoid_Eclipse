@@ -20,10 +20,10 @@ public class Levels {
                                                    "          ",
                                                    "          ",
                                                    "          ",
-                                                   "  MSSSSS  ",
-                                                   "  SSSSSS  ",
-                                                   "  SSSSSS  ",
-                                                   "  MSEMSS  "};
+                                                   "  SSSSSN  ",
+                                                   "  SNSSSS  ",
+                                                   "  SSSSNS  ",
+                                                   "  NSDSSE  "};
   
   private static final String[] L1 = new String[]{"          ",
                                                   "          ",

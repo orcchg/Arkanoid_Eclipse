@@ -175,6 +175,7 @@ private:
   GLfloat* m_bite_color_buffer;   //!< Re-usable buffer for colors of bite.
   GLfloat* m_ball_vertex_buffer;  //!< Re-usable buffer for vertices of ball.
   GLfloat* m_ball_color_buffer;   //!< Re-usable buffer for color of ball.
+  GLfloat* m_bg_vertex_buffer;  //!< Re-usable buffer for background vertices.
   GLfloat* m_particle_buffer;  //!< Re-usable buffer for particle system.
   GLushort* m_rectangle_index_buffer;  //!< Re-usable buffer for indices of rectangle.
   GLushort* m_octagon_index_buffer;  //!< Re-usable buffer for indices of octagon.
@@ -332,11 +333,13 @@ private:
   void drawBlock(int row, int col);
   /// @brief Draws bite at it's current position.m_load_resources_received
   void drawBite();
-  /// @brief Draw ball at it's current position.
+  /// @brief Draws ball at it's current position.
   void drawBall();
-  /// @brief Draw particle system explosion.
+  /// @brief Draws particle system explosion.
   void drawExplosion(GLfloat x, GLfloat y, const util::BGRA<GLfloat>& bgra);
-  /// @brief Draw sample rectangle.
+  /// @brief Draws textured background.
+  void drawBackground();
+  /// @brief Draws sample rectangle.
   void drawRectangle();
   /** @} */  // end of Drawings group
 };
