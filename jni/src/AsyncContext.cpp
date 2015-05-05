@@ -527,6 +527,7 @@ void AsyncContext::render() {
     drawBite();
     drawBall();
 //    drawExplosion(0.f, 0.f, util::TITAN);
+//    drawRectangle();
 
     eglSwapInterval(m_egl_display, 0);
     eglSwapBuffers(m_egl_display, m_egl_surface);
@@ -595,8 +596,8 @@ void AsyncContext::drawBlock(int row, int col) {
 void AsyncContext::drawBite() {
   m_bite_shader->useProgram();
 
-  GLuint a_position = glGetAttribLocation(m_level_shader->getProgram(), "a_position");
-  GLuint a_color = glGetAttribLocation(m_level_shader->getProgram(), "a_color");
+  GLuint a_position = glGetAttribLocation(m_bite_shader->getProgram(), "a_position");
+  GLuint a_color = glGetAttribLocation(m_bite_shader->getProgram(), "a_color");
 
   glVertexAttribPointer(a_position, 4, GL_FLOAT, GL_FALSE, 0, &m_bite_vertex_buffer[0]);
   glVertexAttribPointer(a_color, 4, GL_FLOAT, GL_FALSE, 0, &m_bite_color_buffer[0]);
@@ -613,8 +614,8 @@ void AsyncContext::drawBite() {
 void AsyncContext::drawBall() {
   m_ball_shader->useProgram();
 
-  GLuint a_position = glGetAttribLocation(m_level_shader->getProgram(), "a_position");
-  GLuint a_color = glGetAttribLocation(m_level_shader->getProgram(), "a_color");
+  GLuint a_position = glGetAttribLocation(m_ball_shader->getProgram(), "a_position");
+  GLuint a_color = glGetAttribLocation(m_ball_shader->getProgram(), "a_color");
 
   glVertexAttribPointer(a_position, 4, GL_FLOAT, GL_FALSE, 0, &m_ball_vertex_buffer[0]);
   glVertexAttribPointer(a_color, 4, GL_FLOAT, GL_FALSE, 0, &m_ball_color_buffer[0]);
@@ -686,7 +687,7 @@ void AsyncContext::drawExplosion(GLfloat x, GLfloat y, const util::BGRA<GLfloat>
 // ----------------------------------------------------------------------------
 //https://github.com/danginsburg/opengles-book-samples/blob/master/Android/Ch13_ParticleSystem/src/com/openglesbook/particlesystem/ParticleSystemRenderer.java
 void AsyncContext::drawRectangle() {
-//  m_ball_shader->useProgram();
+  m_level_shader->useProgram();
 
 //  GLuint a_position = m_ball_shader->getVertexAttribLocation();
 //  GLuint a_color = m_ball_shader->getColorAttribLocation();
@@ -707,7 +708,7 @@ void AsyncContext::drawRectangle() {
                                           1.f, 0.f, 0.f, 1.f,
                                           1.f, 0.f, 0.f, 1.f};
 
-  m_resources->getTexture("brick_tex.png")->apply();
+  m_resources->getTexture("smoke.png")->apply();
   GLint sampler = glGetUniformLocation(m_level_shader->getProgram(), "s_texture");
   glUniform1i(sampler, 0);
 
@@ -715,11 +716,9 @@ void AsyncContext::drawRectangle() {
   glEnableVertexAttribArray(a_texCoord);
 //  glEnableVertexAttribArray(a_color);
 
-  m_level_shader->useProgram();
-
   glVertexAttribPointer(a_position, 4, GL_FLOAT, GL_FALSE, 0, &vertex_buffer[0]);
   glVertexAttribPointer(a_texCoord, 2, GL_FLOAT, GL_FALSE, 0, &texCoord_buffer[0]);
-//  glVertexAttribPointer(a_color, 4, GL_FLOAT, GL_FALSE, 0, &color_buffer[0]);
+  glVertexAttribPointer(a_color, 4, GL_FLOAT, GL_FALSE, 0, &color_buffer[0]);
 
 
 
@@ -728,7 +727,7 @@ void AsyncContext::drawRectangle() {
 
   glDisableVertexAttribArray(a_position);
   glDisableVertexAttribArray(a_texCoord);
-//  glDisableVertexAttribArray(a_color);
+  glDisableVertexAttribArray(a_color);
 
   delete [] vertex_buffer;
   delete [] texCoord_buffer;
