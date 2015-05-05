@@ -547,7 +547,7 @@ void AsyncContext::render() {
     drawBall();
 
     if (m_render_explosion) {
-//      drawExplosion(0.f,0.f, util::ZYGOTE);
+//      drawExplosion(0.f,0.f, util::ZYGOTE);  working well
 //      while (!m_explosion_queue.empty()) {
         auto& package = m_explosion_queue.front();
         drawExplosion(package.getX(), package.getY(), package.getColor());

@@ -189,7 +189,7 @@ private:
   std::uniform_real_distribution<float> m_particle_distribution;
   clock_t m_last_time;
   float m_particle_time;
-  ExplosionPackage m_explosion_package;
+  std::queue<ExplosionPackage> m_explosion_queue;
   bool m_render_explosion;
   /** @} */  // end of LogicData group
 
