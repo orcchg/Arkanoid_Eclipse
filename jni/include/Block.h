@@ -63,6 +63,7 @@ public:
   static int getCardinalityCost(Block block);
   static int getBlockScore(Block block);
   static util::BGRA<GLfloat> getBlockColor(Block block);
+  static util::BGRA<GLfloat> getBlockEdgeColor(Block block);
 };
 
 class BlockGenerator {

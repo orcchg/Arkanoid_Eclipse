@@ -322,9 +322,215 @@ int BlockUtils::getBlockScore(Block block) {
 }
 
 util::BGRA<GLfloat> BlockUtils::getBlockColor(Block block) {
+  util::BGRA<GLfloat> bgra;
   switch (block) {
-    //
+    default:
+    case Block::NONE:
+      bgra = util::BGRA<GLfloat>(util::TRANSPARENT);
+      break;
+    case Block::ALUMINIUM:
+      bgra = util::BGRA<GLfloat>(util::ALUMINIUM);
+      break;
+    case Block::BRICK:
+      bgra = util::BGRA<GLfloat>(util::BRICK);
+      break;
+    case Block::CLAY:
+      bgra = util::BGRA<GLfloat>(util::CLAY);
+      break;
+    case Block::DESTROY:
+      bgra = util::BGRA<GLfloat>(util::DESTROY);
+      break;
+    case Block::ELECTRO:
+      bgra = util::BGRA<GLfloat>(util::ELECTRO);
+      break;
+    case Block::FOG:
+      bgra = util::BGRA<GLfloat>(util::FOG);
+      break;
+    case Block::GLASS:
+    case Block::GLASS_1:
+      bgra = util::BGRA<GLfloat>(util::GLASS);
+      break;
+    case Block::HYPER:
+      bgra = util::BGRA<GLfloat>(util::HYPER);
+      break;
+    case Block::IRON:
+      bgra = util::BGRA<GLfloat>(util::IRON);
+      break;
+    case Block::JELLY:
+      bgra = util::BGRA<GLfloat>(util::JELLY);
+      break;
+    case Block::KNOCK_VERTICAL:
+    case Block::KNOCK_HORIZONTAL:
+      bgra = util::BGRA<GLfloat>(util::KNOCK);
+      break;
+    case Block::STEEL:
+      bgra = util::BGRA<GLfloat>(util::STEEL);
+      break;
+    case Block::MAGIC:
+      bgra = util::BGRA<GLfloat>(util::MAGIC);
+      break;
+    case Block::MIDAS:
+      bgra = util::BGRA<GLfloat>(util::MIDAS);
+      break;
+    case Block::NETWORK:
+    case Block::NETWORK_1:
+      bgra = util::BGRA<GLfloat>(util::NETWORK);
+      break;
+    case Block::ORIGIN:
+      bgra = util::BGRA<GLfloat>(util::ORIGIN);
+      break;
+    case Block::PLUMBUM:
+      bgra = util::BGRA<GLfloat>(util::PLUMBUM);
+      break;
+    case Block::QUICK:
+    case Block::QUICK_1:
+    case Block::QUICK_2:
+      bgra = util::BGRA<GLfloat>(util::QUICK);
+      break;
+    case Block::ROLLING:
+      bgra = util::BGRA<GLfloat>(util::ROLLING);
+      break;
+    case Block::SIMPLE:
+      bgra = util::BGRA<GLfloat>(util::SIMPLE);
+      break;
+    case Block::TITAN:
+      bgra = util::BGRA<GLfloat>(util::TITAN);
+      break;
+    case Block::ULTRA:
+    case Block::ULTRA_1:
+    case Block::ULTRA_2:
+    case Block::ULTRA_3:
+    case Block::ULTRA_4:
+      bgra = util::BGRA<GLfloat>(util::ULTRA);
+      break;
+    case Block::INVUL:
+      bgra = util::BGRA<GLfloat>(util::INVUL);
+      break;
+    case Block::WATER:
+      bgra = util::BGRA<GLfloat>(util::WATER);
+      break;
+    case Block::EXTRA:
+      bgra = util::BGRA<GLfloat>(util::EXTRA);
+      break;
+    case Block::YOGURT:
+    case Block::YOGURT_1:
+      bgra = util::BGRA<GLfloat>(util::YOGURT);
+      break;
+    case Block::ZYGOTE:
+    case Block::ZYGOTE_1:
+      bgra = util::BGRA<GLfloat>(util::ZYGOTE);
+      break;
+    case Block::ZYGOTE_SPAWN:
+      bgra = util::BGRA<GLfloat>(util::ZYGOTE_SPAWN);
+      break;
   }
+  return bgra;
+}
+
+util::BGRA<GLfloat> BlockUtils::getBlockEdgeColor(Block block) {
+  util::BGRA<GLfloat> bgra_edge;
+  switch (block) {
+    default:
+    case Block::NONE:
+      bgra_edge = util::BGRA<GLfloat>(util::TRANSPARENT);
+      break;
+    case Block::ALUMINIUM:
+      bgra_edge = util::BGRA<GLfloat>(util::ALUMINIUM_EDGE);
+      break;
+    case Block::BRICK:
+      bgra_edge = util::BGRA<GLfloat>(util::BRICK_EDGE);
+      break;
+    case Block::CLAY:
+      bgra_edge = util::BGRA<GLfloat>(util::CLAY_EDGE);
+      break;
+    case Block::DESTROY:
+      bgra_edge = util::BGRA<GLfloat>(util::DESTROY_EDGE);
+      break;
+    case Block::ELECTRO:
+      bgra_edge = util::BGRA<GLfloat>(util::ELECTRO_EDGE);
+      break;
+    case Block::FOG:
+      bgra_edge = util::BGRA<GLfloat>(util::FOG_EDGE);
+      break;
+    case Block::GLASS:
+    case Block::GLASS_1:
+      bgra_edge = util::BGRA<GLfloat>(util::GLASS_EDGE);
+      break;
+    case Block::HYPER:
+      bgra_edge = util::BGRA<GLfloat>(util::HYPER_EDGE);
+      break;
+    case Block::IRON:
+      bgra_edge = util::BGRA<GLfloat>(util::IRON_EDGE);
+      break;
+    case Block::JELLY:
+      bgra_edge = util::BGRA<GLfloat>(util::JELLY_EDGE);
+      break;
+    case Block::KNOCK_VERTICAL:
+    case Block::KNOCK_HORIZONTAL:
+      bgra_edge = util::BGRA<GLfloat>(util::KNOCK_EDGE);
+      break;
+    case Block::STEEL:
+      bgra_edge = util::BGRA<GLfloat>(util::STEEL_EDGE);
+      break;
+    case Block::MAGIC:
+      bgra_edge = util::BGRA<GLfloat>(util::MAGIC_EDGE);
+      break;
+    case Block::MIDAS:
+      bgra_edge = util::BGRA<GLfloat>(util::MIDAS_EDGE);
+      break;
+    case Block::NETWORK:
+    case Block::NETWORK_1:
+      bgra_edge = util::BGRA<GLfloat>(util::NETWORK_EDGE);
+      break;
+    case Block::ORIGIN:
+      bgra_edge = util::BGRA<GLfloat>(util::ORIGIN_EDGE);
+      break;
+    case Block::PLUMBUM:
+      bgra_edge = util::BGRA<GLfloat>(util::PLUMBUM_EDGE);
+      break;
+    case Block::QUICK:
+    case Block::QUICK_1:
+    case Block::QUICK_2:
+      bgra_edge = util::BGRA<GLfloat>(util::QUICK_EDGE);
+      break;
+    case Block::ROLLING:
+      bgra_edge = util::BGRA<GLfloat>(util::ROLLING_EDGE);
+      break;
+    case Block::SIMPLE:
+      bgra_edge = util::BGRA<GLfloat>(util::SIMPLE_EDGE);
+      break;
+    case Block::TITAN:
+      bgra_edge = util::BGRA<GLfloat>(util::TITAN_EDGE);
+      break;
+    case Block::ULTRA:
+    case Block::ULTRA_1:
+    case Block::ULTRA_2:
+    case Block::ULTRA_3:
+    case Block::ULTRA_4:
+      bgra_edge = util::BGRA<GLfloat>(util::ULTRA_EDGE);
+      break;
+    case Block::INVUL:
+      bgra_edge = util::BGRA<GLfloat>(util::INVUL_EDGE);
+      break;
+    case Block::WATER:
+      bgra_edge = util::BGRA<GLfloat>(util::WATER_EDGE);
+      break;
+    case Block::EXTRA:
+      bgra_edge = util::BGRA<GLfloat>(util::EXTRA_EDGE);
+      break;
+    case Block::YOGURT:
+    case Block::YOGURT_1:
+      bgra_edge = util::BGRA<GLfloat>(util::YOGURT_EDGE);
+      break;
+    case Block::ZYGOTE:
+    case Block::ZYGOTE_1:
+      bgra_edge = util::BGRA<GLfloat>(util::ZYGOTE_EDGE);
+      break;
+    case Block::ZYGOTE_SPAWN:
+      bgra_edge = util::BGRA<GLfloat>(util::ZYGOTE_SPAWN_EDGE);
+      break;
+  }
+  return bgra_edge;
 }
 
 BlockGenerator::BlockGenerator()
