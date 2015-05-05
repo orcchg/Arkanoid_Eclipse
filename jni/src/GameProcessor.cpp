@@ -469,7 +469,7 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
         return false;
       // --------------------
       case Block::DESTROY:
-        explodeBlock(row, col, BlockUtils::getBlockColor(Block::DESTROY));
+        explodeBlock(row, col, BlockUtils::getBlockEdgeColor(Block::DESTROY));
         m_is_ball_death = true;
         break;
       case Block::ULTRA_1:
