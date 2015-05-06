@@ -19,6 +19,14 @@ struct BallParams {
   constexpr static float ballSpeed = 0.002f;   //!< Initial speed at game start
 };
 
+struct PrizeParams {
+  constexpr static float prizeSpeed = 0.002f;
+  constexpr static float prizeWidth = 0.1f;
+  constexpr static float prizeHeight = 0.1f;
+  constexpr static float prizeHalfWidth = 0.5f * prizeWidth;
+  constexpr static float prizeHalfHeight = 0.5f * prizeHeight;
+};
+
 struct ProcessorParams {
   constexpr static int milliDelay = 1;  //!< Delay between sequential frames.
 };

@@ -15,6 +15,7 @@
 #include "ExplosionPackage.h"
 #include "Level.h"
 #include "LevelDimens.h"
+#include "PrizePackage.h"
 #include "RowCol.h"
 #include "utils.h"
 
@@ -105,6 +106,8 @@ public:
   Event<bool> level_finished_event;
   /// @brief Notifies particle system has exploded.
   Event<ExplosionPackage> explosion_event;
+  /// @brief Notifies prize has been generated.
+  Event<PrizePackage> prize_event;
   /** @} */  // end of Event group
 
 // ----------------------------------------------

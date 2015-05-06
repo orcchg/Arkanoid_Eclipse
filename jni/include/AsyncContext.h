@@ -21,6 +21,7 @@
 #include "Level.h"
 #include "LevelDimens.h"
 #include "Prize.h"
+#include "PrizePackage.h"
 #include "Resources.h"
 #include "rgbstruct.h"
 #include "RowCol.h"
@@ -67,6 +68,8 @@ public:
   void callback_levelFinished(bool is_finished);
   /// @brief Called when requested to draw particle system explosion.
   void callback_explosion(ExplosionPackage package);
+  /// @brief Called when prize has been generated.
+  void callback_prizeReceived(PrizePackage package);
   /** @} */  // end of Callbacks group
 
   /** @defgroup GameStat Get game statistics
@@ -122,6 +125,8 @@ public:
   EventListener<bool> level_finished_listener;
   /// @brief Listens for event which occurs when particle system explosion has been requested.
   EventListener<ExplosionPackage> explosion_listener;
+  /// @brief Listens for event which occurs when prize has been generated.
+  EventListener<PrizePackage> prize_listener;
 
   /// @brief Notifies for measured aspect ratio.
   Event<float> aspect_ratio_event;
@@ -177,7 +182,6 @@ private:
   GLfloat* m_ball_vertex_buffer;  //!< Re-usable buffer for vertices of ball.
   GLfloat* m_ball_color_buffer;   //!< Re-usable buffer for color of ball.
   GLfloat* m_bg_vertex_buffer;  //!< Re-usable buffer for background vertices.
-  GLfloat* m_prize_vertex_buffer;  //!< Re-usable buffer for prize vertices.
   GLfloat* m_particle_buffer;  //!< Re-usable buffer for particle system.
   GLushort* m_rectangle_index_buffer;  //!< Re-usable buffer for indices of rectangle.
   GLushort* m_octagon_index_buffer;  //!< Re-usable buffer for indices of octagon.
@@ -192,8 +196,9 @@ private:
   std::uniform_real_distribution<float> m_particle_distribution;
   clock_t m_last_time;
   float m_particle_time;
-  std::vector<ExplosionPackage> m_explosion_packages;
   bool m_render_explosion;
+  std::vector<ExplosionPackage> m_explosion_packages;
+  std::vector<PrizePackage> m_prize_packages;
   /** @} */  // end of LogicData group
 
   /** @defgroup Shaders Shaders for rendering game components.
@@ -220,6 +225,7 @@ private:
   std::mutex m_block_impact_mutex;  //!< Sentinel for block impact event.
   std::mutex m_level_finished_mutex;  //!< Sentinel for level has been successfully finished.
   std::mutex m_explosion_mutex;  //!< Sentinel for particle system explosion.
+  std::mutex m_prize_mutex;  //!< Sentinel for prize receiving.
   std::atomic_bool m_surface_received;  //!< Window has been set.
   std::atomic_bool m_load_resources_received;  //!< Load resources requested.
   std::atomic_bool m_shift_gamepad_received;  //!< Shift gesture has occurred.
@@ -230,6 +236,7 @@ private:
   std::atomic_bool m_block_impact_received;  //!< Block impact has been received.
   std::atomic_bool m_level_finished_received;  //!< Level has been successfully finished.
   std::atomic_bool m_explosion_received;  //!< Request for explosion received.
+  std::atomic_bool m_prize_received;  //!< Prize has been received.
   /** @} */  // end of Mutex group
 
   /** @defgroup SafetyFlag Logic-safety variables
@@ -287,6 +294,8 @@ private:
   void process_levelFinished();
   /// @brief Performs visual particle system explosion.
   void process_explosion();
+  /// @brief Performs visual prize generation.
+  void process_prizeReceived();
   /** @} */  // end of Processors group
 
 private:

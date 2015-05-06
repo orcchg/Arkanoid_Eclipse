@@ -32,7 +32,6 @@ AsyncContext::AsyncContext(JavaVM* jvm)
   , m_ball_vertex_buffer(new GLfloat[36])
   , m_ball_color_buffer(new GLfloat[36])
   , m_bg_vertex_buffer(new GLfloat[16]{-1.0f, -1.0f, 0.0f, 1.0f, 1.0f, -1.0f, 0.0f, 1.0f, -1.0f, 1.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f})
-  , m_prize_vertex_buffer(new GLfloat[16])
   , m_particle_buffer(nullptr)
   , m_rectangle_index_buffer(new GLushort[6]{0, 3, 2, 0, 1, 3})
   , m_octagon_index_buffer(new GLushort[24]{0, 1, 2, 0, 2, 3, 0, 3, 4, 0, 4, 5, 0, 5, 6, 0, 6, 7, 0, 7, 8, 0, 8, 1})
@@ -50,8 +49,9 @@ AsyncContext::AsyncContext(JavaVM* jvm)
   , m_particle_distribution(0.0f, 1.0f)
   , m_last_time(0)
   , m_particle_time(0.0f)
+  , m_render_explosion(false)
   , m_explosion_packages()
-  , m_render_explosion(false) {
+  , m_prize_packages() {
 
   DBG("enter AsyncContext ctor");
   m_surface_received.store(false);
@@ -64,6 +64,7 @@ AsyncContext::AsyncContext(JavaVM* jvm)
   m_block_impact_received.store(false);
   m_level_finished_received.store(false);
   m_explosion_received.store(false);
+  m_prize_received.store(false);
   m_window_set = false;
   m_resources = nullptr;
 
@@ -91,7 +92,6 @@ AsyncContext::~AsyncContext() {
   delete [] m_ball_vertex_buffer; m_ball_vertex_buffer = nullptr;
   delete [] m_ball_color_buffer; m_ball_color_buffer = nullptr;
   delete [] m_bg_vertex_buffer; m_bg_vertex_buffer = nullptr;
-  delete [] m_prize_vertex_buffer; m_prize_vertex_buffer = nullptr;
   delete [] m_particle_buffer; m_particle_buffer = nullptr;
   delete [] m_rectangle_index_buffer; m_rectangle_index_buffer = nullptr;
   delete [] m_octagon_index_buffer; m_octagon_index_buffer = nullptr;
@@ -174,6 +174,13 @@ void AsyncContext::callback_explosion(ExplosionPackage package) {
   interrupt();
 }
 
+void AsyncContext::callback_prizeReceived(PrizePackage package) {
+  std::unique_lock<std::mutex> lock(m_prize_mutex);
+  m_prize_received.store(true);
+  m_prize_packages.push_back(package);
+  interrupt();
+}
+
 // ----------------------------------------------
 Level::Ptr AsyncContext::getCurrentLevelState() {
   std::unique_lock<std::mutex> lock(m_load_level_mutex);
@@ -221,7 +228,8 @@ bool AsyncContext::checkForWakeUp() {
       m_lost_ball_received.load() ||
       m_block_impact_received.load() ||
       m_level_finished_received.load() ||
-      m_explosion_received.load();
+      m_explosion_received.load() ||
+      m_prize_received.load();
 }
 
 void AsyncContext::eventHandler() {
@@ -242,6 +250,10 @@ void AsyncContext::eventHandler() {
     if (m_explosion_received.load()) {
       m_explosion_received.store(false);
       process_explosion();
+    }
+    if (m_prize_received.load()) {
+      m_prize_received.store(false);
+      process_prizeReceived();
     }
     if (m_block_impact_received.load()) {
       m_block_impact_received.store(false);
@@ -379,6 +391,11 @@ void AsyncContext::process_explosion() {
   std::unique_lock<std::mutex> lock(m_explosion_mutex);
   m_last_time = 0;
   m_render_explosion = true;
+}
+
+void AsyncContext::process_prizeReceived() {
+  std::unique_lock<std::mutex> lock(m_prize_mutex);
+  // no-op
 }
 
 /* LogicFunc group */
@@ -565,6 +582,10 @@ void AsyncContext::render() {
             item.getColor(),
             item.getKind());
       }
+    }
+
+    for (auto& item : m_prize_packages) {
+      drawPrize(item.getX(), item.getY(), item.getPrize());
     }
 
     eglSwapInterval(m_egl_display, 0);
@@ -775,30 +796,41 @@ void AsyncContext::drawBackground() {
 }
 
 void AsyncContext::drawPrize(GLfloat x, GLfloat y, Prize prize) {
-//  m_sample_shader->useProgram();
-//
-//  GLint a_position = glGetAttribLocation(m_sample_shader->getProgram(), "a_position");
-//  GLint a_texCoord = glGetAttribLocation(m_sample_shader->getProgram(), "a_texCoord");
-//
-//  glVertexAttribPointer(a_position, 4, GL_FLOAT, GL_FALSE, 0, &m_prize_vertex_buffer[0]);
-//  glVertexAttribPointer(a_texCoord, 2, GL_FLOAT, GL_FALSE, 0, &m_rectangle_texCoord_buffer[0]);
-//
-////  TODO: get texture for specified prize type
-//  m_resources->getTexture("prize_explode.png")->apply();
-//  GLint sampler = glGetUniformLocation(m_sample_shader->getProgram(), "s_texture");
-//  glUniform1i(sampler, 0);
-//
-//  glEnableVertexAttribArray(a_position);
-//  glEnableVertexAttribArray(a_texCoord);
-//
-//  glEnable(GL_TEXTURE_2D);
-//  glEnable(GL_BLEND);
-//  glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-//
-//  glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-//
-//  glDisableVertexAttribArray(a_position);
-//  glDisableVertexAttribArray(a_texCoord);
+  m_sample_shader->useProgram();
+
+  GLint a_position = glGetAttribLocation(m_sample_shader->getProgram(), "a_position");
+  GLint a_texCoord = glGetAttribLocation(m_sample_shader->getProgram(), "a_texCoord");
+
+  GLfloat* prize_vertices = new GLfloat[16];
+  util::setRectangleVertices(
+      prize_vertices,
+      PrizeParams::prizeWidth,
+      PrizeParams::prizeHeight * m_aspect,
+      x - PrizeParams::prizeHalfWidth,
+      y - PrizeParams::prizeHalfHeight,
+      1, 1);
+
+  glVertexAttribPointer(a_position, 4, GL_FLOAT, GL_FALSE, 0, &prize_vertices[0]);
+  glVertexAttribPointer(a_texCoord, 2, GL_FLOAT, GL_FALSE, 0, &m_rectangle_texCoord_buffer[0]);
+
+//  TODO: get texture for specified prize type
+  m_resources->getTexture("pr_candy.png")->apply();
+  GLint sampler = glGetUniformLocation(m_sample_shader->getProgram(), "s_texture");
+  glUniform1i(sampler, 0);
+
+  glEnableVertexAttribArray(a_position);
+  glEnableVertexAttribArray(a_texCoord);
+
+  glEnable(GL_TEXTURE_2D);
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+
+  glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+  delete [] prize_vertices;
+
+  glDisableVertexAttribArray(a_position);
+  glDisableVertexAttribArray(a_texCoord);
 }
 
 }  // namespace game
