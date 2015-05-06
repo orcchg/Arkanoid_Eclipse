@@ -699,6 +699,7 @@ void AsyncContext::drawExplosion(GLfloat x, GLfloat y, const util::BGRA<GLfloat>
   if (m_particle_time >= 1.0f) {
     m_particle_time = 0.0f;
     m_render_explosion = false;
+    return;
   }
 
   GLint u_time = glGetUniformLocation(m_explosion_shader->getProgram(), "u_time");
