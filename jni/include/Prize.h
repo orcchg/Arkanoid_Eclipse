@@ -7,7 +7,7 @@ enum class Prize : int {
   NONE = 0,
   BLOCK = 1,      // produces BRICK block (0 cardinality)
   CLIMB = 2,      // [ t ] climbs up the bite
-  DEATH = 3,      // lose ball
+  DESTROY = 3,      // lose ball
   DRAGON = 4,     // [ t ] summons dragon
   EASY = 5,       // [ 1 ] for all ordinary / action blocks
   EASY_T = 6,     // [ t ] same

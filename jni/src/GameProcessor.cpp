@@ -5,6 +5,7 @@
 #include "Exceptions.h"
 #include "GameProcessor.h"
 #include "Params.h"
+#include "Prize.h"
 
 namespace game {
 

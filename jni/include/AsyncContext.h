@@ -20,6 +20,7 @@
 #include "ExplosionPackage.h"
 #include "Level.h"
 #include "LevelDimens.h"
+#include "Prize.h"
 #include "Resources.h"
 #include "rgbstruct.h"
 #include "RowCol.h"
@@ -176,6 +177,7 @@ private:
   GLfloat* m_ball_vertex_buffer;  //!< Re-usable buffer for vertices of ball.
   GLfloat* m_ball_color_buffer;   //!< Re-usable buffer for color of ball.
   GLfloat* m_bg_vertex_buffer;  //!< Re-usable buffer for background vertices.
+  GLfloat* m_prize_vertex_buffer;  //!< Re-usable buffer for prize vertices.
   GLfloat* m_particle_buffer;  //!< Re-usable buffer for particle system.
   GLushort* m_rectangle_index_buffer;  //!< Re-usable buffer for indices of rectangle.
   GLushort* m_octagon_index_buffer;  //!< Re-usable buffer for indices of octagon.
@@ -190,7 +192,7 @@ private:
   std::uniform_real_distribution<float> m_particle_distribution;
   clock_t m_last_time;
   float m_particle_time;
-  ExplosionPackage m_explosion_package;
+  std::vector<ExplosionPackage> m_explosion_packages;
   bool m_render_explosion;
   /** @} */  // end of LogicData group
 
@@ -340,6 +342,8 @@ private:
   void drawExplosion(GLfloat x, GLfloat y, const util::BGRA<GLfloat>& bgra);
   /// @brief Draws textured background.
   void drawBackground();
+  /// @brief Draws prize of specified type at given location.
+  void drawPrize(GLfloat x, GLfloat y, Prize prize);
   /** @} */  // end of Drawings group
 };
 
