@@ -205,9 +205,6 @@ void Level::setBlockImpacted(int row, int col) {
       setBlock(row, col, Block::GLASS_1);
       break;
     // ----------------------
-    case Block::NETWORK:
-      setBlock(row, col, Block::NETWORK_1);
-      break;
     case Block::ZYGOTE:
       setBlock(row, col, Block::ZYGOTE_1);
       break;
@@ -228,7 +225,7 @@ void Level::setBlockImpacted(int row, int col) {
     case Block::SIMPLE:
     case Block::WATER:
     // ----------------------
-    case Block::NETWORK_1:
+    case Block::NETWORK:
     case Block::QUICK_1:
     case Block::ULTRA_1:
     case Block::YOGURT:

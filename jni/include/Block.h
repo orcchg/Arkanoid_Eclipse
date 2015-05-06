@@ -31,7 +31,7 @@ enum class Block : int {
 
   /* Auxiliary blocks */
   GLASS_1 = 17,    //! '['
-  NETWORK_1 = 18,  //! ']'
+  NOT_USED = 18,  //! ']'
   QUICK_2 = 19, QUICK_1 = 20,  //! '{' '}'
   ULTRA_4 = 21, ULTRA_3 = 22, ULTRA_2 = 23, ULTRA_1 = 24,  //! '%' '^' '&' '*'
   YOGURT_1 = 25,  //! '('

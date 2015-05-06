@@ -93,7 +93,7 @@ Block BlockUtils::charToBlock(char ch) {
     case '[':
       return Block::GLASS_1;
     case ']':
-      return Block::NETWORK_1;
+      return Block::NOT_USED;
     case '{':
       return Block::QUICK_2;
     case '}':
@@ -181,7 +181,7 @@ char BlockUtils::blockToChar(Block block) {
     // ------------------------------------------
     case Block::GLASS_1:
       return '[';
-    case Block::NETWORK_1:
+    case Block::NOT_USED:
       return ']';
     case Block::QUICK_2:
       return '{';
@@ -220,7 +220,6 @@ int BlockUtils::getCardinalityCost(Block block) {
       return 3;
     case Block::BRICK:
     case Block::GLASS:
-    case Block::NETWORK:
     case Block::ZYGOTE:
     case Block::QUICK_2:
     case Block::ULTRA_2:
@@ -241,7 +240,7 @@ int BlockUtils::getCardinalityCost(Block block) {
     case Block::WATER:
     case Block::YOGURT:
     case Block::YOGURT_1:
-    case Block::NETWORK_1:
+    case Block::NETWORK:
     case Block::QUICK_1:
     case Block::ULTRA_1:
     case Block::ZYGOTE_1:
@@ -301,7 +300,6 @@ int BlockUtils::getBlockScore(Block block) {
     case Block::FOG:       score += 1;
       break;
     case Block::NETWORK:   score += 11;
-    case Block::NETWORK_1: score += 1;
     case Block::ELECTRO:   score += 9;
       break;
     case Block::HYPER:     score += 1;
@@ -373,7 +371,6 @@ util::BGRA<GLfloat> BlockUtils::getBlockColor(Block block) {
       bgra = util::BGRA<GLfloat>(util::MIDAS);
       break;
     case Block::NETWORK:
-    case Block::NETWORK_1:
       bgra = util::BGRA<GLfloat>(util::NETWORK);
       break;
     case Block::ORIGIN:
@@ -479,7 +476,6 @@ util::BGRA<GLfloat> BlockUtils::getBlockEdgeColor(Block block) {
       bgra_edge = util::BGRA<GLfloat>(util::MIDAS_EDGE);
       break;
     case Block::NETWORK:
-    case Block::NETWORK_1:
       bgra_edge = util::BGRA<GLfloat>(util::NETWORK_EDGE);
       break;
     case Block::ORIGIN:

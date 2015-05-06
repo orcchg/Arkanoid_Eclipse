@@ -519,10 +519,10 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
         }
         m_is_ball_death = true;
         break;
-      case Block::NETWORK_1:
+      case Block::NETWORK:
         external_collision = blockCollision(top_border, bottom_border, left_border, right_border, 100 /* elastic */);
         m_level->findBlocks(Block::NETWORK, &network_blocks);
-        explodeBlock(row, col, BlockUtils::getBlockColor(Block::NETWORK_1));
+        explodeBlock(row, col, BlockUtils::getBlockColor(Block::NETWORK));
         if (!network_blocks.empty()) {
           random_index = util::getRandomElement(network_blocks);
           shiftBallIntoBlock(network_blocks[random_index].row, network_blocks[random_index].col);
