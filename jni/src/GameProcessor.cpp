@@ -498,6 +498,7 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
           explodeBlock(row, col, BlockUtils::getBlockColor(Block::KNOCK_VERTICAL));
         }
         for (auto& item : affected_blocks) {
+          explodeBlock(item.row, item.col, BlockUtils::getBlockColor(Block::KNOCK_VERTICAL));
           block_impact_event.notifyListeners(item);
         }
         break;
@@ -508,6 +509,7 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
           explodeBlock(row, col, BlockUtils::getBlockColor(Block::KNOCK_HORIZONTAL));
         }
         for (auto& item : affected_blocks) {
+          explodeBlock(item.row, item.col, BlockUtils::getBlockColor(Block::KNOCK_HORIZONTAL));
           block_impact_event.notifyListeners(item);
         }
         break;
@@ -516,6 +518,7 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
         score += m_level->modifyBlocksAround(row, col, Block::TITAN, &affected_blocks);
         explodeBlock(row, col, BlockUtils::getBlockColor(Block::MIDAS));
         for (auto& item : affected_blocks) {
+          explodeBlock(item.row, item.col, BlockUtils::getBlockColor(Block::TITAN));
           block_impact_event.notifyListeners(item);
         }
         m_is_ball_death = true;
