@@ -340,8 +340,6 @@ private:
   void drawExplosion(GLfloat x, GLfloat y, const util::BGRA<GLfloat>& bgra);
   /// @brief Draws textured background.
   void drawBackground();
-  /// @brief Draws sample rectangle.
-  void drawRectangle();
   /** @} */  // end of Drawings group
 };
 
