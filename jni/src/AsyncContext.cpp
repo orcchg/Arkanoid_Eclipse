@@ -51,6 +51,7 @@ AsyncContext::AsyncContext(JavaVM* jvm)
   , m_particle_time(0.0f)
   , m_render_explosion(false)
   , m_explosion_packages()
+  , m_prize_last_time(0)
   , m_prize_packages() {
 
   DBG("enter AsyncContext ctor");
@@ -584,9 +585,10 @@ void AsyncContext::render() {
       }
     }
 
-    for (auto& item : m_prize_packages) {
-      drawPrize(item.getX(), item.getY(), item.getPrize());
-    }
+//    //TODO: uncomment after implemented
+//    for (auto& item : m_prize_packages) {
+//      drawPrize(item.getX(), item.getY(), item.getPrize());
+//    }
 
     eglSwapInterval(m_egl_display, 0);
     eglSwapBuffers(m_egl_display, m_egl_surface);
@@ -796,41 +798,48 @@ void AsyncContext::drawBackground() {
 }
 
 void AsyncContext::drawPrize(GLfloat x, GLfloat y, Prize prize) {
-  m_sample_shader->useProgram();
-
-  GLint a_position = glGetAttribLocation(m_sample_shader->getProgram(), "a_position");
-  GLint a_texCoord = glGetAttribLocation(m_sample_shader->getProgram(), "a_texCoord");
-
-  GLfloat* prize_vertices = new GLfloat[16];
-  util::setRectangleVertices(
-      prize_vertices,
-      PrizeParams::prizeWidth,
-      PrizeParams::prizeHeight * m_aspect,
-      x - PrizeParams::prizeHalfWidth,
-      y - PrizeParams::prizeHalfHeight,
-      1, 1);
-
-  glVertexAttribPointer(a_position, 4, GL_FLOAT, GL_FALSE, 0, &prize_vertices[0]);
-  glVertexAttribPointer(a_texCoord, 2, GL_FLOAT, GL_FALSE, 0, &m_rectangle_texCoord_buffer[0]);
-
-//  TODO: get texture for specified prize type
-  m_resources->getTexture("pr_candy.png")->apply();
-  GLint sampler = glGetUniformLocation(m_sample_shader->getProgram(), "s_texture");
-  glUniform1i(sampler, 0);
-
-  glEnableVertexAttribArray(a_position);
-  glEnableVertexAttribArray(a_texCoord);
-
-  glEnable(GL_TEXTURE_2D);
-  glEnable(GL_BLEND);
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-
-  glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-
-  delete [] prize_vertices;
-
-  glDisableVertexAttribArray(a_position);
-  glDisableVertexAttribArray(a_texCoord);
+//  m_sample_shader->useProgram();
+//
+//  if (m_prize_last_time == 0) {
+//    m_prize_last_time = clock();
+//  }
+//  clock_t currentTime = clock();
+//  float delta_elapsed = static_cast<float>(currentTime - m_prize_last_time) / CLOCKS_PER_SEC;
+//  m_prize_last_time = currentTime;
+//
+//  GLint a_position = glGetAttribLocation(m_sample_shader->getProgram(), "a_position");
+//  GLint a_texCoord = glGetAttribLocation(m_sample_shader->getProgram(), "a_texCoord");
+//
+//  GLfloat* prize_vertices = new GLfloat[16];
+//  util::setRectangleVertices(
+//      prize_vertices,
+//      PrizeParams::prizeWidth,
+//      PrizeParams::prizeHeight * m_aspect,
+//      x - PrizeParams::prizeHalfWidth,
+//      y - PrizeParams::prizeHalfHeight,
+//      1, 1);
+//
+//  glVertexAttribPointer(a_position, 4, GL_FLOAT, GL_FALSE, 0, &prize_vertices[0]);
+//  glVertexAttribPointer(a_texCoord, 2, GL_FLOAT, GL_FALSE, 0, &m_rectangle_texCoord_buffer[0]);
+//
+////  TODO: get texture for specified prize type
+//  m_resources->getTexture("pr_candy.png")->apply();
+//  GLint sampler = glGetUniformLocation(m_sample_shader->getProgram(), "s_texture");
+//  glUniform1i(sampler, 0);
+//
+//  glEnableVertexAttribArray(a_position);
+//  glEnableVertexAttribArray(a_texCoord);
+//
+//  glEnable(GL_TEXTURE_2D);
+//  glEnable(GL_BLEND);
+//  glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+//
+//  glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+//
+//  delete [] prize_vertices;
+//
+//  glDisableVertexAttribArray(a_position);
+//  glDisableVertexAttribArray(a_texCoord);
 }
 
 }  // namespace game

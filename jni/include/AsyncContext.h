@@ -198,6 +198,8 @@ private:
   float m_particle_time;
   bool m_render_explosion;
   std::vector<ExplosionPackage> m_explosion_packages;
+
+  clock_t m_prize_last_time;
   std::vector<PrizePackage> m_prize_packages;
   /** @} */  // end of LogicData group
 
