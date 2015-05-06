@@ -592,6 +592,7 @@ void AsyncContext::render() {
 //    for (auto& item : m_prize_packages) {
 //      drawPrize(item.getX(), item.getY(), item.getPrize());
 //    }
+    drawPrize(0.f, 0.f, Prize::NONE);
 
     eglSwapInterval(m_egl_display, 0);
     eglSwapBuffers(m_egl_display, m_egl_surface);
@@ -816,29 +817,23 @@ void AsyncContext::drawPrize(GLfloat x, GLfloat y, Prize prize) {
   }
 
   GLint u_time = glGetUniformLocation(m_prize_shader->getProgram(), "u_time");
-  GLint u_initPosition = glGetUniformLocation(m_prize_shader->getProgram(), "u_initPosition");
-
-  GLfloat* coord = new GLfloat[3]{x, y, 0.0f};
-  GLfloat* prize_lifetime = new GLfloat[1]{0.8f};
-  GLfloat* prize_velocity = new GLfloat[1]{PrizeParams::prizeSpeed};
-  glUniform3fv(u_initPosition, 1, &coord[0]);
+  GLint u_velocity = glGetUniformLocation(m_prize_shader->getProgram(), "u_velocity");
   glUniform1f(u_time, m_prize_time);
+  glUniform1f(u_velocity, PrizeParams::prizeSpeed);
 
-  GLint a_lifetime = glGetAttribLocation(m_prize_shader->getProgram(), "a_lifetime");
-  GLint a_velocity = glGetAttribLocation(m_prize_shader->getProgram(), "a_velocity");
+  GLint a_position = glGetAttribLocation(m_prize_shader->getProgram(), "a_position");
   GLint a_texCoord = glGetAttribLocation(m_prize_shader->getProgram(), "a_texCoord");
 
-//  GLfloat* prize_vertices = new GLfloat[16];
-//  util::setRectangleVertices(
-//      prize_vertices,
-//      PrizeParams::prizeWidth,
-//      PrizeParams::prizeHeight * m_aspect,
-//      x - PrizeParams::prizeHalfWidth,
-//      y - PrizeParams::prizeHalfHeight,
-//      1, 1);
+  GLfloat* prize_vertices = new GLfloat[16];
+  util::setRectangleVertices(
+      prize_vertices,
+      PrizeParams::prizeWidth,
+      PrizeParams::prizeHeight * m_aspect,
+      x - PrizeParams::prizeHalfWidth,
+      y - PrizeParams::prizeHalfHeight,
+      1, 1);
 
-  glVertexAttribPointer(a_lifetime, 1, GL_FLOAT, GL_FALSE, 0, &prize_lifetime[0]);
-  glVertexAttribPointer(a_velocity, 4, GL_FLOAT, GL_FALSE, 0, &prize_velocity[0]);
+  glVertexAttribPointer(a_position, 4, GL_FLOAT, GL_FALSE, 0, &prize_vertices[0]);
   glVertexAttribPointer(a_texCoord, 2, GL_FLOAT, GL_FALSE, 0, &m_rectangle_texCoord_buffer[0]);
 
 //  TODO: get texture for specified prize type
@@ -846,8 +841,7 @@ void AsyncContext::drawPrize(GLfloat x, GLfloat y, Prize prize) {
   GLint sampler = glGetUniformLocation(m_prize_shader->getProgram(), "s_texture");
   glUniform1i(sampler, 0);
 
-  glEnableVertexAttribArray(a_lifetime);
-  glEnableVertexAttribArray(a_velocity);
+  glEnableVertexAttribArray(a_position);
   glEnableVertexAttribArray(a_texCoord);
 
   glEnable(GL_TEXTURE_2D);
@@ -856,13 +850,9 @@ void AsyncContext::drawPrize(GLfloat x, GLfloat y, Prize prize) {
 
   glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-  delete [] coord;
-  delete [] prize_lifetime;
-  delete [] prize_velocity;
-//  delete [] prize_vertices;
+  delete [] prize_vertices;
 
-  glDisableVertexAttribArray(a_lifetime);
-  glDisableVertexAttribArray(a_velocity);
+  glDisableVertexAttribArray(a_position);
   glDisableVertexAttribArray(a_texCoord);
 }
 

@@ -20,7 +20,7 @@ struct BallParams {
 };
 
 struct PrizeParams {
-  constexpr static float prizeSpeed = 0.002f;
+  constexpr static float prizeSpeed = 0.7f;
   constexpr static float prizeWidth = 0.1f;
   constexpr static float prizeHeight = 0.1f;
   constexpr static float prizeHalfWidth = 0.5f * prizeWidth;
