@@ -214,4 +214,19 @@ void ParticleSystemShader::bindTexCoordAttribLocation(GLuint program, GLuint tex
   // no-op
 }
 
+VerticalFallShader::VerticalFallShader()
+  : Shader(
+      ""
+      ,
+      "") {
+}
+
+void VerticalFallShader::bindColorAttribLocation(GLuint program, GLuint color_location) const {
+  // no-op
+}
+
+void VerticalFallShader::bindTexCoordAttribLocation(GLuint program, GLuint texCoord_location) const {
+  glBindAttribLocation(program, texCoord_location, "a_texCoord");
+}
+
 }

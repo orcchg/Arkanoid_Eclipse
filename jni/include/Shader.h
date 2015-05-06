@@ -71,6 +71,13 @@ struct ParticleSystemShader : public Shader {
   void bindTexCoordAttribLocation(GLuint program, GLuint texCoord_location) const override final;
 };
 
+struct VerticalFallShader : public Shader {
+  VerticalFallShader();
+
+  void bindColorAttribLocation(GLuint program, GLuint color_location) const override final;
+  void bindTexCoordAttribLocation(GLuint program, GLuint texCoord_location) const override final;
+};
+
 }
 
 #endif  // __ARKANOID_SHADER__H__
