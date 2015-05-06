@@ -116,7 +116,7 @@ public class MainActivity extends FragmentActivity {
         break;
       case R.id.nextLevel:
         mAsyncContext.fireJavaEvent_levelFinished();
-        mAsyncContext.fireJavaEvent_onScoreUpdated(-25 * (int) Math.pow(currentLevel + 1, 2));
+        mAsyncContext.fireJavaEvent_onScoreUpdated(-10 * (int) Math.pow(currentLevel + 1, 2));
         break;
       case R.id.dropStat:
         ArkanoidApplication app = (ArkanoidApplication) getApplication();
@@ -212,7 +212,7 @@ public class MainActivity extends FragmentActivity {
       if (activity != null) {
         activity.setLives(currentLives);
       }
-      onScoreUpdated(-10 * (int) Math.pow(currentLevel + 1, 2));  // lost ball decreases score
+      onScoreUpdated(-2 * (int) Math.pow(currentLevel + 1, 2));  // lost ball decreases score
     }
 
     @Override
