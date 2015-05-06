@@ -80,8 +80,8 @@ constexpr static GLfloat IRON_EDGE[4] = {0.5412f, 0.5412f, 0.5412f, 1.f};  // 13
 constexpr static GLfloat JELLY[4]      = {0.9333f, 0.0706f, 0.5373f, 1.f};  // 238 18 137
 constexpr static GLfloat JELLY_EDGE[4] = {0.5451f, 0.0392f, 0.3137f, 1.f};  // 139 10 80
 
-constexpr static GLfloat KNOCK[4]      = {1.f,     0.4980f, 0.1412f, 1.f};  // 255 127 36
-constexpr static GLfloat KNOCK_EDGE[4] = {0.8039f, 0.4f,    0.1137f, 1.f};  // 205 102 29
+constexpr static GLfloat KNOCK[4]      = {1.f,     0.5490f, 0.f, 1.f};  // 255 140 0
+constexpr static GLfloat KNOCK_EDGE[4] = {0.5451f, 0.2706f, 0.f, 1.f};  // 139 69  0
 
 constexpr static GLfloat STEEL[4]      = {0.6902f, 0.7686f, 0.8706f, 1.f};  // 176 196 222
 constexpr static GLfloat STEEL_EDGE[4] = {0.4314f, 0.4824f, 0.5451f, 1.f};  // 110 123 139
@@ -89,8 +89,8 @@ constexpr static GLfloat STEEL_EDGE[4] = {0.4314f, 0.4824f, 0.5451f, 1.f};  // 1
 constexpr static GLfloat MAGIC[4]      = {0.8157f, 0.1255f, 0.5647f, 1.f};  // 208 32 144
 constexpr static GLfloat MAGIC_EDGE[4] = {0.4902f, 0.1490f, 0.8039f, 1.f};  // 125 38 205
 
-constexpr static GLfloat MIDAS[4]      = {1.f,     0.8431f, 0.f, 1.f};  // 255 215 0
-constexpr static GLfloat MIDAS_EDGE[4] = {0.8039f, 0.6784f, 0.f, 1.f};  // 205 173 0
+constexpr static GLfloat MIDAS[4]      = {0.9333f, 0.7882f, 0.f,     1.f};  // 238 201 0
+constexpr static GLfloat MIDAS_EDGE[4] = {0.5451f, 0.4118f, 0.0784f, 1.f};  // 139 105 20
 
 constexpr static GLfloat NETWORK[4]      = {0.f,     0.9333f, 0.f,     1.f};  // 0 238 0
 constexpr static GLfloat NETWORK_EDGE[4] = {0.1804f, 0.5451f, 0.3418f, 1.f};  // 46 139 87

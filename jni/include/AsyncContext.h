@@ -339,7 +339,7 @@ private:
   /// @brief Draws ball at it's current position.
   void drawBall();
   /// @brief Draws particle system explosion.
-  void drawExplosion(GLfloat x, GLfloat y, const util::BGRA<GLfloat>& bgra);
+  void drawExplosion(GLfloat x, GLfloat y, const util::BGRA<GLfloat>& bgra, Kind kind);
   /// @brief Draws textured background.
   void drawBackground();
   /// @brief Draws prize of specified type at given location.

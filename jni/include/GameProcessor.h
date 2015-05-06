@@ -238,13 +238,15 @@ private:
   /// @param x Center of explosion along X axis.
   /// @param y Center of explosion along Y axis.
   /// @param color Color of explosion.
-  void explode(GLfloat x, GLfloat y, const util::BGRA<GLfloat>& color);
+  /// @param kind Kind of explosion.
+  void explode(GLfloat x, GLfloat y, const util::BGRA<GLfloat>& color, Kind kind);
   /// @brief Explodes specified block.
   /// @param row Row index of specified block.
   /// @param col Column index of specified block.
-  void explodeBlock(int row, int col);
+  /// @param kind Kind of explosion.
+  void explodeBlock(int row, int col, Kind kind);
   /// @brief Same as above but with specified color.
-  void explodeBlock(int row, int col, const util::BGRA<GLfloat>& color);
+  void explodeBlock(int row, int col, const util::BGRA<GLfloat>& color, Kind kind);
   /** @} */  // end of LogicFunc group
 
   /** @defgroup Collision Functions to perform various collisions.

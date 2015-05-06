@@ -309,22 +309,22 @@ void GameProcessor::onCardinalityChanged(int new_cardinality) {
   m_jenv->CallVoidMethod(master_object, fireJavaEvent_cardinalityChanged_id, new_cardinality);
 }
 
-void GameProcessor::explode(GLfloat x, GLfloat y, const util::BGRA<GLfloat>& color) {
-  ExplosionPackage package(x, y, color);
+void GameProcessor::explode(GLfloat x, GLfloat y, const util::BGRA<GLfloat>& color, Kind kind) {
+  ExplosionPackage package(x, y, color, kind);
   explosion_event.notifyListeners(package);
 }
 
-void GameProcessor::explodeBlock(int row, int col) {
+void GameProcessor::explodeBlock(int row, int col, Kind kind) {
   GLfloat x = 0.f, y = 0.f;
   getCenterOfBlock(row, col, &x, &y);
   Block block = m_level->getBlock(row, col);
-  explode(x, y, BlockUtils::getBlockColor(block));
+  explode(x, y, BlockUtils::getBlockColor(block), kind);
 }
 
-void GameProcessor::explodeBlock(int row, int col, const util::BGRA<GLfloat>& color) {
+void GameProcessor::explodeBlock(int row, int col, const util::BGRA<GLfloat>& color, Kind kind) {
   GLfloat x = 0.f, y = 0.f;
   getCenterOfBlock(row, col, &x, &y);
-  explode(x, y, color);
+  explode(x, y, color, kind);
 }
 
 /* Collision group */
@@ -470,7 +470,7 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
         return false;
       // --------------------
       case Block::DESTROY:
-        explodeBlock(row, col, BlockUtils::getBlockEdgeColor(Block::DESTROY));
+        explodeBlock(row, col, BlockUtils::getBlockEdgeColor(Block::DESTROY), Kind::DIVERGE);
         m_is_ball_death = true;
         break;
       case Block::ULTRA_1:
@@ -486,7 +486,7 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
       case Block::ELECTRO:
         external_collision = blockCollision(top_border, bottom_border, left_border, right_border, 100 /* elastic */);
         score += m_level->destroyBlocksAround(row, col, &affected_blocks);
-        explodeBlock(row, col, BlockUtils::getBlockColor(Block::ELECTRO));
+        explodeBlock(row, col, BlockUtils::getBlockColor(Block::ELECTRO), Kind::DIVERGE);
         for (auto& item : affected_blocks) {
           block_impact_event.notifyListeners(item);
         }
@@ -495,10 +495,10 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
         external_collision = blockCollision(top_border, bottom_border, left_border, right_border, 100 /* elastic */);
         score += m_level->destroyBlocksBehind(row, col, vertical_direction, &affected_blocks);
         if (vertical_direction != Direction::NONE) {
-          explodeBlock(row, col, BlockUtils::getBlockColor(Block::KNOCK_VERTICAL));
+          explodeBlock(row, col, BlockUtils::getBlockColor(Block::KNOCK_VERTICAL), Kind::DIVERGE);
         }
         for (auto& item : affected_blocks) {
-          explodeBlock(item.row, item.col, BlockUtils::getBlockColor(Block::KNOCK_VERTICAL));
+          explodeBlock(item.row, item.col, BlockUtils::getBlockColor(Block::KNOCK_VERTICAL), Kind::DIVERGE);
           block_impact_event.notifyListeners(item);
         }
         break;
@@ -506,19 +506,19 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
         external_collision = blockCollision(top_border, bottom_border, left_border, right_border, 100 /* elastic */);
         score += m_level->destroyBlocksBehind(row, col, horizontal_direction, &affected_blocks);
         if (horizontal_direction != Direction::NONE) {
-          explodeBlock(row, col, BlockUtils::getBlockColor(Block::KNOCK_HORIZONTAL));
+          explodeBlock(row, col, BlockUtils::getBlockColor(Block::KNOCK_HORIZONTAL), Kind::DIVERGE);
         }
         for (auto& item : affected_blocks) {
-          explodeBlock(item.row, item.col, BlockUtils::getBlockColor(Block::KNOCK_HORIZONTAL));
+          explodeBlock(item.row, item.col, BlockUtils::getBlockColor(Block::KNOCK_HORIZONTAL), Kind::DIVERGE);
           block_impact_event.notifyListeners(item);
         }
         break;
       case Block::MIDAS:
         external_collision = blockCollision(top_border, bottom_border, left_border, right_border, 100 /* elastic */);
         score += m_level->modifyBlocksAround(row, col, Block::TITAN, &affected_blocks);
-        explodeBlock(row, col, BlockUtils::getBlockColor(Block::MIDAS));
+        explodeBlock(row, col, BlockUtils::getBlockColor(Block::MIDAS), Kind::DIVERGE);
         for (auto& item : affected_blocks) {
-          explodeBlock(item.row, item.col, BlockUtils::getBlockColor(Block::TITAN));
+          explodeBlock(item.row, item.col, BlockUtils::getBlockColor(Block::TITAN), Kind::DIVERGE);
           block_impact_event.notifyListeners(item);
         }
         m_is_ball_death = true;
@@ -526,7 +526,7 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
       case Block::NETWORK:
         external_collision = blockCollision(top_border, bottom_border, left_border, right_border, 100 /* elastic */);
         m_level->findBlocks(Block::NETWORK, &network_blocks);
-        explodeBlock(row, col, BlockUtils::getBlockColor(Block::NETWORK));
+        explodeBlock(row, col, BlockUtils::getBlockColor(Block::NETWORK), Kind::DIVERGE);
         if (!network_blocks.empty()) {
           random_index = util::getRandomElement(network_blocks);
           shiftBallIntoBlock(network_blocks[random_index].row, network_blocks[random_index].col);
@@ -572,7 +572,7 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
       case Block::MAGIC:
         external_collision = blockCollision(top_border, bottom_border, left_border, right_border, 100 /* elastic */);
         score += m_level->modifyBlocksAround(row, col, generated_block, &affected_blocks);
-        explodeBlock(row, col, BlockUtils::getBlockColor(generated_block));
+        explodeBlock(row, col, BlockUtils::getBlockColor(generated_block), Kind::DIVERGE);
         for (auto& item : affected_blocks) {
           block_impact_event.notifyListeners(item);
         }
@@ -580,7 +580,7 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
       case Block::QUICK_1:
         external_collision = blockCollision(top_border, bottom_border, left_border, right_border, 100 /* elastic */);
         score += m_level->changeBlocksAround(row, col, mode, &affected_blocks);
-        explodeBlock(row, col, BlockUtils::getBlockColor(Block::QUICK_1));
+        explodeBlock(row, col, BlockUtils::getBlockColor(Block::QUICK_1), Kind::DIVERGE);
         for (auto& item : affected_blocks) {
           block_impact_event.notifyListeners(item);
         }
@@ -588,7 +588,7 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
       case Block::YOGURT:
         external_collision = blockCollision(top_border, bottom_border, left_border, right_border, 50);
         score += m_level->modifyBlocksAround(row, col, Block::YOGURT_1, &affected_blocks);
-        explodeBlock(row, col, BlockUtils::getBlockColor(Block::YOGURT));
+        explodeBlock(row, col, BlockUtils::getBlockColor(Block::YOGURT), Kind::DIVERGE);
         for (auto& item : affected_blocks) {
           block_impact_event.notifyListeners(item);
         }
@@ -596,6 +596,7 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
       case Block::ZYGOTE_1:
         external_collision = blockCollision(top_border, bottom_border, left_border, right_border, 100 /* elastic */);
         m_level->modifyBlockNear(row, col, Block::ZYGOTE_SPAWN, &single_affected);
+        explodeBlock(single_affected.row, single_affected.col, BlockUtils::getBlockColor(Block::ZYGOTE_SPAWN), Kind::CONVERGE);
         block_impact_event.notifyListeners(single_affected);
         break;
       // --------------------

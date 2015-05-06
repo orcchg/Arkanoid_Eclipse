@@ -562,7 +562,8 @@ void AsyncContext::render() {
         drawExplosion(
             item.getX(),
             item.getY(),
-            item.getColor());
+            item.getColor(),
+            item.getKind());
       }
     }
 
@@ -690,7 +691,7 @@ void AsyncContext::drawBall() {
   glDisableVertexAttribArray(a_color);
 }
 
-void AsyncContext::drawExplosion(GLfloat x, GLfloat y, const util::BGRA<GLfloat>& bgra) {
+void AsyncContext::drawExplosion(GLfloat x, GLfloat y, const util::BGRA<GLfloat>& bgra, Kind kind) {
   m_explosion_shader->useProgram();
 
   if (m_last_time == 0) {
