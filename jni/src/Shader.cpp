@@ -140,24 +140,24 @@ void SimpleShader::bindTexCoordAttribLocation(GLuint program, GLuint texCoord_lo
 
 SimpleTextureShader::SimpleTextureShader()
   : Shader(
-      "  attribute vec4 a_position;   \n"
-      "  attribute vec2 a_texCoord;   \n"
-      "                               \n"
-      "  varying vec2 v_texCoord;     \n"
-      "                               \n"
-      "  void main() {                \n"
-      "    v_texCoord = a_texCoord;   \n"
-      "    gl_Position = a_position;  \n"
-      "  }                            \n"
+      "  attribute vec4 a_position;                                            \n"
+      "  attribute vec2 a_texCoord;                                            \n"
+      "                                                                        \n"
+      "  varying vec2 v_texCoord;                                              \n"
+      "                                                                        \n"
+      "  void main() {                                                         \n"
+      "    v_texCoord = a_texCoord;                                            \n"
+      "    gl_Position = a_position;                                           \n"
+      "  }                                                                     \n"
       ,
-      "  precision mediump float;     \n"
-      "                               \n"
-      "  varying vec2 v_texCoord;     \n"
-      "  uniform sampler2D s_texture; \n"
-      "                               \n"
-      "  void main() {                \n"
-      "    gl_FragColor = texture2D(s_texture, v_texCoord); \n"
-      "  }                            \n") {
+      "  precision mediump float;                                              \n"
+      "                                                                        \n"
+      "  varying vec2 v_texCoord;                                              \n"
+      "  uniform sampler2D s_texture;                                          \n"
+      "                                                                        \n"
+      "  void main() {                                                         \n"
+      "    gl_FragColor = texture2D(s_texture, v_texCoord);                    \n"
+      "  }                                                                     \n") {
 }
 
 void SimpleTextureShader::bindColorAttribLocation(GLuint program, GLuint color_location) const {
@@ -192,18 +192,18 @@ ParticleSystemShader::ParticleSystemShader()
       "    gl_PointSize = (v_lifetime * v_lifetime) * 40.0;                    \n"
       "  }                                                                     \n"
       ,
-      "  precision mediump float;                          \n"
-      "                                                    \n"
-      "  uniform vec4 u_color;                             \n"
-      "  varying float v_lifetime;                         \n"
-      "  uniform sampler2D s_texture;                      \n"
-      "                                                    \n"
-      "  void main() {                                     \n"
-      "    vec4 texColor;                                  \n"
-      "    texColor = texture2D(s_texture, gl_PointCoord); \n"
-      "    gl_FragColor = vec4(u_color) * texColor;        \n"
-      "    gl_FragColor.a *= v_lifetime;                   \n"
-      "  }                                                 \n") {
+      "  precision mediump float;                            \n"
+      "                                                      \n"
+      "  uniform vec4 u_color;                               \n"
+      "  varying float v_lifetime;                           \n"
+      "  uniform sampler2D s_texture;                        \n"
+      "                                                      \n"
+      "  void main() {                                       \n"
+      "    vec4 texColor;                                    \n"
+      "    texColor = texture2D(s_texture, gl_PointCoord);   \n"
+      "    gl_FragColor = vec4(u_color) * texColor;          \n"
+      "    gl_FragColor.a *= v_lifetime;                     \n"
+      "  }                                                   \n") {
 }
 
 void ParticleSystemShader::bindColorAttribLocation(GLuint program, GLuint color_location) const {
@@ -216,9 +216,34 @@ void ParticleSystemShader::bindTexCoordAttribLocation(GLuint program, GLuint tex
 
 VerticalFallShader::VerticalFallShader()
   : Shader(
-      ""
+      "  uniform float u_time;                                                 \n"
+      "  uniform vec3 u_initPosition;                                          \n"
+      "                                                                        \n"
+      "  attribute float a_lifetime;                                           \n"
+      "  attribute float a_velocity;                                           \n"
+      "  attribute vec2 a_texCoord;                                            \n"
+      "                                                                        \n"
+      "  varying vec2 v_texCoord;                                              \n"
+      "                                                                        \n"
+      "  void main() {                                                         \n"
+      "    if (u_time <= a_lifetime) {                                         \n"
+      "      gl_Position.xyz = u_initPosition;                                 \n"
+      "      gl_Position.y -= u_time * a_velocity;                             \n"
+      "      gl_Position.w = 1.0;                                              \n"
+      "    } else {                                                            \n"
+      "      gl_Position = vec4(-1000, -1000, 0, 0);                           \n"
+      "    }                                                                   \n"
+      "    v_texCoord = a_texCoord;                                            \n"
+      "  }                                                                     \n"
       ,
-      "") {
+      "  precision mediump float;                                              \n"
+      "                                                                        \n"
+      "  varying vec2 v_texCoord;                                              \n"
+      "  uniform sampler2D s_texture;                                          \n"
+      "                                                                        \n"
+      "  void main() {                                                         \n"
+      "    gl_FragColor = texture2D(s_texture, v_texCoord);                    \n"
+      "  }                                                                     \n") {
 }
 
 void VerticalFallShader::bindColorAttribLocation(GLuint program, GLuint color_location) const {

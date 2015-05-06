@@ -40,11 +40,6 @@ AsyncContext::AsyncContext(JavaVM* jvm)
   , m_level_vertex_buffer(nullptr)
   , m_level_color_buffer(nullptr)
   , m_level_index_buffer(nullptr)
-  , m_level_shader(nullptr)
-  , m_bite_shader(nullptr)
-  , m_ball_shader(nullptr)
-  , m_explosion_shader(nullptr)
-  , m_sample_shader(nullptr)
   , m_generator()
   , m_particle_distribution(0.0f, 1.0f)
   , m_last_time(0)
@@ -52,7 +47,14 @@ AsyncContext::AsyncContext(JavaVM* jvm)
   , m_render_explosion(false)
   , m_explosion_packages()
   , m_prize_last_time(0)
-  , m_prize_packages() {
+  , m_prize_time(0.0f)
+  , m_prize_packages()
+  , m_level_shader(nullptr)
+  , m_bite_shader(nullptr)
+  , m_ball_shader(nullptr)
+  , m_explosion_shader(nullptr)
+  , m_sample_shader(nullptr)
+  , m_prize_shader(nullptr) {
 
   DBG("enter AsyncContext ctor");
   m_surface_received.store(false);
@@ -530,6 +532,7 @@ void AsyncContext::glOptionsConfig() {
   m_ball_shader = std::make_shared<shader::ShaderHelper>(shader::SimpleShader());
   m_explosion_shader = std::make_shared<shader::ShaderHelper>(shader::ParticleSystemShader());
   m_sample_shader = std::make_shared<shader::ShaderHelper>(shader::SimpleTextureShader());
+  m_prize_shader = std::make_shared<shader::ShaderHelper>(shader::VerticalFallShader());
 }
 
 void AsyncContext::destroyDisplay() {
@@ -798,18 +801,33 @@ void AsyncContext::drawBackground() {
 }
 
 void AsyncContext::drawPrize(GLfloat x, GLfloat y, Prize prize) {
-//  m_sample_shader->useProgram();
-//
-//  if (m_prize_last_time == 0) {
-//    m_prize_last_time = clock();
-//  }
-//  clock_t currentTime = clock();
-//  float delta_elapsed = static_cast<float>(currentTime - m_prize_last_time) / CLOCKS_PER_SEC;
-//  m_prize_last_time = currentTime;
-//
-//  GLint a_position = glGetAttribLocation(m_sample_shader->getProgram(), "a_position");
-//  GLint a_texCoord = glGetAttribLocation(m_sample_shader->getProgram(), "a_texCoord");
-//
+  m_prize_shader->useProgram();
+
+  if (m_prize_last_time == 0) {
+    m_prize_last_time = clock();
+  }
+  clock_t currentTime = clock();
+  float delta_elapsed = static_cast<float>(currentTime - m_prize_last_time) / CLOCKS_PER_SEC;
+  m_prize_last_time = currentTime;
+  m_prize_time += delta_elapsed;
+  if (m_prize_time >= 1.0f) {
+    m_prize_time = 0.0f;
+    return;
+  }
+
+  GLint u_time = glGetUniformLocation(m_prize_shader->getProgram(), "u_time");
+  GLint u_initPosition = glGetUniformLocation(m_prize_shader->getProgram(), "u_initPosition");
+
+  GLfloat* coord = new GLfloat[3]{x, y, 0.0f};
+  GLfloat* prize_lifetime = new GLfloat[1]{0.8f};
+  GLfloat* prize_velocity = new GLfloat[1]{PrizeParams::prizeSpeed};
+  glUniform3fv(u_initPosition, 1, &coord[0]);
+  glUniform1f(u_time, m_prize_time);
+
+  GLint a_lifetime = glGetAttribLocation(m_prize_shader->getProgram(), "a_lifetime");
+  GLint a_velocity = glGetAttribLocation(m_prize_shader->getProgram(), "a_velocity");
+  GLint a_texCoord = glGetAttribLocation(m_prize_shader->getProgram(), "a_texCoord");
+
 //  GLfloat* prize_vertices = new GLfloat[16];
 //  util::setRectangleVertices(
 //      prize_vertices,
@@ -818,28 +836,34 @@ void AsyncContext::drawPrize(GLfloat x, GLfloat y, Prize prize) {
 //      x - PrizeParams::prizeHalfWidth,
 //      y - PrizeParams::prizeHalfHeight,
 //      1, 1);
-//
-//  glVertexAttribPointer(a_position, 4, GL_FLOAT, GL_FALSE, 0, &prize_vertices[0]);
-//  glVertexAttribPointer(a_texCoord, 2, GL_FLOAT, GL_FALSE, 0, &m_rectangle_texCoord_buffer[0]);
-//
-////  TODO: get texture for specified prize type
-//  m_resources->getTexture("pr_candy.png")->apply();
-//  GLint sampler = glGetUniformLocation(m_sample_shader->getProgram(), "s_texture");
-//  glUniform1i(sampler, 0);
-//
-//  glEnableVertexAttribArray(a_position);
-//  glEnableVertexAttribArray(a_texCoord);
-//
-//  glEnable(GL_TEXTURE_2D);
-//  glEnable(GL_BLEND);
-//  glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-//
-//  glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-//
+
+  glVertexAttribPointer(a_lifetime, 1, GL_FLOAT, GL_FALSE, 0, &prize_lifetime[0]);
+  glVertexAttribPointer(a_velocity, 4, GL_FLOAT, GL_FALSE, 0, &prize_velocity[0]);
+  glVertexAttribPointer(a_texCoord, 2, GL_FLOAT, GL_FALSE, 0, &m_rectangle_texCoord_buffer[0]);
+
+//  TODO: get texture for specified prize type
+  m_resources->getTexture("pr_candy.png")->apply();
+  GLint sampler = glGetUniformLocation(m_prize_shader->getProgram(), "s_texture");
+  glUniform1i(sampler, 0);
+
+  glEnableVertexAttribArray(a_lifetime);
+  glEnableVertexAttribArray(a_velocity);
+  glEnableVertexAttribArray(a_texCoord);
+
+  glEnable(GL_TEXTURE_2D);
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+
+  glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+  delete [] coord;
+  delete [] prize_lifetime;
+  delete [] prize_velocity;
 //  delete [] prize_vertices;
-//
-//  glDisableVertexAttribArray(a_position);
-//  glDisableVertexAttribArray(a_texCoord);
+
+  glDisableVertexAttribArray(a_lifetime);
+  glDisableVertexAttribArray(a_velocity);
+  glDisableVertexAttribArray(a_texCoord);
 }
 
 }  // namespace game

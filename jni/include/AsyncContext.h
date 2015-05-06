@@ -200,6 +200,7 @@ private:
   std::vector<ExplosionPackage> m_explosion_packages;
 
   clock_t m_prize_last_time;
+  float m_prize_time;
   std::vector<PrizePackage> m_prize_packages;
   /** @} */  // end of LogicData group
 
@@ -211,6 +212,7 @@ private:
   shader::ShaderHelper::Ptr m_ball_shader;
   shader::ShaderHelper::Ptr m_explosion_shader;
   shader::ShaderHelper::Ptr m_sample_shader;
+  shader::ShaderHelper::Ptr m_prize_shader;
   /** @} */  // end of Shaders group
 
   /** @defgroup Mutex Thread-safety variables
