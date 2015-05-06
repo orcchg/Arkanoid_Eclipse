@@ -592,7 +592,6 @@ void AsyncContext::render() {
 //    for (auto& item : m_prize_packages) {
 //      drawPrize(item.getX(), item.getY(), item.getPrize());
 //    }
-    drawPrize(0.f, 0.f, Prize::NONE);
 
     eglSwapInterval(m_egl_display, 0);
     eglSwapBuffers(m_egl_display, m_egl_surface);
