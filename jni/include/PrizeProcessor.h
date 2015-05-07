@@ -6,6 +6,7 @@
 #include <mutex>
 
 #include "ActiveObject.h"
+#include "Bite.h"
 #include "Event.h"
 #include "EventListener.h"
 
@@ -24,7 +25,8 @@ public:
    *  which PrizeProcessor subscribed on.
    *  @{
    */
-  //
+  /// @brief Called when bite's location has changed.
+  void callback_biteMoved(Bite moved_bite);
   /** @} */  // end of Callbacks group
 
 // ----------------------------------------------
@@ -33,7 +35,8 @@ public:
   /** @defgroup Event Outcoming events and listeners for incoming events.
    * @{
    */
-  //
+  /// @brief Listens for bite location changes.
+  EventListener<Bite> bite_location_listener;
   /** @} */  // end of Event group
 
 // ----------------------------------------------
@@ -42,13 +45,14 @@ private:
   /** @defgroup LogicData Game logic related data members.
    * @{
    */
-  //
+  Bite m_bite;  //!< Physical bite's representation.
   /** @} */  // end of LogicData group
 
   /** @defgroup Mutex Thread-safety variables
    * @{
    */
-  //
+  std::mutex m_bite_location_mutex;  //!< Sentinel for bite's center location changes.
+  std::atomic_bool m_bite_location_received;  //!< New bite's center location has been received.
   /** @} */  // end of Mutex group
 
 // ----------------------------------------------
@@ -72,7 +76,8 @@ private:
    *  corresponding event occurred and has been caught.
    *  @{
    */
-  //
+  /// @brief Processing when bite's location has changed.
+  void process_biteMoved();
   /** @} */  // end of Processors group
 
   /** @defgroup LogicFunc Game logic related member functions.

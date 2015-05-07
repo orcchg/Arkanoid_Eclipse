@@ -41,6 +41,8 @@ JNIEXPORT jlong JNICALL Java_com_orcchg_arkanoid_surface_AsyncContext_init
   ptr->processor->level_dimens_listener = ptr->acontext->level_dimens_event.createListener(&game::GameProcessor::callback_levelDimens, ptr->processor);
   ptr->processor->bite_location_listener = ptr->acontext->bite_location_event.createListener(&game::GameProcessor::callback_biteMoved, ptr->processor);
 
+  ptr->prize_processor->bite_location_listener = ptr->acontext->bite_location_event.createListener(&game::PrizeProcessor::callback_biteMoved, ptr->prize_processor);
+
   return descriptor;
 }
 
@@ -170,6 +172,7 @@ AsyncContextHelper::AsyncContextHelper(JNIEnv* jenv, jobject object)
   , window(nullptr) {
   acontext = std::make_shared<game::AsyncContext>(jvm);
   processor = std::make_shared<game::GameProcessor>(jvm, object);
+  prize_processor = std::make_shared<game::PrizeProcessor>();
 
   global_object = jenv->NewGlobalRef(object);
   jclass clazz = jenv->FindClass("java/lang/String");
@@ -199,4 +202,6 @@ AsyncContextHelper::~AsyncContextHelper() {
   acontext = nullptr;
   processor.reset();
   processor = nullptr;
+  prize_processor.reset();
+  prize_processor = nullptr;
 }
