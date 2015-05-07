@@ -10,6 +10,8 @@ PrizeProcessor::PrizeProcessor()
   DBG("enter PrizeProcessor ctor");
   m_init_bite_received.store(false);
   m_bite_location_received.store(false);
+  m_prize_received.store(false);
+  m_prize_location_received.store(false);
   DBG("exit PrizeProcessor ctor");
 }
 
@@ -32,6 +34,20 @@ void PrizeProcessor::callback_biteMoved(Bite moved_bite) {
   interrupt();
 }
 
+void PrizeProcessor::callback_prizeReceived(PrizePackage package) {
+  std::unique_lock<std::mutex> lock(m_prize_mutex);
+  m_prize_received.store(true);
+  m_prize_packages.push_back(package);
+  interrupt();
+}
+
+void PrizeProcessor::callback_prizeLocated(PrizePackage package) {
+  std::unique_lock<std::mutex> lock(m_prize_location_mutex);
+  m_prize_location_received.store(true);
+  // XXX:
+  interrupt();
+}
+
 /* ActiveObject group */
 // ----------------------------------------------------------------------------
 void PrizeProcessor::onStart() {
@@ -42,7 +58,9 @@ void PrizeProcessor::onStop() {
 
 bool PrizeProcessor::checkForWakeUp() {
   return m_init_bite_received.load() ||
-         m_bite_location_received.load();
+         m_bite_location_received.load() ||
+         m_prize_received.load() ||
+         m_prize_location_received.load();
 }
 
 void PrizeProcessor::eventHandler() {
@@ -53,6 +71,14 @@ void PrizeProcessor::eventHandler() {
   if (m_bite_location_received.load()) {
     m_bite_location_received.store(false);
     process_biteMoved();
+  }
+  if (m_prize_received.load()) {
+    m_prize_received.store(false);
+    process_prizeReceived();
+  }
+  if (m_prize_location_received.load()) {
+    m_prize_location_received.store(false);
+    process_prizeLocated();
   }
 }
 
@@ -66,6 +92,16 @@ void PrizeProcessor::process_initBite() {
 void PrizeProcessor::process_biteMoved() {
   std::unique_lock<std::mutex> lock(m_bite_location_mutex);
   // no-op
+}
+
+void PrizeProcessor::process_prizeReceived() {
+  std::unique_lock<std::mutex> lock(m_prize_mutex);
+  // no-op
+}
+
+void PrizeProcessor::process_prizeLocated() {
+  std::unique_lock<std::mutex> lock(m_prize_location_mutex);
+  // XXX:
 }
 
 /* LogicFunc group */

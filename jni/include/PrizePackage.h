@@ -8,17 +8,25 @@ namespace game {
 
 class PrizePackage {
 public:
-  PrizePackage();
   PrizePackage(GLfloat x, GLfloat y, Prize prize);
   virtual ~PrizePackage();
+  PrizePackage(const PrizePackage& obj);
+  PrizePackage(PrizePackage&& rval_obj);
+  PrizePackage& operator= (PrizePackage rhs);
 
+  inline int getID() const { return id; }
   inline GLfloat getX() const { return x; }
   inline GLfloat getY() const { return y; }
   inline Prize getPrize() const { return prize; }
 
 private:
+  static int initialId;
+
+  int id;
   GLfloat x, y;
   Prize prize;
+
+  PrizePackage();
 };
 
 }
