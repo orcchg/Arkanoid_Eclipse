@@ -239,15 +239,7 @@ public class MainActivity extends FragmentActivity {
     public void onLostBall() {
       --currentLives;
       Log.i(TAG, "Ball has been lost! Lives rest: " + currentLives);
-      final MainActivity activity = activityRef.get();
-      if (activity != null) {
-        activity.runOnUiThread(new Runnable() {
-          @Override
-          public void run() {
-            activity.setLives(currentLives);
-          }
-        });
-      }
+      updateLives();
       onScoreUpdated(-2 * (int) Math.pow(currentLevel + 1, 2));  // lost ball decreases score
     }
 
@@ -316,7 +308,27 @@ public class MainActivity extends FragmentActivity {
     @Override
     public void onPrizeCatch(final Prize prize) {
       // TODO: distinguish prize types
+      switch (prize) {
+        case VITALITY:
+          ++currentLives;
+          updateLives();
+          break;
+        default:
+      }
       onScoreUpdated(35);
+    }
+    
+    // ------------------------------------------
+    private void updateLives() {
+      final MainActivity activity = activityRef.get();
+      if (activity != null) {
+        activity.runOnUiThread(new Runnable() {
+          @Override
+          public void run() {
+            activity.setLives(currentLives);
+          }
+        });
+      }
     }
   }
 }
