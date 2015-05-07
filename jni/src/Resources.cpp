@@ -97,6 +97,7 @@ const native::Texture* const Resources::getPrizeTexture(const Prize& prize) cons
     case Prize::SLOW:
     case Prize::UPGRADE:
     case Prize::DEGRADE:
+      return getTexture("pr_star.png");
     case Prize::VITALITY:
       return getTexture("pr_ball.png");
     case Prize::WIN:
