@@ -46,6 +46,7 @@ void PrizeProcessor::callback_prizeLocated(PrizePackage package) {
   std::unique_lock<std::mutex> lock(m_prize_location_mutex);
   m_prize_location_received.store(true);
   // XXX:
+  ERR("LOCATION: %lf %lf", package.getX(), package.getY());
   interrupt();
 }
 
@@ -53,6 +54,7 @@ void PrizeProcessor::callback_prizeHasGone(PrizePackage package) {
   std::unique_lock<std::mutex> lock(m_prize_gone_mutex);
   m_prize_gone_received.store(true);
   // XXX:
+  WRN("LOCATION: GONE  %lf", package.getY());
   interrupt();
 }
 
