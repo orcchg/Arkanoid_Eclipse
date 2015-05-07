@@ -74,22 +74,30 @@ const native::Texture* const Resources::getPrizeTexture(const Prize& prize) cons
   switch (prize) {
     // TODO: distinguish textures by prize type
     case Prize::BLOCK:
+      return getTexture("pr_brick.png");
     case Prize::CLIMB:
+      return getTexture("pr_arrow.png");
     case Prize::DESTROY:
+      return getTexture("pr_skull.png");
     case Prize::DRAGON:
     case Prize::EASY:
     case Prize::EASY_T:
     case Prize::EVAPORATE:
+      return getTexture("pr_waterdrop.png");
     case Prize::EXPLODE:
+      return getTexture("pr_explode.png");
     case Prize::EXTEND:
     case Prize::FAST:
     case Prize::FOG:
     case Prize::GOO:
+      return getTexture("pr_glue.png");
     case Prize::HYPER:
     case Prize::INIT:
     case Prize::JUMP:
     case Prize::LASER:
+      return getTexture("pr_laser.png");
     case Prize::MIRROR:
+      return getTexture("pr_mirror.png");
     case Prize::PIERCE:
     case Prize::PROTECT:
     case Prize::RANDOM:

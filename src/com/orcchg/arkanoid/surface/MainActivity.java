@@ -327,6 +327,10 @@ public class MainActivity extends FragmentActivity {
     public void onPrizeCatch(final Prize prize) {
       // TODO: distinguish prize types
       switch (prize) {
+        case DESTROY:
+          --currentLives;
+          updateLives();
+          break;
         case VITALITY:
           ++currentLives;
           updateLives();
