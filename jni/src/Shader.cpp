@@ -225,7 +225,7 @@ VerticalFallShader::VerticalFallShader()
       "  varying vec2 v_texCoord;                                              \n"
       "                                                                        \n"
       "  void main() {                                                         \n"
-      "    if (u_time <= 1.0) {                                                \n"
+      "    if (u_time <= 3.0) {                                                \n"
       "      gl_Position = a_position;                                         \n"
       "      gl_Position.y -= u_time * u_velocity;                             \n"
       "    } else {                                                            \n"

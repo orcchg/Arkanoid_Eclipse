@@ -813,7 +813,7 @@ void AsyncContext::drawPrize(GLfloat x, GLfloat y, Prize prize) {
   float delta_elapsed = static_cast<float>(currentTime - m_prize_last_time) / CLOCKS_PER_SEC;
   m_prize_last_time = currentTime;
   m_prize_time += delta_elapsed;
-  if (m_prize_time >= 1.0f) {
+  if (m_prize_time >= 3.0f) {
     m_prize_time = 0.0f;
     return;
   }
