@@ -624,8 +624,10 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
         break;
       // --------------------
       default:
-        external_collision = blockCollision(top_border, bottom_border, left_border, right_border, 100 /* elastic */);
         spawnPrizeAtBlock(row, col, spawned_prize);
+      case Block::TITAN:
+      case Block::INVUL:
+        external_collision = blockCollision(top_border, bottom_border, left_border, right_border, 100 /* elastic */);
         break;
     }
     block_impact_event.notifyListeners(RowCol(row, col));
