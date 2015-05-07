@@ -443,7 +443,7 @@ int Level::destroyBlocksAround(int row, int col, std::vector<RowCol>* output) {
   return modifyBlocksAround(row, col, Block::NONE, output);
 }
 
-int Level::modifyBlocksBehind(int row, int col, Block type, Direction direction, std::vector<RowCol>* output) {
+int Level::modifyBlocksBehind(int row, int col, Block type, bool ignoreNone, Direction direction, std::vector<RowCol>* output) {
   int score = 0;
   switch (direction) {
     case Direction::UP:
@@ -453,7 +453,9 @@ int Level::modifyBlocksBehind(int row, int col, Block type, Direction direction,
         initial_cardinality -= BlockUtils::getCardinalityCost(block);
         score += BlockUtils::getBlockScore(block);
         setVulnerableBlock(row, col, type);
-        output->emplace_back(row, col);
+        if (!(ignoreNone && block == Block::NONE)) {
+          output->emplace_back(row, col);
+        }
         --row;
       }
       break;
@@ -464,7 +466,9 @@ int Level::modifyBlocksBehind(int row, int col, Block type, Direction direction,
         initial_cardinality -= BlockUtils::getCardinalityCost(block);
         score += BlockUtils::getBlockScore(block);
         setVulnerableBlock(row, col, type);
-        output->emplace_back(row, col);
+        if (!(ignoreNone && block == Block::NONE)) {
+          output->emplace_back(row, col);
+        }
         ++row;
       }
       break;
@@ -475,7 +479,9 @@ int Level::modifyBlocksBehind(int row, int col, Block type, Direction direction,
         initial_cardinality -= BlockUtils::getCardinalityCost(block);
         score += BlockUtils::getBlockScore(block);
         setVulnerableBlock(row, col, type);
-        output->emplace_back(row, col);
+        if (!(ignoreNone && block == Block::NONE)) {
+          output->emplace_back(row, col);
+        }
         ++col;
       }
       break;
@@ -486,7 +492,9 @@ int Level::modifyBlocksBehind(int row, int col, Block type, Direction direction,
         initial_cardinality -= BlockUtils::getCardinalityCost(block);
         score += BlockUtils::getBlockScore(block);
         setVulnerableBlock(row, col, type);
-        output->emplace_back(row, col);
+        if (!(ignoreNone && block == Block::NONE)) {
+          output->emplace_back(row, col);
+        }
         --col;
       }
       break;
@@ -498,7 +506,7 @@ int Level::modifyBlocksBehind(int row, int col, Block type, Direction direction,
 }
 
 int Level::destroyBlocksBehind(int row, int col, Direction direction, std::vector<RowCol>* output) {
-  return modifyBlocksBehind(row, col, Block::NONE, direction, output);
+  return modifyBlocksBehind(row, col, Block::NONE, true, direction, output);
 }
 
 void Level::modifyBlockNear(int row, int col, Block type, RowCol* output) {

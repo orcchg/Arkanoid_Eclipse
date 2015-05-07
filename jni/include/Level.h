@@ -149,10 +149,11 @@ public:
   /// @param row Row index of certain block.
   /// @param col Column index of certain block.
   /// @param type Type the block will be modified to.
+  /// @param ignoreNone Whether to ignore NONE blocks.
   /// @param direction Direction behind the block.
   /// @param output Array of valid indices of influenced blocks.
   /// @return Score of affected blocks.
-  int modifyBlocksBehind(int row, int col, Block type, Direction direction, std::vector<RowCol>* output);
+  int modifyBlocksBehind(int row, int col, Block type, bool ignoreNone, Direction direction, std::vector<RowCol>* output);
   /// @brief Destroys blocks behind certain block.
   /// @return Score of affected blocks.
   int destroyBlocksBehind(int row, int col, Direction direction, std::vector<RowCol>* output);
