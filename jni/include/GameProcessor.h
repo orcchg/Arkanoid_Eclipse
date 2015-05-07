@@ -31,7 +31,7 @@ public:
   virtual ~GameProcessor() noexcept;
 
   /** @defgroup Callbacks These methods are responses of incoming events
-   *  which AsyncContext subscribed on.
+   *  which GameProcessor subscribed on.
    *  @{
    */
   /// @brief Called when aspect ratio has been measured.
