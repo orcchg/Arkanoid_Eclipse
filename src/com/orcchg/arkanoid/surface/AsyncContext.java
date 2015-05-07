@@ -16,6 +16,7 @@ class AsyncContext {
     void onScoreUpdated(int score);
     void onAngleChanged(int angle);
     void onCardinalityChanged(int new_cardinality);
+    void onPrizeCatch(Prize prize);
   }
   
   private CoreEventListener mListener;
@@ -90,6 +91,12 @@ class AsyncContext {
   void fireJavaEvent_cardinalityChanged(int new_cardinality) {
     if (mListener != null) {
       mListener.onCardinalityChanged(new_cardinality);
+    }
+  }
+  
+  void fireJavaEvent_prizeCatch(int prize) {
+    if (mListener != null) {
+      mListener.onPrizeCatch(Prize.fromInt(prize));
     }
   }
   

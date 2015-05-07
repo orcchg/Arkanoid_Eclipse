@@ -27,7 +27,7 @@ class GameProcessor : public ActiveObject {
 public:
   typedef std::shared_ptr<GameProcessor> Ptr;
 
-  GameProcessor(JavaVM* jvm, jobject master_object);
+  GameProcessor(JavaVM* jvm);
   virtual ~GameProcessor() noexcept;
 
   /** @defgroup Callbacks These methods are responses of incoming events

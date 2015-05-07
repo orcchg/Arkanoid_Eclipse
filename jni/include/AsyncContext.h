@@ -11,6 +11,8 @@
 #include <utility>
 #include <vector>
 
+#include <jni.h>
+
 #include <android/native_window.h>
 #include <android/native_window_jni.h>
 

@@ -179,8 +179,8 @@ AsyncContextHelper::AsyncContextHelper(JNIEnv* jenv, jobject object)
   : jenv(jenv)
   , window(nullptr) {
   acontext = std::make_shared<game::AsyncContext>(jvm);
-  processor = std::make_shared<game::GameProcessor>(jvm, object);
-  prize_processor = std::make_shared<game::PrizeProcessor>();
+  processor = std::make_shared<game::GameProcessor>(jvm);
+  prize_processor = std::make_shared<game::PrizeProcessor>(jvm);
 
   global_object = jenv->NewGlobalRef(object);
   jclass clazz = jenv->FindClass("java/lang/String");
@@ -192,6 +192,7 @@ AsyncContextHelper::AsyncContextHelper(JNIEnv* jenv, jobject object)
   fireJavaEvent_scoreUpdated_id = jenv->GetMethodID(class_id, "fireJavaEvent_onScoreUpdated", "(I)V");
   fireJavaEvent_angleChanged_id = jenv->GetMethodID(class_id, "fireJavaEvent_angleChanged", "(I)V");
   fireJavaEvent_cardinalityChanged_id = jenv->GetMethodID(class_id, "fireJavaEvent_cardinalityChanged", "(I)V");
+  fireJavaEvent_prizeCatch_id = jenv->GetMethodID(class_id, "fireJavaEvent_prizeCatch", "(I)V");
 
   processor->setMasterObject(global_object);
   processor->setOnLostBallMethodID(fireJavaEvent_lostBall_id);
@@ -199,6 +200,9 @@ AsyncContextHelper::AsyncContextHelper(JNIEnv* jenv, jobject object)
   processor->setOnScoreUpdatedMethodID(fireJavaEvent_scoreUpdated_id);
   processor->setOnAngleChangedMethodID(fireJavaEvent_angleChanged_id);
   processor->setOnCardinalityChangedMethodID(fireJavaEvent_cardinalityChanged_id);
+
+  prize_processor->setMasterObject(global_object);
+  prize_processor->setOnPrizeCatchMethodID(fireJavaEvent_prizeCatch_id);
 }
 
 AsyncContextHelper::~AsyncContextHelper() {

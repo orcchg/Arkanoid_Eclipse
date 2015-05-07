@@ -8,6 +8,7 @@
 #include <unordered_set>
 
 #include <GLES/gl.h>
+#include <jni.h>
 
 #include "ActiveObject.h"
 #include "Bite.h"
@@ -23,7 +24,7 @@ class PrizeProcessor : public ActiveObject {
 public:
   typedef std::shared_ptr<PrizeProcessor> Ptr;
 
-  PrizeProcessor();
+  PrizeProcessor(JavaVM* jvm);
   virtual ~PrizeProcessor() noexcept;
 
   /** @defgroup Callbacks These methods are responses of incoming events
@@ -43,6 +44,27 @@ public:
   /// @brief Called when prize has gone.
   void callback_prizeHasGone(int prize_id);
   /** @} */  // end of Callbacks group
+
+// ----------------------------------------------
+/* Private member-functions */
+private:
+  /** @defgroup JNIEnvironment Native glue between core and GUI.
+   * @{
+   */
+  /// @brief Attaches this thread to an existing JVM.
+  void attachToJVM();
+  /// @brief Detaches this thread from an existing JVM it had been
+  /// previously attached.
+  void detachFromJVM();
+  /** @} */  // end of JNIEnvironment group
+
+public:
+  /** @addtogroup JNIEnvironment
+   * @{
+   */
+  inline void setMasterObject(jobject object) { master_object = object; }
+  inline void setOnPrizeCatchMethodID(jmethodID id) { fireJavaEvent_prizeCatch_id = id; };
+  /** @} */  // end of JNIEnvironment group
 
 // ----------------------------------------------
 /* Public data-members */
@@ -70,6 +92,15 @@ public:
 // ----------------------------------------------
 /* Private data-members */
 private:
+  /** @addtogroup JNIEnvironment
+   * @{
+   */
+  JavaVM* m_jvm;  //!< Pointer to Java Virtual Machine in current session.
+  JNIEnv* m_jenv;  //!< Pointer to environment local within this thread.
+  jobject master_object;
+  jmethodID fireJavaEvent_prizeCatch_id;
+  /** @} */  // end of JNIEnvironment group
+
   /** @defgroup LogicData Game logic related data members.
    * @{
    */
@@ -83,6 +114,7 @@ private:
   /** @defgroup Mutex Thread-safety variables
    * @{
    */
+  std::mutex m_jnienvironment_mutex;  //!< Sentinel for thread attach to JVM.
   std::mutex m_aspect_ratio_mutex;  //!< Sentinel for measured aspect ratio.
   std::mutex m_init_bite_mutex;  //!< Sentinel for initial bite dimensions.
   std::mutex m_bite_location_mutex;  //!< Sentinel for bite's center location changes.
@@ -135,7 +167,12 @@ private:
   /** @defgroup LogicFunc Game logic related member functions.
    * @{
    */
-  //
+  /// @brief Adds prize to be removed later.
+  void addPrizeToRemoved(int prize_id);
+  /// @brief Clears removed prizes.
+  void clearRemovedPrizes();
+  /// @brief Notifies Java layer prize has been caught.
+  void onPrizeCatch(int prize_id);
   /** @} */  // end of LogicFunc group
 };
 

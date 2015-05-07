@@ -276,5 +276,11 @@ public class MainActivity extends FragmentActivity {
           }});
       }
     }
+    
+    @Override
+    public void onPrizeCatch(final Prize prize) {
+      // TODO: distinguish prize types
+      onScoreUpdated(35);
+    }
   }
 }

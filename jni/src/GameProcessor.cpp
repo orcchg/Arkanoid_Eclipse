@@ -11,9 +11,9 @@ namespace game {
 
 /* Public API */
 // ----------------------------------------------
-GameProcessor::GameProcessor(JavaVM* jvm, jobject master_object)
+GameProcessor::GameProcessor(JavaVM* jvm)
   : m_jvm(jvm), m_jenv(nullptr)
-  , master_object(master_object)
+  , master_object(nullptr)
   , fireJavaEvent_lostBall_id(nullptr)
   , fireJavaEvent_levelFinished_id(nullptr)
   , fireJavaEvent_cardinalityChanged_id(nullptr)
