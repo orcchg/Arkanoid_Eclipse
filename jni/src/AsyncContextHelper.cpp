@@ -42,6 +42,7 @@ JNIEXPORT jlong JNICALL Java_com_orcchg_arkanoid_surface_AsyncContext_init
   ptr->processor->bite_location_listener = ptr->acontext->bite_location_event.createListener(&game::GameProcessor::callback_biteMoved, ptr->processor);
 
   ptr->prize_processor->bite_location_listener = ptr->acontext->bite_location_event.createListener(&game::PrizeProcessor::callback_biteMoved, ptr->prize_processor);
+  ptr->prize_processor->init_bite_listener = ptr->acontext->init_bite_event.createListener(&game::PrizeProcessor::callback_initBite, ptr->prize_processor);
 
   return descriptor;
 }
@@ -51,6 +52,7 @@ JNIEXPORT void JNICALL Java_com_orcchg_arkanoid_surface_AsyncContext_start
   AsyncContextHelper* ptr = (AsyncContextHelper*) descriptor;
   ptr->acontext->launch();
   ptr->processor->launch();
+  ptr->prize_processor->launch();
 }
 
 JNIEXPORT void JNICALL Java_com_orcchg_arkanoid_surface_AsyncContext_stop
@@ -58,6 +60,7 @@ JNIEXPORT void JNICALL Java_com_orcchg_arkanoid_surface_AsyncContext_stop
   AsyncContextHelper* ptr = (AsyncContextHelper*) descriptor;
   ptr->acontext->stop();
   ptr->processor->stop();
+  ptr->prize_processor->stop();
 }
 
 JNIEXPORT void JNICALL Java_com_orcchg_arkanoid_surface_AsyncContext_destroy

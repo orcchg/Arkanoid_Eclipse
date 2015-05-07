@@ -5,6 +5,8 @@
 #include <memory>
 #include <mutex>
 
+#include <GLES/gl.h>
+
 #include "ActiveObject.h"
 #include "Bite.h"
 #include "Event.h"
@@ -25,6 +27,8 @@ public:
    *  which PrizeProcessor subscribed on.
    *  @{
    */
+  /// @brief Called when bite's dimensions have been measured.
+  void callback_initBite(Bite bite);
   /// @brief Called when bite's location has changed.
   void callback_biteMoved(Bite moved_bite);
   /** @} */  // end of Callbacks group
@@ -35,6 +39,8 @@ public:
   /** @defgroup Event Outcoming events and listeners for incoming events.
    * @{
    */
+  /// @brief Listens for bite's measured dimensions.
+  EventListener<Bite> init_bite_listener;
   /// @brief Listens for bite location changes.
   EventListener<Bite> bite_location_listener;
   /** @} */  // end of Event group
@@ -46,12 +52,15 @@ private:
    * @{
    */
   Bite m_bite;  //!< Physical bite's representation.
+  GLfloat m_bite_upper_border;  //!< Upper border of bite.
   /** @} */  // end of LogicData group
 
   /** @defgroup Mutex Thread-safety variables
    * @{
    */
+  std::mutex m_init_bite_mutex;  //!< Sentinel for initial bite dimensions.
   std::mutex m_bite_location_mutex;  //!< Sentinel for bite's center location changes.
+  std::atomic_bool m_init_bite_received;  //!< Initial bite dimensions have been received.
   std::atomic_bool m_bite_location_received;  //!< New bite's center location has been received.
   /** @} */  // end of Mutex group
 
@@ -76,6 +85,8 @@ private:
    *  corresponding event occurred and has been caught.
    *  @{
    */
+  /// @brief Set's the bite's measured dimensions.
+  void process_initBite();
   /// @brief Processing when bite's location has changed.
   void process_biteMoved();
   /** @} */  // end of Processors group
