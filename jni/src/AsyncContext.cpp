@@ -884,8 +884,7 @@ void AsyncContext::drawPrize(const PrizePackage& prize) {
   glVertexAttribPointer(a_position, 4, GL_FLOAT, GL_FALSE, 0, &prize_vertices[0]);
   glVertexAttribPointer(a_texCoord, 2, GL_FLOAT, GL_FALSE, 0, &m_rectangle_texCoord_buffer[0]);
 
-//  TODO: get texture for specified prize type
-  m_resources->getTexture("pr_star.png")->apply();
+  m_resources->getPrizeTexture(prize.getPrize())->apply();
   GLint sampler = glGetUniformLocation(m_prize_shader->getProgram(), "s_texture");
   glUniform1i(sampler, 0);
 

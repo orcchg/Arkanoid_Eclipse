@@ -50,6 +50,7 @@ JNIEXPORT void JNICALL Java_com_orcchg_arkanoid_surface_NativeResources_release
 #include <cstdlib>
 
 #include "Level.h"
+#include "Prize.h"
 #include "Texture.h"
 
 namespace game {
@@ -66,6 +67,7 @@ public:
   bool read(jstring filename);
   const native::Texture* const getTexture(const std::string& name) const;
   const native::Texture* const getRandomTexture(const std::string& prefix) const;
+  const native::Texture* const getPrizeTexture(const Prize& prize) const;
 
   iterator begin();
   iterator end();

@@ -70,6 +70,46 @@ const native::Texture* const Resources::getRandomTexture(const std::string& pref
   return texture;
 }
 
+const native::Texture* const Resources::getPrizeTexture(const Prize& prize) const {
+  native::Texture* texture = nullptr;
+  switch (prize) {
+    // TODO: distinguish textures by prize type
+    case Prize::BLOCK:
+    case Prize::CLIMB:
+    case Prize::DESTROY:
+    case Prize::DRAGON:
+    case Prize::EASY:
+    case Prize::EASY_T:
+    case Prize::EVAPORATE:
+    case Prize::EXPLODE:
+    case Prize::EXTEND:
+    case Prize::FAST:
+    case Prize::FOG:
+    case Prize::GOO:
+    case Prize::HYPER:
+    case Prize::INIT:
+    case Prize::JUMP:
+    case Prize::LASER:
+    case Prize::MIRROR:
+    case Prize::PIERCE:
+    case Prize::PROTECT:
+    case Prize::RANDOM:
+    case Prize::SHORT:
+    case Prize::SLOW:
+    case Prize::UPGRADE:
+    case Prize::DEGRADE:
+    case Prize::VITALITY:
+    case Prize::WIN:
+    case Prize::ZYGOTE:
+      texture = const_cast<native::Texture*>(getTexture("pr_star.png"));
+      break;
+    default:
+    case Prize::NONE:  // NONE prize is ignored by GameProcessor
+      break;
+  }
+  return texture;
+}
+
 Resources::iterator Resources::begin() {
   return m_textures.begin();
 }
