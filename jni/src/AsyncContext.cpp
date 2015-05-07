@@ -819,12 +819,13 @@ void AsyncContext::drawPrize(const PrizePackage& prize) {
   }
   {
     GLfloat Ypath = prize.getY() - m_prize_time * PrizeParams::prizeSpeed;
+    PrizePackage moved_prize = prize;
+    moved_prize.setY(Ypath);
     if (Ypath > -1.0f) {
-      PrizePackage moved_prize = prize;
-      moved_prize.setY(Ypath);
       prize_location_event.notifyListeners(moved_prize);
     } else {
-      prize_gone_event.notifyListeners(prize);  // prize has gone
+      moved_prize.setGone(true);
+      prize_gone_event.notifyListeners(moved_prize);  // prize has gone
     }
   }
 

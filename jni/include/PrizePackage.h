@@ -23,13 +23,16 @@ public:
   inline GLfloat getX() const { return x; }
   inline GLfloat getY() const { return y; }
   inline Prize getPrize() const { return prize; }
+  inline bool hasGone() const { return has_gone; }
 
   inline void setY(GLfloat new_y) { y = new_y; }
+  inline void setGone(bool gone) { has_gone = gone; }
 
 private:
   int id;
   GLfloat x, y;
   Prize prize;
+  bool has_gone;
 
   PrizePackage(int id, GLfloat x, GLfloat y, Prize prize);
 };
