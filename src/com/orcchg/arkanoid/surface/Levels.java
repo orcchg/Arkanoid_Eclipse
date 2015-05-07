@@ -248,9 +248,6 @@ public class Levels {
                                                     "TTT   TT  "};
   
   private static final String[] L15 = new String[] {"          ",
-                                                    "SS  SSSR S",
-                                                    "S S S SRSS",
-                                                    "SS  SSSR S",
                                                     "          ",
                                                     "    DD    ",
                                                     "  N TT N  ",
