@@ -387,6 +387,10 @@ void AsyncContext::process_blockImpact() {
 void AsyncContext::process_levelFinished() {
   std::unique_lock<std::mutex> lock(m_level_finished_mutex);
   m_bg_texture = m_resources->getRandomTexture("bg");
+  if (m_render_explosion) {
+    moveBall(0.0f, 1000.f);
+    delay(65);
+  }
   initGame();
 }
 
