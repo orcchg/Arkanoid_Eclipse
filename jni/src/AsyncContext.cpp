@@ -597,7 +597,6 @@ void AsyncContext::render() {
       }
     }
 #else
-//    drawLevel();
     for (int r = 0; r < m_level->numRows(); ++r) {
       for (int c = 0; c < m_level->numCols(); ++c) {
         if (m_level->getBlock(r, c) == Block::NONE) {
