@@ -94,6 +94,7 @@ const native::Texture* const Resources::getPrizeTexture(const Prize& prize) cons
     case Prize::HYPER:
     case Prize::INIT:
     case Prize::JUMP:
+      return getTexture("pr_candy.png");
     case Prize::LASER:
       return getTexture("pr_laser.png");
     case Prize::MIRROR:
