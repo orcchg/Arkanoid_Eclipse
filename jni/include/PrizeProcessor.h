@@ -9,6 +9,8 @@
 #include "Event.h"
 #include "EventListener.h"
 
+namespace game {
+
 /// @class PrizeProcessor PrizeProcessor.h "include/PrizeProcessor.h"
 /// @brief Standalone thread performs processing catch prizes.
 class PrizeProcessor : public ActiveObject {
@@ -72,6 +74,14 @@ private:
    */
   //
   /** @} */  // end of Processors group
+
+  /** @defgroup LogicFunc Game logic related member functions.
+   * @{
+   */
+  //
+  /** @} */  // end of LogicFunc group
 };
+
+}
 
 #endif  // __ARKANOID_PRIZE_PROCESSOR__H__
