@@ -3,6 +3,7 @@
 
 namespace game {
 
+// http://stackoverflow.com/questions/18175962/cant-use-static-stdatomic-and-dont-know-how-to-initialize-it
 std::atomic<int> PrizePackage::initialId(0);
 
 PrizePackage::PrizePackage(GLfloat x, GLfloat y, Prize prize)
