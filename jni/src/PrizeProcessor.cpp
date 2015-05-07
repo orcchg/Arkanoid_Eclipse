@@ -7,7 +7,10 @@ namespace game {
 PrizeProcessor::PrizeProcessor()
   : m_aspect(1.0f)
   , m_bite()
-  , m_bite_upper_border(-BiteParams::neg_biteElevation) {
+  , m_bite_upper_border(-BiteParams::neg_biteElevation)
+  , m_prize_packages()
+  , m_removed_prizes() {
+
   DBG("enter PrizeProcessor ctor");
   m_aspect_ratio_received.store(false);
   m_init_bite_received.store(false);
@@ -15,6 +18,8 @@ PrizeProcessor::PrizeProcessor()
   m_prize_received.store(false);
   m_prize_location_received.store(false);
   m_prize_gone_received.store(false);
+
+  m_removed_prizes.reserve(24);
   DBG("exit PrizeProcessor ctor");
 }
 
@@ -59,10 +64,11 @@ void PrizeProcessor::callback_prizeLocated(PrizePackage package) {
 }
 
 void PrizeProcessor::callback_prizeHasGone(int prize_id) {
-//  std::unique_lock<std::mutex> lock(m_prize_gone_mutex);
-//  m_prize_gone_received.store(true);
-//  m_prize_packages[package.getID()] = package;
-//  interrupt();
+  std::unique_lock<std::mutex> lock(m_prize_gone_mutex);
+  m_prize_gone_received.store(true);
+  m_prize_packages[prize_id].setGone(true);
+  m_removed_prizes.insert(prize_id);
+  interrupt();
 }
 
 /* ActiveObject group */
@@ -124,7 +130,10 @@ void PrizeProcessor::process_biteMoved() {
 
 void PrizeProcessor::process_prizeReceived() {
   std::unique_lock<std::mutex> lock(m_prize_mutex);
-  // no-op
+  for (auto& item : m_removed_prizes) {
+    m_prize_packages.erase(item);
+  }
+  m_removed_prizes.clear();
 }
 
 void PrizeProcessor::process_prizeLocated() {

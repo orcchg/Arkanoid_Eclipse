@@ -5,6 +5,7 @@
 #include <memory>
 #include <mutex>
 #include <unordered_map>
+#include <unordered_set>
 
 #include <GLES/gl.h>
 
@@ -76,6 +77,7 @@ private:
   Bite m_bite;  //!< Physical bite's representation.
   GLfloat m_bite_upper_border;  //!< Upper border of bite.
   std::unordered_map<int, PrizePackage> m_prize_packages;
+  std::unordered_set<int> m_removed_prizes;
   /** @} */  // end of LogicData group
 
   /** @defgroup Mutex Thread-safety variables

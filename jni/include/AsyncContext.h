@@ -7,6 +7,7 @@
 #include <queue>
 #include <random>
 #include <unordered_map>
+#include <unordered_set>
 #include <utility>
 #include <vector>
 
@@ -212,6 +213,7 @@ private:
   clock_t m_prize_last_time;
   float m_prize_time;
   std::unordered_map<int, PrizePackage> m_prize_packages;
+  std::unordered_set<int> m_removed_prizes;
   /** @} */  // end of LogicData group
 
   /** @defgroup Shaders Shaders for rendering game components.
@@ -331,6 +333,10 @@ private:
   /// @param y_position Normalized position along Y axis the ball should move at.
   /// @note Positions should both be within [-1, 1] segment.
   void moveBall(float x_position, float y_position);
+  /// @brief Adds prize to be removed later.
+  void addPrizeToRemoved(int prize_id);
+  /// @brief Clears removed prizes.
+  void clearRemovedPrizes();
   /** @} */  // end of LogicFunc group
 
 private:

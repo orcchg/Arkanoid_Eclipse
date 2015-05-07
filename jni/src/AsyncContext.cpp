@@ -49,6 +49,7 @@ AsyncContext::AsyncContext(JavaVM* jvm)
   , m_prize_last_time(0)
   , m_prize_time(0.0f)
   , m_prize_packages()
+  , m_removed_prizes()
   , m_level_shader(nullptr)
   , m_bite_shader(nullptr)
   , m_ball_shader(nullptr)
@@ -188,7 +189,7 @@ void AsyncContext::callback_prizeReceived(PrizePackage package) {
 void AsyncContext::callback_prizeCaught(int prize_id) {
   std::unique_lock<std::mutex> lock(m_prize_caught_mutex);
   m_prize_caught_received.store(true);
-  // XXX:
+  addPrizeToRemoved(prize_id);
   interrupt();
 }
 
@@ -420,7 +421,7 @@ void AsyncContext::process_prizeReceived() {
 
 void AsyncContext::process_prizeCaught() {
   std::unique_lock<std::mutex> lock(m_prize_caught_mutex);
-  // XXX:
+  // no-op
 }
 
 /* LogicFunc group */
@@ -471,6 +472,17 @@ void AsyncContext::moveBall(float x_position, float y_position) {
       -m_ball.getDimens().halfWidth() + x_position,
       m_ball.getDimens().halfHeight() + y_position,
       1, 1);
+}
+
+void AsyncContext::addPrizeToRemoved(int prize_id) {
+  m_removed_prizes.insert(prize_id);
+}
+
+void AsyncContext::clearRemovedPrizes() {
+  for (auto& item : m_removed_prizes) {
+    m_prize_packages.erase(item);
+  }
+  m_removed_prizes.clear();
 }
 
 /* GraphicsContext group */
@@ -610,6 +622,7 @@ void AsyncContext::render() {
       }
     }
 
+    clearRemovedPrizes();
     for (auto& item : m_prize_packages) {
       drawPrize(item.second);
     }
@@ -835,15 +848,18 @@ void AsyncContext::drawPrize(const PrizePackage& prize) {
     m_prize_time = 0.0f;
     return;
   }
+  int is_visible = 1;  /* true */
   {
     GLfloat Ypath = prize.getY() - m_prize_time * PrizeParams::prizeSpeed;
-    PrizePackage moved_prize = prize;
-    moved_prize.setY(Ypath);
-    if (Ypath > -BiteParams::neg_biteElevation) {
+    if (Ypath >= -BiteParams::neg_biteElevation) {
+      PrizePackage moved_prize = prize;
+      moved_prize.setY(Ypath);
       prize_location_event.notifyListeners(moved_prize);
+    } else if (Ypath < -BiteParams::neg_biteElevation && Ypath > -1.0f) {
+      prize_gone_event.notifyListeners(prize.getID());
     } else {
-      moved_prize.setGone(true);
-      prize_gone_event.notifyListeners(moved_prize.getID());
+      is_visible = 0;  /* false */
+      addPrizeToRemoved(prize.getID());
     }
   }
 
@@ -852,7 +868,7 @@ void AsyncContext::drawPrize(const PrizePackage& prize) {
   GLint u_visible = glGetUniformLocation(m_prize_shader->getProgram(), "u_visible");
   glUniform1f(u_time, m_prize_time);
   glUniform1f(u_velocity, PrizeParams::prizeSpeed);
-  glUniform1i(u_visible, 1 /* true */);
+  glUniform1i(u_visible, is_visible);
 
   GLint a_position = glGetAttribLocation(m_prize_shader->getProgram(), "a_position");
   GLint a_texCoord = glGetAttribLocation(m_prize_shader->getProgram(), "a_texCoord");
