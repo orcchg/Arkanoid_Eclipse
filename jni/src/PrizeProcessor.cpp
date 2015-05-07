@@ -59,10 +59,10 @@ void PrizeProcessor::callback_prizeLocated(PrizePackage package) {
 }
 
 void PrizeProcessor::callback_prizeHasGone(PrizePackage package) {
-  std::unique_lock<std::mutex> lock(m_prize_gone_mutex);
-  m_prize_gone_received.store(true);
-  m_prize_packages[package.getID()] = package;
-  interrupt();
+//  std::unique_lock<std::mutex> lock(m_prize_gone_mutex);
+//  m_prize_gone_received.store(true);
+//  m_prize_packages[package.getID()] = package;
+//  interrupt();
 }
 
 /* ActiveObject group */
@@ -134,7 +134,6 @@ void PrizeProcessor::process_prizeLocated() {
         item.second.getY() <= m_bite_upper_border + PrizeParams::prizeHalfHeight * m_aspect &&
         item.second.getX() >= -(m_bite.getDimens().halfWidth() + PrizeParams::prizeHalfWidth) + m_bite.getXPose() &&
         item.second.getX() <= (m_bite.getDimens().halfWidth() + PrizeParams::prizeHalfWidth) + m_bite.getXPose()) {
-      INF("CAUGHT: %i %lf %lf", item.second.getID(), item.second.getX(), item.second.getY());
       prize_caught_event.notifyListeners(item.second.getID());
     }
   }
@@ -142,7 +141,7 @@ void PrizeProcessor::process_prizeLocated() {
 
 void PrizeProcessor::process_prizeHasGone() {
   std::unique_lock<std::mutex> lock(m_prize_gone_mutex);
-  // XXX:
+  // no-op
 }
 
 /* LogicFunc group */

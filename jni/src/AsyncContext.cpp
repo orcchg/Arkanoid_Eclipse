@@ -68,6 +68,7 @@ AsyncContext::AsyncContext(JavaVM* jvm)
   m_level_finished_received.store(false);
   m_explosion_received.store(false);
   m_prize_received.store(false);
+  m_prize_caught_received.store(false);
   m_window_set = false;
   m_resources = nullptr;
 
@@ -184,6 +185,13 @@ void AsyncContext::callback_prizeReceived(PrizePackage package) {
   interrupt();
 }
 
+void AsyncContext::callback_prizeCaught(int prize_id) {
+  std::unique_lock<std::mutex> lock(m_prize_caught_mutex);
+  m_prize_caught_received.store(true);
+  // XXX:
+  interrupt();
+}
+
 // ----------------------------------------------
 Level::Ptr AsyncContext::getCurrentLevelState() {
   std::unique_lock<std::mutex> lock(m_load_level_mutex);
@@ -232,7 +240,8 @@ bool AsyncContext::checkForWakeUp() {
       m_block_impact_received.load() ||
       m_level_finished_received.load() ||
       m_explosion_received.load() ||
-      m_prize_received.load();
+      m_prize_received.load() ||
+      m_prize_caught_received.load();
 }
 
 void AsyncContext::eventHandler() {
@@ -257,6 +266,10 @@ void AsyncContext::eventHandler() {
     if (m_prize_received.load()) {
       m_prize_received.store(false);
       process_prizeReceived();
+    }
+    if (m_prize_caught_received.load()) {
+      m_prize_caught_received.store(false);
+      process_prizeCaught();
     }
     if (m_block_impact_received.load()) {
       m_block_impact_received.store(false);
@@ -403,6 +416,11 @@ void AsyncContext::process_explosion() {
 void AsyncContext::process_prizeReceived() {
   std::unique_lock<std::mutex> lock(m_prize_mutex);
   // no-op
+}
+
+void AsyncContext::process_prizeCaught() {
+  std::unique_lock<std::mutex> lock(m_prize_caught_mutex);
+  // XXX:
 }
 
 /* LogicFunc group */
@@ -821,7 +839,7 @@ void AsyncContext::drawPrize(const PrizePackage& prize) {
     GLfloat Ypath = prize.getY() - m_prize_time * PrizeParams::prizeSpeed;
     PrizePackage moved_prize = prize;
     moved_prize.setY(Ypath);
-    if (Ypath > -1.0f) {
+    if (Ypath > -BiteParams::neg_biteElevation) {
       prize_location_event.notifyListeners(moved_prize);
     } else {
       moved_prize.setGone(true);

@@ -72,6 +72,8 @@ public:
   void callback_explosion(ExplosionPackage package);
   /// @brief Called when prize has been generated.
   void callback_prizeReceived(PrizePackage package);
+  /// @brief Called when prize has been caught.
+  void callback_prizeCaught(int prize_id);
   /** @} */  // end of Callbacks group
 
   /** @defgroup GameStat Get game statistics
@@ -129,6 +131,8 @@ public:
   EventListener<ExplosionPackage> explosion_listener;
   /// @brief Listens for event which occurs when prize has been generated.
   EventListener<PrizePackage> prize_listener;
+  /// @brief Listens for event which occurs when prize has been caught.
+  EventListener<int> prize_caught_listener;
 
   /// @brief Notifies for measured aspect ratio.
   Event<float> aspect_ratio_event;
@@ -236,6 +240,7 @@ private:
   std::mutex m_level_finished_mutex;  //!< Sentinel for level has been successfully finished.
   std::mutex m_explosion_mutex;  //!< Sentinel for particle system explosion.
   std::mutex m_prize_mutex;  //!< Sentinel for prize receiving.
+  std::mutex m_prize_caught_mutex;  //!< Sentinel for prize has been caught.
   std::atomic_bool m_surface_received;  //!< Window has been set.
   std::atomic_bool m_load_resources_received;  //!< Load resources requested.
   std::atomic_bool m_shift_gamepad_received;  //!< Shift gesture has occurred.
@@ -247,6 +252,7 @@ private:
   std::atomic_bool m_level_finished_received;  //!< Level has been successfully finished.
   std::atomic_bool m_explosion_received;  //!< Request for explosion received.
   std::atomic_bool m_prize_received;  //!< Prize has been received.
+  std::atomic_bool m_prize_caught_received;  //!< Prize has been caught received.
   /** @} */  // end of Mutex group
 
   /** @defgroup SafetyFlag Logic-safety variables
@@ -306,6 +312,8 @@ private:
   void process_explosion();
   /// @brief Performs visual prize generation.
   void process_prizeReceived();
+  /// @brief Performs visual prize catching.
+  void process_prizeCaught();
   /** @} */  // end of Processors group
 
 private:
