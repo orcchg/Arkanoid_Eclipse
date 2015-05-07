@@ -71,7 +71,6 @@ const native::Texture* const Resources::getRandomTexture(const std::string& pref
 }
 
 const native::Texture* const Resources::getPrizeTexture(const Prize& prize) const {
-  native::Texture* texture = nullptr;
   switch (prize) {
     // TODO: distinguish textures by prize type
     case Prize::BLOCK:
@@ -99,15 +98,15 @@ const native::Texture* const Resources::getPrizeTexture(const Prize& prize) cons
     case Prize::UPGRADE:
     case Prize::DEGRADE:
     case Prize::VITALITY:
+      return getTexture("pr_ball.png");
     case Prize::WIN:
     case Prize::ZYGOTE:
-      texture = const_cast<native::Texture*>(getTexture("pr_star.png"));
-      break;
+      return getTexture("pr_star.png");
     default:
     case Prize::NONE:  // NONE prize is ignored by GameProcessor
       break;
   }
-  return texture;
+  return nullptr;
 }
 
 Resources::iterator Resources::begin() {
