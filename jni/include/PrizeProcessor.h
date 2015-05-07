@@ -4,7 +4,7 @@
 #include <atomic>
 #include <memory>
 #include <mutex>
-#include <vector>
+#include <unordered_map>
 
 #include <GLES/gl.h>
 
@@ -37,6 +37,8 @@ public:
   void callback_prizeReceived(PrizePackage package);
   /// @brief Called when prize has been located.
   void callback_prizeLocated(PrizePackage package);
+  /// @brief Called when prize has gone.
+  void callback_prizeHasGone(PrizePackage package);
   /** @} */  // end of Callbacks group
 
 // ----------------------------------------------
@@ -53,6 +55,8 @@ public:
   EventListener<PrizePackage> prize_listener;
   /// @brief Listens for prize location changes.
   EventListener<PrizePackage> prize_location_listener;
+  /// @brief Listens whether prize has gone.
+  EventListener<PrizePackage> prize_gone_listener;
   /** @} */  // end of Event group
 
 // ----------------------------------------------
@@ -63,7 +67,7 @@ private:
    */
   Bite m_bite;  //!< Physical bite's representation.
   GLfloat m_bite_upper_border;  //!< Upper border of bite.
-  std::vector<PrizePackage> m_prize_packages;
+  std::unordered_map<int, PrizePackage> m_prize_packages;
   /** @} */  // end of LogicData group
 
   /** @defgroup Mutex Thread-safety variables
@@ -73,10 +77,12 @@ private:
   std::mutex m_bite_location_mutex;  //!< Sentinel for bite's center location changes.
   std::mutex m_prize_mutex;  //!< Sentinel for prize receiving.
   std::mutex m_prize_location_mutex;  //!< Sentinel for prize location changes.
+  std::mutex m_prize_gone_mutex;  //!< Sentinel for prize has gone.
   std::atomic_bool m_init_bite_received;  //!< Initial bite dimensions have been received.
   std::atomic_bool m_bite_location_received;  //!< New bite's center location has been received.
   std::atomic_bool m_prize_received;  //!< Prize has been received.
   std::atomic_bool m_prize_location_received;  //!< Prize location has been received.
+  std::atomic_bool m_prize_gone_received;  //!< Prize has gone received.
   /** @} */  // end of Mutex group
 
 // ----------------------------------------------
@@ -108,6 +114,8 @@ private:
   void process_prizeReceived();
   /// @brief Processing prize relocation.
   void process_prizeLocated();
+  /// @brief Processing prize has gone.
+  void process_prizeHasGone();
   /** @} */  // end of Processors group
 
   /** @defgroup LogicFunc Game logic related member functions.

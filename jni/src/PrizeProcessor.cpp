@@ -12,6 +12,7 @@ PrizeProcessor::PrizeProcessor()
   m_bite_location_received.store(false);
   m_prize_received.store(false);
   m_prize_location_received.store(false);
+  m_prize_gone_received.store(false);
   DBG("exit PrizeProcessor ctor");
 }
 
@@ -37,13 +38,20 @@ void PrizeProcessor::callback_biteMoved(Bite moved_bite) {
 void PrizeProcessor::callback_prizeReceived(PrizePackage package) {
   std::unique_lock<std::mutex> lock(m_prize_mutex);
   m_prize_received.store(true);
-  m_prize_packages.push_back(package);
+  m_prize_packages[package.getID()] = package;
   interrupt();
 }
 
 void PrizeProcessor::callback_prizeLocated(PrizePackage package) {
   std::unique_lock<std::mutex> lock(m_prize_location_mutex);
   m_prize_location_received.store(true);
+  // XXX:
+  interrupt();
+}
+
+void PrizeProcessor::callback_prizeHasGone(PrizePackage package) {
+  std::unique_lock<std::mutex> lock(m_prize_gone_mutex);
+  m_prize_gone_received.store(true);
   // XXX:
   interrupt();
 }
@@ -60,7 +68,8 @@ bool PrizeProcessor::checkForWakeUp() {
   return m_init_bite_received.load() ||
          m_bite_location_received.load() ||
          m_prize_received.load() ||
-         m_prize_location_received.load();
+         m_prize_location_received.load() ||
+         m_prize_gone_received.load();
 }
 
 void PrizeProcessor::eventHandler() {
@@ -101,6 +110,11 @@ void PrizeProcessor::process_prizeReceived() {
 
 void PrizeProcessor::process_prizeLocated() {
   std::unique_lock<std::mutex> lock(m_prize_location_mutex);
+  // XXX:
+}
+
+void PrizeProcessor::process_prizeHasGone() {
+  std::unique_lock<std::mutex> lock(m_prize_gone_mutex);
   // XXX:
 }
 

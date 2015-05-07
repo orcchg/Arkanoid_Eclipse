@@ -6,7 +6,9 @@
 #include <mutex>
 #include <queue>
 #include <random>
+#include <unordered_map>
 #include <utility>
+#include <vector>
 
 #include <android/native_window.h>
 #include <android/native_window_jni.h>
@@ -138,6 +140,10 @@ public:
   Event<LevelDimens> level_dimens_event;
   /// @brief Notifies bite location has changed.
   Event<Bite> bite_location_event;
+  /// @brief Notifies prize visual location has changed.
+  Event<PrizePackage> prize_location_event;
+  /// @brief Notifies prize has gone.
+  Event<PrizePackage> prize_gone_event;
   /** @} */  // end of Event group
 
 // ----------------------------------------------
@@ -201,7 +207,7 @@ private:
 
   clock_t m_prize_last_time;
   float m_prize_time;
-  std::vector<PrizePackage> m_prize_packages;
+  std::unordered_map<int, PrizePackage> m_prize_packages;
   /** @} */  // end of LogicData group
 
   /** @defgroup Shaders Shaders for rendering game components.

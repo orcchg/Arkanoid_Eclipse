@@ -180,7 +180,7 @@ void AsyncContext::callback_explosion(ExplosionPackage package) {
 void AsyncContext::callback_prizeReceived(PrizePackage package) {
   std::unique_lock<std::mutex> lock(m_prize_mutex);
   m_prize_received.store(true);
-  m_prize_packages.push_back(package);
+  m_prize_packages[package.getID()] = package;
   interrupt();
 }
 
@@ -593,7 +593,7 @@ void AsyncContext::render() {
     }
 
     for (auto& item : m_prize_packages) {
-      drawPrize(item.getX(), item.getY(), item.getPrize());
+      drawPrize(item.second);
     }
 
     eglSwapInterval(m_egl_display, 0);
@@ -803,7 +803,7 @@ void AsyncContext::drawBackground() {
   glDisableVertexAttribArray(a_texCoord);
 }
 
-void AsyncContext::drawPrize(GLfloat x, GLfloat y, Prize prize) {
+void AsyncContext::drawPrize(const PrizePackage& prize) {
   m_prize_shader->useProgram();
 
   if (m_prize_last_time == 0) {
@@ -816,6 +816,15 @@ void AsyncContext::drawPrize(GLfloat x, GLfloat y, Prize prize) {
   if (m_prize_time >= 3.0f) {
     m_prize_time = 0.0f;
     return;
+  }
+  {
+    GLfloat Ypath = prize.getY() - m_prize_time * PrizeParams::prizeSpeed;
+    if (Ypath > -1.0f) {
+      PrizePackage moved_prize(prize.getX(), Ypath, prize.getPrize());
+      prize_location_event.notifyListeners(moved_prize);
+    } else {
+      prize_gone_event.notifyListeners(prize);  // prize has gone
+    }
   }
 
   GLint u_time = glGetUniformLocation(m_prize_shader->getProgram(), "u_time");
@@ -833,8 +842,8 @@ void AsyncContext::drawPrize(GLfloat x, GLfloat y, Prize prize) {
       prize_vertices,
       PrizeParams::prizeWidth,
       PrizeParams::prizeHeight * m_aspect,
-      x - PrizeParams::prizeHalfWidth,
-      y - PrizeParams::prizeHalfHeight,
+      prize.getX() - PrizeParams::prizeHalfWidth,
+      prize.getY() - PrizeParams::prizeHalfHeight,
       1, 1);
 
   glVertexAttribPointer(a_position, 4, GL_FLOAT, GL_FALSE, 0, &prize_vertices[0]);

@@ -6,6 +6,10 @@ namespace game {
 // http://stackoverflow.com/questions/18175962/cant-use-static-stdatomic-and-dont-know-how-to-initialize-it
 std::atomic<int> PrizePackage::initialId(0);
 
+PrizePackage::PrizePackage()
+  : id(-1), x(0.0f), y(0.0f), prize(Prize::NONE) {
+}
+
 PrizePackage::PrizePackage(GLfloat x, GLfloat y, Prize prize)
   : id(initialId++), x(x), y(y), prize(prize) {
 }
@@ -32,10 +36,6 @@ PrizePackage& PrizePackage::operator = (PrizePackage rhs) {
   std::swap(y, temp.y);
   std::swap(prize, temp.prize);
   return *this;
-}
-
-PrizePackage::PrizePackage()
-  : id(-1), x(0.0f), y(0.0f), prize(Prize::NONE) {
 }
 
 }

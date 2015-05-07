@@ -10,6 +10,7 @@ namespace game {
 
 class PrizePackage {
 public:
+  PrizePackage();
   PrizePackage(GLfloat x, GLfloat y, Prize prize);
   virtual ~PrizePackage();
   PrizePackage(const PrizePackage& obj);
@@ -27,8 +28,6 @@ private:
   int id;
   GLfloat x, y;
   Prize prize;
-
-  PrizePackage();
 };
 
 }
