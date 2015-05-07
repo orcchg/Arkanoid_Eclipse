@@ -148,6 +148,17 @@ public class MainActivity extends FragmentActivity {
     return true;
   }
   
+  /* Gameplay methods */
+  // --------------------------------------------------------------------------
+  void lostGame() {
+    Log.i(TAG, "Game is lost!");
+    setLives(INITIAL_LIVES);
+    mAsyncContext.fireJavaEvent_refreshLives();
+    mAsyncContext.loadLevel(Levels.get(currentLevel, ""));
+  }
+  
+  /* Support methods */
+  // --------------------------------------------------------------------------
   AsyncContext getAsyncContext() { return mAsyncContext; }
   
   GameStat getStat(long player_id) {
@@ -174,6 +185,8 @@ public class MainActivity extends FragmentActivity {
       lives = mLifeViews.length;
     } else if (lives < 0) {
       lives = 0;
+      lostGame();
+      return;
     }
     for (int i = 0; i < lives; ++i) {
       mLifeViews[i].setVisibility(View.VISIBLE);
@@ -228,6 +241,11 @@ public class MainActivity extends FragmentActivity {
         currentLevel = game_stat.level;
         currentScore = game_stat.score;
       }
+    }
+    
+    @Override
+    public void onRefreshLives() {
+      currentLives = INITIAL_LIVES;
     }
     
     @Override

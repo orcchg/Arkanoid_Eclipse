@@ -10,6 +10,7 @@ class AsyncContext {
   private final long descriptor;
   
   interface CoreEventListener {
+    void onRefreshLives();
     void onThrowBall();
     void onLostBall();
     void onLevelFinished();
@@ -56,6 +57,12 @@ class AsyncContext {
   /* Events coming from native Core */
   void setCoreEventListener(CoreEventListener listener) {
     mListener = listener;
+  }
+  
+  void fireJavaEvent_refreshLives() {
+    if (mListener != null) {
+      mListener.onRefreshLives();
+    }
   }
   
   void fireJavaEvent_throwBall() {
