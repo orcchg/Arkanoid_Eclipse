@@ -72,7 +72,7 @@ AsyncContext::AsyncContext(JavaVM* jvm)
   m_resources = nullptr;
 
   util::setColor(util::SALMON, &m_bite_color_buffer[0], 8);
-  util::setColor(util::BROWN, &m_bite_color_buffer[8], 8);
+  util::setColor(util::SIENNA_DARK, &m_bite_color_buffer[8], 8);
 
   util::setColor(util::ORANGE, &m_ball_color_buffer[0], 4);
   util::setColor(util::SIENNA_LIGHT, &m_ball_color_buffer[4], 16);
