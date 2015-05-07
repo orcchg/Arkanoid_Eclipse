@@ -327,6 +327,21 @@ void GameProcessor::explodeBlock(int row, int col, const util::BGRA<GLfloat>& co
   explode(x, y, color, kind);
 }
 
+void GameProcessor::spawnPrize(GLfloat x, GLfloat y, Prize prize) {
+  if (prize != Prize::NONE) {
+    PrizePackage package(x, y, prize);
+    prize_event.notifyListeners(package);
+  }
+}
+
+void GameProcessor::spawnPrizeAtBlock(int row, int col, Prize prize) {
+  if (prize != Prize::NONE) {
+    GLfloat x = 0.f, y = 0.f;
+    getCenterOfBlock(row, col, &x, &y);
+    spawnPrize(x, y, prize);
+  }
+}
+
 /* Collision group */
 // ----------------------------------------------------------------------------
 void GameProcessor::collideLeftBorder() {
@@ -459,6 +474,7 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
     size_t random_index = 0;
     Mode mode = m_direction_distribution(m_generator) ? Mode::DEGRADE : Mode::UPGRADE;
     Block generated_block = m_level->getGenerator().generateBlock();
+    Prize spawned_prize = m_level->getPrizeGenerator().generatePrize();
 
     Block block = m_level->getBlock(row, col);
     m_level->setBlockImpacted(row, col);
@@ -527,6 +543,7 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
         external_collision = blockCollision(top_border, bottom_border, left_border, right_border, 100 /* elastic */);
         m_level->findBlocks(Block::NETWORK, &network_blocks);
         explodeBlock(row, col, BlockUtils::getBlockColor(Block::NETWORK), Kind::DIVERGE);
+        spawnPrizeAtBlock(row, col, spawned_prize);
         if (!network_blocks.empty()) {
           random_index = util::getRandomElement(network_blocks);
           shiftBallIntoBlock(network_blocks[random_index].row, network_blocks[random_index].col);
@@ -550,6 +567,7 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
       case Block::ROLLING:
         viscosity = m_viscosity_distribution(m_generator);
         external_collision = blockCollision(top_border, bottom_border, left_border, right_border, viscosity);
+        spawnPrizeAtBlock(row, col, spawned_prize);
         break;
       // --------------------
       case Block::ZYGOTE_SPAWN:
@@ -567,6 +585,7 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
       case Block::CLAY:
         viscosity += 10;
         external_collision = blockCollision(top_border, bottom_border, left_border, right_border, viscosity);
+        spawnPrizeAtBlock(row, col, spawned_prize);
         break;
       // --------------------
       case Block::MAGIC:
@@ -581,6 +600,7 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
         external_collision = blockCollision(top_border, bottom_border, left_border, right_border, 100 /* elastic */);
         score += m_level->changeBlocksAround(row, col, mode, &affected_blocks);
         explodeBlock(row, col, BlockUtils::getBlockColor(Block::QUICK_1), Kind::DIVERGE);
+        spawnPrizeAtBlock(row, col, spawned_prize);
         for (auto& item : affected_blocks) {
           block_impact_event.notifyListeners(item);
         }
@@ -589,6 +609,7 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
         external_collision = blockCollision(top_border, bottom_border, left_border, right_border, 50);
         score += m_level->modifyBlocksAround(row, col, Block::YOGURT_1, &affected_blocks);
         explodeBlock(row, col, BlockUtils::getBlockColor(Block::YOGURT), Kind::DIVERGE);
+        spawnPrizeAtBlock(row, col, spawned_prize);
         for (auto& item : affected_blocks) {
           block_impact_event.notifyListeners(item);
         }
@@ -597,11 +618,13 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
         external_collision = blockCollision(top_border, bottom_border, left_border, right_border, 100 /* elastic */);
         m_level->modifyBlockNear(row, col, Block::ZYGOTE_SPAWN, &single_affected);
         explodeBlock(single_affected.row, single_affected.col, BlockUtils::getBlockColor(Block::ZYGOTE_SPAWN), Kind::CONVERGE);
+        spawnPrizeAtBlock(row, col, spawned_prize);
         block_impact_event.notifyListeners(single_affected);
         break;
       // --------------------
       default:
         external_collision = blockCollision(top_border, bottom_border, left_border, right_border, 100 /* elastic */);
+        spawnPrizeAtBlock(row, col, spawned_prize);
         break;
     }
     block_impact_event.notifyListeners(RowCol(row, col));

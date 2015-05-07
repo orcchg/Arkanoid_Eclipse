@@ -250,6 +250,16 @@ private:
   void explodeBlock(int row, int col, Kind kind);
   /// @brief Same as above but with specified color.
   void explodeBlock(int row, int col, const util::BGRA<GLfloat>& color, Kind kind);
+  /// @brief Spawns prize of specified type at given location.
+  /// @param x Spawn point along X axis.
+  /// @param y Spawn point along Y axis.
+  /// @param prize Type of prize to be spawned.
+  void spawnPrize(GLfloat x, GLfloat y, Prize prize);
+  /// @brief Spawns prize at specified block's location.
+  /// @param row Row index of specified block.
+  /// @param col Column index of specified block.
+  /// @param prize Type of prize to be spawned.
+  void spawnPrizeAtBlock(int row, int col, Prize prize);
   /** @} */  // end of LogicFunc group
 
   /** @defgroup Collision Functions to perform various collisions.
