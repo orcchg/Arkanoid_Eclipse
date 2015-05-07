@@ -368,8 +368,10 @@ void AsyncContext::process_moveBall() {
 
 void AsyncContext::process_lostBall() {
   std::unique_lock<std::mutex> lock(m_lost_ball_mutex);
-  moveBall(0.0f, 1000.f);
-  delay(65);
+  if (m_render_explosion) {
+    moveBall(0.0f, 1000.f);
+    delay(65);
+  }
   initGame();
 }
 
