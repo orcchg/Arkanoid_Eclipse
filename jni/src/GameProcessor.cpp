@@ -301,8 +301,8 @@ void GameProcessor::onScoreUpdated(int score) {
 }
 
 void GameProcessor::onAngleChanged() {
-  int angle = static_cast<int>(m_ball.getAngle() / util::PI * 180);
-  m_jenv->CallVoidMethod(master_object, fireJavaEvent_angleChanged_id, angle);
+//  int angle = static_cast<int>(m_ball.getAngle() / util::PI * 180);
+//  m_jenv->CallVoidMethod(master_object, fireJavaEvent_angleChanged_id, angle);
 }
 
 void GameProcessor::onCardinalityChanged(int new_cardinality) {
