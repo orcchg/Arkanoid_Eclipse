@@ -356,7 +356,7 @@ private:
   /// @brief Draws textured background.
   void drawBackground();
   /// @brief Draws prize of specified type at given location.
-  void drawPrize(GLfloat x, GLfloat y, Prize prize);
+  void drawPrize(const PrizePackage& prize);
   /** @} */  // end of Drawings group
 };
 

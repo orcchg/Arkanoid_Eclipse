@@ -3,7 +3,7 @@
 
 namespace game {
 
-int PrizePackage::initialId = 0;
+std::atomic<int> PrizePackage::initialId(0);
 
 PrizePackage::PrizePackage(GLfloat x, GLfloat y, Prize prize)
   : id(initialId++), x(x), y(y), prize(prize) {

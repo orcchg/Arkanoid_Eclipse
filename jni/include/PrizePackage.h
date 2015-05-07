@@ -1,7 +1,9 @@
 #ifndef __ARKANOID_PRIZE_PACKAGE__H__
 #define __ARKANOID_PRIZE_PACKAGE__H__
 
+#include <atomic>
 #include <GLES/gl.h>
+
 #include "Prize.h"
 
 namespace game {
@@ -20,7 +22,7 @@ public:
   inline Prize getPrize() const { return prize; }
 
 private:
-  static int initialId;
+  static std::atomic<int> initialId;
 
   int id;
   GLfloat x, y;
