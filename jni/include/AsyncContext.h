@@ -147,7 +147,7 @@ public:
   /// @brief Notifies prize visual location has changed.
   Event<PrizePackage> prize_location_event;
   /// @brief Notifies prize has gone.
-  Event<PrizePackage> prize_gone_event;
+  Event<int> prize_gone_event;
   /** @} */  // end of Event group
 
 // ----------------------------------------------

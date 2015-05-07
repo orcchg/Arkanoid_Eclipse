@@ -58,7 +58,7 @@ void PrizeProcessor::callback_prizeLocated(PrizePackage package) {
   interrupt();
 }
 
-void PrizeProcessor::callback_prizeHasGone(PrizePackage package) {
+void PrizeProcessor::callback_prizeHasGone(int prize_id) {
 //  std::unique_lock<std::mutex> lock(m_prize_gone_mutex);
 //  m_prize_gone_received.store(true);
 //  m_prize_packages[package.getID()] = package;

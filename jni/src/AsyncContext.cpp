@@ -843,7 +843,7 @@ void AsyncContext::drawPrize(const PrizePackage& prize) {
       prize_location_event.notifyListeners(moved_prize);
     } else {
       moved_prize.setGone(true);
-      prize_gone_event.notifyListeners(moved_prize);  // prize has gone
+      prize_gone_event.notifyListeners(moved_prize.getID());
     }
   }
 

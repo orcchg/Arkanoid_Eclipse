@@ -40,7 +40,7 @@ public:
   /// @brief Called when prize has been located.
   void callback_prizeLocated(PrizePackage package);
   /// @brief Called when prize has gone.
-  void callback_prizeHasGone(PrizePackage package);
+  void callback_prizeHasGone(int prize_id);
   /** @} */  // end of Callbacks group
 
 // ----------------------------------------------
@@ -60,7 +60,7 @@ public:
   /// @brief Listens for prize location changes.
   EventListener<PrizePackage> prize_location_listener;
   /// @brief Listens whether prize has gone.
-  EventListener<PrizePackage> prize_gone_listener;
+  EventListener<int> prize_gone_listener;
 
   /// @brief Notifies prize with specified ID has been caught.
   Event<int> prize_caught_event;
