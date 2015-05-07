@@ -29,7 +29,7 @@ GameProcessor::GameProcessor(JavaVM* jvm, jobject master_object)
   , m_bite()
   , m_bite_upper_border(-BiteParams::neg_biteElevation)
   , m_level_dimens(0, 0, 0.0f, 0.0f, 0.0f, 0.0f)
-  , m_generator()
+  , m_generator(std::chrono::system_clock::now().time_since_epoch().count())
   , m_angle_distribution(util::PI12, util::PI30)
   , m_direction_distribution(0.25f)
   , m_viscosity_distribution(0, 100) {

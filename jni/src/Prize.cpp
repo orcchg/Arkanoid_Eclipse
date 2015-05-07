@@ -1,9 +1,10 @@
+#include <chrono>
 #include "Prize.h"
 
 namespace game {
 
 PrizeGenerator::PrizeGenerator()
-  : m_generator()
+  : m_generator(std::chrono::system_clock::now().time_since_epoch().count())
   , m_distribution(0, PrizeUtils::totalPrizes - 1)
   , m_success_distribution(PrizeUtils::prizeProbability) {
 }

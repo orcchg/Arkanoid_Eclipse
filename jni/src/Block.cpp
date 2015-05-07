@@ -1,3 +1,4 @@
+#include <chrono>
 #include "Block.h"
 
 namespace game {
@@ -530,7 +531,7 @@ util::BGRA<GLfloat> BlockUtils::getBlockEdgeColor(Block block) {
 }
 
 BlockGenerator::BlockGenerator()
-  : m_generator()
+  : m_generator(std::chrono::system_clock::now().time_since_epoch().count())
   , m_distribution(0, BlockUtils::totalOrdinaryBlocks - 1) {
 }
 
