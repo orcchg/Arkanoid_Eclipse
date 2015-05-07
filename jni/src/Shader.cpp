@@ -218,6 +218,7 @@ VerticalFallShader::VerticalFallShader()
   : Shader(
       "  uniform float u_time;                                                 \n"
       "  uniform float u_velocity;                                             \n"
+      "  uniform int u_visible;                                                \n"
       "                                                                        \n"
       "  attribute vec4 a_position;                                            \n"
       "  attribute vec2 a_texCoord;                                            \n"
@@ -225,7 +226,7 @@ VerticalFallShader::VerticalFallShader()
       "  varying vec2 v_texCoord;                                              \n"
       "                                                                        \n"
       "  void main() {                                                         \n"
-      "    if (u_time <= 3.0) {                                                \n"
+      "    if (u_visible != 0 && u_time <= 3.0) {                              \n"
       "      gl_Position = a_position;                                         \n"
       "      gl_Position.y -= u_time * u_velocity;                             \n"
       "    } else {                                                            \n"

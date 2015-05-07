@@ -820,8 +820,10 @@ void AsyncContext::drawPrize(GLfloat x, GLfloat y, Prize prize) {
 
   GLint u_time = glGetUniformLocation(m_prize_shader->getProgram(), "u_time");
   GLint u_velocity = glGetUniformLocation(m_prize_shader->getProgram(), "u_velocity");
+  GLint u_visible = glGetUniformLocation(m_prize_shader->getProgram(), "u_visible");
   glUniform1f(u_time, m_prize_time);
   glUniform1f(u_velocity, PrizeParams::prizeSpeed);
+  glUniform1i(u_visible, 1 /* true */);
 
   GLint a_position = glGetAttribLocation(m_prize_shader->getProgram(), "a_position");
   GLint a_texCoord = glGetAttribLocation(m_prize_shader->getProgram(), "a_texCoord");
