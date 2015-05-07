@@ -41,6 +41,7 @@ JNIEXPORT jlong JNICALL Java_com_orcchg_arkanoid_surface_AsyncContext_init
   ptr->processor->level_dimens_listener = ptr->acontext->level_dimens_event.createListener(&game::GameProcessor::callback_levelDimens, ptr->processor);
   ptr->processor->bite_location_listener = ptr->acontext->bite_location_event.createListener(&game::GameProcessor::callback_biteMoved, ptr->processor);
 
+  ptr->prize_processor->aspect_ratio_listener = ptr->acontext->aspect_ratio_event.createListener(&game::PrizeProcessor::callback_aspectMeasured, ptr->prize_processor);
   ptr->prize_processor->bite_location_listener = ptr->acontext->bite_location_event.createListener(&game::PrizeProcessor::callback_biteMoved, ptr->prize_processor);
   ptr->prize_processor->init_bite_listener = ptr->acontext->init_bite_event.createListener(&game::PrizeProcessor::callback_initBite, ptr->prize_processor);
   ptr->prize_processor->prize_listener = ptr->processor->prize_event.createListener(&game::PrizeProcessor::callback_prizeReceived, ptr->prize_processor);

@@ -5,9 +5,11 @@
 namespace game {
 
 PrizeProcessor::PrizeProcessor()
-  : m_bite()
+  : m_aspect(1.0f)
+  , m_bite()
   , m_bite_upper_border(-BiteParams::neg_biteElevation) {
   DBG("enter PrizeProcessor ctor");
+  m_aspect_ratio_received.store(false);
   m_init_bite_received.store(false);
   m_bite_location_received.store(false);
   m_prize_received.store(false);
@@ -21,6 +23,13 @@ PrizeProcessor::~PrizeProcessor() {
 
 /* Callbacks group */
 // ----------------------------------------------------------------------------
+void PrizeProcessor::callback_aspectMeasured(float aspect) {
+  std::unique_lock<std::mutex> lock(m_aspect_ratio_mutex);
+  m_aspect_ratio_received.store(true);
+  m_aspect = aspect;
+  interrupt();
+}
+
 void PrizeProcessor::callback_initBite(Bite bite) {
   std::unique_lock<std::mutex> lock(m_init_bite_mutex);
   m_init_bite_received.store(true);
@@ -45,7 +54,7 @@ void PrizeProcessor::callback_prizeReceived(PrizePackage package) {
 void PrizeProcessor::callback_prizeLocated(PrizePackage package) {
   std::unique_lock<std::mutex> lock(m_prize_location_mutex);
   m_prize_location_received.store(true);
-  // XXX:
+  m_prize_packages[package.getID()] = package;
   interrupt();
 }
 
@@ -65,7 +74,8 @@ void PrizeProcessor::onStop() {
 }
 
 bool PrizeProcessor::checkForWakeUp() {
-  return m_init_bite_received.load() ||
+  return m_aspect_ratio_received.load()||
+         m_init_bite_received.load() ||
          m_bite_location_received.load() ||
          m_prize_received.load() ||
          m_prize_location_received.load() ||
@@ -73,6 +83,10 @@ bool PrizeProcessor::checkForWakeUp() {
 }
 
 void PrizeProcessor::eventHandler() {
+  if (m_aspect_ratio_received.load()) {
+    m_aspect_ratio_received.store(false);
+    process_aspectMeasured();
+  }
   if (m_init_bite_received.load()) {
     m_init_bite_received.store(false);
     process_initBite();
@@ -93,6 +107,11 @@ void PrizeProcessor::eventHandler() {
 
 /* Processors group */
 // ----------------------------------------------------------------------------
+void PrizeProcessor::process_aspectMeasured() {
+  std::unique_lock<std::mutex> lock(m_aspect_ratio_mutex);
+  // no-op
+}
+
 void PrizeProcessor::process_initBite() {
   std::unique_lock<std::mutex> lock(m_init_bite_mutex);
   m_bite_upper_border = -BiteParams::neg_biteElevation;
@@ -110,7 +129,14 @@ void PrizeProcessor::process_prizeReceived() {
 
 void PrizeProcessor::process_prizeLocated() {
   std::unique_lock<std::mutex> lock(m_prize_location_mutex);
-  // XXX:
+  for (auto& item : m_prize_packages) {
+    if (item.second.getY() <= m_bite_upper_border + PrizeParams::prizeHalfHeight * m_aspect &&
+        item.second.getX() >= -(m_bite.getDimens().halfWidth() + PrizeParams::prizeHalfWidth) + m_bite.getXPose() &&
+        item.second.getX() <= (m_bite.getDimens().halfWidth() + PrizeParams::prizeHalfWidth) + m_bite.getXPose()) {
+      INF("CAUGHT: %i %lf %lf", item.second.getID(), item.second.getX(), item.second.getY());
+      prize_caught_event.notifyListeners(item.second.getID());
+    }
+  }
 }
 
 void PrizeProcessor::process_prizeHasGone() {

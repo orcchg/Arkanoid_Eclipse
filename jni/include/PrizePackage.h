@@ -10,6 +10,8 @@ namespace game {
 
 class PrizePackage {
 public:
+  friend class GameProcessor;
+
   PrizePackage();
   PrizePackage(GLfloat x, GLfloat y, Prize prize);
   virtual ~PrizePackage();
@@ -22,12 +24,14 @@ public:
   inline GLfloat getY() const { return y; }
   inline Prize getPrize() const { return prize; }
 
-private:
-  static std::atomic<int> initialId;
+  inline void setY(GLfloat new_y) { y = new_y; }
 
+private:
   int id;
   GLfloat x, y;
   Prize prize;
+
+  PrizePackage(int id, GLfloat x, GLfloat y, Prize prize);
 };
 
 }
