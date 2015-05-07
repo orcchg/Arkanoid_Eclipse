@@ -144,7 +144,7 @@ class Database {
       return new GameStat(player_id, lives, level, score, state);
     } else {
       Log.w(TAG, "Table " + StatTable + " has no GameStat with requested PlayerID: " + player_id);
-      return new GameStat();
+      return null;
     }
   }
   

@@ -12,6 +12,8 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 public class MainActivity extends FragmentActivity {
@@ -33,6 +35,7 @@ public class MainActivity extends FragmentActivity {
   private NativeResources mNativeResources;
   private TextView mInfoTextView, mAddInfoTextView;
   private TextView mCardinalityTextView;
+  private ImageView[] mLifeViews;
   
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -41,10 +44,17 @@ public class MainActivity extends FragmentActivity {
     setContentView(R.layout.activity_main);
     mAsyncContext = new AsyncContext();
     mAsyncContext.setCoreEventListener(new CoreEventHandler(this));
+    
     mSurface = (GameSurface) findViewById(R.id.surface_view);
     mInfoTextView = (TextView) findViewById(R.id.info_textview);
     mAddInfoTextView = (TextView) findViewById(R.id.add_info_textview);
     mCardinalityTextView = (TextView) findViewById(R.id.cardinality_textview);
+    mLifeViews = new ImageView[] {
+      (ImageView) findViewById(R.id.life1_imageview),
+      (ImageView) findViewById(R.id.life2_imageview),
+      (ImageView) findViewById(R.id.life3_imageview),
+      (ImageView) findViewById(R.id.life4_imageview),
+      (ImageView) findViewById(R.id.life5_imageview)};
     
     mNativeResources = new NativeResources(getAssets());
     try {
@@ -79,10 +89,18 @@ public class MainActivity extends FragmentActivity {
     
     ArkanoidApplication app = (ArkanoidApplication) getApplication();
     GameStat game_stat = app.DATABASE.getStat(PLAYER_ID);
-    setLives(game_stat.lives);
-    setLevel(game_stat.level);
-    setScore(game_stat.score);
-    mAsyncContext.loadLevel(Levels.get(currentLevel, game_stat.state));
+    String level_state = "";
+    if (game_stat != null) {
+      setLives(game_stat.lives);
+      setLevel(game_stat.level);
+      setScore(game_stat.score);
+      level_state = game_stat.state;
+    } else {
+      setLives(INITIAL_LIVES);
+      setLevel(INITIAL_LEVEL);
+      setScore(INITIAL_SCORE);
+    }
+    mAsyncContext.loadLevel(Levels.get(currentLevel, level_state));
     super.onResume();
   }
   
@@ -152,6 +170,17 @@ public class MainActivity extends FragmentActivity {
   }
   
   void setLives(int lives) {
+    if (lives > mLifeViews.length) {
+      lives = mLifeViews.length;
+    } else if (lives < 0) {
+      lives = 0;
+    }
+    for (int i = 0; i < lives; ++i) {
+      mLifeViews[i].setVisibility(View.VISIBLE);
+    }
+    for (int i = lives; i < mLifeViews.length; ++i) {
+      mLifeViews[i].setVisibility(View.INVISIBLE);
+    }
     currentLives = lives;
   }
   
@@ -194,9 +223,11 @@ public class MainActivity extends FragmentActivity {
     CoreEventHandler(final MainActivity activity) {
       activityRef = new WeakReference<MainActivity>(activity);
       GameStat game_stat = activity.getStat(PLAYER_ID);
-      currentLives = game_stat.lives;
-      currentLevel = game_stat.level;
-      currentScore = game_stat.score;
+      if (game_stat != null) {
+        currentLives = game_stat.lives;
+        currentLevel = game_stat.level;
+        currentScore = game_stat.score;
+      }
     }
     
     @Override
@@ -208,9 +239,14 @@ public class MainActivity extends FragmentActivity {
     public void onLostBall() {
       --currentLives;
       Log.i(TAG, "Ball has been lost! Lives rest: " + currentLives);
-      MainActivity activity = activityRef.get();
+      final MainActivity activity = activityRef.get();
       if (activity != null) {
-        activity.setLives(currentLives);
+        activity.runOnUiThread(new Runnable() {
+          @Override
+          public void run() {
+            activity.setLives(currentLives);
+          }
+        });
       }
       onScoreUpdated(-2 * (int) Math.pow(currentLevel + 1, 2));  // lost ball decreases score
     }
