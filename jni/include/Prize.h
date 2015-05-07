@@ -1,6 +1,8 @@
 #ifndef __ARKANOID_PRIZE__H__
 #define __ARKANOID_PRIZE__H__
 
+#include <random>
+
 namespace game {
 
 enum class Prize : int {
@@ -32,6 +34,23 @@ enum class Prize : int {
   VITALITY = 25,  // additional live
   WIN = 26,       // win level
   ZYGOTE = 27     // multiplies ball
+};
+
+class PrizeUtils {
+public:
+  constexpr static int totalPrizes = 28;
+  constexpr static double prizeProbability = 0.415;
+};
+
+class PrizeGenerator {
+public:
+  PrizeGenerator();
+  Prize generatePrize();  //!< Generates random prize of any type
+
+private:
+  std::default_random_engine m_generator;
+  std::uniform_int_distribution<int> m_distribution;
+  std::bernoulli_distribution m_success_distribution;
 };
 
 }

@@ -16,6 +16,7 @@
 
 #include "Block.h"
 #include "logger.h"
+#include "Prize.h"
 #include "RowCol.h"
 
 namespace game {
@@ -101,6 +102,8 @@ public:
   inline int size() const { return rows * cols; }
   /// @brief Gets block generator instance.
   inline BlockGenerator& getGenerator() { return generator; }
+  /// @brief Gets prize generator instance.
+  inline PrizeGenerator& getPrizeGenerator() { return prize_generator; }
   /// @brief Gets block by row and column indices.
   inline Block getBlock(int row, int col) const { return blocks[row][col]; }
   /// @brief Sets the block by row and column indices.
@@ -183,6 +186,7 @@ private:
   int initial_cardinality;
   Block** blocks;
   BlockGenerator generator;
+  PrizeGenerator prize_generator;
 };
 
 }  // namespace game

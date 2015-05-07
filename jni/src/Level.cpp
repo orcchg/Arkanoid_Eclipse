@@ -622,7 +622,8 @@ Level::Level(int rows, int cols)
   , cols(cols)
   , initial_cardinality(0)
   , blocks(new Block*[rows])
-  , generator() {
+  , generator()
+  , prize_generator() {
   for (int r = 0; r < rows; ++r) {
     blocks[r] = new Block[cols];
   }
