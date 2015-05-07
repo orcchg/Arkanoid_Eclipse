@@ -49,6 +49,7 @@ JNIEXPORT jlong JNICALL Java_com_orcchg_arkanoid_surface_AsyncContext_init
   ptr->prize_processor->prize_location_listener = ptr->acontext->prize_location_event.createListener(&game::PrizeProcessor::callback_prizeLocated, ptr->prize_processor);
   ptr->prize_processor->prize_gone_listener = ptr->acontext->prize_gone_event.createListener(&game::PrizeProcessor::callback_prizeHasGone, ptr->prize_processor);
 
+  // TODO: subscribe sound_processor
   return descriptor;
 }
 
@@ -58,6 +59,7 @@ JNIEXPORT void JNICALL Java_com_orcchg_arkanoid_surface_AsyncContext_start
   ptr->acontext->launch();
   ptr->processor->launch();
   ptr->prize_processor->launch();
+  //ptr->sound_processor->launch();
 }
 
 JNIEXPORT void JNICALL Java_com_orcchg_arkanoid_surface_AsyncContext_stop
@@ -66,6 +68,7 @@ JNIEXPORT void JNICALL Java_com_orcchg_arkanoid_surface_AsyncContext_stop
   ptr->acontext->stop();
   ptr->processor->stop();
   ptr->prize_processor->stop();
+  //ptr->sound_processor->stop();
 }
 
 JNIEXPORT void JNICALL Java_com_orcchg_arkanoid_surface_AsyncContext_destroy
@@ -181,6 +184,7 @@ AsyncContextHelper::AsyncContextHelper(JNIEnv* jenv, jobject object)
   acontext = std::make_shared<game::AsyncContext>(jvm);
   processor = std::make_shared<game::GameProcessor>(jvm);
   prize_processor = std::make_shared<game::PrizeProcessor>(jvm);
+  sound_processor = std::make_shared<native::sound::SoundProcessor>();
 
   global_object = jenv->NewGlobalRef(object);
   jclass clazz = jenv->FindClass("java/lang/String");
@@ -216,4 +220,6 @@ AsyncContextHelper::~AsyncContextHelper() {
   processor = nullptr;
   prize_processor.reset();
   prize_processor = nullptr;
+  sound_processor.reset();
+  sound_processor = nullptr;
 }

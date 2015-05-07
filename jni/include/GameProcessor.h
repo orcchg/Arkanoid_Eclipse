@@ -12,6 +12,8 @@
 #include "ActiveObject.h"
 #include "Ball.h"
 #include "Bite.h"
+#include "Event.h"
+#include "EventListener.h"
 #include "ExplosionPackage.h"
 #include "Level.h"
 #include "LevelDimens.h"

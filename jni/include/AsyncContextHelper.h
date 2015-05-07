@@ -131,6 +131,7 @@ JNIEXPORT jint JNICALL Java_com_orcchg_arkanoid_surface_AsyncContext_getScore
 #include "AsyncContext.h"
 #include "GameProcessor.h"
 #include "PrizeProcessor.h"
+#include "SoundProcessor.h"
 
 /**
  * @class AsyncContextHelper AsyncContext.h "include/AsyncContext.h"
@@ -155,6 +156,9 @@ struct AsyncContextHelper {
 
   /// @brief Shared pointer to an instance of prize catch processor thread.
   game::PrizeProcessor::Ptr prize_processor;
+
+  /// @brief Shared pointer to an instance of sound processor thread.
+  native::sound::SoundProcessor::Ptr sound_processor;
 
   /** @defgroup AsyncContextEvent Events coming to render thread from outside.
    * @{
