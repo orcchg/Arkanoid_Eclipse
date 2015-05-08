@@ -16,34 +16,25 @@ public class Levels {
     }
   }
   
-//  private static final String[] L0 = new String[] {"          ",
-//                                                   "          ",
-//                                                   "          ",
-//                                                   "          ",
-//                                                   "  SSSSSS  ",
-//                                                   "  SSSSSS  ",
-//                                                   "  SSSSSS  ",
-//                                                   "  SSSSSS  "};
-//  
-//  private static final String[] L1 = new String[]{"          ",
-//                                                  "          ",
-//                                                  "          ",
-//                                                  "          ",
-//                                                  "  BBBBBB  ",
-//                                                  "  BSSSSB  ",
-//                                                  "  BSSSSB  ",
-//                                                  "  BSSSSB  ",
-//                                                  "  BSSSSB  ",
-//                                                  "  BBBBBB  "};
-  
   private static final String[] L0 = new String[] {"          ",
-    "          ",
-    "          ",
-    "   S      "};
-
-private static final String[] L1 = new String[]{"          ",
-   "       S  ",
-   "          "};
+                                                   "          ",
+                                                   "          ",
+                                                   "          ",
+                                                   "  SSSSSS  ",
+                                                   "  SSSSSS  ",
+                                                   "  SSSSSS  ",
+                                                   "  SSSSSS  "};
+  
+  private static final String[] L1 = new String[]{"          ",
+                                                  "          ",
+                                                  "          ",
+                                                  "          ",
+                                                  "  BBBBBB  ",
+                                                  "  BSSSSB  ",
+                                                  "  BSSSSB  ",
+                                                  "  BSSSSB  ",
+                                                  "  BSSSSB  ",
+                                                  "  BBBBBB  "};
   
   private static final String[] L2 = new String[]{"          ",
                                                   "          ",
