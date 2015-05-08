@@ -283,13 +283,6 @@ public class MainActivity extends FragmentActivity {
         if (currentLevel >= Levels.TOTAL_LEVELS) {
           currentLevel = INITIAL_LEVEL;
         }
-//        try {
-//          Thread.sleep(250);  // let all core treads finished their jobs
-//          // TODO: Show win animation instead
-//        } catch (InterruptedException e) {
-//          Thread.interrupted();
-//          e.printStackTrace();
-//        }
         activity.setLevel(currentLevel);
         activity.mAsyncContext.loadLevel(Levels.get(currentLevel)); 
       }
