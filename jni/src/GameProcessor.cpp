@@ -636,7 +636,7 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
         break;
     }
     block_impact_event.notifyListeners(RowCol(row, col));
-    ERR("Prize: impacted block %i %i", row, col);
+    ERR("Prize: impacted block %i %i type=%i", row, col, static_cast<int>(block));
     onScoreUpdated(score);
     return (external_collision &&
             block != Block::NONE &&
