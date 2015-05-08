@@ -505,6 +505,7 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
         score += m_level->destroyBlocksAround(row, col, &affected_blocks);
         explodeBlock(row, col, BlockUtils::getBlockColor(Block::ELECTRO), Kind::DIVERGE);
         for (auto& item : affected_blocks) {
+          spawnPrizeAtBlock(item.row, item.col, spawned_prize);
           block_impact_event.notifyListeners(item);
         }
         break;
@@ -516,6 +517,7 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
         }
         for (auto& item : affected_blocks) {
           explodeBlock(item.row, item.col, BlockUtils::getBlockColor(Block::KNOCK_VERTICAL), Kind::DIVERGE);
+          spawnPrizeAtBlock(item.row, item.col, spawned_prize);
           block_impact_event.notifyListeners(item);
         }
         break;
@@ -527,6 +529,7 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
         }
         for (auto& item : affected_blocks) {
           explodeBlock(item.row, item.col, BlockUtils::getBlockColor(Block::KNOCK_HORIZONTAL), Kind::DIVERGE);
+          spawnPrizeAtBlock(item.row, item.col, spawned_prize);
           block_impact_event.notifyListeners(item);
         }
         break;
