@@ -186,7 +186,9 @@ private:
   constexpr static int particleSystemSize = 1000;
 
   constexpr static int particleSpiralSize = 6;
-  constexpr static int particleSpiralSystemSize = 40;
+  constexpr static int particeSpiralSystemBranches = 4;
+  constexpr static int particleSpiralSystemBranchSize = 10;
+  constexpr static int particleSpiralSystemSize = particleSpiralSystemBranchSize * particeSpiralSystemBranches;
 
   GLfloat m_position;  //!< Last received position value of user's motion gesture.
   Bite m_bite;  //!< Physical bite's representation.

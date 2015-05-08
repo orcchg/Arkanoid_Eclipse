@@ -269,6 +269,7 @@ ParticleMoveShader::ParticleMoveShader()
       "    } else {                                                            \n"
       "      gl_Position = vec4(-1000, -1000, 0, 0);                           \n"
       "    }                                                                   \n"
+      "    gl_PointSize = 5.0;                                                 \n"
       "  }                                                                     \n"
       ,
       "  precision mediump float;                                              \n"

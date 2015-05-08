@@ -87,6 +87,7 @@ AsyncContext::AsyncContext(JavaVM* jvm)
   util::setColor(util::SIENNA, &m_ball_color_buffer[32], 4);
 
   m_particle_buffer = new GLfloat[particleSize * particleSystemSize];
+  m_particle_spiral_buffer = new GLfloat[particleSpiralSize * particleSpiralSystemSize];
   DBG("exit AsyncContext ctor");
 }
 
@@ -639,6 +640,8 @@ void AsyncContext::render() {
       }
     }
 
+    drawPrizeCatch(0.f,0.f,util::MIDAS);
+
     clearRemovedPrizes();
     for (auto& item : m_prize_packages) {
       drawPrize(item.second);
@@ -658,16 +661,137 @@ void AsyncContext::delay(int ms) {
 
 void AsyncContext::initParticleSystem() {
   for (int i = 0; i < particleSystemSize; ++i) {
+    int index = i * particleSize;
     // Lifetime of particle
-    m_particle_buffer[i * particleSize + 0] = m_particle_distribution(m_generator);
+    m_particle_buffer[index + 0] = m_particle_distribution(m_generator);
     // Start position of particle
-    m_particle_buffer[i * particleSize + 4] = m_particle_distribution(m_generator) * 0.25f - 0.125f;
-    m_particle_buffer[i * particleSize + 5] = (m_particle_distribution(m_generator) * 0.25f - 0.125f) * m_aspect;
-    m_particle_buffer[i * particleSize + 6] = 0.0f;
+    m_particle_buffer[index + 4] = m_particle_distribution(m_generator) * 0.25f - 0.125f;
+    m_particle_buffer[index + 5] = (m_particle_distribution(m_generator) * 0.25f - 0.125f) * m_aspect;
+    m_particle_buffer[index + 6] = 0.0f;
     // End position of particle
-    m_particle_buffer[i * particleSize + 1] = m_particle_distribution(m_generator) * 2.0f - 1.0f;
-    m_particle_buffer[i * particleSize + 2] = (m_particle_distribution(m_generator) * 2.0f - 1.0f) * m_aspect;
-    m_particle_buffer[i * particleSize + 3] = 0.0f;
+    m_particle_buffer[index + 1] = m_particle_distribution(m_generator) * 2.0f - 1.0f;
+    m_particle_buffer[index + 2] = (m_particle_distribution(m_generator) * 2.0f - 1.0f) * m_aspect;
+    m_particle_buffer[index + 3] = 0.0f;
+  }
+
+  // --------------------------------------------
+  GLfloat step = 0.025f;
+  GLfloat halfStep = 0.5f * step;
+  // branch 0
+  {
+    int bi = 0 * particleSpiralSize * particleSpiralSystemBranchSize;
+    int i = 0;
+    for (; i < particleSpiralSystemBranchSize >> 1; ++i) {
+      int index = i * particleSpiralSize;
+      // Start position of particle
+      m_particle_spiral_buffer[index + 3 + bi] = -halfStep * i;
+      m_particle_spiral_buffer[index + 4 + bi] = step * i;
+      m_particle_spiral_buffer[index + 5 + bi] = 0.0f;
+      // End position of particle
+      m_particle_spiral_buffer[index + 0 + bi] = step * i;
+      m_particle_spiral_buffer[index + 1 + bi] = halfStep * i;
+      m_particle_spiral_buffer[index + 2 + bi] = 0.0f;
+    }
+    GLfloat offset = 0;//-halfStep * (i - 1);
+    for (; i < particleSpiralSystemBranchSize; ++i) {
+      int index = i * particleSpiralSize;
+      int j = i - particleSpiralSystemBranchSize >> 1;
+      // Start position of particle
+      m_particle_spiral_buffer[index + 3 + bi] = offset + halfStep * j;
+      m_particle_spiral_buffer[index + 4 + bi] = step * j;
+      m_particle_spiral_buffer[index + 5 + bi] = 0.0f;
+      // End position of particle
+      m_particle_spiral_buffer[index + 0 + bi] = step * j;
+      m_particle_spiral_buffer[index + 1 + bi] = -halfStep * j;
+      m_particle_spiral_buffer[index + 2 + bi] = 0.0f;
+    }
+  }
+  // branch 1
+  {
+    int bi = 1 * particleSpiralSize * particleSpiralSystemBranchSize;
+    int i = 0;
+    for (; i < particleSpiralSystemBranchSize >> 1; ++i) {
+      int index = i * particleSpiralSize;
+      // Start position of particle
+      m_particle_spiral_buffer[index + 3 + bi] = step * i;
+      m_particle_spiral_buffer[index + 4 + bi] = halfStep * i;
+      m_particle_spiral_buffer[index + 5 + bi] = 0.0f;
+      // End position of particle
+      m_particle_spiral_buffer[index + 0 + bi] = halfStep * i;
+      m_particle_spiral_buffer[index + 1 + bi] = -step * i;
+      m_particle_spiral_buffer[index + 2 + bi] = 0.0f;
+    }
+    GLfloat offset = 0;//halfStep * (i - 1);
+    for (; i < particleSpiralSystemBranchSize; ++i) {
+      int index = i * particleSpiralSize;
+      int j = i - particleSpiralSystemBranchSize >> 1;
+      // Start position of particle
+      m_particle_spiral_buffer[index + 3 + bi] = step * j;
+      m_particle_spiral_buffer[index + 4 + bi] = offset - halfStep * j;
+      m_particle_spiral_buffer[index + 5 + bi] = 0.0f;
+      // End position of particle
+      m_particle_spiral_buffer[index + 0 + bi] = -halfStep * j;
+      m_particle_spiral_buffer[index + 1 + bi] = -step * j;
+      m_particle_spiral_buffer[index + 2 + bi] = 0.0f;
+    }
+  }
+  // branch 2
+  {
+    int bi = 2 * particleSpiralSize * particleSpiralSystemBranchSize;
+    int i = 0;
+    for (; i < particleSpiralSystemBranchSize >> 1; ++i) {
+      int index = i * particleSpiralSize;
+      // Start position of particle
+      m_particle_spiral_buffer[index + 3 + bi] = halfStep * i;
+      m_particle_spiral_buffer[index + 4 + bi] = -step * i;
+      m_particle_spiral_buffer[index + 5 + bi] = 0.0f;
+      // End position of particle
+      m_particle_spiral_buffer[index + 0 + bi] = -step * i;
+      m_particle_spiral_buffer[index + 1 + bi] = -halfStep * i;
+      m_particle_spiral_buffer[index + 2 + bi] = 0.0f;
+    }
+    GLfloat offset = 0;//halfStep * (i - 1);
+    for (; i < particleSpiralSystemBranchSize; ++i) {
+      int index = i * particleSpiralSize;
+      int j = i - particleSpiralSystemBranchSize >> 1;
+      // Start position of particle
+      m_particle_spiral_buffer[index + 3 + bi] = offset - halfStep * j;
+      m_particle_spiral_buffer[index + 4 + bi] = -step * j;
+      m_particle_spiral_buffer[index + 5 + bi] = 0.0f;
+      // End position of particle
+      m_particle_spiral_buffer[index + 0 + bi] = -step * j;
+      m_particle_spiral_buffer[index + 1 + bi] = halfStep * j;
+      m_particle_spiral_buffer[index + 2 + bi] = 0.0f;
+    }
+  }
+  // branch 3
+  {
+    int bi = 3 * particleSpiralSize * particleSpiralSystemBranchSize;
+    int i = 0;
+    for (; i < particleSpiralSystemBranchSize >> 1; ++i) {
+      int index = i * particleSpiralSize;
+      // Start position of particle
+      m_particle_spiral_buffer[index + 3 + bi] = -step * i;
+      m_particle_spiral_buffer[index + 4 + bi] = -halfStep * i;
+      m_particle_spiral_buffer[index + 5 + bi] = 0.0f;
+      // End position of particle
+      m_particle_spiral_buffer[index + 0 + bi] = -halfStep * i;
+      m_particle_spiral_buffer[index + 1 + bi] = step * i;
+      m_particle_spiral_buffer[index + 2 + bi] = 0.0f;
+    }
+    GLfloat offset = 0;//-halfStep * (i - 1);
+    for (; i < particleSpiralSystemBranchSize; ++i) {
+      int index = i * particleSpiralSize;
+      int j = i - particleSpiralSystemBranchSize >> 1;
+      // Start position of particle
+      m_particle_spiral_buffer[index + 3 + bi] = -step * j;
+      m_particle_spiral_buffer[index + 4 + bi] = offset + halfStep * j;
+      m_particle_spiral_buffer[index + 5 + bi] = 0.0f;
+      // End position of particle
+      m_particle_spiral_buffer[index + 0 + bi] = halfStep * j;
+      m_particle_spiral_buffer[index + 1 + bi] = step * j;
+      m_particle_spiral_buffer[index + 2 + bi] = 0.0f;
+    }
   }
 }
 
@@ -938,7 +1062,7 @@ void AsyncContext::drawPrizeCatch(GLfloat x, GLfloat y, const util::BGRA<GLfloat
     m_prize_catch_time += delta_elapsed;
     if (m_prize_catch_time >= 0.5f) {
       m_prize_catch_time = 0.0f;
-      return;
+//      return;
     }
   }
 
