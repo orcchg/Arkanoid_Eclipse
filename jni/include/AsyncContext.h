@@ -182,7 +182,7 @@ private:
   /** @defgroup LogicData Game logic related data members.
    * @{
    */
-  constexpr static int particleSize = 7;
+  constexpr static int particleSize = 5;
   constexpr static int particleSystemSize = 1000;
 
   constexpr static int particleSpiralSize = 6;

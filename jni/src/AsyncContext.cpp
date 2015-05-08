@@ -675,13 +675,11 @@ void AsyncContext::initParticleSystem() {
     // Lifetime of particle
     m_particle_buffer[index + 0] = m_particle_distribution(m_generator);
     // Start position of particle
-    m_particle_buffer[index + 4] = m_particle_distribution(m_generator) * 0.25f - 0.125f;
-    m_particle_buffer[index + 5] = (m_particle_distribution(m_generator) * 0.25f - 0.125f) * m_aspect;
-    m_particle_buffer[index + 6] = 0.0f;
+    m_particle_buffer[index + 3] = m_particle_distribution(m_generator) * 0.25f - 0.125f;
+    m_particle_buffer[index + 4] = (m_particle_distribution(m_generator) * 0.25f - 0.125f) * m_aspect;
     // End position of particle
     m_particle_buffer[index + 1] = m_particle_distribution(m_generator) * 2.0f - 1.0f;
     m_particle_buffer[index + 2] = (m_particle_distribution(m_generator) * 2.0f - 1.0f) * m_aspect;
-    m_particle_buffer[index + 3] = 0.0f;
   }
 
   // --------------------------------------------
@@ -925,9 +923,9 @@ void AsyncContext::drawExplosion(GLfloat x, GLfloat y, const util::BGRA<GLfloat>
   GLint u_centerPosition = glGetUniformLocation(m_explosion_shader->getProgram(), "u_centerPosition");
   GLint u_color = glGetUniformLocation(m_explosion_shader->getProgram(), "u_color");
 
-  GLfloat* coord = new GLfloat[3]{x, y, 0.0f};
+  GLfloat* coord = new GLfloat[2]{x, y};
   GLfloat* color = new GLfloat[4]{bgra.b, bgra.g, bgra.r, 0.5f};
-  glUniform3fv(u_centerPosition, 1, &coord[0]);
+  glUniform2fv(u_centerPosition, 1, &coord[0]);
   glUniform4fv(u_color, 1, &color[0]);
   glUniform1f(u_time, m_particle_time);
 
@@ -936,8 +934,8 @@ void AsyncContext::drawExplosion(GLfloat x, GLfloat y, const util::BGRA<GLfloat>
   GLint a_endPosition = glGetAttribLocation(m_explosion_shader->getProgram(), "a_endPosition");
 
   glVertexAttribPointer(a_lifetime, 1, GL_FLOAT, GL_FALSE, particleSize * sizeof(GLfloat), &m_particle_buffer[0]);
-  glVertexAttribPointer(a_startPosition, 3, GL_FLOAT, GL_FALSE, particleSize * sizeof(GLfloat), &m_particle_buffer[4]);
-  glVertexAttribPointer(a_endPosition, 3, GL_FLOAT, GL_FALSE, particleSize * sizeof(GLfloat), &m_particle_buffer[1]);
+  glVertexAttribPointer(a_startPosition, 2, GL_FLOAT, GL_FALSE, particleSize * sizeof(GLfloat), &m_particle_buffer[3]);
+  glVertexAttribPointer(a_endPosition, 2, GL_FLOAT, GL_FALSE, particleSize * sizeof(GLfloat), &m_particle_buffer[1]);
 
   m_resources->getTexture("smoke.png")->apply();
   GLint sampler = glGetUniformLocation(m_explosion_shader->getProgram(), "s_texture");
