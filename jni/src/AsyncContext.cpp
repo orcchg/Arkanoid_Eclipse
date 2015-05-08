@@ -195,7 +195,9 @@ void AsyncContext::callback_prizeReceived(PrizePackage package) {
 void AsyncContext::callback_prizeCaught(int prize_id) {
   std::unique_lock<std::mutex> lock(m_prize_caught_mutex);
   m_prize_caught_received.store(true);
+  m_prize_packages.at(prize_id).setCaught(true);
   addPrizeToRemoved(prize_id);
+  INF("Prize caught, ID: %i", prize_id);
   interrupt();
 }
 
@@ -435,7 +437,7 @@ void AsyncContext::process_prizeReceived() {
 
 void AsyncContext::process_prizeCaught() {
   std::unique_lock<std::mutex> lock(m_prize_caught_mutex);
-  // no-op
+  m_prize_catch_last_time = 0;
 }
 
 /* LogicFunc group */
@@ -640,11 +642,12 @@ void AsyncContext::render() {
       }
     }
 
-    drawPrizeCatch(0.f,0.f,util::MIDAS);
-
     clearRemovedPrizes();
     for (auto& item : m_prize_packages) {
       drawPrize(item.second);
+      if (item.second.hasCaught()) {
+        drawPrizeCatch(item.second.getX(), -BiteParams::neg_biteElevation, util::MIDAS);
+      }
     }
 
     eglSwapInterval(m_egl_display, 0);

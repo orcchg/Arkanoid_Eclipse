@@ -24,15 +24,18 @@ public:
   inline GLfloat getY() const { return y; }
   inline Prize getPrize() const { return prize; }
   inline bool hasGone() const { return has_gone; }
+  inline bool hasCaught() const { return has_caught; }
 
   inline void setY(GLfloat new_y) { y = new_y; }
   inline void setGone(bool gone) { has_gone = gone; }
+  inline void setCaught(bool caught) { has_caught = caught; }
 
 private:
   int id;
   GLfloat x, y;
   Prize prize;
   bool has_gone;
+  bool has_caught;
 
   PrizePackage(int id, GLfloat x, GLfloat y, Prize prize);
 };
