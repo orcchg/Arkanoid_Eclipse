@@ -185,6 +185,9 @@ private:
   constexpr static int particleSize = 7;
   constexpr static int particleSystemSize = 1000;
 
+  constexpr static int particleSpiralSize = 6;
+  constexpr static int particleSpiralSize = 40;
+
   GLfloat m_position;  //!< Last received position value of user's motion gesture.
   Bite m_bite;  //!< Physical bite's representation.
   Ball m_ball;  //!< Physical ball's representation.
@@ -196,6 +199,7 @@ private:
   GLfloat* m_ball_color_buffer;   //!< Re-usable buffer for color of ball.
   GLfloat* m_bg_vertex_buffer;  //!< Re-usable buffer for background vertices.
   GLfloat* m_particle_buffer;  //!< Re-usable buffer for particle system.
+  GLfloat* m_particle_spiral_buffer;  //!< Re-usable buffer for particle spiral system.
   GLushort* m_rectangle_index_buffer;  //!< Re-usable buffer for indices of rectangle.
   GLushort* m_octagon_index_buffer;  //!< Re-usable buffer for indices of octagon.
   GLfloat* m_rectangle_texCoord_buffer;  //!< Re-usable buffer for texture coords of rectangle.
@@ -216,6 +220,9 @@ private:
   float m_prize_time;
   std::unordered_map<int, PrizePackage> m_prize_packages;
   std::unordered_set<int> m_removed_prizes;
+
+  clock_t m_prize_catch_last_time;
+  float m_prize_catch_time;
   /** @} */  // end of LogicData group
 
   /** @defgroup Shaders Shaders for rendering game components.
@@ -227,6 +234,7 @@ private:
   shader::ShaderHelper::Ptr m_explosion_shader;
   shader::ShaderHelper::Ptr m_sample_shader;
   shader::ShaderHelper::Ptr m_prize_shader;
+  shader::ShaderHelper::Ptr m_prize_catch_shader;
   /** @} */  // end of Shaders group
 
   /** @defgroup Mutex Thread-safety variables
@@ -385,6 +393,8 @@ private:
   void drawBackground();
   /// @brief Draws prize of specified type at given location.
   void drawPrize(const PrizePackage& prize);
+  /// @brief Draws prize catch animation.
+  void drawPrizeCatch(GLfloat x, GLfloat y, const util::BGRA<GLfloat>& bgra);
   /** @} */  // end of Drawings group
 };
 

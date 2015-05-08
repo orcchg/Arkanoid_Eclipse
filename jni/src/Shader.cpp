@@ -253,4 +253,39 @@ void VerticalFallShader::bindTexCoordAttribLocation(GLuint program, GLuint texCo
   glBindAttribLocation(program, texCoord_location, "a_texCoord");
 }
 
+ParticleMoveShader::ParticleMoveShader()
+  : Shader(
+      "  uniform float u_time;                                                 \n"
+      "  uniform vec3 u_centerPosition;                                        \n"
+      "                                                                        \n"
+      "  attribute vec3 a_startPosition;                                       \n"
+      "  attribute vec3 a_endPosition;                                         \n"
+      "                                                                        \n"
+      "  void main() {                                                         \n"
+      "    if (u_time <= 0.5) {                                                \n"
+      "      gl_Position.xyz = a_startPosition + (u_time * a_endPosition);     \n"
+      "      gl_Position.xyz += u_centerPosition;                              \n"
+      "      gl_Position.w = 1.0;                                              \n"
+      "    } else {                                                            \n"
+      "      gl_Position = vec4(-1000, -1000, 0, 0);                           \n"
+      "    }                                                                   \n"
+      "  }                                                                     \n"
+      ,
+      "  precision mediump float;                                              \n"
+      "                                                                        \n"
+      "  uniform vec4 v_color;                                                 \n"
+      "                                                                        \n"
+      "  void main() {                                                         \n"
+      "    gl_FragColor = u_color;                                             \n"
+      "  }                                                                     \n") {
+}
+
+void ParticleMoveShader::bindColorAttribLocation(GLuint program, GLuint color_location) const {
+  // no-op
+}
+
+void ParticleMoveShader::bindTexCoordAttribLocation(GLuint program, GLuint texCoord_location) const {
+  // no-op
+}
+
 }

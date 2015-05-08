@@ -33,6 +33,7 @@ AsyncContext::AsyncContext(JavaVM* jvm)
   , m_ball_color_buffer(new GLfloat[36])
   , m_bg_vertex_buffer(new GLfloat[16]{-1.0f, -1.0f, 0.0f, 1.0f, 1.0f, -1.0f, 0.0f, 1.0f, -1.0f, 1.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f})
   , m_particle_buffer(nullptr)
+  , m_particle_spiral_buffer(nullptr)
   , m_rectangle_index_buffer(new GLushort[6]{0, 3, 2, 0, 1, 3})
   , m_octagon_index_buffer(new GLushort[24]{0, 1, 2, 0, 2, 3, 0, 3, 4, 0, 4, 5, 0, 5, 6, 0, 6, 7, 0, 7, 8, 0, 8, 1})
   , m_rectangle_texCoord_buffer(new GLfloat[8]{1.f, 1.f, 0.f, 1.f, 1.f, 0.f, 0.f, 0.f})
@@ -50,12 +51,15 @@ AsyncContext::AsyncContext(JavaVM* jvm)
   , m_prize_time(0.0f)
   , m_prize_packages()
   , m_removed_prizes()
+  , m_prize_catch_last_time(0)
+  , m_prize_catch_time(0.0f)
   , m_level_shader(nullptr)
   , m_bite_shader(nullptr)
   , m_ball_shader(nullptr)
   , m_explosion_shader(nullptr)
   , m_sample_shader(nullptr)
-  , m_prize_shader(nullptr) {
+  , m_prize_shader(nullptr)
+  , m_prize_catch_shader(nullptr) {
 
   DBG("enter AsyncContext ctor");
   m_surface_received.store(false);
@@ -98,6 +102,7 @@ AsyncContext::~AsyncContext() {
   delete [] m_ball_color_buffer; m_ball_color_buffer = nullptr;
   delete [] m_bg_vertex_buffer; m_bg_vertex_buffer = nullptr;
   delete [] m_particle_buffer; m_particle_buffer = nullptr;
+  delete [] m_particle_spiral_buffer; m_particle_spiral_buffer = nullptr;
   delete [] m_rectangle_index_buffer; m_rectangle_index_buffer = nullptr;
   delete [] m_octagon_index_buffer; m_octagon_index_buffer = nullptr;
   delete [] m_rectangle_texCoord_buffer; m_rectangle_texCoord_buffer = nullptr;
@@ -579,6 +584,7 @@ void AsyncContext::glOptionsConfig() {
   m_explosion_shader = std::make_shared<shader::ShaderHelper>(shader::ParticleSystemShader());
   m_sample_shader = std::make_shared<shader::ShaderHelper>(shader::SimpleTextureShader());
   m_prize_shader = std::make_shared<shader::ShaderHelper>(shader::VerticalFallShader());
+  m_prize_catch_shader = std::make_shared<shader::ShaderHelper>(shader::ParticleMoveShader());
 }
 
 void AsyncContext::destroyDisplay() {
@@ -768,15 +774,17 @@ void AsyncContext::drawExplosion(GLfloat x, GLfloat y, const util::BGRA<GLfloat>
   if (m_last_time == 0) {
     m_last_time = clock();
   }
-  clock_t currentTime = clock();
-  float delta_elapsed = static_cast<float>(currentTime - m_last_time) / CLOCKS_PER_SEC;
-  m_last_time = currentTime;
-  m_particle_time += delta_elapsed;
-  if (m_particle_time >= 1.0f) {
-    m_particle_time = 0.0f;
-    m_render_explosion = false;
-    m_explosion_packages.clear();
-    return;
+  {
+    clock_t currentTime = clock();
+    float delta_elapsed = static_cast<float>(currentTime - m_last_time) / CLOCKS_PER_SEC;
+    m_last_time = currentTime;
+    m_particle_time += delta_elapsed;
+    if (m_particle_time >= 1.0f) {
+      m_particle_time = 0.0f;
+      m_render_explosion = false;
+      m_explosion_packages.clear();
+      return;
+    }
   }
 
   GLint u_time = glGetUniformLocation(m_explosion_shader->getProgram(), "u_time");
@@ -851,13 +859,15 @@ void AsyncContext::drawPrize(const PrizePackage& prize) {
   if (m_prize_last_time == 0) {
     m_prize_last_time = clock();
   }
-  clock_t currentTime = clock();
-  float delta_elapsed = static_cast<float>(currentTime - m_prize_last_time) / CLOCKS_PER_SEC;
-  m_prize_last_time = currentTime;
-  m_prize_time += delta_elapsed;
-  if (m_prize_time >= 3.0f) {
-    m_prize_time = 0.0f;
-    return;
+  {
+    clock_t currentTime = clock();
+    float delta_elapsed = static_cast<float>(currentTime - m_prize_last_time) / CLOCKS_PER_SEC;
+    m_prize_last_time = currentTime;
+    m_prize_time += delta_elapsed;
+    if (m_prize_time >= 3.0f) {
+      m_prize_time = 0.0f;
+      return;
+    }
   }
   int is_visible = 1;  /* true */
   {
@@ -913,6 +923,51 @@ void AsyncContext::drawPrize(const PrizePackage& prize) {
 
   glDisableVertexAttribArray(a_position);
   glDisableVertexAttribArray(a_texCoord);
+}
+
+void AsyncContext::drawPrizeCatch(GLfloat x, GLfloat y, const util::BGRA<GLfloat>& bgra) {
+  m_prize_catch_shader->useProgram();
+
+  if (m_prize_catch_last_time == 0) {
+    m_prize_catch_last_time = clock();
+  }
+  {
+    clock_t currentTime = clock();
+    float delta_elapsed = static_cast<float>(currentTime - m_prize_catch_last_time) / CLOCKS_PER_SEC;
+    m_prize_catch_last_time = currentTime;
+    m_prize_catch_time += delta_elapsed;
+    if (m_prize_catch_time >= 0.5f) {
+      m_prize_catch_time = 0.0f;
+      return;
+    }
+  }
+
+  GLint u_time = glGetUniformLocation(m_prize_catch_shader->getProgram(), "u_time");
+  GLint u_centerPosition = glGetUniformLocation(m_prize_catch_shader->getProgram(), "u_centerPosition");
+  GLint u_color = glGetUniformLocation(m_prize_catch_shader->getProgram(), "u_color");
+
+  GLfloat* coord = new GLfloat[3]{x, y, 0.0f};
+  GLfloat* color = new GLfloat[4]{bgra.b, bgra.g, bgra.r, 0.5f};
+  glUniform3fv(u_centerPosition, 1, &coord[0]);
+  glUniform4fv(u_color, 1, &color[0]);
+  glUniform1f(u_time, m_prize_catch_time);
+
+  GLint a_startPosition = glGetAttribLocation(m_prize_catch_shader->getProgram(), "a_startPosition");
+  GLint a_endPosition = glGetAttribLocation(m_prize_catch_shader->getProgram(), "a_endPosition");
+
+  glVertexAttribPointer(a_startPosition, 3, GL_FLOAT, GL_FALSE, particleSpiralSize * 4, &m_particle_spiral_buffer[3]);
+  glVertexAttribPointer(a_endPosition, 3, GL_FLOAT, GL_FALSE, particleSpiralSize * 4, &m_particle_spiral_buffer[0]);
+
+  glEnableVertexAttribArray(a_startPosition);
+  glEnableVertexAttribArray(a_endPosition);
+
+  glDrawArrays(GL_POINTS, 0, particleSpiralSystemSize);
+
+  delete [] coord;
+  delete [] color;
+
+  glDisableVertexAttribArray(a_startPosition);
+  glDisableVertexAttribArray(a_endPosition);
 }
 
 }  // namespace game
