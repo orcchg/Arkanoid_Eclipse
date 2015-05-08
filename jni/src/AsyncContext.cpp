@@ -197,7 +197,6 @@ void AsyncContext::callback_prizeCaught(int prize_id) {
   m_prize_caught_received.store(true);
   m_prize_packages.at(prize_id).setCaught(true);
   addPrizeToRemoved(prize_id);
-  INF("Prize has been caught, ID: %i", prize_id);
   interrupt();
 }
 
