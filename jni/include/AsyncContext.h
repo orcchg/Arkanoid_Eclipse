@@ -185,7 +185,7 @@ private:
   constexpr static int particleSize = 5;
   constexpr static int particleSystemSize = 1000;
 
-  constexpr static int particleSpiralSize = 6;
+  constexpr static int particleSpiralSize = 4;
   constexpr static int particeSpiralSystemBranches = 4;
   constexpr static int particleSpiralSystemBranchSize = 100;
   constexpr static int particleSpiralSystemSize = particleSpiralSystemBranchSize * particeSpiralSystemBranches;
