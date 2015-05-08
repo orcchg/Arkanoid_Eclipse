@@ -349,8 +349,10 @@ void AsyncContext::process_throwBall() {
 
 void AsyncContext::process_loadLevel() {
   std::unique_lock<std::mutex> lock(m_load_level_mutex);
-  std::queue<RowCol> empty_queue;
-  std::swap(m_impact_queue, empty_queue);
+  {
+    std::queue<RowCol> empty_queue;
+    std::swap(m_impact_queue, empty_queue);
+  }
 
   // release memory allocated for previous level if any
   delete [] m_level_vertex_buffer;
@@ -393,6 +395,12 @@ void AsyncContext::process_blockImpact() {
   std::unique_lock<std::mutex> lock(m_block_impact_mutex);
   while (!m_impact_queue.empty()) {
     auto impact = m_impact_queue.front();
+    if (!checkBlockPresense(impact.row, impact.col)) {
+      WRN("Impacted block is absent in level!");
+      std::queue<RowCol> empty_queue;
+      std::swap(m_impact_queue, empty_queue);
+      return;
+    }
     m_level->fillColorArrayAtBlock(&m_level_color_buffer[0], impact.row, impact.col);
     m_impact_queue.pop();
   }
@@ -483,6 +491,10 @@ void AsyncContext::clearRemovedPrizes() {
     m_prize_packages.erase(item);
   }
   m_removed_prizes.clear();
+}
+
+bool AsyncContext::checkBlockPresense(int row, int col) {
+  return (row >= 0 && row < m_level->numRows()) && (col >= 0 && col < m_level->numCols());
 }
 
 /* GraphicsContext group */

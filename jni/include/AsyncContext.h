@@ -339,6 +339,12 @@ private:
   void addPrizeToRemoved(int prize_id);
   /// @brief Clears removed prizes.
   void clearRemovedPrizes();
+  /// @brief Checks whether specified block is present in current level.
+  /// @return TRUE is block is present in newly loaded level, FALSE otherwise.
+  /// @detail This allows to avoid crash when load level event is followed by
+  /// block impact event, but it's processing is performed before the former's
+  /// processing due to asynchronous event handling.
+  bool checkBlockPresense(int row, int col);
   /** @} */  // end of LogicFunc group
 
 private:
