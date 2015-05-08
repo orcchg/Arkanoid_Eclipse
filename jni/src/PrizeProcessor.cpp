@@ -162,6 +162,7 @@ void PrizeProcessor::process_prizeLocated() {
   for (auto& item : m_prize_packages) {
     if (!item.second.hasGone() &&
         item.second.getY() <= m_bite_upper_border + PrizeParams::prizeHalfHeight * m_aspect &&
+        item.second.getY() >= m_bite_upper_border - (BiteParams::biteHeight + PrizeParams::prizeHalfHeight) * m_aspect &&
         item.second.getX() >= -(m_bite.getDimens().halfWidth() + PrizeParams::prizeHalfWidth) + m_bite.getXPose() &&
         item.second.getX() <= (m_bite.getDimens().halfWidth() + PrizeParams::prizeHalfWidth) + m_bite.getXPose()) {
       auto prize_id = item.second.getID();
