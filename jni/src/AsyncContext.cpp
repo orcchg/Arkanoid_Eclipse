@@ -675,7 +675,7 @@ void AsyncContext::initParticleSystem() {
   }
 
   // --------------------------------------------
-  GLfloat step = 0.005f;
+  GLfloat step = 0.001f;
   GLfloat halfStep = 0.5f * step;
   // branch 0
   {
@@ -1052,7 +1052,7 @@ void AsyncContext::drawPrizeCatch(GLfloat x, GLfloat y, const util::BGRA<GLfloat
     float delta_elapsed = static_cast<float>(currentTime - m_prize_catch_last_time) / CLOCKS_PER_SEC;
     m_prize_catch_last_time = currentTime;
     m_prize_catch_time += delta_elapsed;
-    if (m_prize_catch_time >= 0.5f) {
+    if (m_prize_catch_time >= 3.0f) {
       m_prize_catch_time = 0.0f;
 //      return;
     }
@@ -1074,8 +1074,16 @@ void AsyncContext::drawPrizeCatch(GLfloat x, GLfloat y, const util::BGRA<GLfloat
   glVertexAttribPointer(a_startPosition, 3, GL_FLOAT, GL_FALSE, particleSpiralSize * sizeof(GLfloat), &m_particle_spiral_buffer[3]);
   glVertexAttribPointer(a_endPosition, 3, GL_FLOAT, GL_FALSE, particleSpiralSize * sizeof(GLfloat), &m_particle_spiral_buffer[0]);
 
+  m_resources->getTexture("spark.png")->apply();
+  GLint sampler = glGetUniformLocation(m_prize_catch_shader->getProgram(), "s_texture");
+  glUniform1i(sampler, 0);
+
   glEnableVertexAttribArray(a_startPosition);
   glEnableVertexAttribArray(a_endPosition);
+
+  glEnable(GL_TEXTURE_2D);
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 
   glDrawArrays(GL_POINTS, 0, particleSpiralSystemSize);
 

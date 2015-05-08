@@ -262,7 +262,7 @@ ParticleMoveShader::ParticleMoveShader()
       "  attribute vec3 a_endPosition;                                         \n"
       "                                                                        \n"
       "  void main() {                                                         \n"
-      "    if (u_time <= 0.5) {                                                \n"
+      "    if (u_time <= 3.0) {                                                \n"
       "      gl_Position.xyz = a_startPosition + (u_time * a_endPosition);     \n"
       "      gl_Position.xyz += u_centerPosition;                              \n"
       "      gl_Position.w = 1.0;                                              \n"
@@ -275,9 +275,12 @@ ParticleMoveShader::ParticleMoveShader()
       "  precision mediump float;                                              \n"
       "                                                                        \n"
       "  uniform vec4 u_color;                                                 \n"
+      "  uniform sampler2D s_texture;                                          \n"
       "                                                                        \n"
       "  void main() {                                                         \n"
-      "    gl_FragColor = u_color;                                             \n"
+      "    vec4 texColor;                                                      \n"
+      "    texColor = texture2D(s_texture, gl_PointCoord);                     \n"
+      "    gl_FragColor = vec4(u_color) * texColor;                            \n"
       "  }                                                                     \n") {
 }
 
