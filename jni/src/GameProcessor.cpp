@@ -331,6 +331,7 @@ void GameProcessor::explodeBlock(int row, int col, const util::BGRA<GLfloat>& co
 void GameProcessor::spawnPrize(GLfloat x, GLfloat y, Prize prize) {
   if (prize != Prize::NONE) {
     PrizePackage package(prizeID++, x, y, prize);
+    INF("Prize with ID %i has been spawned at (%lf, %lf)", package.getID(), x, y);
     prize_event.notifyListeners(package);
   }
 }
@@ -340,6 +341,7 @@ void GameProcessor::spawnPrizeAtBlock(int row, int col, Prize prize) {
     GLfloat x = 0.f, y = 0.f;
     getCenterOfBlock(row, col, &x, &y);
     spawnPrize(x, y, prize);
+    DBG("Prize has been spawned at block %i %i (%lf, %lf)", row, col, x, y);
   }
 }
 
@@ -634,6 +636,7 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
         break;
     }
     block_impact_event.notifyListeners(RowCol(row, col));
+    ERR("Prize: impacted block %i %i", row, col);
     onScoreUpdated(score);
     return (external_collision &&
             block != Block::NONE &&
