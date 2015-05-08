@@ -801,9 +801,9 @@ void AsyncContext::drawExplosion(GLfloat x, GLfloat y, const util::BGRA<GLfloat>
   GLint a_startPosition = glGetAttribLocation(m_explosion_shader->getProgram(), "a_startPosition");
   GLint a_endPosition = glGetAttribLocation(m_explosion_shader->getProgram(), "a_endPosition");
 
-  glVertexAttribPointer(a_lifetime, 1, GL_FLOAT, GL_FALSE, particleSize * 4, &m_particle_buffer[0]);
-  glVertexAttribPointer(a_startPosition, 3, GL_FLOAT, GL_FALSE, particleSize * 4, &m_particle_buffer[4]);
-  glVertexAttribPointer(a_endPosition, 3, GL_FLOAT, GL_FALSE, particleSize * 4, &m_particle_buffer[1]);
+  glVertexAttribPointer(a_lifetime, 1, GL_FLOAT, GL_FALSE, particleSize * sizeof(GLfloat), &m_particle_buffer[0]);
+  glVertexAttribPointer(a_startPosition, 3, GL_FLOAT, GL_FALSE, particleSize * sizeof(GLfloat), &m_particle_buffer[4]);
+  glVertexAttribPointer(a_endPosition, 3, GL_FLOAT, GL_FALSE, particleSize * sizeof(GLfloat), &m_particle_buffer[1]);
 
   m_resources->getTexture("smoke.png")->apply();
   GLint sampler = glGetUniformLocation(m_explosion_shader->getProgram(), "s_texture");
@@ -955,8 +955,8 @@ void AsyncContext::drawPrizeCatch(GLfloat x, GLfloat y, const util::BGRA<GLfloat
   GLint a_startPosition = glGetAttribLocation(m_prize_catch_shader->getProgram(), "a_startPosition");
   GLint a_endPosition = glGetAttribLocation(m_prize_catch_shader->getProgram(), "a_endPosition");
 
-  glVertexAttribPointer(a_startPosition, 3, GL_FLOAT, GL_FALSE, particleSpiralSize * 4, &m_particle_spiral_buffer[3]);
-  glVertexAttribPointer(a_endPosition, 3, GL_FLOAT, GL_FALSE, particleSpiralSize * 4, &m_particle_spiral_buffer[0]);
+  glVertexAttribPointer(a_startPosition, 3, GL_FLOAT, GL_FALSE, particleSpiralSize * sizeof(GLfloat), &m_particle_spiral_buffer[3]);
+  glVertexAttribPointer(a_endPosition, 3, GL_FLOAT, GL_FALSE, particleSpiralSize * sizeof(GLfloat), &m_particle_spiral_buffer[0]);
 
   glEnableVertexAttribArray(a_startPosition);
   glEnableVertexAttribArray(a_endPosition);
