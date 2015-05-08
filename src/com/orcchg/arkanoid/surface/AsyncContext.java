@@ -11,6 +11,8 @@ class AsyncContext {
   
   interface CoreEventListener {
     void onRefreshLives();
+    void onRefreshLevel();
+    void onRefreshScore();
     void onThrowBall();
     void onLostBall();
     void onLevelFinished();
@@ -62,6 +64,18 @@ class AsyncContext {
   void fireJavaEvent_refreshLives() {
     if (mListener != null) {
       mListener.onRefreshLives();
+    }
+  }
+  
+  void fireJavaEvent_refreshLevel() {
+    if (mListener != null) {
+      mListener.onRefreshLevel();
+    }
+  }
+  
+  void fireJavaEvent_refreshScore() {
+    if (mListener != null) {
+      mListener.onRefreshScore();
     }
   }
   

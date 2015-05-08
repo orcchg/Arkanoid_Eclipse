@@ -142,6 +142,9 @@ public class MainActivity extends FragmentActivity {
         setLives(INITIAL_LIVES);
         setLevel(INITIAL_LEVEL);
         setScore(INITIAL_SCORE);
+        mAsyncContext.fireJavaEvent_refreshLives();
+        mAsyncContext.fireJavaEvent_refreshLevel();
+        mAsyncContext.fireJavaEvent_refreshScore();
         mAsyncContext.loadLevel(Levels.get(currentLevel));
         break;
     }
@@ -246,6 +249,16 @@ public class MainActivity extends FragmentActivity {
     @Override
     public void onRefreshLives() {
       currentLives = INITIAL_LIVES;
+    }
+    
+    @Override
+    public void onRefreshLevel() {
+      currentLevel = INITIAL_LEVEL;
+    }
+    
+    @Override
+    public void onRefreshScore() {
+      currentScore = INITIAL_SCORE;
     }
     
     @Override
