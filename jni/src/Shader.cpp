@@ -273,7 +273,7 @@ ParticleMoveShader::ParticleMoveShader()
       ,
       "  precision mediump float;                                              \n"
       "                                                                        \n"
-      "  uniform vec4 v_color;                                                 \n"
+      "  uniform vec4 u_color;                                                 \n"
       "                                                                        \n"
       "  void main() {                                                         \n"
       "    gl_FragColor = u_color;                                             \n"
