@@ -262,7 +262,7 @@ ParticleMoveShader::ParticleMoveShader()
       "  attribute vec3 a_endPosition;                                         \n"
       "                                                                        \n"
       "  void main() {                                                         \n"
-      "    if (u_time <= 3.0) {                                                \n"
+      "    if (u_time <= 1.0) {                                                \n"
       "      gl_Position.xyz = a_startPosition + (u_time * a_endPosition);     \n"
       "      gl_Position.xyz += u_centerPosition;                              \n"
       "      gl_Position.w = 1.0;                                              \n"

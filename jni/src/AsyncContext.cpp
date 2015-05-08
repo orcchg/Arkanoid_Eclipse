@@ -692,14 +692,16 @@ void AsyncContext::initParticleSystem() {
       m_particle_spiral_buffer[index + 1 + bi] = halfStep * i;
       m_particle_spiral_buffer[index + 2 + bi] = 0.0f;
     }
-    for (int j = -particleSpiralSystemBranchSize >> 1; i < particleSpiralSystemBranchSize; ++i, ++j) {
+    GLfloat offset = 0;//-halfStep * (i - 1);
+    for (; i < particleSpiralSystemBranchSize; ++i) {
       int index = i * particleSpiralSize;
+      int j = i - particleSpiralSystemBranchSize >> 1;
       // Start position of particle
-      m_particle_spiral_buffer[index + 3 + bi] = halfStep * j;
-      m_particle_spiral_buffer[index + 4 + bi] = step * i;
+      m_particle_spiral_buffer[index + 3 + bi] = offset + halfStep * j;
+      m_particle_spiral_buffer[index + 4 + bi] = step * j;
       m_particle_spiral_buffer[index + 5 + bi] = 0.0f;
       // End position of particle
-      m_particle_spiral_buffer[index + 0 + bi] = step * i;
+      m_particle_spiral_buffer[index + 0 + bi] = step * j;
       m_particle_spiral_buffer[index + 1 + bi] = -halfStep * j;
       m_particle_spiral_buffer[index + 2 + bi] = 0.0f;
     }
@@ -719,15 +721,17 @@ void AsyncContext::initParticleSystem() {
       m_particle_spiral_buffer[index + 1 + bi] = -step * i;
       m_particle_spiral_buffer[index + 2 + bi] = 0.0f;
     }
-    for (int j = -particleSpiralSystemBranchSize >> 1; i < particleSpiralSystemBranchSize; ++i, ++j) {
+    GLfloat offset = 0;//halfStep * (i - 1);
+    for (; i < particleSpiralSystemBranchSize; ++i) {
       int index = i * particleSpiralSize;
+      int j = i - particleSpiralSystemBranchSize >> 1;
       // Start position of particle
-      m_particle_spiral_buffer[index + 3 + bi] = step * i;
-      m_particle_spiral_buffer[index + 4 + bi] = -halfStep * j;
+      m_particle_spiral_buffer[index + 3 + bi] = step * j;
+      m_particle_spiral_buffer[index + 4 + bi] = offset - halfStep * j;
       m_particle_spiral_buffer[index + 5 + bi] = 0.0f;
       // End position of particle
       m_particle_spiral_buffer[index + 0 + bi] = -halfStep * j;
-      m_particle_spiral_buffer[index + 1 + bi] = -step * i;
+      m_particle_spiral_buffer[index + 1 + bi] = -step * j;
       m_particle_spiral_buffer[index + 2 + bi] = 0.0f;
     }
   }
@@ -746,14 +750,16 @@ void AsyncContext::initParticleSystem() {
       m_particle_spiral_buffer[index + 1 + bi] = -halfStep * i;
       m_particle_spiral_buffer[index + 2 + bi] = 0.0f;
     }
-    for (int j = -particleSpiralSystemBranchSize >> 1; i < particleSpiralSystemBranchSize; ++i, ++j) {
+    GLfloat offset = 0;//halfStep * (i - 1);
+    for (; i < particleSpiralSystemBranchSize; ++i) {
       int index = i * particleSpiralSize;
+      int j = i - particleSpiralSystemBranchSize >> 1;
       // Start position of particle
-      m_particle_spiral_buffer[index + 3 + bi] = -halfStep * j;
-      m_particle_spiral_buffer[index + 4 + bi] = -step * i;
+      m_particle_spiral_buffer[index + 3 + bi] = offset - halfStep * j;
+      m_particle_spiral_buffer[index + 4 + bi] = -step * j;
       m_particle_spiral_buffer[index + 5 + bi] = 0.0f;
       // End position of particle
-      m_particle_spiral_buffer[index + 0 + bi] = -step * i;
+      m_particle_spiral_buffer[index + 0 + bi] = -step * j;
       m_particle_spiral_buffer[index + 1 + bi] = halfStep * j;
       m_particle_spiral_buffer[index + 2 + bi] = 0.0f;
     }
@@ -773,15 +779,17 @@ void AsyncContext::initParticleSystem() {
       m_particle_spiral_buffer[index + 1 + bi] = step * i;
       m_particle_spiral_buffer[index + 2 + bi] = 0.0f;
     }
-    for (int j = -particleSpiralSystemBranchSize >> 1; i < particleSpiralSystemBranchSize; ++i, ++j) {
+    GLfloat offset = 0;//-halfStep * (i - 1);
+    for (; i < particleSpiralSystemBranchSize; ++i) {
       int index = i * particleSpiralSize;
+      int j = i - particleSpiralSystemBranchSize >> 1;
       // Start position of particle
-      m_particle_spiral_buffer[index + 3 + bi] = -step * i;
-      m_particle_spiral_buffer[index + 4 + bi] = halfStep * j;
+      m_particle_spiral_buffer[index + 3 + bi] = -step * j;
+      m_particle_spiral_buffer[index + 4 + bi] = offset + halfStep * j;
       m_particle_spiral_buffer[index + 5 + bi] = 0.0f;
       // End position of particle
       m_particle_spiral_buffer[index + 0 + bi] = halfStep * j;
-      m_particle_spiral_buffer[index + 1 + bi] = step * i;
+      m_particle_spiral_buffer[index + 1 + bi] = step * j;
       m_particle_spiral_buffer[index + 2 + bi] = 0.0f;
     }
   }
@@ -1052,9 +1060,9 @@ void AsyncContext::drawPrizeCatch(GLfloat x, GLfloat y, const util::BGRA<GLfloat
     float delta_elapsed = static_cast<float>(currentTime - m_prize_catch_last_time) / CLOCKS_PER_SEC;
     m_prize_catch_last_time = currentTime;
     m_prize_catch_time += delta_elapsed;
-    if (m_prize_catch_time >= 3.0f) {
+    if (m_prize_catch_time >= 1.0f) {
       m_prize_catch_time = 0.0f;
-//      return;
+      return;
     }
   }
 
