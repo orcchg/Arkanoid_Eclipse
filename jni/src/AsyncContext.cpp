@@ -391,6 +391,7 @@ void AsyncContext::process_moveBall() {
 
 void AsyncContext::process_lostBall() {
   std::unique_lock<std::mutex> lock(m_lost_ball_mutex);
+  clearPrizeStructures();
   if (m_render_explosion) {
     moveBall(0.0f, 1000.f);
     delay(65);
@@ -497,6 +498,13 @@ void AsyncContext::clearRemovedPrizes() {
   for (auto& item : m_removed_prizes) {
     m_prize_packages.erase(item);
   }
+  m_removed_prizes.clear();
+}
+
+void AsyncContext::clearPrizeStructures() {
+  m_prize_last_time = 0;
+  m_prize_catch_last_time = 0;
+  m_prize_packages.clear();
   m_removed_prizes.clear();
 }
 

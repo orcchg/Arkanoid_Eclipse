@@ -349,6 +349,8 @@ private:
   void addPrizeToRemoved(int prize_id);
   /// @brief Clears removed prizes.
   void clearRemovedPrizes();
+  /// @brief Clean-up prize structures and counters.
+  void clearPrizeStructures();
   /// @brief Checks whether specified block is present in current level.
   /// @return TRUE is block is present in newly loaded level, FALSE otherwise.
   /// @detail This allows to avoid crash when load level event is followed by
