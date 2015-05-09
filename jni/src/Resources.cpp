@@ -134,20 +134,10 @@ const native::Texture* const Resources::getPrizeTexture(const Prize& prize) cons
   return nullptr;
 }
 
-Resources::tex_iterator Resources::beginTexture() {
-  return m_textures.begin();
-}
-Resources::tex_iterator Resources::endTexture() {
-  return m_textures.end();
-}
-
-Resources::const_tex_iterator Resources::cbeginTexture() const {
-  return m_textures.cbegin();
-}
-
-Resources::const_tex_iterator Resources::cendTexture() const {
-  return m_textures.cend();
-}
+Resources::tex_iterator Resources::beginTexture() { return m_textures.begin(); }
+Resources::tex_iterator Resources::endTexture() { return m_textures.end(); }
+Resources::const_tex_iterator Resources::cbeginTexture() const { return m_textures.cbegin(); }
+Resources::const_tex_iterator Resources::cendTexture() const { return m_textures.cend(); }
 
 Resources::Ptr Resources::getSharedPtr() {
   return shared_from_this();
@@ -167,5 +157,10 @@ bool Resources::readSound(jstring filename) {
   m_jenv->ReleaseStringUTFChars(filename, raw_name);
   return true;
 }
+
+Resources::sound_iterator Resources::beginSound() { return m_sounds.begin(); }
+Resources::sound_iterator Resources::endSound() { return m_sounds.end(); }
+Resources::const_sound_iterator Resources::cbeginSound() const { return m_sounds.cbegin(); }
+Resources::const_sound_iterator Resources::cendSound() const { return m_sounds.cend(); }
 
 }

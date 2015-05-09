@@ -30,7 +30,8 @@ public:
    *  which SoundProcessor subscribed on.
    *  @{
    */
-  //
+  /// @brief Called when load resources requested.
+  void callback_loadResources(bool /* dummy */);
   /** @} */  // end of Callbacks group
 
   /** @defgroup Resources Bind with external resources.
@@ -46,7 +47,8 @@ public:
   /** @defgroup Event Outcoming events and listeners for incoming events.
    * @{
    */
-  //
+  /// @brief Listens for load resources request.
+  EventListener<bool> load_resources_listener;
   /** @} */  // end of Event group
 
 // ----------------------------------------------
@@ -64,7 +66,8 @@ private:
   /** @defgroup Mutex Thread-safety variables
    * @{
    */
-  //
+  std::mutex m_load_resources_mutex;  //!< Sentinel for load resources.
+  std::atomic_bool m_load_resources_received;  //!< Load resources requested.
   /** @} */  // end of Mutex group
 
   /** @addtogroup Resources
@@ -94,7 +97,8 @@ private:
    *  corresponding event occurred and has been caught.
    *  @{
    */
-  //
+  /// @brief Loads external resources into Graphic memory.
+  void process_loadResources();
   /** @} */  // end of Processors group
 
   /** @defgroup CoreFunc Core-related internal functionality.

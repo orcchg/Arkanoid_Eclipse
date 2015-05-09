@@ -49,7 +49,7 @@ JNIEXPORT jlong JNICALL Java_com_orcchg_arkanoid_surface_AsyncContext_init
   ptr->prize_processor->prize_location_listener = ptr->acontext->prize_location_event.createListener(&game::PrizeProcessor::callback_prizeLocated, ptr->prize_processor);
   ptr->prize_processor->prize_gone_listener = ptr->acontext->prize_gone_event.createListener(&game::PrizeProcessor::callback_prizeHasGone, ptr->prize_processor);
 
-  // TODO: subscribe sound_processor
+  ptr->sound_processor->load_resources_listener = ptr->load_resources_event.createListener(&native::sound::SoundProcessor::callback_loadResources, ptr->sound_processor);
   return descriptor;
 }
 
@@ -59,7 +59,7 @@ JNIEXPORT void JNICALL Java_com_orcchg_arkanoid_surface_AsyncContext_start
   ptr->acontext->launch();
   ptr->processor->launch();
   ptr->prize_processor->launch();
-  //ptr->sound_processor->launch();
+  ptr->sound_processor->launch();
 }
 
 JNIEXPORT void JNICALL Java_com_orcchg_arkanoid_surface_AsyncContext_stop
@@ -68,7 +68,7 @@ JNIEXPORT void JNICALL Java_com_orcchg_arkanoid_surface_AsyncContext_stop
   ptr->acontext->stop();
   ptr->processor->stop();
   ptr->prize_processor->stop();
-  //ptr->sound_processor->stop();
+  ptr->sound_processor->stop();
 }
 
 JNIEXPORT void JNICALL Java_com_orcchg_arkanoid_surface_AsyncContext_destroy

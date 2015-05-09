@@ -12,20 +12,32 @@ SoundProcessor::SoundProcessor()
   , m_engine(nullptr)
   , m_mixer(nullptr)
   , m_interface(nullptr) {
+
+  DBG("enter SoundProcessor ctor");
   if (!init()) {
     std::ostringstream oss;
     oss << "Sound processor exception, error code: " << m_error_code;
     throw SoundProcessorException(oss.str().c_str());
   }
+
+  m_load_resources_received.store(false);
+  DBG("exit SoundProcessor ctor");
 }
 
 SoundProcessor::~SoundProcessor() {
+  DBG("enter SoundProcessor ~dtor");
   destroy();
   m_resources = nullptr;
+  DBG("exit SoundProcessor ~dtor");
 }
 
 /* Callbacks group */
 // ----------------------------------------------------------------------------
+void SoundProcessor::callback_loadResources(bool /* dummy */) {
+  std::unique_lock<std::mutex> lock(m_load_resources_mutex);
+  m_load_resources_received.store(true);
+  interrupt();
+}
 
 // ----------------------------------------------
 void SoundProcessor::setResourcesPtr(game::Resources* resources) {
@@ -41,15 +53,29 @@ void SoundProcessor::onStop() {
 }
 
 bool SoundProcessor::checkForWakeUp() {
-  return true;  // TODO: implement
+  return m_load_resources_received.load();
 }
 
 void SoundProcessor::eventHandler() {
-  // TODO: implement
+  if (m_load_resources_received.load()) {
+    m_load_resources_received.store(false);
+    process_loadResources();
+  }
 }
 
 /* Processors group */
 // ----------------------------------------------------------------------------
+void SoundProcessor::process_loadResources() {
+  std::unique_lock<std::mutex> lock(m_load_resources_mutex);
+  if (m_resources != nullptr) {
+    for (auto it = m_resources->beginSound(); it != m_resources->endSound(); ++it) {
+      DBG("Loading resources: %s %p", it->first.c_str(), it->second);
+      it->second->load();
+    }
+  } else {
+    ERR("Resources pointer was not set !");
+  }
+}
 
 /* CoreFunc group */
 // ----------------------------------------------------------------------------

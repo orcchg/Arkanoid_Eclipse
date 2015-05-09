@@ -67,8 +67,6 @@ namespace game {
 class Resources : public std::enable_shared_from_this<Resources> {
 public:
   typedef std::shared_ptr<Resources> Ptr;
-  typedef std::unordered_map<std::string, native::Texture*>::iterator tex_iterator;
-  typedef std::unordered_map<std::string, native::Texture*>::const_iterator const_tex_iterator;
 
   Resources(JNIEnv* jenv, jobject assets, jstring internalFileStorage_Java);
   ~Resources() noexcept;
@@ -76,6 +74,9 @@ public:
   /** @defgroup Texture Access texture resources.
    * @{
    */
+  typedef std::unordered_map<std::string, native::Texture*>::iterator tex_iterator;
+  typedef std::unordered_map<std::string, native::Texture*>::const_iterator const_tex_iterator;
+
   bool readTexture(jstring filename);
   const native::Texture* const getTexture(const std::string& name) const;
   const native::Texture* const getRandomTexture(const std::string& prefix) const;
@@ -90,7 +91,15 @@ public:
   /** @defgroup Sound Access sound resources.
    * @{
    */
+  typedef std::unordered_map<std::string, native::SoundBuffer*>::iterator sound_iterator;
+  typedef std::unordered_map<std::string, native::SoundBuffer*>::const_iterator const_sound_iterator;
+
   bool readSound(jstring filename);
+
+  sound_iterator beginSound();
+  sound_iterator endSound();
+  const_sound_iterator cbeginSound() const;
+  const_sound_iterator cendSound() const;
   /** @} */  // end of Sound group
 
   Ptr getSharedPtr();
