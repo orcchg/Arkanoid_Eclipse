@@ -24,7 +24,6 @@ namespace sound {
 /// http://habrahabr.ru/post/176933/
 class SoundProcessor : public ActiveObject {
 public:
-//  typedef std::shared_ptr<SoundProcessor> Ptr;
   typedef SoundProcessor* Ptr;
 
   SoundProcessor();
