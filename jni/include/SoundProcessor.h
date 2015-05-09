@@ -5,15 +5,20 @@
 #include <memory>
 #include <mutex>
 
+#include <SLES/OpenSLES.h>
+#include <SLES/OpenSLES_Android.h>
+
 #include "ActiveObject.h"
 #include "Event.h"
 #include "EventListener.h"
+#include "Resources.h"
 
 namespace native {
 namespace sound {
 
 /// @class SoundProcessor SoundProcessor.h "include/SoundProcessor.h"
 /// @brief Standalone thread to play sounds from sound buffers' queue.
+/// http://habrahabr.ru/post/176933/
 class SoundProcessor : public ActiveObject {
 public:
   typedef std::shared_ptr<SoundProcessor> Ptr;
@@ -27,6 +32,13 @@ public:
    */
   //
   /** @} */  // end of Callbacks group
+
+  /** @defgroup Resources Bind with external resources.
+   * @{
+   */
+  /// @brief Sets the pointer to external resources.
+  void setResourcesPtr(game::Resources* resources);
+  /** @} */  // end of Resources group
 
 // ----------------------------------------------
 /* Public data-members */
@@ -43,7 +55,10 @@ private:
   /** @defgroup Core Core data-structures for sound playback.
    * @{
    */
-  //
+  int m_error_code;
+  SLObjectItf m_engine;
+  SLObjectItf m_mixer;
+  SLEngineItf m_interface;
   /** @} */  // end of Core group
 
   /** @defgroup Mutex Thread-safety variables
@@ -51,6 +66,12 @@ private:
    */
   //
   /** @} */  // end of Mutex group
+
+  /** @addtogroup Resources
+   * @{
+   */
+  game::Resources* m_resources;
+  /** @} */  // end of Resources group
 
 // ----------------------------------------------
 /* Private member-functions */
@@ -79,7 +100,8 @@ private:
   /** @defgroup CoreFunc Core-related internal functionality.
    * @{
    */
-  //
+  bool init();  //!< Initializes sound processor stuff.
+  void destroy();  //!< Releases sound processor stuff.
   /** @} */  // end of CoreFunc group
 };
 

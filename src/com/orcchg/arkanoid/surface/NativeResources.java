@@ -16,11 +16,13 @@ public class NativeResources {
   /* Package API */
   // --------------------------------------------------------------------------
   boolean readTexture(String filename) { return readTexture(descriptor, filename); }
+  boolean readSound(String filename) { return readSound(descriptor, filename); }
   void release() { release(descriptor); }
   
   /* Private methods */
   // --------------------------------------------------------------------------
   private native long init(AssetManager assets, String internal_storage);
   private native boolean readTexture(long descriptor, String filename);
+  private native boolean readSound(long descriptor, String filename);
   private native void release(long descriptor);
 }

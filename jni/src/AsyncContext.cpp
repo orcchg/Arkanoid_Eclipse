@@ -333,7 +333,7 @@ void AsyncContext::process_setWindow() {
 void AsyncContext::process_loadResources() {
   std::unique_lock<std::mutex> lock(m_load_resources_mutex);
   if (m_resources != nullptr) {
-    for (auto it = m_resources->begin(); it != m_resources->end(); ++it) {
+    for (auto it = m_resources->beginTexture(); it != m_resources->endTexture(); ++it) {
       DBG("Loading resources: %s %p", it->first.c_str(), it->second);
       it->second->load();
     }

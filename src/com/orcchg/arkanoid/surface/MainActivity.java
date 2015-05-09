@@ -59,10 +59,13 @@ public class MainActivity extends FragmentActivity {
     
     mNativeResources = new NativeResources(getAssets(), getFilesDir().getAbsolutePath());
     try {
-      String texture_folder = "texture";
-      String[] resources = getAssets().list(texture_folder);
-      for (String resource : resources) {
-        mNativeResources.readTexture(resource);
+      String[] texture_resources = getAssets().list("texture");
+      for (String texture : texture_resources) {
+        mNativeResources.readTexture(texture);
+      }
+      String[] sound_resources = getAssets().list("sound");
+      for (String sound : sound_resources) {
+        mNativeResources.readSound(sound);
       }
     } catch (IOException e) {
       e.printStackTrace();

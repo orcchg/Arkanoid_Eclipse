@@ -1,7 +1,5 @@
 package com.orcchg.arkanoid.surface;
 
-import java.util.Arrays;
-
 import android.view.Surface;
 
 class AsyncContext {

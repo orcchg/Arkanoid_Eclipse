@@ -16,6 +16,12 @@ JNIEXPORT jboolean JNICALL Java_com_orcchg_arkanoid_surface_NativeResources_read
   return ptr->readTexture(filename);
 }
 
+JNIEXPORT jboolean JNICALL Java_com_orcchg_arkanoid_surface_NativeResources_readSound
+  (JNIEnv *, jobject, jlong descriptor, jstring filename) {
+  game::Resources* ptr = reinterpret_cast<game::Resources*>(descriptor);
+  return ptr->readSound(filename);
+}
+
 JNIEXPORT void JNICALL Java_com_orcchg_arkanoid_surface_NativeResources_release
   (JNIEnv *, jobject, jlong descriptor) {
   game::Resources* ptr = reinterpret_cast<game::Resources*>(descriptor);
@@ -45,13 +51,15 @@ Resources::~Resources() {
   m_jenv = nullptr;
 }
 
+/* Texture group */
+// ----------------------------------------------------------------------------
 bool Resources::readTexture(jstring filename) {
   const char* raw_name = m_jenv->GetStringUTFChars(filename, nullptr);
   native::Texture* texture = nullptr;
   {
     std::string prefix = "texture/" + std::string(raw_name);
     texture = new native::PNGTexture(m_assets, prefix.c_str());
-    DBG("Read resource: %s", raw_name);
+    DBG("Read texture resource: %s", raw_name);
   }
   m_textures[raw_name] = texture;
   m_jenv->ReleaseStringUTFChars(filename, raw_name);
@@ -126,23 +134,38 @@ const native::Texture* const Resources::getPrizeTexture(const Prize& prize) cons
   return nullptr;
 }
 
-Resources::iterator Resources::begin() {
+Resources::tex_iterator Resources::beginTexture() {
   return m_textures.begin();
 }
-Resources::iterator Resources::end() {
+Resources::tex_iterator Resources::endTexture() {
   return m_textures.end();
 }
 
-Resources::const_iterator Resources::cbegin() const {
+Resources::const_tex_iterator Resources::cbeginTexture() const {
   return m_textures.cbegin();
 }
 
-Resources::const_iterator Resources::cend() const {
+Resources::const_tex_iterator Resources::cendTexture() const {
   return m_textures.cend();
 }
 
 Resources::Ptr Resources::getSharedPtr() {
   return shared_from_this();
+}
+
+/* Sound group */
+// ----------------------------------------------------------------------------
+bool Resources::readSound(jstring filename) {
+  const char* raw_name = m_jenv->GetStringUTFChars(filename, nullptr);
+  native::SoundBuffer* sound = nullptr;
+  {
+    std::string prefix = "sound/" + std::string(raw_name);
+    sound = new native::WAVSound(m_assets, prefix.c_str());
+    DBG("Read sound resource: %s", raw_name);
+  }
+  m_sounds[raw_name] = sound;
+  m_jenv->ReleaseStringUTFChars(filename, raw_name);
+  return true;
 }
 
 }

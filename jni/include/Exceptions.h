@@ -52,4 +52,15 @@ private:
   const char* message;
 };
 
+struct SoundProcessorException : public std::exception {
+public:
+  SoundProcessorException(const char* message) : message(message) {}
+  const char* what() const noexcept override final {
+    return message;
+  }
+
+private:
+  const char* message;
+};
+
 #endif  // __ARKANOID_EXCEPTIONS__H__

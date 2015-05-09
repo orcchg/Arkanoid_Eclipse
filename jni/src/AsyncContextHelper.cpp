@@ -99,6 +99,7 @@ JNIEXPORT void JNICALL Java_com_orcchg_arkanoid_surface_AsyncContext_setResource
   AsyncContextHelper* ptr = (AsyncContextHelper*) descriptor;
   game::Resources* res_ptr = (game::Resources*) resources;
   ptr->acontext->setResourcesPtr(res_ptr);
+  ptr->sound_processor->setResourcesPtr(res_ptr);
 }
 
 JNIEXPORT void JNICALL Java_com_orcchg_arkanoid_surface_AsyncContext_loadResources
