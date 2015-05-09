@@ -294,7 +294,7 @@ bool SoundProcessor::init() {
   if (result != SL_RESULT_SUCCESS) { error_code = 4; goto ERROR_SOUND; }
   result = (*m_mixer)->Realize(m_mixer, SL_BOOLEAN_FALSE);
   if (result != SL_RESULT_SUCCESS) { error_code = 5; goto ERROR_SOUND; }
-  return true;
+  return initPlayerQueue();
 
   ERROR_SOUND:
     m_error_code = 2000 + error_code;
