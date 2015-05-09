@@ -47,7 +47,9 @@ GameProcessor::GameProcessor(JavaVM* jvm)
 }
 
 GameProcessor::~GameProcessor() {
+  DBG("enter GameProcessor ~dtor");
   m_jvm = nullptr;  m_jenv = nullptr;
+  DBG("exit GameProcessor ~dtor");
 }
 
 /* Callbacks group */
@@ -122,10 +124,12 @@ void GameProcessor::detachFromJVM() {
 /* ActiveObject group */
 // ----------------------------------------------------------------------------
 void GameProcessor::onStart() {
+  DBG("GameProcessor onStart");
   attachToJVM();
 }
 
 void GameProcessor::onStop() {
+  DBG("GameProcessor onStop");
   detachFromJVM();
 }
 

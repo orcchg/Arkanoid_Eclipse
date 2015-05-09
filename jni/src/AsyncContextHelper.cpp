@@ -190,10 +190,12 @@ JNIEXPORT jint JNICALL Java_com_orcchg_arkanoid_surface_AsyncContext_getScore
 AsyncContextHelper::AsyncContextHelper(JNIEnv* jenv, jobject object)
   : jenv(jenv)
   , window(nullptr) {
-  acontext = std::make_shared<game::AsyncContext>(jvm);
-  processor = std::make_shared<game::GameProcessor>(jvm);
-  prize_processor = std::make_shared<game::PrizeProcessor>(jvm);
-  sound_processor = std::make_shared<native::sound::SoundProcessor>();
+
+  DBG("enter AsyncContextHelper ctor");
+  acontext = new game::AsyncContext(jvm);  // std::make_shared<game::AsyncContext>(jvm);
+  processor = new game::GameProcessor(jvm);  // std::make_shared<game::GameProcessor>(jvm);
+  prize_processor = new game::PrizeProcessor(jvm);  // std::make_shared<game::PrizeProcessor>(jvm);
+  sound_processor = new native::sound::SoundProcessor();  // std::make_shared<native::sound::SoundProcessor>();
 
   global_object = jenv->NewGlobalRef(object);
   jclass clazz = jenv->FindClass("java/lang/String");
@@ -216,19 +218,22 @@ AsyncContextHelper::AsyncContextHelper(JNIEnv* jenv, jobject object)
 
   prize_processor->setMasterObject(global_object);
   prize_processor->setOnPrizeCatchMethodID(fireJavaEvent_prizeCatch_id);
+  DBG("exit AsyncContextHelper ctor");
 }
 
 AsyncContextHelper::~AsyncContextHelper() {
+  DBG("enter AsyncContextHelper ~dtor");
   jenv->DeleteGlobalRef(global_object);
   global_object = nullptr;
   jenv->DeleteGlobalRef(String_clazz);
   String_clazz = nullptr;
-  acontext.reset();
-  acontext = nullptr;
-  processor.reset();
-  processor = nullptr;
-  prize_processor.reset();
-  prize_processor = nullptr;
-  sound_processor.reset();
-  sound_processor = nullptr;
+//  acontext.reset();
+  delete acontext; acontext = nullptr;
+//  processor.reset();
+  delete processor; processor = nullptr;
+//  prize_processor.reset();
+  delete prize_processor; prize_processor = nullptr;
+//  sound_processor.reset();
+  delete sound_processor; sound_processor = nullptr;
+  DBG("exit AsyncContextHelper ~dtor");
 }

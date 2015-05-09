@@ -103,9 +103,11 @@ void SoundProcessor::setResourcesPtr(game::Resources* resources) {
 /* ActiveObject group */
 // ----------------------------------------------------------------------------
 void SoundProcessor::onStart() {
+  DBG("SoundProcessor onStart");
 }
 
 void SoundProcessor::onStop() {
+  DBG("SoundProcessor onStop");
 }
 
 bool SoundProcessor::checkForWakeUp() {
@@ -176,7 +178,6 @@ void SoundProcessor::process_lostBall() {
 void SoundProcessor::process_biteImpact() {
   std::unique_lock<std::mutex> lock(m_bite_impact_mutex);
   auto sound = m_resources->getRandomSound("bite_");
-  DBG("Sound: %s", sound->getName());
   playSound(sound);
 }
 
@@ -258,7 +259,6 @@ void SoundProcessor::process_blockImpact() {
 void SoundProcessor::process_wallImpact() {
   std::unique_lock<std::mutex> lock(m_wall_impact_mutex);
   auto sound = m_resources->getRandomSound("wall_");
-  INF("Sound: %s", sound->getName());
   playSound(sound);
 }
 
@@ -274,7 +274,8 @@ void SoundProcessor::process_explosion() {
 
 void SoundProcessor::process_prizeCaught() {
   std::unique_lock<std::mutex> lock(m_prize_caught_mutex);
-  // XXX:
+  auto sound = m_resources->getRandomSound("prize_");
+  playSound(sound);
 }
 
 /* CoreFunc group */

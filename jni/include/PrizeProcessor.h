@@ -22,7 +22,8 @@ namespace game {
 /// @brief Standalone thread performs processing catch prizes.
 class PrizeProcessor : public ActiveObject {
 public:
-  typedef std::shared_ptr<PrizeProcessor> Ptr;
+//  typedef std::shared_ptr<PrizeProcessor> Ptr;
+  typedef PrizeProcessor* Ptr;
 
   PrizeProcessor(JavaVM* jvm);
   virtual ~PrizeProcessor() noexcept;

@@ -41,7 +41,8 @@ namespace game {
  */
 class AsyncContext : public ActiveObject {
 public:
-  typedef std::shared_ptr<AsyncContext> Ptr;
+//  typedef std::shared_ptr<AsyncContext> Ptr;
+  typedef AsyncContext* Ptr;
 
   AsyncContext(JavaVM* jvm);
   virtual ~AsyncContext() noexcept;

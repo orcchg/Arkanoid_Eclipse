@@ -27,7 +27,8 @@ namespace game {
 /// @brief Standalone thread performs game logic calculations.
 class GameProcessor : public ActiveObject {
 public:
-  typedef std::shared_ptr<GameProcessor> Ptr;
+//  typedef std::shared_ptr<GameProcessor> Ptr;
+  typedef GameProcessor* Ptr;
 
   GameProcessor(JavaVM* jvm);
   virtual ~GameProcessor() noexcept;

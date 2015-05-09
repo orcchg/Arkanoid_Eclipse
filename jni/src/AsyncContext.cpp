@@ -230,10 +230,12 @@ void AsyncContext::detachFromJVM() {
 /* ActiveObject group */
 // ----------------------------------------------------------------------------
 void AsyncContext::onStart() {
+  DBG("AsyncContext onStart");
   attachToJVM();
 }
 
 void AsyncContext::onStop() {
+  DBG("AsyncContext onStop");
   detachFromJVM();
 }
 

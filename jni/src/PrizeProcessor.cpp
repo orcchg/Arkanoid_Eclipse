@@ -27,7 +27,9 @@ PrizeProcessor::PrizeProcessor(JavaVM* jvm)
 }
 
 PrizeProcessor::~PrizeProcessor() {
+  DBG("enter PrizeProcessor ~dtor");
   m_jvm = nullptr;  m_jenv = nullptr;
+  DBG("exit PrizeProcessor ~dtor");
 }
 
 /* Callbacks group */
@@ -95,10 +97,12 @@ void PrizeProcessor::detachFromJVM() {
 /* ActiveObject group */
 // ----------------------------------------------------------------------------
 void PrizeProcessor::onStart() {
+  DBG("PrizeProcessor onStart");
   attachToJVM();
 }
 
 void PrizeProcessor::onStop() {
+  DBG("PrizeProcessor onStop");
   detachFromJVM();
 }
 
