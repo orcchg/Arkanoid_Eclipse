@@ -13,7 +13,8 @@ SoundBuffer::SoundBuffer(AssetStorage* assets, const char* filename)
   , m_assets(assets)
   , m_filename(new char[128])
   , m_length(0)
-  , m_data(nullptr) {
+  , m_data(nullptr)
+  , m_error_code(0) {
 }
 
 SoundBuffer::SoundBuffer(const char* filepath)
@@ -21,7 +22,8 @@ SoundBuffer::SoundBuffer(const char* filepath)
   , m_assets(nullptr)
   , m_filename(new char[128])
   , m_length(0)
-  , m_data(nullptr) {
+  , m_data(nullptr)
+  , m_error_code(0) {
 }
 
 SoundBuffer::~SoundBuffer() {
@@ -40,6 +42,9 @@ const char* SoundBuffer::getName() const {
   }
   return nullptr;
 }
+
+uint8_t* const SoundBuffer::getData() const { return m_data; }
+off_t SoundBuffer::getLength() const { return m_length; }
 
 bool SoundBuffer::load() {
   m_data = loadSound();
@@ -84,6 +89,8 @@ uint8_t* SoundBuffer::loadSound() {
   return data;
 
   ERROR_SOUND:
+    m_error_code = 2020 + error_code;
+    ERR("Error while reading raw sound: %i", m_error_code);
     switch (m_read_mode) {
       case ReadMode::ASSETS:
         m_assets->close();

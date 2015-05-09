@@ -61,6 +61,10 @@ private:
   SLObjectItf m_engine;
   SLObjectItf m_mixer;
   SLEngineItf m_interface;
+
+  SLObjectItf m_player;
+  SLPlayItf m_player_interface;
+  SLBufferQueueItf m_player_queue;
   /** @} */  // end of Core group
 
   /** @defgroup Mutex Thread-safety variables
@@ -105,9 +109,21 @@ private:
    * @{
    */
   bool init();  //!< Initializes sound processor stuff.
+  bool initPlayerQueue();  //!< Initializes queue for sound buffers.
+  bool playSound(SoundBuffer* sound);  //!< Plays new sound, stopping any previous one.
   void destroy();  //!< Releases sound processor stuff.
   /** @} */  // end of CoreFunc group
 };
+
+/**
+ * Error codes (SoundProcessor)
+ *
+ * 2001 - slCreateEngine() failed
+ * 2002 - Realize() for Engine failed
+ * 2003 - GetInterface() SL_IID_ENGINE failed
+ * 2004 - CreateOutputMix() failed
+ * 2005 - Realize() for Mixer failed
+ */
 
 }
 }

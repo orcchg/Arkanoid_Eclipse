@@ -13,6 +13,8 @@ public:
 
   const char* getFilename() const;
   const char* getName() const;
+  uint8_t* const getData() const;
+  off_t getLength() const;
 
   virtual bool load();
   virtual void unload();
@@ -29,7 +31,19 @@ protected:
   char* m_filename;
   off_t m_length;
   uint8_t* m_data;
+  int m_error_code;
 };
+
+/**
+ * Error codes (SoundBuffer)
+ *
+ * 2021 - assets->open() failed
+ * 2022 - data allocation failed from assets
+ * 2023 - assets->read() failed
+ * 2024 - fopen() failed
+ * 2025 - data allocation failed from file
+ * 2026 - fread() failed
+ */
 
 // ----------------------------------------------------------------------------
 /// @brief Class allows to operate with WAV and PCM files.
