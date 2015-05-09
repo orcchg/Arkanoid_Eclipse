@@ -62,10 +62,7 @@ public class MainActivity extends FragmentActivity {
       String texture_folder = "texture";
       String[] resources = getAssets().list(texture_folder);
       for (String resource : resources) {
-        if (!resource.equals("webkit") && !resource.equals("webkitsec") &&
-            !resource.equals("sounds") && !resource.equals("images")) {
-          mNativeResources.readTexture(resource);
-        }
+        mNativeResources.readTexture(resource);
       }
     } catch (IOException e) {
       e.printStackTrace();
