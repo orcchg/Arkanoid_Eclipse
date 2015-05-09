@@ -84,7 +84,7 @@ uint8_t* WAVSound::loadSound() {
     case ReadMode::ASSETS:
       if (!m_assets->open(m_filename)) { error_code = 1; goto ERROR_SOUND; }
       m_length = m_assets->length() - sizeof(WAVHeader);
-      data = new (std::nothrow) uint8_t(m_length);
+      data = new (std::nothrow) uint8_t[m_length];
       if (data == nullptr) { error_code = 2; goto ERROR_SOUND; }
       m_assets->read(header, sizeof(WAVHeader));
       if (!m_assets->read(data, m_length)) { error_code = 3; goto ERROR_SOUND; }
