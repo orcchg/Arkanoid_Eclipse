@@ -48,6 +48,12 @@ Resources::~Resources() {
     delete item.second;
     item.second = nullptr;
   }
+  m_textures.clear();
+  for (auto& item: m_sounds) {
+    delete item.second;
+    item.second = nullptr;
+  }
+  m_sounds.clear();
   m_jenv = nullptr;
 }
 
