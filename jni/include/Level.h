@@ -135,9 +135,10 @@ public:
   /// @param row Row index of certain block.
   /// @param col Column index of certain block.
   /// @param type Type the block will be modified to.
+  /// @param ignoreNone Whether to ignore NONE blocks.
   /// @param output Array of valid indices of influenced blocks.
   /// @return Score of affected blocks.
-  int modifyBlocksAround(int row, int col, Block type, std::vector<RowCol>* output);
+  int modifyBlocksAround(int row, int col, Block type, bool ignoreNone, std::vector<RowCol>* output);
   /// @brief Upgrades or degrades blocks around certain block.
   /// @param row Row index of certain block.
   /// @param col Column index of certain block.

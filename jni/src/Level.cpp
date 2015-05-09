@@ -251,14 +251,16 @@ void Level::setBlockImpacted(int row, int col) {
   }
 }
 
-int Level::modifyBlocksAround(int row, int col, Block type, std::vector<RowCol>* output) {
+int Level::modifyBlocksAround(int row, int col, Block type, bool ignoreNone, std::vector<RowCol>* output) {
   int score = 0;
   if (row - 2 >= 0) {
     Block block = getBlock(row - 2, col);
     initial_cardinality -= BlockUtils::getCardinalityCost(block);
     score += BlockUtils::getBlockScore(block);
     setVulnerableBlock(row - 2, col, type);
-    output->emplace_back(row - 2, col);
+    if (!(ignoreNone && block == Block::NONE)) {
+      output->emplace_back(row - 2, col);
+    }
   }
 
   if (row - 1 >= 0) {
@@ -266,20 +268,26 @@ int Level::modifyBlocksAround(int row, int col, Block type, std::vector<RowCol>*
     initial_cardinality -= BlockUtils::getCardinalityCost(block);
     score += BlockUtils::getBlockScore(block);
     setVulnerableBlock(row - 1, col, type);
-    output->emplace_back(row - 1, col);
+    if (!(ignoreNone && block == Block::NONE)) {
+      output->emplace_back(row - 1, col);
+    }
     if (col - 1 >= 0) {
       Block block = getBlock(row - 1, col - 1);
       initial_cardinality -= BlockUtils::getCardinalityCost(block);
       score += BlockUtils::getBlockScore(block);
       setVulnerableBlock(row - 1, col - 1, type);
-      output->emplace_back(row - 1, col - 1);
+      if (!(ignoreNone && block == Block::NONE)) {
+        output->emplace_back(row - 1, col - 1);
+      }
     }
     if (col + 1 < cols) {
       Block block = getBlock(row - 1, col + 1);
       initial_cardinality -= BlockUtils::getCardinalityCost(block);
       score += BlockUtils::getBlockScore(block);
       setVulnerableBlock(row - 1, col + 1, type);
-      output->emplace_back(row - 1, col + 1);
+      if (!(ignoreNone && block == Block::NONE)) {
+        output->emplace_back(row - 1, col + 1);
+      }
     }
   }
 
@@ -288,20 +296,26 @@ int Level::modifyBlocksAround(int row, int col, Block type, std::vector<RowCol>*
     initial_cardinality -= BlockUtils::getCardinalityCost(block);
     score += BlockUtils::getBlockScore(block);
     setVulnerableBlock(row + 1, col, type);
-    output->emplace_back(row + 1, col);
+    if (!(ignoreNone && block == Block::NONE)) {
+      output->emplace_back(row + 1, col);
+    }
     if (col - 1 >= 0) {
       Block block = getBlock(row + 1, col - 1);
       initial_cardinality -= BlockUtils::getCardinalityCost(block);
       score += BlockUtils::getBlockScore(block);
       setVulnerableBlock(row + 1, col - 1, type);
-      output->emplace_back(row + 1, col - 1);
+      if (!(ignoreNone && block == Block::NONE)) {
+        output->emplace_back(row + 1, col - 1);
+      }
     }
     if (col + 1 < cols) {
       Block block = getBlock(row + 1, col + 1);
       initial_cardinality -= BlockUtils::getCardinalityCost(block);
       score += BlockUtils::getBlockScore(block);
       setVulnerableBlock(row + 1, col + 1, type);
-      output->emplace_back(row + 1, col + 1);
+      if (!(ignoreNone && block == Block::NONE)) {
+        output->emplace_back(row + 1, col + 1);
+      }
     }
   }
 
@@ -310,7 +324,9 @@ int Level::modifyBlocksAround(int row, int col, Block type, std::vector<RowCol>*
     initial_cardinality -= BlockUtils::getCardinalityCost(block);
     score += BlockUtils::getBlockScore(block);
     setVulnerableBlock(row + 2, col, type);
-    output->emplace_back(row + 2, col);
+    if (!(ignoreNone && block == Block::NONE)) {
+      output->emplace_back(row + 2, col);
+    }
   }
 
   // ------------------------
@@ -319,28 +335,36 @@ int Level::modifyBlocksAround(int row, int col, Block type, std::vector<RowCol>*
     initial_cardinality -= BlockUtils::getCardinalityCost(block);
     score += BlockUtils::getBlockScore(block);
     setVulnerableBlock(row, col - 2, type);
-    output->emplace_back(row, col - 2);
+    if (!(ignoreNone && block == Block::NONE)) {
+      output->emplace_back(row, col - 2);
+    }
   }
   if (col - 1 >= 0) {
     Block block = getBlock(row, col - 1);
     initial_cardinality -= BlockUtils::getCardinalityCost(block);
     score += BlockUtils::getBlockScore(block);
     setVulnerableBlock(row, col - 1, type);
-    output->emplace_back(row, col - 1);
+    if (!(ignoreNone && block == Block::NONE)) {
+      output->emplace_back(row, col - 1);
+    }
   }
   if (col + 1 < cols) {
     Block block = getBlock(row, col + 1);
     initial_cardinality -= BlockUtils::getCardinalityCost(block);
     score += BlockUtils::getBlockScore(block);
     setVulnerableBlock(row, col + 1, type);
-    output->emplace_back(row, col + 1);
+    if (!(ignoreNone && block == Block::NONE)) {
+      output->emplace_back(row, col + 1);
+    }
   }
   if (col + 2 < cols) {
     Block block = getBlock(row, col + 2);
     initial_cardinality -= BlockUtils::getCardinalityCost(block);
     score += BlockUtils::getBlockScore(block);
     setVulnerableBlock(row, col + 2, type);
-    output->emplace_back(row, col + 2);
+    if (!(ignoreNone && block == Block::NONE)) {
+      output->emplace_back(row, col + 2);
+    }
   }
   return score;
 }
@@ -440,7 +464,7 @@ int Level::changeBlocksAround(int row, int col, Mode mode, std::vector<RowCol>* 
 }
 
 int Level::destroyBlocksAround(int row, int col, std::vector<RowCol>* output) {
-  return modifyBlocksAround(row, col, Block::NONE, output);
+  return modifyBlocksAround(row, col, Block::NONE, true, output);
 }
 
 int Level::modifyBlocksBehind(int row, int col, Block type, bool ignoreNone, Direction direction, std::vector<RowCol>* output) {

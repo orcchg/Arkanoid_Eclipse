@@ -542,7 +542,7 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
         break;
       case Block::MIDAS:
         external_collision = blockCollision(top_border, bottom_border, left_border, right_border, 100 /* elastic */);
-        score += m_level->modifyBlocksAround(row, col, Block::TITAN, &affected_blocks);
+        score += m_level->modifyBlocksAround(row, col, Block::TITAN, false, &affected_blocks);
         explodeBlock(row, col, BlockUtils::getBlockColor(Block::MIDAS), Kind::DIVERGE);
         for (auto& item : affected_blocks) {
           explodeBlock(item.row, item.col, BlockUtils::getBlockColor(Block::TITAN), Kind::DIVERGE);
@@ -601,7 +601,7 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
       // --------------------
       case Block::MAGIC:
         external_collision = blockCollision(top_border, bottom_border, left_border, right_border, 100 /* elastic */);
-        score += m_level->modifyBlocksAround(row, col, generated_block, &affected_blocks);
+        score += m_level->modifyBlocksAround(row, col, generated_block, false, &affected_blocks);
         explodeBlock(row, col, BlockUtils::getBlockColor(generated_block), Kind::DIVERGE);
         for (auto& item : affected_blocks) {
           block_impact_event.notifyListeners(item);
@@ -618,7 +618,7 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
         break;
       case Block::YOGURT:
         external_collision = blockCollision(top_border, bottom_border, left_border, right_border, 50);
-        score += m_level->modifyBlocksAround(row, col, Block::YOGURT_1, &affected_blocks);
+        score += m_level->modifyBlocksAround(row, col, Block::YOGURT_1, false, &affected_blocks);
         explodeBlock(row, col, BlockUtils::getBlockColor(Block::YOGURT), Kind::DIVERGE);
         spawnPrizeAtBlock(row, col, spawned_prize);
         for (auto& item : affected_blocks) {
