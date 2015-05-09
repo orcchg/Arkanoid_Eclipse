@@ -95,6 +95,8 @@ public:
   typedef std::unordered_map<std::string, native::SoundBuffer*>::const_iterator const_sound_iterator;
 
   bool readSound(jstring filename);
+  const native::SoundBuffer* const getSound(const std::string& name) const;
+  const native::SoundBuffer* const getRandomSound(const std::string& prefix) const;
 
   sound_iterator beginSound();
   sound_iterator endSound();

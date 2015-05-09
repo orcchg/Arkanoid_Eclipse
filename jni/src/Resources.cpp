@@ -164,6 +164,25 @@ bool Resources::readSound(jstring filename) {
   return true;
 }
 
+const native::SoundBuffer* const Resources::getSound(const std::string& name) const {
+  return m_sounds.at(name);
+}
+
+const native::SoundBuffer* const Resources::getRandomSound(const std::string& prefix) const {
+  native::SoundBuffer* sound = nullptr;
+  bool success = false;
+  do {
+    size_t random_index = std::rand() % m_sounds.size();
+    auto shift = m_sounds.begin();
+    for (int i = 0; i < random_index; ++i) {
+      ++shift;
+    }
+    success = (shift->first.find(prefix) == 0);
+    sound = shift->second;
+  } while (!success);
+  return sound;
+}
+
 Resources::sound_iterator Resources::beginSound() { return m_sounds.begin(); }
 Resources::sound_iterator Resources::endSound() { return m_sounds.end(); }
 Resources::const_sound_iterator Resources::cbeginSound() const { return m_sounds.cbegin(); }
