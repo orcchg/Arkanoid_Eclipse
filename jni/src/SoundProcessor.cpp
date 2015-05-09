@@ -176,6 +176,7 @@ void SoundProcessor::process_lostBall() {
 void SoundProcessor::process_biteImpact() {
   std::unique_lock<std::mutex> lock(m_bite_impact_mutex);
   auto sound = m_resources->getRandomSound("bite_");
+  DBG("Sound: %s", sound->getName());
   playSound(sound);
 }
 
@@ -257,6 +258,7 @@ void SoundProcessor::process_blockImpact() {
 void SoundProcessor::process_wallImpact() {
   std::unique_lock<std::mutex> lock(m_wall_impact_mutex);
   auto sound = m_resources->getRandomSound("wall_");
+  INF("Sound: %s", sound->getName());
   playSound(sound);
 }
 
