@@ -50,6 +50,12 @@ JNIEXPORT jlong JNICALL Java_com_orcchg_arkanoid_surface_AsyncContext_init
   ptr->prize_processor->prize_gone_listener = ptr->acontext->prize_gone_event.createListener(&game::PrizeProcessor::callback_prizeHasGone, ptr->prize_processor);
 
   ptr->sound_processor->load_resources_listener = ptr->load_resources_event.createListener(&native::sound::SoundProcessor::callback_loadResources, ptr->sound_processor);
+  ptr->sound_processor->lost_ball_listener = ptr->processor->lost_ball_event.createListener(&native::sound::SoundProcessor::callback_lostBall, ptr->sound_processor);
+  ptr->sound_processor->block_impact_listener = ptr->processor->block_impact_event.createListener(&native::sound::SoundProcessor::callback_blockImpact, ptr->sound_processor);
+  ptr->sound_processor->level_finished_listener = ptr->processor->level_finished_event.createListener(&native::sound::SoundProcessor::callback_levelFinished, ptr->sound_processor);
+  ptr->sound_processor->explosion_listener = ptr->processor->explosion_event.createListener(&native::sound::SoundProcessor::callback_explosion, ptr->sound_processor);
+  ptr->sound_processor->prize_caught_listener = ptr->prize_processor->prize_caught_event.createListener(&native::sound::SoundProcessor::callback_prizeCaught, ptr->sound_processor);
+
   return descriptor;
 }
 

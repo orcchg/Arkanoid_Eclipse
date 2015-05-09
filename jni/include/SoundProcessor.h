@@ -11,7 +11,9 @@
 #include "ActiveObject.h"
 #include "Event.h"
 #include "EventListener.h"
+#include "ExplosionPackage.h"
 #include "Resources.h"
+#include "RowCol.h"
 
 namespace native {
 namespace sound {
@@ -32,6 +34,16 @@ public:
    */
   /// @brief Called when load resources requested.
   void callback_loadResources(bool /* dummy */);
+  /// @brief Called when ball has been lost.
+  void callback_lostBall(float is_lost);
+  /// @brief Called when block has been impacted.
+  void callback_blockImpact(game::RowCol block);
+  /// @brief Called when level has been successfully finished.
+  void callback_levelFinished(bool is_finished);
+  /// @brief Called when requested to draw particle system explosion.
+  void callback_explosion(game::ExplosionPackage package);
+  /// @brief Called when prize has been caught.
+  void callback_prizeCaught(int prize_id);
   /** @} */  // end of Callbacks group
 
   /** @defgroup Resources Bind with external resources.
@@ -49,6 +61,16 @@ public:
    */
   /// @brief Listens for load resources request.
   EventListener<bool> load_resources_listener;
+  /// @brief Listens for event which occurs when ball has been lost.
+  EventListener<bool> lost_ball_listener;
+  /// @brief Listens for event which occurs when block has been impacted.
+  EventListener<game::RowCol> block_impact_listener;
+  /// @brief Listens for event which occurs when level has been successfully finished.
+  EventListener<bool> level_finished_listener;
+  /// @brief Listens for event which occurs when particle system explosion has been requested.
+  EventListener<game::ExplosionPackage> explosion_listener;
+  /// @brief Listens for event which occurs when prize has been caught.
+  EventListener<int> prize_caught_listener;
   /** @} */  // end of Event group
 
 // ----------------------------------------------
@@ -71,7 +93,17 @@ private:
    * @{
    */
   std::mutex m_load_resources_mutex;  //!< Sentinel for load resources.
+  std::mutex m_lost_ball_mutex;  //!< Sentinel for lost ball flag.
+  std::mutex m_block_impact_mutex;  //!< Sentinel for block impact event.
+  std::mutex m_level_finished_mutex;  //!< Sentinel for level has been successfully finished.
+  std::mutex m_explosion_mutex;  //!< Sentinel for particle system explosion.
+  std::mutex m_prize_caught_mutex;  //!< Sentinel for prize has been caught.
   std::atomic_bool m_load_resources_received;  //!< Load resources requested.
+  std::atomic_bool m_lost_ball_received;  //!< Ball has been lost received.
+  std::atomic_bool m_block_impact_received;  //!< Block impact has been received.
+  std::atomic_bool m_level_finished_received;  //!< Level has been successfully finished.
+  std::atomic_bool m_explosion_received;  //!< Request for explosion received.
+  std::atomic_bool m_prize_caught_received;  //!< Prize has been caught received.
   /** @} */  // end of Mutex group
 
   /** @addtogroup Resources
@@ -103,6 +135,16 @@ private:
    */
   /// @brief Loads external resources into Graphic memory.
   void process_loadResources();
+  /// @brief Plays sound when ball has been lost.
+  void process_lostBall();
+  /// @brief Plays sound when block gets impacted.
+  void process_blockImpact();
+  /// @brief Plays sound when level has been finished.
+  void process_levelFinished();
+  /// @brief Plays sound for particle system explosion.
+  void process_explosion();
+  /// @brief Plays sound for prize catching.
+  void process_prizeCaught();
   /** @} */  // end of Processors group
 
   /** @defgroup CoreFunc Core-related internal functionality.

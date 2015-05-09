@@ -24,6 +24,11 @@ SoundProcessor::SoundProcessor()
   }
 
   m_load_resources_received.store(false);
+  m_lost_ball_received.store(false);
+  m_block_impact_received.store(false);
+  m_level_finished_received.store(false);
+  m_explosion_received.store(false);
+  m_prize_caught_received.store(false);
   DBG("exit SoundProcessor ctor");
 }
 
@@ -42,6 +47,36 @@ void SoundProcessor::callback_loadResources(bool /* dummy */) {
   interrupt();
 }
 
+void SoundProcessor::callback_lostBall(float is_lost) {
+  std::unique_lock<std::mutex> lock(m_lost_ball_mutex);
+  m_lost_ball_received.store(true);
+  interrupt();
+}
+
+void SoundProcessor::callback_blockImpact(game::RowCol block) {
+  std::unique_lock<std::mutex> lock(m_block_impact_mutex);
+  m_block_impact_received.store(true);
+  interrupt();
+}
+
+void SoundProcessor::callback_levelFinished(bool is_finished) {
+  std::unique_lock<std::mutex> lock(m_level_finished_mutex);
+  m_level_finished_received.store(true);
+  interrupt();
+}
+
+void SoundProcessor::callback_explosion(game::ExplosionPackage package) {
+  std::unique_lock<std::mutex> lock(m_explosion_mutex);
+  m_explosion_received.store(true);
+  interrupt();
+}
+
+void SoundProcessor::callback_prizeCaught(int prize_id) {
+  std::unique_lock<std::mutex> lock(m_prize_caught_mutex);
+  m_prize_caught_received.store(true);
+  interrupt();
+}
+
 // ----------------------------------------------
 void SoundProcessor::setResourcesPtr(game::Resources* resources) {
   m_resources = resources;
@@ -56,13 +91,38 @@ void SoundProcessor::onStop() {
 }
 
 bool SoundProcessor::checkForWakeUp() {
-  return m_load_resources_received.load();
+  return m_load_resources_received.load() ||
+      m_lost_ball_received.load() ||
+      m_block_impact_received.load() ||
+      m_level_finished_received.load() ||
+      m_explosion_received.load() ||
+      m_prize_caught_received.load();
 }
 
 void SoundProcessor::eventHandler() {
   if (m_load_resources_received.load()) {
     m_load_resources_received.store(false);
     process_loadResources();
+  }
+  if (m_explosion_received.load()) {
+    m_explosion_received.store(false);
+    process_explosion();
+  }
+  if (m_prize_caught_received.load()) {
+    m_prize_caught_received.store(false);
+    process_prizeCaught();
+  }
+  if (m_block_impact_received.load()) {
+    m_block_impact_received.store(false);
+    process_blockImpact();
+  }
+  if (m_lost_ball_received.load()) {
+    m_lost_ball_received.store(false);
+    process_lostBall();
+  }
+  if (m_level_finished_received.load()) {
+    m_level_finished_received.store(false);
+    process_levelFinished();
   }
 }
 
@@ -78,6 +138,31 @@ void SoundProcessor::process_loadResources() {
   } else {
     ERR("Resources pointer was not set !");
   }
+}
+
+void SoundProcessor::process_lostBall() {
+  std::unique_lock<std::mutex> lock(m_lost_ball_mutex);
+  // XXX:
+}
+
+void SoundProcessor::process_blockImpact() {
+  std::unique_lock<std::mutex> lock(m_block_impact_mutex);
+  // XXX:
+}
+
+void SoundProcessor::process_levelFinished() {
+  std::unique_lock<std::mutex> lock(m_level_finished_mutex);
+  // XXX:
+}
+
+void SoundProcessor::process_explosion() {
+  std::unique_lock<std::mutex> lock(m_explosion_mutex);
+  // XXX:
+}
+
+void SoundProcessor::process_prizeCaught() {
+  std::unique_lock<std::mutex> lock(m_prize_caught_mutex);
+  // XXX:
 }
 
 /* CoreFunc group */
