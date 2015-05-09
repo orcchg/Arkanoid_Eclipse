@@ -9,6 +9,7 @@
 #include <SLES/OpenSLES_Android.h>
 
 #include "ActiveObject.h"
+#include "Block.h"
 #include "Event.h"
 #include "EventListener.h"
 #include "ExplosionPackage.h"
@@ -36,8 +37,12 @@ public:
   void callback_loadResources(bool /* dummy */);
   /// @brief Called when ball has been lost.
   void callback_lostBall(float is_lost);
+  /// @brief Called when bite has been impacted.
+  void callback_biteImpact(bool /* dummy */);
   /// @brief Called when block has been impacted.
   void callback_blockImpact(game::RowCol block);
+  /// @brief Called when wall has been impacted.
+  void callback_wallImpact(bool /* dummy */);
   /// @brief Called when level has been successfully finished.
   void callback_levelFinished(bool is_finished);
   /// @brief Called when requested to draw particle system explosion.
@@ -63,8 +68,12 @@ public:
   EventListener<bool> load_resources_listener;
   /// @brief Listens for event which occurs when ball has been lost.
   EventListener<bool> lost_ball_listener;
+  /// @brief Listens for event which occurs when bite has been impacted.
+  EventListener<bool> bite_impact_listener;
   /// @brief Listens for event which occurs when block has been impacted.
   EventListener<game::RowCol> block_impact_listener;
+  /// @brief Listens for event which occurs when wall has been impacted.
+  EventListener<bool> wall_impact_listener;
   /// @brief Listens for event which occurs when level has been successfully finished.
   EventListener<bool> level_finished_listener;
   /// @brief Listens for event which occurs when particle system explosion has been requested.
@@ -89,18 +98,28 @@ private:
   SLBufferQueueItf m_player_queue;
   /** @} */  // end of Core group
 
+  /** @defgroup LogicData Game Logic related data members.
+   * @{
+   */
+  game::Block m_impacted_block;  //!< Last received impacted block.
+  /** @} */  // end of LogicData group
+
   /** @defgroup Mutex Thread-safety variables
    * @{
    */
   std::mutex m_load_resources_mutex;  //!< Sentinel for load resources.
   std::mutex m_lost_ball_mutex;  //!< Sentinel for lost ball flag.
+  std::mutex m_bite_impact_mutex;
   std::mutex m_block_impact_mutex;  //!< Sentinel for block impact event.
+  std::mutex m_wall_impact_mutex;
   std::mutex m_level_finished_mutex;  //!< Sentinel for level has been successfully finished.
   std::mutex m_explosion_mutex;  //!< Sentinel for particle system explosion.
   std::mutex m_prize_caught_mutex;  //!< Sentinel for prize has been caught.
   std::atomic_bool m_load_resources_received;  //!< Load resources requested.
   std::atomic_bool m_lost_ball_received;  //!< Ball has been lost received.
+  std::atomic_bool m_bite_impact_received;
   std::atomic_bool m_block_impact_received;  //!< Block impact has been received.
+  std::atomic_bool m_wall_impact_received;
   std::atomic_bool m_level_finished_received;  //!< Level has been successfully finished.
   std::atomic_bool m_explosion_received;  //!< Request for explosion received.
   std::atomic_bool m_prize_caught_received;  //!< Prize has been caught received.
@@ -137,8 +156,12 @@ private:
   void process_loadResources();
   /// @brief Plays sound when ball has been lost.
   void process_lostBall();
+  /// @brief Plays sound when bite gets impacted.
+  void process_biteImpact();
   /// @brief Plays sound when block gets impacted.
   void process_blockImpact();
+  /// @brief Plays sound when wall gets impacted.
+  void process_wallImpact();
   /// @brief Plays sound when level has been finished.
   void process_levelFinished();
   /// @brief Plays sound for particle system explosion.
@@ -152,7 +175,7 @@ private:
    */
   bool init();  //!< Initializes sound processor stuff.
   bool initPlayerQueue();  //!< Initializes queue for sound buffers.
-  bool playSound(SoundBuffer* sound);  //!< Plays new sound, stopping any previous one.
+  bool playSound(const SoundBuffer* sound);  //!< Plays new sound, stopping any previous one.
   void destroy();  //!< Releases sound processor stuff.
   /** @} */  // end of CoreFunc group
 };

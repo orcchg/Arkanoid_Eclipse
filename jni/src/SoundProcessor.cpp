@@ -14,7 +14,8 @@ SoundProcessor::SoundProcessor()
   , m_interface(nullptr)
   , m_player(nullptr)
   , m_player_interface(nullptr)
-  , m_player_queue(nullptr) {
+  , m_player_queue(nullptr)
+  , m_impacted_block(game::Block::NONE) {
 
   DBG("enter SoundProcessor ctor");
   if (!init()) {
@@ -25,7 +26,9 @@ SoundProcessor::SoundProcessor()
 
   m_load_resources_received.store(false);
   m_lost_ball_received.store(false);
+  m_bite_impact_received.store(false);
   m_block_impact_received.store(false);
+  m_wall_impact_received.store(false);
   m_level_finished_received.store(false);
   m_explosion_received.store(false);
   m_prize_caught_received.store(false);
@@ -53,9 +56,22 @@ void SoundProcessor::callback_lostBall(float is_lost) {
   interrupt();
 }
 
+void SoundProcessor::callback_biteImpact(bool /* dummy */) {
+  std::unique_lock<std::mutex> lock(m_bite_impact_mutex);
+  m_bite_impact_received.store(true);
+  interrupt();
+}
+
 void SoundProcessor::callback_blockImpact(game::RowCol block) {
   std::unique_lock<std::mutex> lock(m_block_impact_mutex);
   m_block_impact_received.store(true);
+  m_impacted_block = block.block;
+  interrupt();
+}
+
+void SoundProcessor::callback_wallImpact(bool /* dummy */) {
+  std::unique_lock<std::mutex> lock(m_wall_impact_mutex);
+  m_wall_impact_received.store(true);
   interrupt();
 }
 
@@ -68,12 +84,14 @@ void SoundProcessor::callback_levelFinished(bool is_finished) {
 void SoundProcessor::callback_explosion(game::ExplosionPackage package) {
   std::unique_lock<std::mutex> lock(m_explosion_mutex);
   m_explosion_received.store(true);
+  // TODO: distinguish block type
   interrupt();
 }
 
 void SoundProcessor::callback_prizeCaught(int prize_id) {
   std::unique_lock<std::mutex> lock(m_prize_caught_mutex);
   m_prize_caught_received.store(true);
+  // TODO: distinguish prize type
   interrupt();
 }
 
@@ -93,7 +111,9 @@ void SoundProcessor::onStop() {
 bool SoundProcessor::checkForWakeUp() {
   return m_load_resources_received.load() ||
       m_lost_ball_received.load() ||
+      m_bite_impact_received.load() ||
       m_block_impact_received.load() ||
+      m_wall_impact_received.load() ||
       m_level_finished_received.load() ||
       m_explosion_received.load() ||
       m_prize_caught_received.load();
@@ -112,9 +132,17 @@ void SoundProcessor::eventHandler() {
     m_prize_caught_received.store(false);
     process_prizeCaught();
   }
+  if (m_bite_impact_received.load()) {
+    m_bite_impact_received.store(false);
+    process_biteImpact();
+  }
   if (m_block_impact_received.load()) {
     m_block_impact_received.store(false);
     process_blockImpact();
+  }
+  if (m_wall_impact_received.load()) {
+    m_wall_impact_received.store(false);
+    process_wallImpact();
   }
   if (m_lost_ball_received.load()) {
     m_lost_ball_received.store(false);
@@ -145,9 +173,91 @@ void SoundProcessor::process_lostBall() {
   // XXX:
 }
 
+void SoundProcessor::process_biteImpact() {
+  std::unique_lock<std::mutex> lock(m_bite_impact_mutex);
+  auto sound = m_resources->getRandomSound("bite_");
+  playSound(sound);
+}
+
 void SoundProcessor::process_blockImpact() {
   std::unique_lock<std::mutex> lock(m_block_impact_mutex);
-  // XXX:
+  std::string sound_prefix = "";
+
+  switch (m_impacted_block) {
+    case game::Block::ALUMINIUM:
+    case game::Block::BRICK:
+    case game::Block::JELLY:
+    case game::Block::ROLLING:
+      sound_prefix = "block_";
+      break;
+    case game::Block::CLAY:
+    case game::Block::SIMPLE:
+      sound_prefix = "simple_";
+      break;
+    case game::Block::FOG:
+    case game::Block::GLASS:
+    case game::Block::GLASS_1:
+      sound_prefix = "stone_";
+      break;
+    case game::Block::MAGIC:
+      sound_prefix = "magic_";
+      break;
+    case game::Block::IRON:
+    case game::Block::STEEL:
+    case game::Block::PLUMBUM:
+      sound_prefix = "iron_";
+      break;
+    case game::Block::ULTRA:
+    case game::Block::ULTRA_4:
+    case game::Block::ULTRA_3:
+    case game::Block::ULTRA_2:
+    case game::Block::ULTRA_1:
+      sound_prefix = "ultra_";
+      break;
+    case game::Block::TITAN:
+    case game::Block::INVUL:
+    case game::Block::EXTRA:
+      sound_prefix = "invul_";
+      break;
+    case game::Block::WATER:
+      sound_prefix = "water_";
+      break;
+    case game::Block::YOGURT:
+    case game::Block::YOGURT_1:
+      sound_prefix = "yogurt_";
+      break;
+    case game::Block::ZYGOTE:
+    case game::Block::ZYGOTE_1:
+    case game::Block::ZYGOTE_SPAWN:
+      sound_prefix = "zygote_";
+      break;
+
+      // TODO: implement sounds
+    case game::Block::DESTROY:
+    case game::Block::ELECTRO:
+    case game::Block::HYPER:
+    case game::Block::KNOCK_VERTICAL:
+    case game::Block::KNOCK_HORIZONTAL:
+    case game::Block::MIDAS:
+    case game::Block::NETWORK:
+    case game::Block::ORIGIN:
+    case game::Block::QUICK:
+    case game::Block::NOT_USED:
+    case game::Block::QUICK_2:
+    case game::Block::QUICK_1:
+    case game::Block::NONE:
+    default:
+      break;
+  }
+
+  auto sound = m_resources->getRandomSound(sound_prefix);
+  playSound(sound);
+}
+
+void SoundProcessor::process_wallImpact() {
+  std::unique_lock<std::mutex> lock(m_wall_impact_mutex);
+  auto sound = m_resources->getRandomSound("wall_");
+  playSound(sound);
 }
 
 void SoundProcessor::process_levelFinished() {
@@ -246,7 +356,7 @@ bool SoundProcessor::initPlayerQueue() {
     return false;
 }
 
-bool SoundProcessor::playSound(SoundBuffer* sound) {
+bool SoundProcessor::playSound(const SoundBuffer* sound) {
   int error_code = 0;
   SLuint32 player_state = 0;
   (*m_player)->GetState(m_player, &player_state);

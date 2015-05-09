@@ -251,9 +251,11 @@ void GameProcessor::moveBall() {
   if (new_x >= 1.0f - m_ball.getDimens().halfWidth()) {  // right border
     collideRightBorder();
     correctBallPosition(1.0f - m_ball.getDimens().halfWidth(), new_y);
+    wall_impact_event.notifyListeners(true);
   } else if (new_x <= -1.0f + m_ball.getDimens().halfWidth()) {  // left border
     collideLeftBorder();
     correctBallPosition(-1.0f + m_ball.getDimens().halfWidth(), new_y);
+    wall_impact_event.notifyListeners(true);
   }
 
   if (new_y <= m_bite_upper_border + m_ball.getDimens().halfHeight()) {
@@ -435,6 +437,7 @@ bool GameProcessor::collideBite(GLfloat new_x) {
   } else {
     return false;  // ball missed the bite
   }
+  bite_impact_event.notifyListeners(true);
   return true;
 }
 
@@ -628,6 +631,7 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
       // --------------------
       default:
         spawnPrizeAtBlock(row, col, spawned_prize);
+        // intend no break
       case Block::TITAN:
       case Block::INVUL:
         external_collision = blockCollision(top_border, bottom_border, left_border, right_border, 100 /* elastic */);
@@ -643,9 +647,10 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
             block != Block::INVUL &&
             block != Block::EXTRA);
 
-  } else if (new_y >= 1.0f - m_ball.getDimens().halfHeight()) {
+  } else if (new_y >= 1.0f - m_ball.getDimens().halfHeight()) {  // upper ceil
     collideHorizontalSurface();
     correctBallPosition(new_x, 1.0f - m_ball.getDimens().halfHeight());
+    wall_impact_event.notifyListeners(true);
   }
   return false;
 }

@@ -53,6 +53,22 @@ public:
   WAVSound(const char* filepath);
   virtual ~WAVSound();
 
+  struct WAVHeader{
+    char                RIFF[4];
+    unsigned long       ChunkSize;
+    char                WAVE[4];
+    char                fmt[4];
+    unsigned long       Subchunk1Size;
+    unsigned short      AudioFormat;
+    unsigned short      NumOfChan;
+    unsigned long       SamplesPerSec;
+    unsigned long       bytesPerSec;
+    unsigned short      blockAlign;
+    unsigned short      bitsPerSample;
+    char                Subchunk2ID[4];
+    unsigned long       Subchunk2Size;
+  };
+
 protected:
   uint8_t* loadSound() override final;
 };

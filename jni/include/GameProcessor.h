@@ -102,8 +102,12 @@ public:
   Event<Ball> move_ball_event;
   /// @brief Notifies whether the ball has been lost.
   Event<bool> lost_ball_event;
+  /// @brief Notifies bite has been impacted.
+  Event<bool> bite_impact_event;
   /// @brief Notifies block has been impacted.
   Event<RowCol> block_impact_event;
+  /// @brief Notifies wall has benn impacted.
+  Event<bool> wall_impact_event;
   /// @brief Notifies level has been successfully finished.
   Event<bool> level_finished_event;
   /// @brief Notifies particle system has exploded.
