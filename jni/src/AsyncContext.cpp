@@ -438,7 +438,7 @@ void AsyncContext::process_explosion() {
 
 void AsyncContext::process_prizeReceived() {
   std::unique_lock<std::mutex> lock(m_prize_mutex);
-  // no-op
+  m_prize_last_time = 0;
 }
 
 void AsyncContext::process_prizeCaught() {
