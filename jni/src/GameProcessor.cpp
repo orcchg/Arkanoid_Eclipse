@@ -633,7 +633,7 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
         external_collision = blockCollision(top_border, bottom_border, left_border, right_border, 100 /* elastic */);
         break;
     }
-    block_impact_event.notifyListeners(RowCol(row, col));
+    block_impact_event.notifyListeners(RowCol(row, col, block));
     onScoreUpdated(score);
     return (external_collision &&
             block != Block::NONE &&
