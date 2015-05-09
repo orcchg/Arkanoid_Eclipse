@@ -4,8 +4,8 @@
 /* Init */
 // ----------------------------------------------------------------------------
 JNIEXPORT jlong JNICALL Java_com_orcchg_arkanoid_surface_NativeResources_init
-  (JNIEnv *jenv, jobject, jobject assets) {
-  auto ptr = new game::Resources(jenv, assets);
+  (JNIEnv *jenv, jobject, jobject assets, jstring internalFileStorage_Java) {
+  auto ptr = new game::Resources(jenv, assets, internalFileStorage_Java);
   jlong descriptor = (jlong)(intptr_t) ptr;
   return descriptor;
 }
@@ -13,7 +13,7 @@ JNIEXPORT jlong JNICALL Java_com_orcchg_arkanoid_surface_NativeResources_init
 JNIEXPORT jboolean JNICALL Java_com_orcchg_arkanoid_surface_NativeResources_read
   (JNIEnv *, jobject, jlong descriptor, jstring filename) {
   game::Resources* ptr = reinterpret_cast<game::Resources*>(descriptor);
-  return ptr->read(filename);
+  return ptr->readTexture(filename);
 }
 
 JNIEXPORT void JNICALL Java_com_orcchg_arkanoid_surface_NativeResources_release
@@ -27,9 +27,12 @@ JNIEXPORT void JNICALL Java_com_orcchg_arkanoid_surface_NativeResources_release
 // ----------------------------------------------------------------------------
 namespace game {
 
-Resources::Resources(JNIEnv* jenv, jobject assets)
+Resources::Resources(JNIEnv* jenv, jobject assets, jstring internalFileStorage_Java)
   : m_jenv(jenv)
   , m_assets(new AssetStorage(m_jenv, assets)) {
+  const char* internal_file_storage = jenv->GetStringUTFChars(internalFileStorage_Java, 0);
+  m_assets->setInternalFileStorage(internal_file_storage);
+  jenv->ReleaseStringUTFChars(internalFileStorage_Java, internal_file_storage);
 }
 
 Resources::~Resources() {
@@ -42,10 +45,14 @@ Resources::~Resources() {
   m_jenv = nullptr;
 }
 
-bool Resources::read(jstring filename) {
+bool Resources::readTexture(jstring filename) {
   const char* raw_name = m_jenv->GetStringUTFChars(filename, nullptr);
-  native::Texture* texture = new native::PNGTexture(m_assets, raw_name);
-  DBG("Read resource: %s", raw_name);
+  native::Texture* texture = nullptr;
+  {
+    std::string prefix = "texture/" + std::string(raw_name);
+    texture = new native::PNGTexture(m_assets, prefix.c_str());
+    DBG("Read resource: %s", raw_name);
+  }
   m_textures[raw_name] = texture;
   m_jenv->ReleaseStringUTFChars(filename, raw_name);
   return true;

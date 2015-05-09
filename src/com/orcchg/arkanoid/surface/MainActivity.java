@@ -2,6 +2,7 @@ package com.orcchg.arkanoid.surface;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
+import java.util.Arrays;
 
 import com.orcchg.arkanoid.surface.Database.DatabaseException;
 import com.orcchg.arkanoid.surface.Database.GameStat;
@@ -56,9 +57,10 @@ public class MainActivity extends FragmentActivity {
       (ImageView) findViewById(R.id.life4_imageview),
       (ImageView) findViewById(R.id.life5_imageview)};
     
-    mNativeResources = new NativeResources(getAssets());
+    mNativeResources = new NativeResources(getAssets(), getFilesDir().getAbsolutePath());
     try {
-      String[] resources = getAssets().list("");
+      String texture_folder = "texture";
+      String[] resources = getAssets().list(texture_folder);
       for (String resource : resources) {
         if (!resource.equals("webkit") && !resource.equals("webkitsec") &&
             !resource.equals("sounds") && !resource.equals("images")) {

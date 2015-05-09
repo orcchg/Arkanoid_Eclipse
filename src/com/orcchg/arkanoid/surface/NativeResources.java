@@ -7,8 +7,8 @@ public class NativeResources {
   
   private final long descriptor;
   
-  NativeResources(AssetManager assets) {
-    descriptor = init(assets);
+  NativeResources(AssetManager assets, String internal_storage) {
+    descriptor = init(assets, internal_storage);
   }
   
   long getPtr() { return descriptor; }
@@ -20,7 +20,7 @@ public class NativeResources {
   
   /* Private methods */
   // --------------------------------------------------------------------------
-  private native long init(AssetManager assets);
+  private native long init(AssetManager assets, String internal_storage);
   private native boolean read(long descriptor, String filename);
   private native void release(long descriptor);
 }

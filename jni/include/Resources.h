@@ -16,10 +16,10 @@ extern "C" {
 /*
  * Class:     com_orcchg_arkanoid_surface_NativeResources
  * Method:    init
- * Signature: (Landroid/content/res/AssetManager;)J
+ * Signature: (Landroid/content/res/AssetManager;Ljava/lang/String;)J
  */
 JNIEXPORT jlong JNICALL Java_com_orcchg_arkanoid_surface_NativeResources_init
-  (JNIEnv *, jobject, jobject);
+  (JNIEnv *, jobject, jobject, jstring);
 
 /*
  * Class:     com_orcchg_arkanoid_surface_NativeResources
@@ -61,10 +61,10 @@ public:
   typedef std::unordered_map<std::string, native::Texture*>::iterator iterator;
   typedef std::unordered_map<std::string, native::Texture*>::const_iterator const_iterator;
 
-  Resources(JNIEnv* jenv, jobject assets);
+  Resources(JNIEnv* jenv, jobject assets, jstring internalFileStorage_Java);
   ~Resources() noexcept;
 
-  bool read(jstring filename);
+  bool readTexture(jstring filename);
   const native::Texture* const getTexture(const std::string& name) const;
   const native::Texture* const getRandomTexture(const std::string& prefix) const;
   const native::Texture* const getPrizeTexture(const Prize& prize) const;
