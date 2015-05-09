@@ -53,6 +53,8 @@ AsyncContext::AsyncContext(JavaVM* jvm)
   , m_removed_prizes()
   , m_prize_catch_last_time(0)
   , m_prize_catch_time(0.0f)
+  , m_render_prize_catch(false)
+  , m_caught_prizes_x_coords()
   , m_level_shader(nullptr)
   , m_bite_shader(nullptr)
   , m_ball_shader(nullptr)
@@ -195,6 +197,7 @@ void AsyncContext::callback_prizeReceived(PrizePackage package) {
 void AsyncContext::callback_prizeCaught(int prize_id) {
   std::unique_lock<std::mutex> lock(m_prize_caught_mutex);
   m_prize_caught_received.store(true);
+  m_caught_prizes_x_coords.push_back(m_prize_packages.at(prize_id).getX());
   m_prize_packages.at(prize_id).setCaught(true);
   addPrizeToRemoved(prize_id);
   interrupt();
@@ -441,6 +444,7 @@ void AsyncContext::process_prizeReceived() {
 void AsyncContext::process_prizeCaught() {
   std::unique_lock<std::mutex> lock(m_prize_caught_mutex);
   m_prize_catch_last_time = 0;
+  m_render_prize_catch = true;
 }
 
 /* LogicFunc group */
@@ -655,8 +659,11 @@ void AsyncContext::render() {
     clearRemovedPrizes();
     for (auto& item : m_prize_packages) {
       drawPrize(item.second);
-      if (item.second.hasCaught()) {
-        drawPrizeCatch(item.second.getX(), -BiteParams::neg_biteElevation, util::MIDAS);
+    }
+
+    if (m_render_prize_catch) {
+      for (auto& item : m_caught_prizes_x_coords) {
+        drawPrizeCatch(item, -BiteParams::neg_biteElevation, util::MIDAS);
       }
     }
 
@@ -1057,6 +1064,8 @@ void AsyncContext::drawPrizeCatch(GLfloat x, GLfloat y, const util::BGRA<GLfloat
     m_prize_catch_time += delta_elapsed;
     if (m_prize_catch_time >= 1.0f) {
       m_prize_catch_time = 0.0f;
+      m_render_prize_catch = false;
+      m_caught_prizes_x_coords.clear();
       return;
     }
   }

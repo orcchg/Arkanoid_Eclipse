@@ -225,6 +225,8 @@ private:
 
   clock_t m_prize_catch_last_time;
   float m_prize_catch_time;
+  bool m_render_prize_catch;
+  std::vector<GLfloat> m_caught_prizes_x_coords;
   /** @} */  // end of LogicData group
 
   /** @defgroup Shaders Shaders for rendering game components.
