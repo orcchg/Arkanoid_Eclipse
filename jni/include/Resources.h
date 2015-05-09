@@ -23,10 +23,10 @@ JNIEXPORT jlong JNICALL Java_com_orcchg_arkanoid_surface_NativeResources_init
 
 /*
  * Class:     com_orcchg_arkanoid_surface_NativeResources
- * Method:    read
+ * Method:    readTexture
  * Signature: (JLjava/lang/String;)Z
  */
-JNIEXPORT jboolean JNICALL Java_com_orcchg_arkanoid_surface_NativeResources_read
+JNIEXPORT jboolean JNICALL Java_com_orcchg_arkanoid_surface_NativeResources_readTexture
   (JNIEnv *, jobject, jlong, jstring);
 
 /*

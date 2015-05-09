@@ -15,12 +15,12 @@ public class NativeResources {
   
   /* Package API */
   // --------------------------------------------------------------------------
-  boolean read(String filename) { return read(descriptor, filename); }
+  boolean readTexture(String filename) { return readTexture(descriptor, filename); }
   void release() { release(descriptor); }
   
   /* Private methods */
   // --------------------------------------------------------------------------
   private native long init(AssetManager assets, String internal_storage);
-  private native boolean read(long descriptor, String filename);
+  private native boolean readTexture(long descriptor, String filename);
   private native void release(long descriptor);
 }

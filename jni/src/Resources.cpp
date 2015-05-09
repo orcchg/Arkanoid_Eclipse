@@ -10,7 +10,7 @@ JNIEXPORT jlong JNICALL Java_com_orcchg_arkanoid_surface_NativeResources_init
   return descriptor;
 }
 
-JNIEXPORT jboolean JNICALL Java_com_orcchg_arkanoid_surface_NativeResources_read
+JNIEXPORT jboolean JNICALL Java_com_orcchg_arkanoid_surface_NativeResources_readTexture
   (JNIEnv *, jobject, jlong descriptor, jstring filename) {
   game::Resources* ptr = reinterpret_cast<game::Resources*>(descriptor);
   return ptr->readTexture(filename);

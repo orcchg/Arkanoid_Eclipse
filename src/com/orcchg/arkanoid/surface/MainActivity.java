@@ -64,7 +64,7 @@ public class MainActivity extends FragmentActivity {
       for (String resource : resources) {
         if (!resource.equals("webkit") && !resource.equals("webkitsec") &&
             !resource.equals("sounds") && !resource.equals("images")) {
-          mNativeResources.read(resource);
+          mNativeResources.readTexture(resource);
         }
       }
     } catch (IOException e) {
