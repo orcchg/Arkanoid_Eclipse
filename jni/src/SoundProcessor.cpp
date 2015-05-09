@@ -382,6 +382,12 @@ bool SoundProcessor::playSound(const SoundBuffer* sound) {
 }
 
 void SoundProcessor::destroy() {
+  if (m_player != nullptr) {
+    (*m_player)->Destroy(m_player);
+    m_player = nullptr;
+    m_player_interface = nullptr;
+    m_player_queue = nullptr;
+  }
   if (m_mixer != nullptr) {
     (*m_mixer)->Destroy(m_mixer);
     m_mixer = nullptr;
@@ -389,12 +395,6 @@ void SoundProcessor::destroy() {
   if (m_engine != nullptr) {
     (*m_engine)->Destroy(m_engine);
     m_engine = nullptr;
-  }
-  if (m_player != nullptr) {
-    (*m_player)->Destroy(m_player);
-    m_player = nullptr;
-    m_player_interface = nullptr;
-    m_player_queue = nullptr;
   }
 }
 
