@@ -13,6 +13,8 @@ enum class Kind : int {
 
 class ExplosionPackage {
 public:
+  friend class GameProcessor;
+
   ExplosionPackage();
   ExplosionPackage(GLfloat x, GLfloat y, const util::BGRA<GLfloat>& color, Kind kind);
   virtual ~ExplosionPackage();

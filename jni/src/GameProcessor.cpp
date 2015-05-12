@@ -318,7 +318,7 @@ void GameProcessor::onCardinalityChanged(int new_cardinality) {
 }
 
 void GameProcessor::explode(GLfloat x, GLfloat y, const util::BGRA<GLfloat>& color, Kind kind) {
-  ExplosionPackage package(x, y, color, kind);
+  ExplosionPackage package(explosionID++, x, y, color, kind);
   explosion_event.notifyListeners(package);
 }
 
