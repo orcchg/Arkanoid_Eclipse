@@ -337,19 +337,62 @@ public class MainActivity extends FragmentActivity {
     
     @Override
     public void onPrizeCatch(final Prize prize) {
-      // TODO: distinguish prize types
+      int score = 0;
       switch (prize) {
+        case BLOCK:
+        case CLIMB:
+          break;
         case DESTROY:
           --currentLives;
           updateLives();
           break;
+        case DRAGON:
+        case EASY:
+        case EASY_T:
+        case EVAPORATE:
+        case EXPLODE:
+        case EXTEND:
+        case FAST:
+        case FOG:
+        case GOO:
+        case HYPER:
+        case INIT:
+        case JUMP:
+        case LASER:
+        case MIRROR:
+        case PIERCE:
+        case PROTECT:
+        case RANDOM:
+        case SHORT:
+        case SLOW:
+        case UPGRADE:
+        case DEGRADE:
+          break;
         case VITALITY:
           ++currentLives;
+          score += 25;
           updateLives();
           break;
+        case WIN:
+          score += 100;
+          onLevelFinished();
+          break;
+        case ZYGOTE:
+          break;
+        case SCORE_1:
+          score += 35;
+        case SCORE_2:
+          score += 25;
+        case SCORE_3:
+          score += 20;
+        case SCORE_4:
+          score += 15;
+        case SCORE_5:
+          score += 10;
         default:
+          break;
       }
-      onScoreUpdated(35);
+      onScoreUpdated(score);
     }
     
     // ------------------------------------------

@@ -33,12 +33,17 @@ enum class Prize : int {
   DEGRADE = 24,   // decreases all ordinary blocks (- cardinality)
   VITALITY = 25,  // additional live
   WIN = 26,       // win level
-  ZYGOTE = 27     // multiplies ball
+  ZYGOTE = 27,    // multiplies ball
+  SCORE_1 = 28,
+  SCORE_2 = 29,
+  SCORE_3 = 30,
+  SCORE_4 = 31,
+  SCORE_5 = 32
 };
 
 class PrizeUtils {
 public:
-  constexpr static int totalPrizes = 28;
+  constexpr static int totalPrizes = 33;
   constexpr static double prizeProbability = 0.415;
 };
 

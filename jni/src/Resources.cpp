@@ -93,46 +93,38 @@ const native::Texture* const Resources::getRandomTexture(const std::string& pref
 
 const native::Texture* const Resources::getPrizeTexture(const Prize& prize) const {
   switch (prize) {
-    // TODO: distinguish textures by prize type
-    case Prize::BLOCK:
-      return getTexture("pr_brick.png");
-    case Prize::CLIMB:
-      return getTexture("pr_arrow.png");
-    case Prize::DESTROY:
-      return getTexture("pr_skull.png");
-    case Prize::DRAGON:
+    case Prize::BLOCK:    return getTexture("pr_brick.png");
+    case Prize::CLIMB:    return getTexture("pr_earth.png");
+    case Prize::DESTROY:  return getTexture("pr_skull.png");
+    case Prize::DRAGON:   return getTexture("pr_egg.png");
     case Prize::EASY:
-    case Prize::EASY_T:
-    case Prize::EVAPORATE:
-      return getTexture("pr_waterdrop.png");
-    case Prize::EXPLODE:
-      return getTexture("pr_explode.png");
-    case Prize::EXTEND:
-    case Prize::FAST:
-    case Prize::FOG:
-    case Prize::GOO:
-      return getTexture("pr_glue.png");
-    case Prize::HYPER:
-    case Prize::INIT:
-    case Prize::JUMP:
-      return getTexture("pr_candy.png");
-    case Prize::LASER:
-      return getTexture("pr_laser.png");
-    case Prize::MIRROR:
-      return getTexture("pr_mirror.png");
-    case Prize::PIERCE:
-    case Prize::PROTECT:
-    case Prize::RANDOM:
-    case Prize::SHORT:
-    case Prize::SLOW:
-    case Prize::UPGRADE:
-    case Prize::DEGRADE:
-      return getTexture("pr_star.png");
-    case Prize::VITALITY:
-      return getTexture("pr_ball.png");
-    case Prize::WIN:
-    case Prize::ZYGOTE:
-      return getTexture("pr_star.png");
+    case Prize::EASY_T:     return getTexture("pr_fire.png");
+    case Prize::EVAPORATE:  return getTexture("pr_waterdrop.png");
+    case Prize::EXPLODE:    return getTexture("pr_explode.png");
+    case Prize::EXTEND:   return getTexture("pr_extend.png");
+    case Prize::FAST:     return getTexture("pr_clock.png");
+    case Prize::FOG:      return getTexture("pr_fog.png");
+    case Prize::GOO:      return getTexture("pr_glue.png");
+    case Prize::HYPER:    return getTexture("pr_hyper.png");
+    case Prize::INIT:     return getTexture("pr_radar.png");
+    case Prize::JUMP:     return getTexture("pr_jump.png");
+    case Prize::LASER:    return getTexture("pr_laser.png");
+    case Prize::MIRROR:   return getTexture("pr_mirror.png");
+    case Prize::PIERCE:   return getTexture("pr_pierce.png");
+    case Prize::PROTECT:  return getTexture("pr_protect.png");
+    case Prize::RANDOM:   return getTexture("pr_dice.png");
+    case Prize::SHORT:     return getTexture("pr_short.png");
+    case Prize::SLOW:      return getTexture("pr_frozen_clock.png");
+    case Prize::UPGRADE:   return getTexture("pr_arrow.png");
+    case Prize::DEGRADE:   return getTexture("pr_down.png");
+    case Prize::VITALITY:  return getTexture("pr_ball.png");
+    case Prize::WIN:       return getTexture("pr_diamond.png");
+    case Prize::ZYGOTE:    return getTexture("pr_zygote.png");
+    case Prize::SCORE_1:   return getTexture("pr_candy.png");
+    case Prize::SCORE_2:   return getTexture("pr_coin.png");
+    case Prize::SCORE_3:   return getTexture("pr_star.png");
+    case Prize::SCORE_4:   return getTexture("pr_newyear.png");
+    case Prize::SCORE_5:   return getTexture("pr_butterfly.png");
     default:
     case Prize::NONE:  // NONE prize is ignored by GameProcessor
       break;
