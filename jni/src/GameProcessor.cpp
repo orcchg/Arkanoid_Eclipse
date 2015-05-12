@@ -29,6 +29,7 @@ GameProcessor::GameProcessor(JavaVM* jvm)
   , m_bite()
   , m_bite_upper_border(-BiteParams::neg_biteElevation)
   , m_level_dimens(0, 0, 0.0f, 0.0f, 0.0f, 0.0f)
+  , m_prize_caught(Prize::NONE)
   , explosionID(0)
   , prizeID(0)
   , m_generator(std::chrono::system_clock::now().time_since_epoch().count())
@@ -44,6 +45,7 @@ GameProcessor::GameProcessor(JavaVM* jvm)
   m_init_bite_received.store(false);
   m_level_dimens_received.store(false);
   m_bite_location_received.store(false);
+  m_prize_caught_received.store(false);
   DBG("exit GameProcessor ctor");
 }
 
@@ -105,6 +107,13 @@ void GameProcessor::callback_biteMoved(Bite moved_bite) {
   interrupt();
 }
 
+void GameProcessor::callback_prizeCaught(PrizePackage package) {
+  std::unique_lock<std::mutex> lock(m_prize_caught_mutex);
+  m_prize_caught_received.store(true);
+  m_prize_caught = package.getPrize();
+  interrupt();
+}
+
 /* *** Private methods *** */
 /* JNIEnvironment group */
 // ----------------------------------------------------------------------------
@@ -142,7 +151,8 @@ bool GameProcessor::checkForWakeUp() {
       m_init_ball_position_received.load() ||
       m_init_bite_received.load() ||
       m_level_dimens_received.load() ||
-      m_bite_location_received.load();
+      m_bite_location_received.load() ||
+      m_prize_caught_received.load();
 }
 
 void GameProcessor::eventHandler() {
@@ -173,6 +183,10 @@ void GameProcessor::eventHandler() {
   if (m_throw_ball_received.load()) {
     m_throw_ball_received.store(false);
     process_throwBall();
+  }
+  if (m_prize_caught_received.load()) {
+    m_prize_caught_received.store(false);
+    process_prizeCaught();
   }
   if (m_ball_is_flying) {
     moveBall();
@@ -224,6 +238,38 @@ void GameProcessor::process_biteMoved() {
   std::unique_lock<std::mutex> lock(m_bite_location_mutex);
   if (!m_ball_is_flying) {  // move ball following the bite
     shiftBall(m_bite.getXPose(), m_ball.getPose().getY() /* unchanged */);
+  }
+}
+
+void GameProcessor::process_prizeCaught() {
+  std::unique_lock<std::mutex> lock(m_prize_caught_mutex);
+  switch (m_prize_caught) {
+    case Prize::EASY:
+      m_ball.setEffect(BallEffect::EASY);
+      break;
+    case Prize::EASY_T:
+      m_ball.setEffect(BallEffect::EASY_T);
+      break;
+    case Prize::EXPLODE:
+      m_ball.setEffect(BallEffect::EXPLODE);
+      break;
+    case Prize::GOO:
+      m_ball.setEffect(BallEffect::GOO);
+      break;
+    case Prize::MIRROR:
+      m_ball.setEffect(BallEffect::MIRROR);
+      break;
+    case Prize::PIERCE:
+      m_ball.setEffect(BallEffect::PIERCE);
+      break;
+    case Prize::RANDOM:
+      m_ball.setEffect(BallEffect::RANDOM);
+      break;
+    case Prize::ZYGOTE:
+      m_ball.setEffect(BallEffect::ZYGOTE);
+      break;
+    default:
+      break;
   }
 }
 
@@ -643,6 +689,18 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
         external_collision = blockCollision(top_border, bottom_border, left_border, right_border, 100 /* elastic */);
         break;
     }
+    if (m_ball.getEffect() == BallEffect::EXPLODE) {
+      std::vector<RowCol> affected_blocks_effect;
+      score += m_level->destroyBlocksAround(row, col, &affected_blocks_effect);
+      explodeBlock(row, col, BlockUtils::getBlockColor(Block::ULTRA), Kind::DIVERGE);
+      for (auto& item : affected_blocks_effect) {
+        spawnPrizeAtBlock(item.row, item.col, spawned_prize);
+        block_impact_event.notifyListeners(item);
+      }
+      m_ball.setEffect(BallEffect::NONE);
+      drop_ball_appearance_event.notifyListeners(true);
+    }
+
     block_impact_event.notifyListeners(RowCol(row, col, block));
     onScoreUpdated(score);
     return (external_collision &&

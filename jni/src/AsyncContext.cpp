@@ -76,17 +76,13 @@ AsyncContext::AsyncContext(JavaVM* jvm)
   m_explosion_received.store(false);
   m_prize_received.store(false);
   m_prize_caught_received.store(false);
+  m_drop_ball_appearance_received.store(false);
   m_window_set = false;
   m_resources = nullptr;
 
   util::setColor(util::SALMON, &m_bite_color_buffer[0], 8);
   util::setColor(util::SIENNA_DARK, &m_bite_color_buffer[8], 8);
-
-  util::setColor(util::ORANGE, &m_ball_color_buffer[0], 4);
-  util::setColor(util::SIENNA_LIGHT, &m_ball_color_buffer[4], 16);
-  util::setColor(util::SIENNA, &m_ball_color_buffer[20], 4);
-  util::setColor(util::SIENNA_DARK, &m_ball_color_buffer[24], 12);
-  util::setColor(util::SIENNA, &m_ball_color_buffer[32], 4);
+  setStandardBallAppearance();
 
   m_particle_buffer = new GLfloat[particleSize * particleSystemSize];
   m_particle_spiral_buffer = new GLfloat[particleSpiralSize * particleSpiralSystemSize];
@@ -203,6 +199,21 @@ void AsyncContext::callback_prizeCaught(PrizePackage package) {
   m_caught_prizes_x_coords.push_back(m_prize_packages.at(prize_id).getX());
   m_prize_packages.at(prize_id).setCaught(true);
   addPrizeToRemoved(prize_id);
+
+  switch (package.getPrize()) {
+    case Prize::EXPLODE:
+      setExplodeBallAppearance();
+      break;
+    default:
+      setStandardBallAppearance();
+      break;
+  }
+  interrupt();
+}
+
+void AsyncContext::callback_dropBallAppearance(bool /* dummy */) {
+  std::unique_lock<std::mutex> lock(m_drop_ball_appearance_mutex);
+  m_drop_ball_appearance_received.store(true);
   interrupt();
 }
 
@@ -257,7 +268,8 @@ bool AsyncContext::checkForWakeUp() {
       m_level_finished_received.load() ||
       m_explosion_received.load() ||
       m_prize_received.load() ||
-      m_prize_caught_received.load();
+      m_prize_caught_received.load() ||
+      m_drop_ball_appearance_received.load();
 }
 
 void AsyncContext::eventHandler() {
@@ -311,6 +323,10 @@ void AsyncContext::eventHandler() {
     if (m_level_finished_received.load()) {
       m_level_finished_received.store(false);
       process_levelFinished();
+    }
+    if (m_drop_ball_appearance_received.load()) {
+      m_drop_ball_appearance_received.store(false);
+      process_dropBallAppearance();
     }
     render();  // render frame to reflect changes occurred
   } else {
@@ -450,6 +466,11 @@ void AsyncContext::process_prizeCaught() {
   m_render_prize_catch = true;
 }
 
+void AsyncContext::process_dropBallAppearance() {
+  std::unique_lock<std::mutex> lock(m_drop_ball_appearance_mutex);
+  setStandardBallAppearance();
+}
+
 /* LogicFunc group */
 // ----------------------------------------------------------------------------
 void AsyncContext::initGame() {
@@ -463,6 +484,7 @@ void AsyncContext::initGame() {
   m_ball.setXPose(m_bite.getXPose());
   m_ball.setYPose(-BiteParams::neg_biteElevation + m_ball.getDimens().halfHeight());
   moveBall(m_ball.getPose().getX(), m_ball.getPose().getY());
+  setStandardBallAppearance();
 
   init_ball_position_event.notifyListeners(m_ball);
   init_bite_event.notifyListeners(m_bite);
@@ -523,6 +545,22 @@ void AsyncContext::clearPrizeStructures() {
 
 bool AsyncContext::checkBlockPresense(int row, int col) {
   return (row >= 0 && row < m_level->numRows()) && (col >= 0 && col < m_level->numCols());
+}
+
+void AsyncContext::setStandardBallAppearance() {
+  util::setColor(util::ORANGE, &m_ball_color_buffer[0], 4);
+  util::setColor(util::SIENNA_LIGHT, &m_ball_color_buffer[4], 16);
+  util::setColor(util::SIENNA, &m_ball_color_buffer[20], 4);
+  util::setColor(util::SIENNA_DARK, &m_ball_color_buffer[24], 12);
+  util::setColor(util::SIENNA, &m_ball_color_buffer[32], 4);
+}
+
+void AsyncContext::setExplodeBallAppearance() {
+  util::setColor(util::WATER_EDGE, &m_ball_color_buffer[0], 4);
+  util::setColor(util::WATER, &m_ball_color_buffer[4], 16);
+  util::setColor(util::ULTRA, &m_ball_color_buffer[20], 4);
+  util::setColor(util::ULTRA_EDGE, &m_ball_color_buffer[24], 12);
+  util::setColor(util::MAGENTA, &m_ball_color_buffer[32], 4);
 }
 
 /* GraphicsContext group */

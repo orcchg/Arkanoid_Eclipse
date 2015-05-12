@@ -17,6 +17,7 @@
 #include "ExplosionPackage.h"
 #include "Level.h"
 #include "LevelDimens.h"
+#include "Prize.h"
 #include "PrizePackage.h"
 #include "RowCol.h"
 #include "utils.h"
@@ -50,6 +51,8 @@ public:
   void callback_levelDimens(LevelDimens level_dimens);
   /// @brief Called when bite's location has changed.
   void callback_biteMoved(Bite moved_bite);
+  /// @brief Called when prize has been caught.
+  void callback_prizeCaught(PrizePackage package);
   /** @} */  // end of Callbacks group
 
 // ----------------------------------------------
@@ -97,6 +100,8 @@ public:
   EventListener<LevelDimens> level_dimens_listener;
   /// @brief Listens for bite location changes.
   EventListener<Bite> bite_location_listener;
+  /// @brief Listens for event which occurs when prize has been caught.
+  EventListener<PrizePackage> prize_caught_listener;
 
   /// @brief Notifies ball has moved to a new position.
   Event<Ball> move_ball_event;
@@ -114,6 +119,8 @@ public:
   Event<ExplosionPackage> explosion_event;
   /// @brief Notifies prize has been generated.
   Event<PrizePackage> prize_event;
+  /// @brief Notifies when to drop ball's appearance to standard.
+  Event<bool> drop_ball_appearance_event;
   /** @} */  // end of Event group
 
 // ----------------------------------------------
@@ -147,6 +154,7 @@ private:
   Bite m_bite;  //!< Physical bite's representation.
   GLfloat m_bite_upper_border;  //!< Upper border of bite.
   LevelDimens m_level_dimens;  //!< Measured level's dimensions.
+  Prize m_prize_caught;  //!< Type of last caught prize.
   std::atomic<int> explosionID;
   std::atomic<int> prizeID;
   /** @} */  // end of LogicData group
@@ -171,6 +179,7 @@ private:
   std::mutex m_init_bite_mutex;  //!< Sentinel for initial bite dimensions.
   std::mutex m_level_dimens_mutex;  //!< Sentinel for loaded level dimensions.
   std::mutex m_bite_location_mutex;  //!< Sentinel for bite's center location changes.
+  std::mutex m_prize_caught_mutex;  //!< Sentinel for prize has been caught.
   std::atomic_bool m_aspect_ratio_received;  //!< Aspect ratio has been measured.
   std::atomic_bool m_load_level_received;  //!< Load level request has been received.
   std::atomic_bool m_throw_ball_received;  //!< Throw ball command has been received.
@@ -178,6 +187,7 @@ private:
   std::atomic_bool m_init_bite_received;  //!< Initial bite dimensions have been received.
   std::atomic_bool m_level_dimens_received;  //!< Level has been loaded and it's dimens received.
   std::atomic_bool m_bite_location_received;  //!< New bite's center location has been received.
+  std::atomic_bool m_prize_caught_received;  //!< Prize has been caught received.
   /** @} */  // end of Mutex group
 
 // ----------------------------------------------
@@ -215,6 +225,8 @@ private:
   void process_levelDimens();
   /// @brief Processing when bite's location has changed.
   void process_biteMoved();
+  /// @brief Sets effect supplied with prize.
+  void process_prizeCaught();
   /** @} */  // end of Processors group
 
   /** @defgroup LogicFunc Game logic related member functions.

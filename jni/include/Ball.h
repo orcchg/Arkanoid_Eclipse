@@ -10,12 +10,13 @@ namespace game {
 enum class BallEffect : int {
   NONE = 0,
   EASY = 1,
-  EXPLODE = 2,
-  GOO = 3,
-  MIRROR = 4,
-  PIERCE = 5,
-  RANDOM = 6,
-  ZYGOTE = 7
+  EASY_T = 2,
+  EXPLODE = 3,
+  GOO = 4,
+  MIRROR = 5,
+  PIERCE = 6,
+  RANDOM = 7,
+  ZYGOTE = 8
 };
 
 class Ball {

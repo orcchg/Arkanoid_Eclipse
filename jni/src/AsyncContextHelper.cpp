@@ -33,6 +33,7 @@ JNIEXPORT jlong JNICALL Java_com_orcchg_arkanoid_surface_AsyncContext_init
   ptr->acontext->explosion_listener = ptr->processor->explosion_event.createListener(&game::AsyncContext::callback_explosion, ptr->acontext);
   ptr->acontext->prize_listener = ptr->processor->prize_event.createListener(&game::AsyncContext::callback_prizeReceived, ptr->acontext);
   ptr->acontext->prize_caught_listener = ptr->prize_processor->prize_caught_event.createListener(&game::AsyncContext::callback_prizeCaught, ptr->acontext);
+  ptr->acontext->drop_ball_appearance_listener = ptr->processor->drop_ball_appearance_event.createListener(&game::AsyncContext::callback_dropBallAppearance, ptr->acontext);
 
   ptr->processor->aspect_ratio_listener = ptr->acontext->aspect_ratio_event.createListener(&game::GameProcessor::callback_aspectMeasured, ptr->processor);
   ptr->processor->load_level_listener = ptr->load_level_event.createListener(&game::GameProcessor::callback_loadLevel, ptr->processor);
@@ -41,6 +42,7 @@ JNIEXPORT jlong JNICALL Java_com_orcchg_arkanoid_surface_AsyncContext_init
   ptr->processor->init_bite_listener = ptr->acontext->init_bite_event.createListener(&game::GameProcessor::callback_initBite, ptr->processor);
   ptr->processor->level_dimens_listener = ptr->acontext->level_dimens_event.createListener(&game::GameProcessor::callback_levelDimens, ptr->processor);
   ptr->processor->bite_location_listener = ptr->acontext->bite_location_event.createListener(&game::GameProcessor::callback_biteMoved, ptr->processor);
+  ptr->processor->prize_caught_listener = ptr->prize_processor->prize_caught_event.createListener(&game::GameProcessor::callback_prizeCaught, ptr->processor);
 
   ptr->prize_processor->aspect_ratio_listener = ptr->acontext->aspect_ratio_event.createListener(&game::PrizeProcessor::callback_aspectMeasured, ptr->prize_processor);
   ptr->prize_processor->bite_location_listener = ptr->acontext->bite_location_event.createListener(&game::PrizeProcessor::callback_biteMoved, ptr->prize_processor);

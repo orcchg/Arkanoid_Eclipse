@@ -15,6 +15,7 @@ Prize PrizeGenerator::generatePrize() {
   if (m_win_distribution(m_generator)) {
     return Prize::WIN;
   }
+  return Prize::EXPLODE;
   return static_cast<Prize>(value);
 }
 

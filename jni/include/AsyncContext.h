@@ -77,6 +77,8 @@ public:
   void callback_prizeReceived(PrizePackage package);
   /// @brief Called when prize has been caught.
   void callback_prizeCaught(PrizePackage package);
+  /// @brief Called when drop ball's appearance to standard has been requested.
+  void callback_dropBallAppearance(bool /* dummy */);
   /** @} */  // end of Callbacks group
 
   /** @defgroup GameStat Get game statistics
@@ -136,6 +138,8 @@ public:
   EventListener<PrizePackage> prize_listener;
   /// @brief Listens for event which occurs when prize has been caught.
   EventListener<PrizePackage> prize_caught_listener;
+  /// @brief Listens for event which drop ball's appearance to standard has been requested.
+  EventListener<bool> drop_ball_appearance_listener;
 
   /// @brief Notifies for measured aspect ratio.
   Event<float> aspect_ratio_event;
@@ -257,6 +261,7 @@ private:
   std::mutex m_explosion_mutex;  //!< Sentinel for particle system explosion.
   std::mutex m_prize_mutex;  //!< Sentinel for prize receiving.
   std::mutex m_prize_caught_mutex;  //!< Sentinel for prize has been caught.
+  std::mutex m_drop_ball_appearance_mutex;
   std::atomic_bool m_surface_received;  //!< Window has been set.
   std::atomic_bool m_load_resources_received;  //!< Load resources requested.
   std::atomic_bool m_shift_gamepad_received;  //!< Shift gesture has occurred.
@@ -269,6 +274,7 @@ private:
   std::atomic_bool m_explosion_received;  //!< Request for explosion received.
   std::atomic_bool m_prize_received;  //!< Prize has been received.
   std::atomic_bool m_prize_caught_received;  //!< Prize has been caught received.
+  std::atomic_bool m_drop_ball_appearance_received;
   /** @} */  // end of Mutex group
 
   /** @defgroup SafetyFlag Logic-safety variables
@@ -330,6 +336,8 @@ private:
   void process_prizeReceived();
   /// @brief Performs visual prize catching.
   void process_prizeCaught();
+  /// @brief Drops ball's appearance to standard.
+  void process_dropBallAppearance();
   /** @} */  // end of Processors group
 
 private:
@@ -359,6 +367,10 @@ private:
   /// block impact event, but it's processing is performed before the former's
   /// processing due to asynchronous event handling.
   bool checkBlockPresense(int row, int col);
+  /// @brief Sets standard ball's appearance.
+  void setStandardBallAppearance();
+  /// @brief Sets explode ball's appearance.
+  void setExplodeBallAppearance();
   /** @} */  // end of LogicFunc group
 
 private:
