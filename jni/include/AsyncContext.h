@@ -401,6 +401,7 @@ private:
   void drawBackground();
   /// @brief Draws prize of specified type at given location.
   void drawPrize(const PrizePackage& prize);
+  void drawPrizeProg(const PrizePackage&  prize);
   /// @brief Draws prize catch animation.
   void drawPrizeCatch(GLfloat x, GLfloat y, const util::BGRA<GLfloat>& bgra);
   /** @} */  // end of Drawings group
