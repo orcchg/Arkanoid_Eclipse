@@ -110,8 +110,8 @@ constexpr static GLfloat ROLLING_EDGE[4] = {0.5451f, 0.2431f, 0.1843f, 1.f};  //
 constexpr static GLfloat SIMPLE[4]      = {0.6353f, 0.8039f, 0.3529f, 1.f};  // 162 205 90
 constexpr static GLfloat SIMPLE_EDGE[4] = {0.4314f, 0.5451f, 0.2392f, 1.f};  // 110 139 61
 
-constexpr static GLfloat TITAN[4]      = {1.f,     0.7255f, 0.0588f, 1.f};  // 255 185 15
-constexpr static GLfloat TITAN_EDGE[4] = {0.8039f, 0.5843f, 0.0471f, 1.f};  // 205 149 12
+constexpr static GLfloat TITAN[4]      = {1.f,     0.7567f, 0.1451f, 1.f};  // 255 193 37
+constexpr static GLfloat TITAN_EDGE[4] = {0.8039f, 0.6078f, 0.1137f, 1.f};  // 205 155 29
 
 constexpr static GLfloat ULTRA[4]      = {0.7490f, 0.2431f, 1.f,     1.f};  // 191 62 255
 constexpr static GLfloat ULTRA_EDGE[4] = {0.4078f, 0.1333f, 0.5451f, 1.f};  // 104 34 139
