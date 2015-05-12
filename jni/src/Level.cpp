@@ -533,14 +533,14 @@ int Level::destroyBlocksBehind(int row, int col, Direction direction, std::vecto
   return modifyBlocksBehind(row, col, Block::NONE, true, direction, output);
 }
 
-void Level::modifyBlockNear(int row, int col, Block type, RowCol* output) {
+bool Level::modifyBlockNear(int row, int col, Block type, RowCol* output) {
   if (row - 1 >= 0) {
     if (col - 1 >= 0) {
       auto block = getBlock(row - 1, col - 1);
       if (block == Block::NONE) {
         setVulnerableBlock(row - 1, col - 1, type);
         *output = RowCol(row - 1, col - 1);
-        return;
+        return true;
       }
     }
     if (col + 1 < cols) {
@@ -548,7 +548,7 @@ void Level::modifyBlockNear(int row, int col, Block type, RowCol* output) {
       if (block == Block::NONE) {
         setVulnerableBlock(row - 1, col + 1, type);
         *output = RowCol(row - 1, col + 1);
-        return;
+        return true;
       }
     }
   }
@@ -558,7 +558,7 @@ void Level::modifyBlockNear(int row, int col, Block type, RowCol* output) {
       if (block == Block::NONE) {
         setVulnerableBlock(row + 1, col - 1, type);
         *output = RowCol(row + 1, col - 1);
-        return;
+        return true;
       }
     }
     if (col + 1 < cols) {
@@ -566,7 +566,7 @@ void Level::modifyBlockNear(int row, int col, Block type, RowCol* output) {
       if (block == Block::NONE) {
         setVulnerableBlock(row + 1, col + 1, type);
         *output = RowCol(row + 1, col + 1);
-        return;
+        return true;
       }
     }
   }
@@ -575,7 +575,7 @@ void Level::modifyBlockNear(int row, int col, Block type, RowCol* output) {
     if (block == Block::NONE) {
       setVulnerableBlock(row - 1, col, type);
       *output = RowCol(row - 1, col);
-      return;
+      return true;
     }
   }
   if (row + 1 < rows) {
@@ -583,7 +583,7 @@ void Level::modifyBlockNear(int row, int col, Block type, RowCol* output) {
     if (block == Block::NONE) {
       setVulnerableBlock(row + 1, col, type);
       *output = RowCol(row + 1, col);
-      return;
+      return true;
     }
   }
   if (col - 1 >= 0) {
@@ -591,7 +591,7 @@ void Level::modifyBlockNear(int row, int col, Block type, RowCol* output) {
     if (block == Block::NONE) {
       setVulnerableBlock(row, col - 1, type);
       *output = RowCol(row, col - 1);
-      return;
+      return true;
     }
   }
   if (col + 1 < cols) {
@@ -599,9 +599,10 @@ void Level::modifyBlockNear(int row, int col, Block type, RowCol* output) {
     if (block == Block::NONE) {
       setVulnerableBlock(row, col + 1, type);
       *output = RowCol(row, col + 1);
-      return;
+      return true;
     }
   }
+  return false;
 }
 
 void Level::findBlocks(Block type, std::vector<RowCol>* output) {

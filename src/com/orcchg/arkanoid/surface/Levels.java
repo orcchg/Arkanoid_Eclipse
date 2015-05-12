@@ -337,7 +337,8 @@ public class Levels {
                                                     "          ",
                                                     "      ZZ#D",
                                                     "    ZZD#ZZ",
-                                                    "  ZZD#ZZ  "};
+                                                    "  ZZD#ZZ  ",
+                                                    ""};
   
   private static final String[] L20 = new String[] {"SSSSSSSSES",
                                                     "SSSESSSSSS",
