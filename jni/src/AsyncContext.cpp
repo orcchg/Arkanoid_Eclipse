@@ -632,31 +632,11 @@ void AsyncContext::render() {
             glDisable(GL_BLEND);
             break;
         }
-        switch (block) {
-          case Block::BRICK:
-            drawTexturedBlock(r, c, "bl_brick.png");
-            break;
-          case Block::CLAY:
-            drawTexturedBlock(r, c, "bl_clay.png");
-            break;
-          case Block::FOG:
-            drawTexturedBlock(r, c, "bl_fog.png");
-            break;
-            //
-            //
-            //
-            //
-            //
-            //
-          case Block::SIMPLE:
-            drawTexturedBlock(r, c, "bl_simple.png");
-            break;
-          case Block::WATER:
-            drawTexturedBlock(r, c, "bl_water.png");
-            break;
-          default:
-            drawBlock(r, c);
-            break;
+        auto texture = BlockUtils::getBlockTexture(block);
+        if (texture.empty()) {
+          drawBlock(r, c);
+        } else {
+          drawTexturedBlock(r, c, texture);
         }
       }
     }

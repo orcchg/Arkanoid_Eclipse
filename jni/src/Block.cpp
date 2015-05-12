@@ -530,6 +530,52 @@ util::BGRA<GLfloat> BlockUtils::getBlockEdgeColor(Block block) {
   return bgra_edge;
 }
 
+std::string BlockUtils::getBlockTexture(Block block) {
+  switch (block) {
+    case Block::DESTROY:    return "bl_destroy.png";
+    case Block::ELECTRO:    return "bl_electro.png";
+    case Block::HYPER:      return "bl_hyper.png";
+    case Block::KNOCK_VERTICAL:
+    case Block::KNOCK_HORIZONTAL:  return "bl_knock.png";
+    case Block::MAGIC:      return "bl_magic.png";
+    case Block::NETWORK:    return "bl_network.png";
+    case Block::ORIGIN:     return "bl_origin.png";
+    case Block::QUICK_1:
+    case Block::QUICK_2:
+    case Block::QUICK:      return "bl_quick.png";
+    case Block::ULTRA_1:
+    case Block::ULTRA_2:
+    case Block::ULTRA_3:
+    case Block::ULTRA_4:
+    case Block::ULTRA:      return "bl_ultra.png";
+    case Block::TITAN:      return "bl_titan.png";
+    case Block::INVUL:      return "bl_invul.png";
+    case Block::EXTRA:      return "bl_extra.png";
+    case Block::MIDAS:      return "bl_midas.png";
+    case Block::ALUMINIUM:  return "bl_aluminium.png";
+    case Block::BRICK:      return "bl_brick.png";
+    case Block::CLAY:       return "bl_clay.png";
+    case Block::FOG:        return "bl_fog.png";
+    case Block::GLASS_1:
+    case Block::GLASS:      return "bl_glass.png";
+    case Block::IRON:       return "bl_iron.png";
+    case Block::JELLY:      return "bl_jelly.png";
+    case Block::STEEL:      return "bl_steel.png";
+    case Block::PLUMBUM:    return "bl_plumbum.png";
+    case Block::ROLLING:    return "bl_rolling.png";
+    case Block::SIMPLE:     return "bl_simple.png";
+    case Block::WATER:      return "bl_water.png";
+    case Block::YOGURT_1:
+    case Block::YOGURT:     return "bl_yogurt.png";
+    case Block::ZYGOTE_1:
+    case Block::ZYGOTE:     return "bl_zygote.png";
+    case Block::ZYGOTE_SPAWN:  return "bl_zygote_spawn.png";
+    default:
+      break;
+  }
+  return "";
+}
+
 BlockGenerator::BlockGenerator()
   : m_generator(std::chrono::system_clock::now().time_since_epoch().count())
   , m_distribution(0, BlockUtils::totalOrdinaryBlocks - 1) {

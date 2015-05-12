@@ -2,6 +2,7 @@
 #define __ARKANOID_BLOCK__H__
 
 #include <random>
+#include <string>
 #include "rgbstruct.h"
 
 namespace game {
@@ -64,6 +65,7 @@ public:
   static int getBlockScore(Block block);
   static util::BGRA<GLfloat> getBlockColor(Block block);
   static util::BGRA<GLfloat> getBlockEdgeColor(Block block);
+  static std::string getBlockTexture(Block block);
 };
 
 class BlockGenerator {
