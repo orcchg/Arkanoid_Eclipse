@@ -389,6 +389,8 @@ private:
   void drawLevel();
   /// @brief Draws block of current level.
   void drawBlock(int row, int col);
+  /// @brief Draws textured block of current level,
+  void drawTexturedBlock(int row, int col, const std::string& texture);
   /// @brief Draws bite at it's current position.m_load_resources_received
   void drawBite();
   /// @brief Draws ball at it's current position.

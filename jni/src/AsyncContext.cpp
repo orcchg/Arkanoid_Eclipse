@@ -591,11 +591,7 @@ void AsyncContext::glOptionsConfig() {
   glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
   glViewport(-4, -4, m_width + 4, m_height + 4);
 
-#if USE_TEXTURE
-  m_level_shader = std::make_shared<shader::ShaderHelper>(shader::SimpleTextureShader());
-#else
   m_level_shader = std::make_shared<shader::ShaderHelper>(shader::SimpleShader());
-#endif  // USE_TEXTURE
   m_bite_shader = std::make_shared<shader::ShaderHelper>(shader::SimpleShader());
   m_ball_shader = std::make_shared<shader::ShaderHelper>(shader::SimpleShader());
   m_explosion_shader = std::make_shared<shader::ShaderHelper>(shader::ParticleSystemShader());
@@ -625,13 +621,6 @@ void AsyncContext::render() {
     glClear(GL_COLOR_BUFFER_BIT);
     drawBackground();
 
-#if USE_TEXTURE
-    for (int r = 0; r < m_level->numRows(); ++r) {
-      for (int c = 0; c < m_level->numCols(); ++c) {
-        drawBlock(r, c);
-      }
-    }
-#else
     for (int r = 0; r < m_level->numRows(); ++r) {
       for (int c = 0; c < m_level->numCols(); ++c) {
         if (m_level->getBlock(r, c) == Block::NONE) {
@@ -642,7 +631,6 @@ void AsyncContext::render() {
         drawBlock(r, c);
       }
     }
-#endif
     drawBite();
     drawBall();
 
@@ -821,39 +809,42 @@ void AsyncContext::drawBlock(int row, int col) {
   m_level_shader->useProgram();
 
   GLint a_position = glGetAttribLocation(m_level_shader->getProgram(), "a_position");
-#if USE_TEXTURE
-  GLint a_texCoord = glGetAttribLocation(m_level_shader->getProgram(), "a_texCoord");
-#else
   GLint a_color = glGetAttribLocation(m_level_shader->getProgram(), "a_color");
-#endif
 
   int rci = col * 16 + row * m_level->numCols() * 16;
   glVertexAttribPointer(a_position, 4, GL_FLOAT, GL_FALSE, 0, &m_level_vertex_buffer[rci]);
-#if USE_TEXTUREm_program
-  glVertexAttribPointer(a_texCoord, 2, GL_FLOAT, GL_FALSE, 0, &m_rectangle_texCoord_buffer[0]);
-#else
   glVertexAttribPointer(a_color, 4, GL_FLOAT, GL_FALSE, 0, &m_level_color_buffer[rci]);
-#endif
 
   glEnableVertexAttribArray(a_position);
-#if USE_TEXTURE
-  glEnableVertexAttribArray(a_texCoord);
-  // TODO: apply texture for specified block
-  m_resources->getTexture("brick_tex.png")->apply();
-  GLint sampler = m_level_shader->getSampler2DUniformLocation();
-  glUniform1i(sampler, 0);
-#else
   glEnableVertexAttribArray(a_color);
-#endif
 
   glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, &m_rectangle_index_buffer[0]);
 
   glDisableVertexAttribArray(a_position);
-#if USE_TEXTURE
-  glDisableVertexAttribArray(a_texCoord);
-#else
   glDisableVertexAttribArray(a_color);
-#endif
+}
+
+void AsyncContext::drawTexturedBlock(int row, int col, const std::string& texture) {
+  m_sample_shader->useProgram();
+
+  GLint a_position = glGetAttribLocation(m_sample_shader->getProgram(), "a_position");
+  GLint a_texCoord = glGetAttribLocation(m_sample_shader->getProgram(), "a_texCoord");
+
+  int rci = col * 16 + row * m_level->numCols() * 16;
+  glVertexAttribPointer(a_position, 4, GL_FLOAT, GL_FALSE, 0, &m_level_vertex_buffer[rci]);
+  glVertexAttribPointer(a_texCoord, 2, GL_FLOAT, GL_FALSE, 0, &m_rectangle_texCoord_buffer[0]);
+
+  m_resources->getTexture(texture)->apply();
+  GLint sampler = glGetUniformLocation(m_sample_shader->getProgram(), "s_texture");
+  glUniform1i(sampler, 0);
+
+  glEnableVertexAttribArray(a_position);
+  glEnableVertexAttribArray(a_texCoord);
+
+  glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+  glDisableVertexAttribArray(a_position);
+  glDisableVertexAttribArray(a_texCoord);
 }
 
 void AsyncContext::drawBite() {
