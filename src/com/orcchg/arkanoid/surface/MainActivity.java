@@ -14,6 +14,12 @@ import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
+import android.view.animation.DecelerateInterpolator;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -37,6 +43,7 @@ public class MainActivity extends FragmentActivity {
   private TextView mInfoTextView, mAddInfoTextView;
   private TextView mLifeMultiplierTextView, mCardinalityTextView;
   private ImageView[] mLifeViews;
+  private AnimationSet mAnimations;
   
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +52,7 @@ public class MainActivity extends FragmentActivity {
     setContentView(R.layout.activity_main);
     mAsyncContext = new AsyncContext();
     mAsyncContext.setCoreEventListener(new CoreEventHandler(this));
-    
+
     mSurface = (GameSurface) findViewById(R.id.surface_view);
     mInfoTextView = (TextView) findViewById(R.id.info_textview);
     mAddInfoTextView = (TextView) findViewById(R.id.add_info_textview);
@@ -58,6 +65,19 @@ public class MainActivity extends FragmentActivity {
       (ImageView) findViewById(R.id.life4_imageview),
       (ImageView) findViewById(R.id.life5_imageview)};
     
+    // ------------------------------------------
+    Animation fadeIn = new AlphaAnimation(0, 1);
+    fadeIn.setInterpolator(new DecelerateInterpolator());
+    fadeIn.setDuration(250);
+    Animation fadeOut = new AlphaAnimation(1, 0);
+    fadeOut.setInterpolator(new AccelerateInterpolator());
+    fadeOut.setStartOffset(250);
+    fadeOut.setDuration(250);
+    mAnimations = new AnimationSet(false);
+    mAnimations.addAnimation(fadeIn);
+    mAnimations.addAnimation(fadeOut);
+    
+    // ------------------------------------------
     mNativeResources = new NativeResources(getAssets(), getFilesDir().getAbsolutePath());
     try {
       String[] texture_resources = getAssets().list("texture");
@@ -73,6 +93,7 @@ public class MainActivity extends FragmentActivity {
     }
     mAsyncContext.setResourcesPtr(mNativeResources.getPtr());
     
+    // ------------------------------------------
     ArkanoidApplication app = (ArkanoidApplication) getApplication();
     if (!app.DATABASE.updatePlayer(PLAYER_ID, "Player")) {
       try {
@@ -233,6 +254,10 @@ public class MainActivity extends FragmentActivity {
     mCardinalityTextView.setText(Integer.toString(new_cardinality));
   }
   
+  void levelTransitionEffect() {
+    mSurface.startAnimation(mAnimations);
+  }
+  
   /* Core event listeners */
   // --------------------------------------------------------------------------
   private static class CoreEventHandler implements AsyncContext.CoreEventListener {
@@ -283,7 +308,7 @@ public class MainActivity extends FragmentActivity {
     @Override
     public void onLevelFinished() {
       Log.i(TAG, "Level finished!");
-      MainActivity activity = activityRef.get();
+      final MainActivity activity = activityRef.get();
       if (activity != null) {
         ++currentLevel;
         if (currentLevel >= Levels.TOTAL_LEVELS) {
