@@ -2,7 +2,6 @@ package com.orcchg.arkanoid.surface;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
-import java.util.Arrays;
 
 import com.orcchg.arkanoid.surface.Database.DatabaseException;
 import com.orcchg.arkanoid.surface.Database.GameStat;
@@ -14,12 +13,6 @@ import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.AccelerateInterpolator;
-import android.view.animation.AlphaAnimation;
-import android.view.animation.Animation;
-import android.view.animation.AnimationSet;
-import android.view.animation.DecelerateInterpolator;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -43,7 +36,6 @@ public class MainActivity extends FragmentActivity {
   private TextView mInfoTextView, mAddInfoTextView;
   private TextView mLifeMultiplierTextView, mCardinalityTextView;
   private ImageView[] mLifeViews;
-  private AnimationSet mAnimations;
   
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -64,18 +56,6 @@ public class MainActivity extends FragmentActivity {
       (ImageView) findViewById(R.id.life3_imageview),
       (ImageView) findViewById(R.id.life4_imageview),
       (ImageView) findViewById(R.id.life5_imageview)};
-    
-    // ------------------------------------------
-    Animation fadeIn = new AlphaAnimation(0, 1);
-    fadeIn.setInterpolator(new DecelerateInterpolator());
-    fadeIn.setDuration(250);
-    Animation fadeOut = new AlphaAnimation(1, 0);
-    fadeOut.setInterpolator(new AccelerateInterpolator());
-    fadeOut.setStartOffset(250);
-    fadeOut.setDuration(250);
-    mAnimations = new AnimationSet(false);
-    mAnimations.addAnimation(fadeIn);
-    mAnimations.addAnimation(fadeOut);
     
     // ------------------------------------------
     mNativeResources = new NativeResources(getAssets(), getFilesDir().getAbsolutePath());
@@ -252,10 +232,6 @@ public class MainActivity extends FragmentActivity {
   
   void setCardinalityValue(int new_cardinality) {
     mCardinalityTextView.setText(Integer.toString(new_cardinality));
-  }
-  
-  void levelTransitionEffect() {
-    mSurface.startAnimation(mAnimations);
   }
   
   /* Core event listeners */
