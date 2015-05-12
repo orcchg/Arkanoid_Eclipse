@@ -1003,11 +1003,6 @@ void AsyncContext::drawPrize(const PrizePackage& prize) {
       m_prize_timers.at(prize.getID()) = 0.0f;
       return;
     }
-    DBG("Prize draw: id=%i y=%lf time=%lf delta=%lf",
-        prize.getID(),
-        prize.getY() - PrizeParams::prizeHalfHeight - PrizeParams::prizeSpeed * m_prize_timers.at(prize.getID()),
-        m_prize_timers.at(prize.getID()),
-        delta_elapsed);
   }
   int is_visible = 1;  /* true */
   {
