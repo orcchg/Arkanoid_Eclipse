@@ -623,12 +623,41 @@ void AsyncContext::render() {
 
     for (int r = 0; r < m_level->numRows(); ++r) {
       for (int c = 0; c < m_level->numCols(); ++c) {
-        if (m_level->getBlock(r, c) == Block::NONE) {
-          glEnable(GL_BLEND);
-        } else {
-          glDisable(GL_BLEND);
+        auto block = m_level->getBlock(r, c);
+        switch (block) {
+          case Block::NONE:
+            glEnable(GL_BLEND);
+            break;
+          default:
+            glDisable(GL_BLEND);
+            break;
         }
-        drawBlock(r, c);
+        switch (block) {
+          case Block::BRICK:
+            drawTexturedBlock(r, c, "bl_brick.png");
+            break;
+          case Block::CLAY:
+            drawTexturedBlock(r, c, "bl_clay.png");
+            break;
+          case Block::FOG:
+            drawTexturedBlock(r, c, "bl_fog.png");
+            break;
+            //
+            //
+            //
+            //
+            //
+            //
+          case Block::SIMPLE:
+            drawTexturedBlock(r, c, "bl_simple.png");
+            break;
+          case Block::WATER:
+            drawTexturedBlock(r, c, "bl_water.png");
+            break;
+          default:
+            drawBlock(r, c);
+            break;
+        }
       }
     }
     drawBite();
