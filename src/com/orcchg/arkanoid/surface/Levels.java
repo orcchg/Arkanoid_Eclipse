@@ -309,7 +309,6 @@ public class Levels {
                                                     "  #BBBB#  ",                                                    "          ",
                                                     "          ",
                                                     " X   X   X",
-                                                    " X   X   X",
                                                     " T   T   T",                                                    "          ",
                                                     " P   P   P",
                                                     " L   L   L",
@@ -755,8 +754,7 @@ public class Levels {
                                                     "ZZZYYYYYZZ",
                                                     "ZZZZYYYZZZ",
                                                     "ZNZZZYZZZZ",
-                                                    "ZZZZZZZZZZ",
-                                                    ""};
+                                                    "SSSSSSSSSS"};
   
   private static final String[] L41 = new String[] {"FFFFFFFFFF",
                                                     "FFXFFFFFFF",
