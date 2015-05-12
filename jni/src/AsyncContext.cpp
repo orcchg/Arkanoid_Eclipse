@@ -387,6 +387,7 @@ void AsyncContext::process_loadLevel() {
   util::rectangleIndices(&m_level_index_buffer[0], m_level->size() * 6);
 
   level_dimens_event.notifyListeners(dimens);
+  initGame();
 }
 
 void AsyncContext::process_moveBall() {

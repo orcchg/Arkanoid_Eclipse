@@ -206,7 +206,7 @@ void GameProcessor::process_throwBall() {
 
 void GameProcessor::process_initBall() {
   std::unique_lock<std::mutex> lock(m_init_ball_position_mutex);
-  // no-op
+  m_ball_is_flying = false;
 }
 
 void GameProcessor::process_initBite() {
