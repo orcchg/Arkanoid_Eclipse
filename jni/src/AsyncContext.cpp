@@ -632,12 +632,16 @@ void AsyncContext::render() {
             glDisable(GL_BLEND);
             break;
         }
+#if USE_TEXTURE
         auto texture = BlockUtils::getBlockTexture(block);
         if (texture.empty()) {
           drawBlock(r, c);
         } else {
           drawTexturedBlock(r, c, texture);
         }
+#else
+        drawBlock(r, c);
+#endif
       }
     }
     drawBite();
