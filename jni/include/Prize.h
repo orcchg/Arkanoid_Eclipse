@@ -32,19 +32,20 @@ enum class Prize : int {
   UPGRADE = 23,   // improved all ordinary blocks (+ cardinality)
   DEGRADE = 24,   // decreases all ordinary blocks (- cardinality)
   VITALITY = 25,  // additional live
-  WIN = 26,       // win level
-  ZYGOTE = 27,    // multiplies ball
-  SCORE_1 = 28,
-  SCORE_2 = 29,
-  SCORE_3 = 30,
-  SCORE_4 = 31,
-  SCORE_5 = 32
+  ZYGOTE = 26,    // multiplies ball
+  SCORE_1 = 27,
+  SCORE_2 = 28,
+  SCORE_3 = 29,
+  SCORE_4 = 30,
+  SCORE_5 = 31,
+  WIN = 32,       // win level
 };
 
 class PrizeUtils {
 public:
-  constexpr static int totalPrizes = 33;
+  constexpr static int totalPrizes = 32;  // WIN not included
   constexpr static double prizeProbability = 0.415;
+  constexpr static double winProbability = 0.05;
 };
 
 class PrizeGenerator {
@@ -56,6 +57,7 @@ private:
   std::default_random_engine m_generator;
   std::uniform_int_distribution<int> m_distribution;
   std::bernoulli_distribution m_success_distribution;
+  std::bernoulli_distribution m_win_distribution;
 };
 
 }
