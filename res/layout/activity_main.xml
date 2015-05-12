@@ -85,6 +85,18 @@
 		            android:layout_height="@dimen/life_image_size"
 		            android:src="@drawable/gm_ball"
 		            android:visibility="invisible" />
+		        
+		        <Space
+		            android:layout_width="4dp"
+		            android:layout_height="match_parent" />
+		        
+		        <TextView
+		            android:id="@+id/life_multiplier_textview"
+		            android:layout_width="wrap_content"
+		            android:layout_height="wrap_content"
+		            android:textColor="@android:color/holo_orange_dark"
+		            android:textStyle="bold"
+		            android:textSize="20sp" />
 		    </LinearLayout>
 		</LinearLayout>
 	    

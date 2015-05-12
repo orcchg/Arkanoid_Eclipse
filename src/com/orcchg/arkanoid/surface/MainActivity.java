@@ -35,7 +35,7 @@ public class MainActivity extends FragmentActivity {
   private GameSurface mSurface;
   private NativeResources mNativeResources;
   private TextView mInfoTextView, mAddInfoTextView;
-  private TextView mCardinalityTextView;
+  private TextView mLifeMultiplierTextView, mCardinalityTextView;
   private ImageView[] mLifeViews;
   
   @Override
@@ -49,6 +49,7 @@ public class MainActivity extends FragmentActivity {
     mSurface = (GameSurface) findViewById(R.id.surface_view);
     mInfoTextView = (TextView) findViewById(R.id.info_textview);
     mAddInfoTextView = (TextView) findViewById(R.id.add_info_textview);
+    mLifeMultiplierTextView = (TextView) findViewById(R.id.life_multiplier_textview);
     mCardinalityTextView = (TextView) findViewById(R.id.cardinality_textview);
     mLifeViews = new ImageView[] {
       (ImageView) findViewById(R.id.life1_imageview),
@@ -187,11 +188,14 @@ public class MainActivity extends FragmentActivity {
   
   void setLives(int lives) {
     if (lives > mLifeViews.length) {
+      mLifeMultiplierTextView.setText("+" + Integer.toString(lives - mLifeViews.length));
       lives = mLifeViews.length;
     } else if (lives < 0) {
       lives = 0;
       lostGame();
       return;
+    } else {
+      mLifeMultiplierTextView.setText("");
     }
     for (int i = 0; i < lives; ++i) {
       mLifeViews[i].setVisibility(View.VISIBLE);
