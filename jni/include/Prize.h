@@ -9,12 +9,12 @@ enum class Prize : int {
   NONE = 0,
   BLOCK = 1,      // produces BRICK block (0 cardinality)
   CLIMB = 2,      // [ t ] climbs up the bite
-  DESTROY = 3,    // lose ball
+  DESTROY = 3,    //! lose ball
   DRAGON = 4,     // [ t ] summons dragon
   EASY = 5,       // [ 1 ] for all ordinary / action blocks  { ball }
   EASY_T = 6,     // [ t ] same                              { ball }
   EVAPORATE = 7,  // transform all WATER to FOG
-  EXPLODE = 8,    // [ 1 ] explodes blocks nearest to ball   { ball }
+  EXPLODE = 8,    //! [ 1 ] explodes blocks nearest to ball   { ball }
   EXTEND = 9,     // [ t ] extends bite
   FAST = 10,      // [ t ] speed-up ball
   FOG = 11,       // produces FOG blocks instead NONE (0 cardinality)
@@ -31,14 +31,14 @@ enum class Prize : int {
   SLOW = 22,      // [ t ] slow down ball
   UPGRADE = 23,   // improved all ordinary blocks (+ cardinality)
   DEGRADE = 24,   // decreases all ordinary blocks (- cardinality)
-  VITALITY = 25,  // additional live
+  VITALITY = 25,  //! additional live
   ZYGOTE = 26,    // multiplies ball                              { ball }
   SCORE_1 = 27,
   SCORE_2 = 28,
   SCORE_3 = 29,
   SCORE_4 = 30,
   SCORE_5 = 31,
-  WIN = 32,       // win level
+  WIN = 32,       //! win level
 };
 
 class PrizeUtils {

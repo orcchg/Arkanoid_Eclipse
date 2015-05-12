@@ -258,7 +258,7 @@ int Level::modifyBlocksAround(int row, int col, Block type, bool ignoreNone, std
     initial_cardinality -= BlockUtils::getCardinalityCost(block);
     score += BlockUtils::getBlockScore(block);
     setVulnerableBlock(row - 2, col, type);
-    if (!(ignoreNone && block == Block::NONE)) {
+    if (!(ignoreNone && (block == Block::NONE || block == Block::TITAN || block == Block::INVUL))) {
       output->emplace_back(row - 2, col);
     }
   }
@@ -268,7 +268,7 @@ int Level::modifyBlocksAround(int row, int col, Block type, bool ignoreNone, std
     initial_cardinality -= BlockUtils::getCardinalityCost(block);
     score += BlockUtils::getBlockScore(block);
     setVulnerableBlock(row - 1, col, type);
-    if (!(ignoreNone && block == Block::NONE)) {
+    if (!(ignoreNone && (block == Block::NONE || block == Block::TITAN || block == Block::INVUL))) {
       output->emplace_back(row - 1, col);
     }
     if (col - 1 >= 0) {
@@ -276,7 +276,7 @@ int Level::modifyBlocksAround(int row, int col, Block type, bool ignoreNone, std
       initial_cardinality -= BlockUtils::getCardinalityCost(block);
       score += BlockUtils::getBlockScore(block);
       setVulnerableBlock(row - 1, col - 1, type);
-      if (!(ignoreNone && block == Block::NONE)) {
+      if (!(ignoreNone && (block == Block::NONE || block == Block::TITAN || block == Block::INVUL))) {
         output->emplace_back(row - 1, col - 1);
       }
     }
@@ -285,7 +285,7 @@ int Level::modifyBlocksAround(int row, int col, Block type, bool ignoreNone, std
       initial_cardinality -= BlockUtils::getCardinalityCost(block);
       score += BlockUtils::getBlockScore(block);
       setVulnerableBlock(row - 1, col + 1, type);
-      if (!(ignoreNone && block == Block::NONE)) {
+      if (!(ignoreNone && (block == Block::NONE || block == Block::TITAN || block == Block::INVUL))) {
         output->emplace_back(row - 1, col + 1);
       }
     }
@@ -296,7 +296,7 @@ int Level::modifyBlocksAround(int row, int col, Block type, bool ignoreNone, std
     initial_cardinality -= BlockUtils::getCardinalityCost(block);
     score += BlockUtils::getBlockScore(block);
     setVulnerableBlock(row + 1, col, type);
-    if (!(ignoreNone && block == Block::NONE)) {
+    if (!(ignoreNone && (block == Block::NONE || block == Block::TITAN || block == Block::INVUL))) {
       output->emplace_back(row + 1, col);
     }
     if (col - 1 >= 0) {
@@ -304,7 +304,7 @@ int Level::modifyBlocksAround(int row, int col, Block type, bool ignoreNone, std
       initial_cardinality -= BlockUtils::getCardinalityCost(block);
       score += BlockUtils::getBlockScore(block);
       setVulnerableBlock(row + 1, col - 1, type);
-      if (!(ignoreNone && block == Block::NONE)) {
+      if (!(ignoreNone && (block == Block::NONE || block == Block::TITAN || block == Block::INVUL))) {
         output->emplace_back(row + 1, col - 1);
       }
     }
@@ -313,7 +313,7 @@ int Level::modifyBlocksAround(int row, int col, Block type, bool ignoreNone, std
       initial_cardinality -= BlockUtils::getCardinalityCost(block);
       score += BlockUtils::getBlockScore(block);
       setVulnerableBlock(row + 1, col + 1, type);
-      if (!(ignoreNone && block == Block::NONE)) {
+      if (!(ignoreNone && (block == Block::NONE || block == Block::TITAN || block == Block::INVUL))) {
         output->emplace_back(row + 1, col + 1);
       }
     }
@@ -324,7 +324,7 @@ int Level::modifyBlocksAround(int row, int col, Block type, bool ignoreNone, std
     initial_cardinality -= BlockUtils::getCardinalityCost(block);
     score += BlockUtils::getBlockScore(block);
     setVulnerableBlock(row + 2, col, type);
-    if (!(ignoreNone && block == Block::NONE)) {
+    if (!(ignoreNone && (block == Block::NONE || block == Block::TITAN || block == Block::INVUL))) {
       output->emplace_back(row + 2, col);
     }
   }
@@ -335,7 +335,7 @@ int Level::modifyBlocksAround(int row, int col, Block type, bool ignoreNone, std
     initial_cardinality -= BlockUtils::getCardinalityCost(block);
     score += BlockUtils::getBlockScore(block);
     setVulnerableBlock(row, col - 2, type);
-    if (!(ignoreNone && block == Block::NONE)) {
+    if (!(ignoreNone && (block == Block::NONE || block == Block::TITAN || block == Block::INVUL))) {
       output->emplace_back(row, col - 2);
     }
   }
@@ -344,7 +344,7 @@ int Level::modifyBlocksAround(int row, int col, Block type, bool ignoreNone, std
     initial_cardinality -= BlockUtils::getCardinalityCost(block);
     score += BlockUtils::getBlockScore(block);
     setVulnerableBlock(row, col - 1, type);
-    if (!(ignoreNone && block == Block::NONE)) {
+    if (!(ignoreNone && (block == Block::NONE || block == Block::TITAN || block == Block::INVUL))) {
       output->emplace_back(row, col - 1);
     }
   }
@@ -353,7 +353,7 @@ int Level::modifyBlocksAround(int row, int col, Block type, bool ignoreNone, std
     initial_cardinality -= BlockUtils::getCardinalityCost(block);
     score += BlockUtils::getBlockScore(block);
     setVulnerableBlock(row, col + 1, type);
-    if (!(ignoreNone && block == Block::NONE)) {
+    if (!(ignoreNone && (block == Block::NONE || block == Block::TITAN || block == Block::INVUL))) {
       output->emplace_back(row, col + 1);
     }
   }
@@ -362,7 +362,7 @@ int Level::modifyBlocksAround(int row, int col, Block type, bool ignoreNone, std
     initial_cardinality -= BlockUtils::getCardinalityCost(block);
     score += BlockUtils::getBlockScore(block);
     setVulnerableBlock(row, col + 2, type);
-    if (!(ignoreNone && block == Block::NONE)) {
+    if (!(ignoreNone && (block == Block::NONE || block == Block::TITAN || block == Block::INVUL))) {
       output->emplace_back(row, col + 2);
     }
   }
@@ -477,7 +477,7 @@ int Level::modifyBlocksBehind(int row, int col, Block type, bool ignoreNone, Dir
         initial_cardinality -= BlockUtils::getCardinalityCost(block);
         score += BlockUtils::getBlockScore(block);
         setVulnerableBlock(row, col, type);
-        if (!(ignoreNone && block == Block::NONE)) {
+        if (!(ignoreNone && (block == Block::NONE || block == Block::TITAN || block == Block::INVUL))) {
           output->emplace_back(row, col);
         }
         --row;
@@ -490,7 +490,7 @@ int Level::modifyBlocksBehind(int row, int col, Block type, bool ignoreNone, Dir
         initial_cardinality -= BlockUtils::getCardinalityCost(block);
         score += BlockUtils::getBlockScore(block);
         setVulnerableBlock(row, col, type);
-        if (!(ignoreNone && block == Block::NONE)) {
+        if (!(ignoreNone && (block == Block::NONE || block == Block::TITAN || block == Block::INVUL))) {
           output->emplace_back(row, col);
         }
         ++row;
@@ -503,7 +503,7 @@ int Level::modifyBlocksBehind(int row, int col, Block type, bool ignoreNone, Dir
         initial_cardinality -= BlockUtils::getCardinalityCost(block);
         score += BlockUtils::getBlockScore(block);
         setVulnerableBlock(row, col, type);
-        if (!(ignoreNone && block == Block::NONE)) {
+        if (!(ignoreNone && (block == Block::NONE || block == Block::TITAN || block == Block::INVUL))) {
           output->emplace_back(row, col);
         }
         ++col;
@@ -516,7 +516,7 @@ int Level::modifyBlocksBehind(int row, int col, Block type, bool ignoreNone, Dir
         initial_cardinality -= BlockUtils::getCardinalityCost(block);
         score += BlockUtils::getBlockScore(block);
         setVulnerableBlock(row, col, type);
-        if (!(ignoreNone && block == Block::NONE)) {
+        if (!(ignoreNone && (block == Block::NONE || block == Block::TITAN || block == Block::INVUL))) {
           output->emplace_back(row, col);
         }
         --col;
