@@ -341,6 +341,7 @@ public class MainActivity extends FragmentActivity {
       switch (prize) {
         case BLOCK:
         case CLIMB:
+          score += 15;
           break;
         case DESTROY:
           --currentLives;
@@ -367,6 +368,7 @@ public class MainActivity extends FragmentActivity {
         case SLOW:
         case UPGRADE:
         case DEGRADE:
+          score += 15;
           break;
         case VITALITY:
           ++currentLives;
