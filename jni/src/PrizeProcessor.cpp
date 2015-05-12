@@ -171,7 +171,7 @@ void PrizeProcessor::process_prizeLocated() {
         item.second.getX() <= (m_bite.getDimens().halfWidth() + PrizeParams::prizeHalfWidth) + m_bite.getXPose()) {
       auto prize_id = item.second.getID();
       addPrizeToRemoved(prize_id);
-      prize_caught_event.notifyListeners(prize_id);
+      prize_caught_event.notifyListeners(item.second);
       onPrizeCatch(prize_id);
     }
   }

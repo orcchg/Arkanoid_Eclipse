@@ -13,6 +13,7 @@
 #include "Event.h"
 #include "EventListener.h"
 #include "ExplosionPackage.h"
+#include "PrizePackage.h"
 #include "Resources.h"
 #include "RowCol.h"
 
@@ -48,7 +49,7 @@ public:
   /// @brief Called when requested to draw particle system explosion.
   void callback_explosion(game::ExplosionPackage package);
   /// @brief Called when prize has been caught.
-  void callback_prizeCaught(int prize_id);
+  void callback_prizeCaught(game::PrizePackage package);
   /** @} */  // end of Callbacks group
 
   /** @defgroup Resources Bind with external resources.
@@ -79,7 +80,7 @@ public:
   /// @brief Listens for event which occurs when particle system explosion has been requested.
   EventListener<game::ExplosionPackage> explosion_listener;
   /// @brief Listens for event which occurs when prize has been caught.
-  EventListener<int> prize_caught_listener;
+  EventListener<game::PrizePackage> prize_caught_listener;
   /** @} */  // end of Event group
 
 // ----------------------------------------------

@@ -88,7 +88,7 @@ void SoundProcessor::callback_explosion(game::ExplosionPackage package) {
   interrupt();
 }
 
-void SoundProcessor::callback_prizeCaught(int prize_id) {
+void SoundProcessor::callback_prizeCaught(game::PrizePackage package) {
   std::unique_lock<std::mutex> lock(m_prize_caught_mutex);
   m_prize_caught_received.store(true);
   // TODO: distinguish prize type

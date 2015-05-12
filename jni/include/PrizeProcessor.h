@@ -86,7 +86,7 @@ public:
   EventListener<int> prize_gone_listener;
 
   /// @brief Notifies prize with specified ID has been caught.
-  Event<int> prize_caught_event;
+  Event<PrizePackage> prize_caught_event;
   /** @} */  // end of Event group
 
 // ----------------------------------------------

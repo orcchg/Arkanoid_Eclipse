@@ -76,7 +76,7 @@ public:
   /// @brief Called when prize has been generated.
   void callback_prizeReceived(PrizePackage package);
   /// @brief Called when prize has been caught.
-  void callback_prizeCaught(int prize_id);
+  void callback_prizeCaught(PrizePackage package);
   /** @} */  // end of Callbacks group
 
   /** @defgroup GameStat Get game statistics
@@ -135,7 +135,7 @@ public:
   /// @brief Listens for event which occurs when prize has been generated.
   EventListener<PrizePackage> prize_listener;
   /// @brief Listens for event which occurs when prize has been caught.
-  EventListener<int> prize_caught_listener;
+  EventListener<PrizePackage> prize_caught_listener;
 
   /// @brief Notifies for measured aspect ratio.
   Event<float> aspect_ratio_event;

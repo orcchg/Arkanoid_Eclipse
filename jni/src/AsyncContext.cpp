@@ -196,9 +196,10 @@ void AsyncContext::callback_prizeReceived(PrizePackage package) {
   interrupt();
 }
 
-void AsyncContext::callback_prizeCaught(int prize_id) {
+void AsyncContext::callback_prizeCaught(PrizePackage package) {
   std::unique_lock<std::mutex> lock(m_prize_caught_mutex);
   m_prize_caught_received.store(true);
+  auto prize_id = package.getID();
   m_caught_prizes_x_coords.push_back(m_prize_packages.at(prize_id).getX());
   m_prize_packages.at(prize_id).setCaught(true);
   addPrizeToRemoved(prize_id);
