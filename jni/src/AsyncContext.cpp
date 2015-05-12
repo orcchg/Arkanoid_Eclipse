@@ -47,9 +47,9 @@ AsyncContext::AsyncContext(JavaVM* jvm)
   , m_particle_time(0.0f)
   , m_render_explosion(false)
   , m_explosion_packages()
-  , m_prize_last_time(0)
-  , m_prize_time(0.0f)
   , m_prize_packages()
+  , m_prize_last_timers()
+  , m_prize_timers()
   , m_removed_prizes()
   , m_prize_catch_last_time(0)
   , m_prize_catch_time(0.0f)
@@ -191,8 +191,8 @@ void AsyncContext::callback_prizeReceived(PrizePackage package) {
   std::unique_lock<std::mutex> lock(m_prize_mutex);
   m_prize_received.store(true);
   m_prize_packages[package.getID()] = package;
-  DBG("Prize received: id=%i (%lf, %lf) of type %i",
-      package.getID(), package.getX(), package.getY(), static_cast<int>(package.getPrize()));
+  m_prize_last_timers[package.getID()] = 0;
+  m_prize_timers[package.getID()] = 0.0f;
   interrupt();
 }
 
@@ -441,7 +441,6 @@ void AsyncContext::process_explosion() {
 
 void AsyncContext::process_prizeReceived() {
   std::unique_lock<std::mutex> lock(m_prize_mutex);
-  m_prize_last_time = 0;
 }
 
 void AsyncContext::process_prizeCaught() {
@@ -507,14 +506,17 @@ void AsyncContext::addPrizeToRemoved(int prize_id) {
 void AsyncContext::clearRemovedPrizes() {
   for (auto& item : m_removed_prizes) {
     m_prize_packages.erase(item);
+    m_prize_last_timers.erase(item);
+    m_prize_timers.erase(item);
   }
   m_removed_prizes.clear();
 }
 
 void AsyncContext::clearPrizeStructures() {
-  m_prize_last_time = 0;
   m_prize_catch_last_time = 0;
   m_prize_packages.clear();
+  m_prize_last_timers.clear();
+  m_prize_timers.clear();
   m_removed_prizes.clear();
 }
 
@@ -989,27 +991,27 @@ void AsyncContext::drawBackground() {
 void AsyncContext::drawPrize(const PrizePackage& prize) {
   m_prize_shader->useProgram();
 
-  if (m_prize_last_time == 0) {
-    m_prize_last_time = clock();
+  if (m_prize_last_timers.at(prize.getID()) == 0) {
+    m_prize_last_timers.at(prize.getID()) = clock();
   }
   {
     clock_t currentTime = clock();
-    float delta_elapsed = static_cast<float>(currentTime - m_prize_last_time) / CLOCKS_PER_SEC;
-    m_prize_last_time = currentTime;
-    m_prize_time += delta_elapsed;
-    if (m_prize_time >= 3.0f) {
-      m_prize_time = 0.0f;
+    float delta_elapsed = static_cast<float>(currentTime - m_prize_last_timers.at(prize.getID())) / CLOCKS_PER_SEC;
+    m_prize_last_timers.at(prize.getID()) = currentTime;
+    m_prize_timers.at(prize.getID()) += delta_elapsed;
+    if (m_prize_timers.at(prize.getID()) >= 3.0f) {
+      m_prize_timers.at(prize.getID()) = 0.0f;
       return;
     }
-//    DBG("Prize draw: id=%i y=%lf time=%lf delta=%lf",
-//        prize.getID(),
-//        prize.getY() - PrizeParams::prizeHalfHeight - PrizeParams::prizeSpeed * m_prize_time,
-//        m_prize_time,
-//        delta_elapsed);
+    DBG("Prize draw: id=%i y=%lf time=%lf delta=%lf",
+        prize.getID(),
+        prize.getY() - PrizeParams::prizeHalfHeight - PrizeParams::prizeSpeed * m_prize_timers.at(prize.getID()),
+        m_prize_timers.at(prize.getID()),
+        delta_elapsed);
   }
   int is_visible = 1;  /* true */
   {
-    GLfloat Ypath = prize.getY() - m_prize_time * PrizeParams::prizeSpeed;
+    GLfloat Ypath = prize.getY() - m_prize_timers.at(prize.getID()) * PrizeParams::prizeSpeed;
     if (Ypath >= -BiteParams::neg_biteElevation) {
       PrizePackage moved_prize = prize;
       moved_prize.setY(Ypath);
@@ -1025,7 +1027,7 @@ void AsyncContext::drawPrize(const PrizePackage& prize) {
   GLint u_time = glGetUniformLocation(m_prize_shader->getProgram(), "u_time");
   GLint u_velocity = glGetUniformLocation(m_prize_shader->getProgram(), "u_velocity");
   GLint u_visible = glGetUniformLocation(m_prize_shader->getProgram(), "u_visible");
-  glUniform1f(u_time, m_prize_time);
+  glUniform1f(u_time, m_prize_timers.at(prize.getID()));
   glUniform1f(u_velocity, PrizeParams::prizeSpeed);
   glUniform1i(u_visible, is_visible);
 
@@ -1063,73 +1065,73 @@ void AsyncContext::drawPrize(const PrizePackage& prize) {
   glDisableVertexAttribArray(a_texCoord);
 }
 
-void AsyncContext::drawPrizeProg(const PrizePackage&  prize) {
-  m_sample_shader->useProgram();
-
-  if (m_prize_last_time == 0) {
-    m_prize_last_time = clock();
-  }
-  {
-    clock_t currentTime = clock();
-    float delta_elapsed = static_cast<float>(currentTime - m_prize_last_time) / CLOCKS_PER_SEC;
-    m_prize_last_time = currentTime;
-    m_prize_time += delta_elapsed;
-    if (m_prize_time >= 3.0f) {
-      m_prize_time = 0.0f;
-      return;
-    }
-  }
-  int is_visible = 1;  /* true */
-  {
-    GLfloat Ypath = prize.getY() - m_prize_time * PrizeParams::prizeSpeed;
-    if (Ypath >= -BiteParams::neg_biteElevation) {
-      PrizePackage moved_prize = prize;
-      moved_prize.setY(Ypath);
-      prize_location_event.notifyListeners(moved_prize);
-    } else if (Ypath < -BiteParams::neg_biteElevation && Ypath > -1.0f) {
-      prize_gone_event.notifyListeners(prize.getID());
-    } else {
-      is_visible = 0;  /* false */
-      addPrizeToRemoved(prize.getID());
-    }
-  }
-
-//  GLint u_visible = glGetUniformLocation(m_sample_shader->getProgram(), "u_visible");
-//  glUniform1i(u_visible, is_visible);
-
-  GLint a_position = glGetAttribLocation(m_sample_shader->getProgram(), "a_position");
-  GLint a_texCoord = glGetAttribLocation(m_sample_shader->getProgram(), "a_texCoord");
-
-  GLfloat* prize_vertices = new GLfloat[16];
-  util::setRectangleVertices(
-      prize_vertices,
-      PrizeParams::prizeWidth,
-      PrizeParams::prizeHeight * m_aspect,
-      prize.getX() - PrizeParams::prizeHalfWidth,
-      prize.getY() - PrizeParams::prizeHalfHeight - m_prize_time * PrizeParams::prizeSpeed,
-      1, 1);
-
-  glVertexAttribPointer(a_position, 4, GL_FLOAT, GL_FALSE, 0, &prize_vertices[0]);
-  glVertexAttribPointer(a_texCoord, 2, GL_FLOAT, GL_FALSE, 0, &m_rectangle_texCoord_buffer[0]);
-
-  m_resources->getPrizeTexture(prize.getPrize())->apply();
-  GLint sampler = glGetUniformLocation(m_sample_shader->getProgram(), "s_texture");
-  glUniform1i(sampler, 0);
-
-  glEnableVertexAttribArray(a_position);
-  glEnableVertexAttribArray(a_texCoord);
-
-  glEnable(GL_TEXTURE_2D);
-  glEnable(GL_BLEND);
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-
-  glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-
-  delete [] prize_vertices;
-
-  glDisableVertexAttribArray(a_position);
-  glDisableVertexAttribArray(a_texCoord);
-}
+//void AsyncContext::drawPrizeProg(const PrizePackage&  prize) {
+//  m_sample_shader->useProgram();
+//
+//  if (m_prize_last_time == 0) {
+//    m_prize_last_time = clock();
+//  }
+//  {
+//    clock_t currentTime = clock();
+//    float delta_elapsed = static_cast<float>(currentTime - m_prize_last_time) / CLOCKS_PER_SEC;
+//    m_prize_last_time = currentTime;
+//    m_prize_time += delta_elapsed;
+//    if (m_prize_time >= 3.0f) {
+//      m_prize_time = 0.0f;
+//      return;
+//    }
+//  }
+//  int is_visible = 1;  /* true */
+//  {
+//    GLfloat Ypath = prize.getY() - m_prize_time * PrizeParams::prizeSpeed;
+//    if (Ypath >= -BiteParams::neg_biteElevation) {
+//      PrizePackage moved_prize = prize;
+//      moved_prize.setY(Ypath);
+//      prize_location_event.notifyListeners(moved_prize);
+//    } else if (Ypath < -BiteParams::neg_biteElevation && Ypath > -1.0f) {
+//      prize_gone_event.notifyListeners(prize.getID());
+//    } else {
+//      is_visible = 0;  /* false */
+//      addPrizeToRemoved(prize.getID());
+//    }
+//  }
+//
+////  GLint u_visible = glGetUniformLocation(m_sample_shader->getProgram(), "u_visible");
+////  glUniform1i(u_visible, is_visible);
+//
+//  GLint a_position = glGetAttribLocation(m_sample_shader->getProgram(), "a_position");
+//  GLint a_texCoord = glGetAttribLocation(m_sample_shader->getProgram(), "a_texCoord");
+//
+//  GLfloat* prize_vertices = new GLfloat[16];
+//  util::setRectangleVertices(
+//      prize_vertices,
+//      PrizeParams::prizeWidth,
+//      PrizeParams::prizeHeight * m_aspect,
+//      prize.getX() - PrizeParams::prizeHalfWidth,
+//      prize.getY() - PrizeParams::prizeHalfHeight - m_prize_time * PrizeParams::prizeSpeed,
+//      1, 1);
+//
+//  glVertexAttribPointer(a_position, 4, GL_FLOAT, GL_FALSE, 0, &prize_vertices[0]);
+//  glVertexAttribPointer(a_texCoord, 2, GL_FLOAT, GL_FALSE, 0, &m_rectangle_texCoord_buffer[0]);
+//
+//  m_resources->getPrizeTexture(prize.getPrize())->apply();
+//  GLint sampler = glGetUniformLocation(m_sample_shader->getProgram(), "s_texture");
+//  glUniform1i(sampler, 0);
+//
+//  glEnableVertexAttribArray(a_position);
+//  glEnableVertexAttribArray(a_texCoord);
+//
+//  glEnable(GL_TEXTURE_2D);
+//  glEnable(GL_BLEND);
+//  glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+//
+//  glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+//
+//  delete [] prize_vertices;
+//
+//  glDisableVertexAttribArray(a_position);
+//  glDisableVertexAttribArray(a_texCoord);
+//}
 
 void AsyncContext::drawPrizeCatch(GLfloat x, GLfloat y, const util::BGRA<GLfloat>& bgra) {
   m_prize_catch_shader->useProgram();

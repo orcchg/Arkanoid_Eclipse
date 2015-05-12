@@ -218,9 +218,9 @@ private:
   bool m_render_explosion;
   std::vector<ExplosionPackage> m_explosion_packages;
 
-  clock_t m_prize_last_time;
-  float m_prize_time;
   std::unordered_map<int, PrizePackage> m_prize_packages;
+  std::unordered_map<int, clock_t> m_prize_last_timers;
+  std::unordered_map<int, float> m_prize_timers;
   std::unordered_set<int> m_removed_prizes;
 
   clock_t m_prize_catch_last_time;
@@ -401,7 +401,7 @@ private:
   void drawBackground();
   /// @brief Draws prize of specified type at given location.
   void drawPrize(const PrizePackage& prize);
-  void drawPrizeProg(const PrizePackage&  prize);
+//  void drawPrizeProg(const PrizePackage&  prize);
   /// @brief Draws prize catch animation.
   void drawPrizeCatch(GLfloat x, GLfloat y, const util::BGRA<GLfloat>& bgra);
   /** @} */  // end of Drawings group
