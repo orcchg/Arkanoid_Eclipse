@@ -963,8 +963,8 @@ public class Levels {
                                                     " B      B",
                                                     " B      B"};
   
-  private static final String[] L49 = new String[] {"  TTTTTT",
-                                                    " T      T",
+  private static final String[] L49 = new String[] {" TTTTTTTT",
+                                                    "TT      TT",
                                                     "T        T",
                                                     "          ",
                                                     "     TT   ",
