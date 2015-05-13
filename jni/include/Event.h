@@ -82,11 +82,7 @@ public:
 	}
 
 	void clearListeners() {
-    auto iter = listeners.begin();
-    while (iter != listeners.end()) {
-      listeners.erase(iter);
-      iter++;
-    }
+	  listeners.clear();
 	}
 
 	bool hasListeners() const {
