@@ -559,6 +559,7 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
         score += m_level->destroyBlocksAround(row, col, &affected_blocks);
         explodeBlock(row, col, BlockUtils::getBlockColor(Block::ELECTRO), Kind::DIVERGE);
         for (auto& item : affected_blocks) {
+          spawned_prize = m_level->getPrizeGenerator().generatePrize();
           spawnPrizeAtBlock(item.row, item.col, spawned_prize);
           block_impact_event.notifyListeners(item);
         }
@@ -571,6 +572,7 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
         }
         for (auto& item : affected_blocks) {
           explodeBlock(item.row, item.col, BlockUtils::getBlockColor(Block::KNOCK_VERTICAL), Kind::DIVERGE);
+          spawned_prize = m_level->getPrizeGenerator().generatePrize();
           spawnPrizeAtBlock(item.row, item.col, spawned_prize);
           block_impact_event.notifyListeners(item);
         }
@@ -583,6 +585,7 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
         }
         for (auto& item : affected_blocks) {
           explodeBlock(item.row, item.col, BlockUtils::getBlockColor(Block::KNOCK_HORIZONTAL), Kind::DIVERGE);
+          spawned_prize = m_level->getPrizeGenerator().generatePrize();
           spawnPrizeAtBlock(item.row, item.col, spawned_prize);
           block_impact_event.notifyListeners(item);
         }
@@ -694,6 +697,7 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
       score += m_level->destroyBlocksAround(row, col, &affected_blocks_effect);
       explodeBlock(row, col, BlockUtils::getBlockColor(Block::ULTRA), Kind::DIVERGE);
       for (auto& item : affected_blocks_effect) {
+        spawned_prize = m_level->getPrizeGenerator().generatePrize();
         spawnPrizeAtBlock(item.row, item.col, spawned_prize);
         block_impact_event.notifyListeners(item);
       }
