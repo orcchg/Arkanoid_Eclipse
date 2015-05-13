@@ -85,8 +85,8 @@ public:
     auto iter = listeners.begin();
     while (iter != listeners.end()) {
       listeners.erase(iter);
+      iter++;
     }
-    iter++;
 	}
 
 	bool hasListeners() const {
