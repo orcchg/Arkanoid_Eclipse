@@ -382,15 +382,15 @@ public class MainActivity extends FragmentActivity {
           break;
         case ZYGOTE:
           break;
-        case SCORE_1:
+        case SCORE_5:
           score += 35;
-        case SCORE_2:
+        case SCORE_4:
           score += 25;
         case SCORE_3:
           score += 20;
-        case SCORE_4:
+        case SCORE_2:
           score += 15;
-        case SCORE_5:
+        case SCORE_1:
           score += 10;
         default:
           break;
