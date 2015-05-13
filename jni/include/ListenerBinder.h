@@ -54,7 +54,7 @@ public:
       return false;
     }
     bool result = event->removeListener(id);
-    event = nullptr;
+    eventListener = nullptr;
     return result;
   }
 
