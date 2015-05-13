@@ -380,6 +380,7 @@ void AsyncContext::process_throwBall() {
 
 void AsyncContext::process_loadLevel() {
   std::unique_lock<std::mutex> lock(m_load_level_mutex);
+  initGame();
   {
     std::queue<RowCol> empty_queue;
     std::swap(m_impact_queue, empty_queue);
@@ -406,7 +407,6 @@ void AsyncContext::process_loadLevel() {
   util::rectangleIndices(&m_level_index_buffer[0], m_level->size() * 6);
 
   level_dimens_event.notifyListeners(dimens);
-  initGame();
 }
 
 void AsyncContext::process_moveBall() {
