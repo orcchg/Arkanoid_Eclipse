@@ -188,9 +188,10 @@ public class MainActivity extends FragmentActivity {
   }
   
   void setLives(int lives) {
+    int auxLives = lives;
     if (lives > mLifeViews.length) {
       mLifeMultiplierTextView.setText("+" + Integer.toString(lives - mLifeViews.length));
-      lives = mLifeViews.length;
+      auxLives = mLifeViews.length;
     } else if (lives < 0) {
       lives = 0;
       lostGame();
@@ -198,10 +199,10 @@ public class MainActivity extends FragmentActivity {
     } else {
       mLifeMultiplierTextView.setText("");
     }
-    for (int i = 0; i < lives; ++i) {
+    for (int i = 0; i < auxLives; ++i) {
       mLifeViews[i].setVisibility(View.VISIBLE);
     }
-    for (int i = lives; i < mLifeViews.length; ++i) {
+    for (int i = auxLives; i < mLifeViews.length; ++i) {
       mLifeViews[i].setVisibility(View.INVISIBLE);
     }
     currentLives = lives;
