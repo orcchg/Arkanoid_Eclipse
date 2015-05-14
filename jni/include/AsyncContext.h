@@ -368,8 +368,8 @@ private:
   /// block impact event, but it's processing is performed before the former's
   /// processing due to asynchronous event handling.
   bool checkBlockPresense(int row, int col);
-  /// @brief Sets ball's appearance.
-  void setBallAppearance(BallEffect effect);
+  /// @brief Sets bite's and ball's appearance according to current ball's effect.
+  void setBiteBallAppearance(BallEffect effect);
   /** @} */  // end of LogicFunc group
 
 private:

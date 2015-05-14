@@ -81,9 +81,7 @@ AsyncContext::AsyncContext(JavaVM* jvm)
   m_window_set = false;
   m_resources = nullptr;
 
-  util::setColor(util::SALMON, &m_bite_color_buffer[0], 8);
-  util::setColor(util::SIENNA_DARK, &m_bite_color_buffer[8], 8);
-  setBallAppearance(BallEffect::NONE);
+  setBiteBallAppearance(BallEffect::NONE);
 
   m_particle_diverge_buffer = new GLfloat[particleSize * particleSystemSize];
   m_particle_converge_buffer = new GLfloat[particleSize * particleSystemSize];
@@ -203,19 +201,30 @@ void AsyncContext::callback_prizeCaught(PrizePackage package) {
   m_prize_packages.at(prize_id).setCaught(true);
   addPrizeToRemoved(prize_id);
 
+  // TODO: prize types for appearance
   switch (package.getPrize()) {
     case Prize::EXPLODE:
     case Prize::JUMP:
-      setBallAppearance(BallEffect::EXPLODE);
+      setBiteBallAppearance(BallEffect::EXPLODE);
+      break;
+    case Prize::GOO:
+      setBiteBallAppearance(BallEffect::GOO);
+      break;
+    case Prize::MIRROR:
+      setBiteBallAppearance(BallEffect::MIRROR);
+      break;
+    case Prize::RANDOM:
+      setBiteBallAppearance(BallEffect::RANDOM);
       break;
     case Prize::UPGRADE:
-      setBallAppearance(BallEffect::UPGRADE);
+      setBiteBallAppearance(BallEffect::UPGRADE);
       break;
     case Prize::DEGRADE:
-      setBallAppearance(BallEffect::DEGRADE);
+      setBiteBallAppearance(BallEffect::DEGRADE);
       break;
     default:
-      setBallAppearance(BallEffect::NONE);
+      // TODO: do not drop appearance for timed effects
+      setBiteBallAppearance(BallEffect::NONE);
       break;
   }
   interrupt();
@@ -478,7 +487,7 @@ void AsyncContext::process_prizeCaught() {
 
 void AsyncContext::process_dropBallAppearance() {
   std::unique_lock<std::mutex> lock(m_drop_ball_appearance_mutex);
-  setBallAppearance(BallEffect::NONE);
+  setBiteBallAppearance(BallEffect::NONE);
 }
 
 /* LogicFunc group */
@@ -494,7 +503,7 @@ void AsyncContext::initGame() {
   m_ball.setXPose(m_bite.getXPose());
   m_ball.setYPose(-BiteParams::neg_biteElevation + m_ball.getDimens().halfHeight());
   moveBall(m_ball.getPose().getX(), m_ball.getPose().getY());
-  setBallAppearance(BallEffect::NONE);
+  setBiteBallAppearance(BallEffect::NONE);
 
   init_ball_position_event.notifyListeners(m_ball);
   init_bite_event.notifyListeners(m_bite);
@@ -557,13 +566,15 @@ bool AsyncContext::checkBlockPresense(int row, int col) {
   return (row >= 0 && row < m_level->numRows()) && (col >= 0 && col < m_level->numCols());
 }
 
-void AsyncContext::setBallAppearance(BallEffect effect) {
+void AsyncContext::setBiteBallAppearance(BallEffect effect) {
   // TODO: impl more effect appearances
   switch (effect) {
     default:
     case BallEffect::NONE:
-    case BallEffect::MIRROR:
-    case BallEffect::RANDOM:
+      // bite
+      util::setColor(util::SALMON, &m_bite_color_buffer[0], 8);
+      util::setColor(util::SIENNA_DARK, &m_bite_color_buffer[8], 8);
+      // ball
       util::setColor(util::ORANGE, &m_ball_color_buffer[0], 4);
       util::setColor(util::SIENNA_LIGHT, &m_ball_color_buffer[4], 16);
       util::setColor(util::SIENNA, &m_ball_color_buffer[20], 4);
@@ -576,19 +587,57 @@ void AsyncContext::setBallAppearance(BallEffect effect) {
 //      break;
     case BallEffect::EXPLODE:
     case BallEffect::JUMP:
+      // bite
+      util::setColor(util::SALMON, &m_bite_color_buffer[0], 8);
+      util::setColor(util::SIENNA_DARK, &m_bite_color_buffer[8], 8);
+      // ball
       util::setColor(util::WATER_EDGE, &m_ball_color_buffer[0], 4);
       util::setColor(util::WATER, &m_ball_color_buffer[4], 16);
       util::setColor(util::ULTRA, &m_ball_color_buffer[20], 4);
       util::setColor(util::ULTRA_EDGE, &m_ball_color_buffer[24], 12);
       util::setColor(util::MAGENTA, &m_ball_color_buffer[32], 4);
       break;
-//    case BallEffect::GOO:
-//
-//      break;
+    case BallEffect::GOO:
+      // bite
+      util::setColor(util::ZYGOTE_SPAWN, &m_bite_color_buffer[0], 8);
+      util::setColor(util::ZYGOTE_SPAWN_EDGE, &m_bite_color_buffer[8], 8);
+      // ball
+      util::setColor(util::GREEN, &m_ball_color_buffer[0], 4);
+      util::setColor(util::ZYGOTE_SPAWN, &m_ball_color_buffer[4], 16);
+      util::setColor(util::NETWORK, &m_ball_color_buffer[20], 4);
+      util::setColor(util::ZYGOTE_EDGE, &m_ball_color_buffer[24], 12);
+      util::setColor(util::NETWORK, &m_ball_color_buffer[32], 4);
+      break;
 //    case BallEffect::PIERCE:
 //
 //      break;
+    case BallEffect::MIRROR:
+      // bite
+      util::setColor(util::MIRROR, &m_bite_color_buffer[0], 8);
+      util::setColor(util::MIRROR_EDGE, &m_bite_color_buffer[8], 8);
+      // ball
+      util::setColor(util::ORANGE, &m_ball_color_buffer[0], 4);
+      util::setColor(util::SIENNA_LIGHT, &m_ball_color_buffer[4], 16);
+      util::setColor(util::SIENNA, &m_ball_color_buffer[20], 4);
+      util::setColor(util::SIENNA_DARK, &m_ball_color_buffer[24], 12);
+      util::setColor(util::SIENNA, &m_ball_color_buffer[32], 4);
+      break;
+    case BallEffect::RANDOM:
+      // bite
+      util::setColor(util::MAGENTA, &m_bite_color_buffer[0], 8);
+      util::setColor(util::PURPLE, &m_bite_color_buffer[8], 8);
+      // ball
+      util::setColor(util::ORANGE, &m_ball_color_buffer[0], 4);
+      util::setColor(util::SIENNA_LIGHT, &m_ball_color_buffer[4], 16);
+      util::setColor(util::SIENNA, &m_ball_color_buffer[20], 4);
+      util::setColor(util::SIENNA_DARK, &m_ball_color_buffer[24], 12);
+      util::setColor(util::SIENNA, &m_ball_color_buffer[32], 4);
+      break;
     case BallEffect::UPGRADE:
+      // bite
+      util::setColor(util::SALMON, &m_bite_color_buffer[0], 8);
+      util::setColor(util::SIENNA_DARK, &m_bite_color_buffer[8], 8);
+      // ball
       util::setColor(util::GREEN, &m_ball_color_buffer[0], 4);
       util::setColor(util::ZYGOTE_SPAWN, &m_ball_color_buffer[4], 16);
       util::setColor(util::NETWORK, &m_ball_color_buffer[20], 4);
@@ -596,6 +645,10 @@ void AsyncContext::setBallAppearance(BallEffect effect) {
       util::setColor(util::NETWORK, &m_ball_color_buffer[32], 4);
       break;
     case BallEffect::DEGRADE:
+      // bite
+      util::setColor(util::SALMON, &m_bite_color_buffer[0], 8);
+      util::setColor(util::SIENNA_DARK, &m_bite_color_buffer[8], 8);
+      // ball
       util::setColor(util::RED, &m_ball_color_buffer[0], 4);
       util::setColor(util::ORIGIN, &m_ball_color_buffer[4], 16);
       util::setColor(util::BRICK, &m_ball_color_buffer[20], 4);

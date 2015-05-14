@@ -48,6 +48,8 @@ constexpr static GLfloat BROWN[4]   = {0.5451f, 0.2706f, 0.0745f, 1.f};
 constexpr static GLfloat SIENNA_LIGHT[4] = {0.9333f, 0.4745f, 0.2588f, 1.f};
 constexpr static GLfloat SIENNA[4]       = {0.8039f, 0.4078f, 0.2235f, 1.f};
 constexpr static GLfloat SIENNA_DARK[4]  = {0.5451f, 0.2784f, 0.1490f, 1.f};
+constexpr static GLfloat MIRROR[4]       = {0.8784f, 0.9333f, 0.9333f, 1.f};
+constexpr static GLfloat MIRROR_EDGE[4]  = {0.5137f, 0.5451f, 0.5451f, 1.f};
 
 // http://www.color-hex.com/color-names.html
 constexpr static GLfloat ALUMINIUM[4]      = {0.8509f, 0.8509f, 0.8509f, 1.f};  // 217 217 217

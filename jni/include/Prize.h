@@ -21,12 +21,12 @@ enum class Prize : int {
   GOO = 12,       // [ t ] glues ball and bite               { ball }
   HYPER = 13,     // teleports ball to random place
   INIT = 14,      //! reloads current level
-  JUMP = 15,      // [ t ] explodes blocks nearest to ball { ball }
+  JUMP = 15,      //! [ t ] explodes blocks nearest to ball { ball }
   LASER = 16,     // [ t ] laser beam from bite
-  MIRROR = 17,    // [ t ] all collisions from bite are mirrored  { ball }
+  MIRROR = 17,    //! [ t ] all collisions from bite are mirrored  { ball }
   PIERCE = 18,    // [ t ] ball not disturbing                    { ball }
   PROTECT = 19,   // [ t ] add protection blocks                  { level }
-  RANDOM = 20,    // [ t ] random angle for any bite collision    { ball }
+  RANDOM = 20,    //! [ t ] random angle for any bite collision    { ball }
   SHORT = 21,     // [ t ] shortens bite
   SLOW = 22,      // [ t ] slow down ball
   UPGRADE = 23,   //! improves collided ordinary blocks (+ cardinality)  { ball }

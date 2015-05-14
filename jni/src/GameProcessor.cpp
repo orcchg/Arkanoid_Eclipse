@@ -483,7 +483,12 @@ int GameProcessor::performBallEffectAtBlock(int row, int col) {
   }
 
   // JUMP is a timed effect and to be dropped by timer
-  if (m_ball.getEffect() != BallEffect::JUMP) {
+  if (m_ball.getEffect() != BallEffect::EASY_T &&
+      m_ball.getEffect() != BallEffect::GOO &&
+      m_ball.getEffect() != BallEffect::JUMP &&
+      m_ball.getEffect() != BallEffect::MIRROR &&
+      m_ball.getEffect() != BallEffect::PIERCE &&
+      m_ball.getEffect() != BallEffect::RANDOM) {
     m_ball.setEffect(BallEffect::NONE);
     drop_ball_appearance_event.notifyListeners(true);
   }
@@ -541,60 +546,70 @@ bool GameProcessor::collideBite(GLfloat new_x) {
   if (new_x >= -(m_bite.getDimens().halfWidth() + m_ball.getDimens().halfWidth()) + m_bite.getXPose() &&
       new_x <= (m_bite.getDimens().halfWidth() + m_ball.getDimens().halfWidth()) + m_bite.getXPose()) {
 
-    GLfloat distance = std::fabs(new_x - m_bite.getXPose());
-    GLfloat beta = std::fabs(std::atan(distance / m_bite.getRadius()));
-
-    if (new_x >= m_bite.getXPose() + m_bite.getDimens().quarterWidth()) {
-      GLfloat normal = std::fabs(util::PI2 - beta);
-      if (m_ball.getAngle() >= util::_3PI2) {
-        collideHorizontalSurface();
-        if (m_ball.getAngle() >= beta) {
-          m_ball.setAngle(m_ball.getAngle() - beta);
-        } else {
-          m_ball.setAngle(m_ball.getAngle() + beta);
-        }
-        smallAngleAvoid();
-      } else if (m_ball.getAngle() >= util::PI) {
-        GLfloat gamma = util::_3PI2 - m_ball.getAngle();
-        if (gamma <= beta) {
-          GLfloat delta = std::fabs(gamma - 2 * beta + util::PI2);
-          m_ball.setAngle(delta);
-          smallAngleAvoid();
-        } else {
-          gamma = m_ball.getAngle() - util::PI;
-          GLfloat delta = std::fabs(gamma + 2 * beta - util::PI2);
-          m_ball.setAngle(util::PI2 - delta);
-          smallAngleAvoid();
-        }
-      }
-    } else if (new_x <= m_bite.getXPose() - m_bite.getDimens().quarterWidth()) {
-      GLfloat normal = std::fabs(util::PI2 + beta);
-      if (m_ball.getAngle() >= util::_3PI2) {
-        GLfloat gamma = m_ball.getAngle() - util::_3PI2;
-        if (gamma <= beta) {
-          GLfloat delta = std::fabs(gamma - 2 * beta + util::PI2);
-          m_ball.setAngle(util::PI - delta);
-          smallAngleAvoid();
-        } else {
-          gamma = util::_2PI - m_ball.getAngle();
-          GLfloat delta = std::fabs(gamma + 2 * beta - util::PI2);
-          m_ball.setAngle(util::PI2 + delta);
-          smallAngleAvoid();
-        }
-      } else if (m_ball.getAngle() >= util::PI) {
-        collideHorizontalSurface();
-        if (m_ball.getAngle() >= beta + util::PI2) {
-          m_ball.setAngle(m_ball.getAngle() - beta);
-        } else {
-          m_ball.setAngle(m_ball.getAngle() + beta);
-        }
-        smallAngleAvoid();
-      }
-    } else {
+    if (m_ball.getEffect() == BallEffect::MIRROR) {
       collideHorizontalSurface();
+
+    } else if (m_ball.getEffect() == BallEffect::RANDOM) {
+      randomAngle();
+      smallAngleAvoid();
+
+    } else {
+      GLfloat distance = std::fabs(new_x - m_bite.getXPose());
+      GLfloat beta = std::fabs(std::atan(distance / m_bite.getRadius()));
+
+      if (new_x >= m_bite.getXPose() + m_bite.getDimens().quarterWidth()) {
+        GLfloat normal = std::fabs(util::PI2 - beta);
+        if (m_ball.getAngle() >= util::_3PI2) {
+          collideHorizontalSurface();
+          if (m_ball.getAngle() >= beta) {
+            m_ball.setAngle(m_ball.getAngle() - beta);
+          } else {
+            m_ball.setAngle(m_ball.getAngle() + beta);
+          }
+          smallAngleAvoid();
+        } else if (m_ball.getAngle() >= util::PI) {
+          GLfloat gamma = util::_3PI2 - m_ball.getAngle();
+          if (gamma <= beta) {
+            GLfloat delta = std::fabs(gamma - 2 * beta + util::PI2);
+            m_ball.setAngle(delta);
+            smallAngleAvoid();
+          } else {
+            gamma = m_ball.getAngle() - util::PI;
+            GLfloat delta = std::fabs(gamma + 2 * beta - util::PI2);
+            m_ball.setAngle(util::PI2 - delta);
+            smallAngleAvoid();
+          }
+        }
+      } else if (new_x <= m_bite.getXPose() - m_bite.getDimens().quarterWidth()) {
+        GLfloat normal = std::fabs(util::PI2 + beta);
+        if (m_ball.getAngle() >= util::_3PI2) {
+          GLfloat gamma = m_ball.getAngle() - util::_3PI2;
+          if (gamma <= beta) {
+            GLfloat delta = std::fabs(gamma - 2 * beta + util::PI2);
+            m_ball.setAngle(util::PI - delta);
+            smallAngleAvoid();
+          } else {
+            gamma = util::_2PI - m_ball.getAngle();
+            GLfloat delta = std::fabs(gamma + 2 * beta - util::PI2);
+            m_ball.setAngle(util::PI2 + delta);
+            smallAngleAvoid();
+          }
+        } else if (m_ball.getAngle() >= util::PI) {
+          collideHorizontalSurface();
+          if (m_ball.getAngle() >= beta + util::PI2) {
+            m_ball.setAngle(m_ball.getAngle() - beta);
+          } else {
+            m_ball.setAngle(m_ball.getAngle() + beta);
+          }
+          smallAngleAvoid();
+        }
+      } else {
+        collideHorizontalSurface();
+      }
     }
     m_ball.setAngle(std::fmod(std::fabs(m_ball.getAngle()), util::_2PI));
     onAngleChanged();
+
   } else {
     return false;  // ball missed the bite
   }
