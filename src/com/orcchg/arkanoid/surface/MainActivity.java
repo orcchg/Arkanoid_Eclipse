@@ -26,6 +26,8 @@ public class MainActivity extends FragmentActivity {
   private int currentLevel = INITIAL_LEVEL;
   private int currentScore = INITIAL_SCORE;
   
+  private boolean dropStatFlag = false;
+  
   static {
     System.loadLibrary("Arkanoid");
   }
@@ -42,6 +44,9 @@ public class MainActivity extends FragmentActivity {
     super.onCreate(savedInstanceState);
     Log.d(TAG, "onCreate");
     setContentView(R.layout.activity_main);
+    
+    dropStatFlag = getIntent().getBooleanExtra(InitActivity.bundleKey_dropStat, false);
+    
     mAsyncContext = new AsyncContext();
     mAsyncContext.setCoreEventListener(new CoreEventHandler(this));
 
@@ -94,7 +99,7 @@ public class MainActivity extends FragmentActivity {
     ArkanoidApplication app = (ArkanoidApplication) getApplication();
     GameStat game_stat = app.DATABASE.getStat(PLAYER_ID);
     String level_state = "";
-    if (game_stat != null) {
+    if (!dropStatFlag && game_stat != null) {
       setLives(game_stat.lives);
       setLevel(game_stat.level);
       setScore(game_stat.score);

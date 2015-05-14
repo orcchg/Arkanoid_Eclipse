@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     
+    <dimen name="button_width">500dp</dimen>
+    <dimen name="button_height">160dp</dimen>
+    
     <dimen name="life_image_size">40dp</dimen>
     <dimen name="info_textview_width">142dp</dimen>
     <dimen name="space_textview_width">20dp</dimen>
