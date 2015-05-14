@@ -25,25 +25,25 @@
 		    
 			<TextView
 			    android:id="@+id/info_textview"
-			    android:layout_width="72dp"
+			    android:layout_width="@dimen/info_textview_width"
 			    android:layout_height="wrap_content"
 			    android:textColor="@android:color/white"
 			    android:textStyle="bold"
-			    android:textSize="20sp" />
+			    android:textSize="@dimen/text_size" />
 			
 			<Space
-			    android:layout_width="10dp"
+			    android:layout_width="@dimen/space_textview_width"
 			    android:layout_height="wrap_content" />
 			
 			<TextView
 			    android:id="@+id/add_info_textview"
-			    android:layout_width="72dp"
+			    android:layout_width="@dimen/info_textview_width"
 			    android:layout_height="wrap_content"
 			    android:textStyle="bold"
-			    android:textSize="20sp" />
+			    android:textSize="@dimen/text_size" />
 			
 		    <Space
-			    android:layout_width="40dp"
+			    android:layout_width="@dimen/space_textimage_width"
 			    android:layout_height="wrap_content" />
 		    
 		    <LinearLayout
@@ -87,7 +87,7 @@
 		            android:visibility="invisible" />
 		        
 		        <Space
-		            android:layout_width="4dp"
+		            android:layout_width="@dimen/space_imagetext_width"
 		            android:layout_height="match_parent" />
 		        
 		        <TextView
@@ -96,7 +96,7 @@
 		            android:layout_height="wrap_content"
 		            android:textColor="@android:color/holo_orange_dark"
 		            android:textStyle="bold"
-		            android:textSize="20sp" />
+		            android:textSize="@dimen/text_size" />
 		    </LinearLayout>
 		</LinearLayout>
 	    
@@ -109,6 +109,6 @@
 		    android:layout_alignParentBottom="true"
 		    android:textColor="@android:color/white"
 		    android:textStyle="bold"
-		    android:textSize="20sp" />
+		    android:textSize="@dimen/text_size" />
 	</RelativeLayout>
 </FrameLayout>
