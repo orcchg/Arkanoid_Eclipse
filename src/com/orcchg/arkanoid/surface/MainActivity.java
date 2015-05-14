@@ -343,7 +343,7 @@ public class MainActivity extends FragmentActivity {
       switch (prize) {
         case BLOCK:
         case CLIMB:
-          score += 15;
+          score += 35;
           break;
         case DESTROY:
           --currentLives;
@@ -370,29 +370,29 @@ public class MainActivity extends FragmentActivity {
         case SLOW:
         case UPGRADE:
         case DEGRADE:
-          score += 15;
+          score += 35;
           break;
         case VITALITY:
           ++currentLives;
-          score += 25;
+          score += 45;
           updateLives();
           break;
         case WIN:
-          score += 100;
+          score += 400;
           onLevelFinished();
           break;
         case ZYGOTE:
           break;
         case SCORE_5:
-          score += 35;
+          score += 95;
         case SCORE_4:
-          score += 25;
+          score += 75;
         case SCORE_3:
-          score += 20;
+          score += 50;
         case SCORE_2:
-          score += 15;
+          score += 35;
         case SCORE_1:
-          score += 10;
+          score += 20;
         default:
           break;
       }
