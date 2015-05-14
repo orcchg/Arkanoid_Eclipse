@@ -172,8 +172,12 @@ public:
   /// @param type Type of block to be found.
   /// @param output Array of valid indices of found blocks.
   void findBlocks(Block type, std::vector<RowCol>* output);
+  /// @brief Same as above, allows NONE blocks.
+  void findBlocksAllowNone(Block type, std::vector<RowCol>* output);
   /// @brief Same as above, but searches backwards.
   void findBlocksBackward(Block type, std::vector<RowCol>* output);
+  /// @brief Same as above, allows NONE blocks.
+  void findBlocksBackwardAllowNone(Block type, std::vector<RowCol>* output);
   /// @brief Generates ordinary block which presents in current level.
   Block generatePresentBlock();
   /** @} */  // end of Modifiers group

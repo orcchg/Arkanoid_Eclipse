@@ -13,12 +13,13 @@ enum class BallEffect : int {
   EASY_T = 2,
   EXPLODE = 3,  // !
   GOO = 4,
-  MIRROR = 5,
-  PIERCE = 6,
-  RANDOM = 7,
-  UPGRADE = 8,  // !
-  DEGRADE = 9,  // !
-  ZYGOTE = 10
+  JUMP = 5,
+  MIRROR = 6,
+  PIERCE = 7,
+  RANDOM = 8,
+  UPGRADE = 9,  // !
+  DEGRADE = 10,  // !
+  ZYGOTE = 11
 };
 
 class Ball {

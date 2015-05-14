@@ -94,7 +94,7 @@ Block BlockUtils::charToBlock(char ch) {
     case '[':
       return Block::GLASS_1;
     case ']':
-      return Block::NOT_USED;
+      return Block::ARTIFICAL;
     case '{':
       return Block::QUICK_2;
     case '}':
@@ -182,7 +182,7 @@ char BlockUtils::blockToChar(Block block) {
     // ------------------------------------------
     case Block::GLASS_1:
       return '[';
-    case Block::NOT_USED:
+    case Block::ARTIFICAL:
       return ']';
     case Block::QUICK_2:
       return '{';
@@ -255,6 +255,7 @@ int BlockUtils::getCardinalityCost(Block block) {
     case Block::INVUL:
     case Block::EXTRA:
     case Block::NONE:
+    case Block::ARTIFICAL:
       return 0;
   }
 }
@@ -315,6 +316,7 @@ int BlockUtils::getBlockScore(Block block) {
     case Block::INVUL:
     case Block::EXTRA:
     case Block::NONE:
+    case Block::ARTIFICAL:
       break;
   }
   return score;
@@ -329,6 +331,9 @@ util::BGRA<GLfloat> BlockUtils::getBlockColor(Block block) {
       break;
     case Block::ALUMINIUM:
       bgra = util::BGRA<GLfloat>(util::ALUMINIUM);
+      break;
+    case Block::ARTIFICAL:
+      bgra = util::BGRA<GLfloat>(util::ARTIFICAL);
       break;
     case Block::BRICK:
       bgra = util::BGRA<GLfloat>(util::BRICK);
@@ -434,6 +439,9 @@ util::BGRA<GLfloat> BlockUtils::getBlockEdgeColor(Block block) {
       break;
     case Block::ALUMINIUM:
       bgra_edge = util::BGRA<GLfloat>(util::ALUMINIUM_EDGE);
+      break;
+    case Block::ARTIFICAL:
+      bgra_edge = util::BGRA<GLfloat>(util::ARTIFICAL_EDGE);
       break;
     case Block::BRICK:
       bgra_edge = util::BGRA<GLfloat>(util::BRICK_EDGE);

@@ -31,8 +31,8 @@ enum class Block : int {
   MIDAS = 16,      //! '$' - [ 1 ] transforms nearest to TITAN
 
   /* Auxiliary blocks */
-  GLASS_1 = 17,    //! '['
-  NOT_USED = 18,  //! ']'
+  GLASS_1 = 17,   //! '['
+  ARTIFICAL = 18,  //! ']'
   QUICK_2 = 19, QUICK_1 = 20,  //! '{' '}'
   ULTRA_4 = 21, ULTRA_3 = 22, ULTRA_2 = 23, ULTRA_1 = 24,  //! '%' '^' '&' '*'
   YOGURT_1 = 25,  //! '('

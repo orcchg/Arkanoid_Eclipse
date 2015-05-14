@@ -244,6 +244,20 @@ void GameProcessor::process_biteMoved() {
 void GameProcessor::process_prizeCaught() {
   std::unique_lock<std::mutex> lock(m_prize_caught_mutex);
   switch (m_prize_caught) {
+    case Prize::BLOCK:
+      {
+        std::vector<RowCol> none_blocks;
+        m_level->findBlocksBackwardAllowNone(Block::NONE, &none_blocks);
+        if (!none_blocks.empty()) {
+          int random_index = util::getRandomElement(none_blocks);
+          RowCol rowcol(none_blocks[random_index].row, none_blocks[random_index].col, Block::ARTIFICAL);
+          explodeBlock(rowcol.row, rowcol.col, BlockUtils::getBlockEdgeColor(Block::ARTIFICAL), Kind::CONVERGE);
+          m_level->setVulnerableBlock(rowcol.row, rowcol.col, Block::ARTIFICAL);
+          block_impact_event.notifyListeners(rowcol);
+        }
+      }
+      break;
+    // TODO: implement other prizes
     case Prize::EASY:
       m_ball.setEffect(BallEffect::EASY);
       break;

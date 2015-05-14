@@ -244,7 +244,7 @@ void SoundProcessor::process_blockImpact() {
     case game::Block::NETWORK:
     case game::Block::ORIGIN:
     case game::Block::QUICK:
-    case game::Block::NOT_USED:
+    case game::Block::ARTIFICAL:
     case game::Block::QUICK_2:
     case game::Block::QUICK_1:
     case game::Block::NONE:

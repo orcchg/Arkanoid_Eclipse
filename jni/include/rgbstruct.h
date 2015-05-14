@@ -53,6 +53,9 @@ constexpr static GLfloat SIENNA_DARK[4]  = {0.5451f, 0.2784f, 0.1490f, 1.f};
 constexpr static GLfloat ALUMINIUM[4]      = {0.8509f, 0.8509f, 0.8509f, 1.f};  // 217 217 217
 constexpr static GLfloat ALUMINIUM_EDGE[4] = {0.65f,   0.65f,   0.65f,   1.f};  // 166 166 166
 
+constexpr static GLfloat ARTIFICAL[4]      = {1.f,     0.0784f, 0.5765f, 1.f};  // 255 20 147
+constexpr static GLfloat ARTIFICAL_EDGE[4] = {0.2784f, 0.2784f, 0.2784f, 1.f};  // 71  71 71
+
 constexpr static GLfloat BRICK[4]      = {0.8039f, 0.1490f, 0.1490f, 1.f};  // 205 38 38
 constexpr static GLfloat BRICK_EDGE[4] = {0.5451f, 0.1020f, 0.1020f, 1.f};  // 139 26 26
 

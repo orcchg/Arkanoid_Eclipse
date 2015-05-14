@@ -21,7 +21,7 @@ enum class Prize : int {
   GOO = 12,       // [ t ] glues ball and bite               { ball }
   HYPER = 13,     // teleports ball to random place
   INIT = 14,      //! reloads current level
-  JUMP = 15,      // XXX:
+  JUMP = 15,      // [ t ] explodes blocks nearest to ball { ball }
   LASER = 16,     // [ t ] laser beam from bite
   MIRROR = 17,    // [ t ] all collisions from bite are mirrored  { ball }
   PIERCE = 18,    // [ t ] ball not disturbing                    { ball }

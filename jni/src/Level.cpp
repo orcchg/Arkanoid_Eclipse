@@ -210,6 +210,7 @@ void Level::setBlockImpacted(int row, int col) {
       break;
     // ----------------------
     case Block::ALUMINIUM:
+    case Block::ARTIFICAL:
     case Block::CLAY:
     case Block::DESTROY:
     case Block::ELECTRO:
@@ -607,11 +608,15 @@ bool Level::modifyBlockNear(int row, int col, Block type, RowCol* output) {
 
 void Level::findBlocks(Block type, std::vector<RowCol>* output) {
   if (type != Block::NONE) {
-    for (int r = 0; r < rows; ++r) {
-      for (int c = 0; c < cols; ++c) {
-        if (blocks[r][c] == type) {
-          output->emplace_back(r, c);
-        }
+    findBlocksAllowNone(type, output);
+  }
+}
+
+void Level::findBlocksAllowNone(Block type, std::vector<RowCol>* output) {
+  for (int r = 0; r < rows; ++r) {
+    for (int c = 0; c < cols; ++c) {
+      if (blocks[r][c] == type) {
+        output->emplace_back(r, c);
       }
     }
   }
@@ -619,11 +624,15 @@ void Level::findBlocks(Block type, std::vector<RowCol>* output) {
 
 void Level::findBlocksBackward(Block type, std::vector<RowCol>* output) {
   if (type != Block::NONE) {
-    for (int r = rows - 1; r >= 0; --r) {
-      for (int c = cols - 1; c >= 0; --c) {
-        if (blocks[r][c] == type) {
-          output->emplace_back(r, c);
-        }
+    findBlocksBackwardAllowNone(type, output);
+  }
+}
+
+void Level::findBlocksBackwardAllowNone(Block type, std::vector<RowCol>* output) {
+  for (int r = rows - 1; r >= 0; --r) {
+    for (int c = cols - 1; c >= 0; --c) {
+      if (blocks[r][c] == type) {
+        output->emplace_back(r, c);
       }
     }
   }
