@@ -489,6 +489,7 @@ int GameProcessor::performBallEffectAtBlock(int row, int col) {
       m_ball.getEffect() != BallEffect::MIRROR &&
       m_ball.getEffect() != BallEffect::PIERCE &&
       m_ball.getEffect() != BallEffect::RANDOM) {
+
     m_ball.setEffect(BallEffect::NONE);
     drop_ball_appearance_event.notifyListeners(true);
   }
