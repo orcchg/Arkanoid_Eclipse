@@ -203,12 +203,12 @@ private:
   GLfloat* m_bite_color_buffer;   //!< Re-usable buffer for colors of bite.
   GLfloat* m_ball_vertex_buffer;  //!< Re-usable buffer for vertices of ball.
   GLfloat* m_ball_color_buffer;   //!< Re-usable buffer for color of ball.
-  GLfloat* m_bg_vertex_buffer;  //!< Re-usable buffer for background vertices.
-  GLfloat* m_particle_diverge_buffer;  //!< Re-usable buffer for diverging particle system.
-  GLfloat* m_particle_converge_buffer;  //!< Re-usable buffer for converging particle system.
-  GLfloat* m_particle_spiral_buffer;  //!< Re-usable buffer for particle spiral system.
-  GLushort* m_rectangle_index_buffer;  //!< Re-usable buffer for indices of rectangle.
-  GLushort* m_octagon_index_buffer;  //!< Re-usable buffer for indices of octagon.
+  GLfloat* m_bg_vertex_buffer;    //!< Re-usable buffer for background vertices.
+  GLfloat* m_particle_diverge_buffer;    //!< Re-usable buffer for diverging particle system.
+  GLfloat* m_particle_converge_buffer;   //!< Re-usable buffer for converging particle system.
+  GLfloat* m_particle_spiral_buffer;     //!< Re-usable buffer for particle spiral system.
+  GLushort* m_rectangle_index_buffer;    //!< Re-usable buffer for indices of rectangle.
+  GLushort* m_octagon_index_buffer;      //!< Re-usable buffer for indices of octagon.
   GLfloat* m_rectangle_texCoord_buffer;  //!< Re-usable buffer for texture coords of rectangle.
 
   Level::Ptr m_level;  //!< Last loaded game level.
