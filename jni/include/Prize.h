@@ -53,7 +53,10 @@ public:
   PrizeGenerator();
   Prize generatePrize();  //!< Generates random prize of any type
 
+  inline void setBonusBlocks(bool flag) { m_bonus_blocks = flag; }
+
 private:
+  bool m_bonus_blocks;
   std::default_random_engine m_generator;
   std::uniform_int_distribution<int> m_distribution;
   std::bernoulli_distribution m_success_distribution;

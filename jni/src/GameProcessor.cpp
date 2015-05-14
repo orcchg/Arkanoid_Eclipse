@@ -295,6 +295,15 @@ void GameProcessor::process_prizeCaught() {
 
 /* LogicFunc group */
 // ----------------------------------------------------------------------------
+void GameProcessor::setBonusBlocks(bool flag) {
+  if (m_level != nullptr) {
+    m_level->getPrizeGenerator().setBonusBlocks(flag);
+    DBG("Bonus blocks set to %s", flag ? "true" : "false");
+  } else {
+    ERR("Unable to set bonus blocks: level has not been loaded before!");
+  }
+}
+
 void GameProcessor::moveBall() {
   m_ball_pose_corrected = false;
 

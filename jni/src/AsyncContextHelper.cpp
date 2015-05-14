@@ -177,6 +177,12 @@ JNIEXPORT jobjectArray JNICALL Java_com_orcchg_arkanoid_surface_AsyncContext_sav
   return out_level_Java;
 }
 
+JNIEXPORT void JNICALL Java_com_orcchg_arkanoid_surface_AsyncContext_setBonusBlocks
+  (JNIEnv *, jobject, jlong descriptor, jboolean flag) {
+  AsyncContextHelper* ptr = (AsyncContextHelper*) descriptor;
+  ptr->processor->setBonusBlocks(flag);
+}
+
 JNIEXPORT void JNICALL Java_com_orcchg_arkanoid_surface_AsyncContext_drop
   (JNIEnv *jenv, jobject, jlong descriptor) {
   AsyncContextHelper* ptr = (AsyncContextHelper*) descriptor;

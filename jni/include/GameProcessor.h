@@ -80,6 +80,13 @@ public:
   inline void setOnCardinalityChangedMethodID(jmethodID id) { fireJavaEvent_cardinalityChanged_id = id; }
   /** @} */  // end of JNIEnvironment group
 
+  /** @addtogroup LogicFunc
+   * @{
+   */
+  /// @brief Forces prize generator to generate BLOCK prizes in case of TRUE passed.
+  void setBonusBlocks(bool flag);
+  /** @} */  // end of LogicFunc group
+
 // ----------------------------------------------
 /* Public data-members */
 public:

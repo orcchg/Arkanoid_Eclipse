@@ -41,6 +41,7 @@ class AsyncContext {
 
   /* Tools */
   void loadLevel(final String[] level) { loadLevel(descriptor, level); }
+  void setBonusBlocks(boolean flag) { setBonusBlocks(descriptor, flag); }
   
   String saveLevel() {
     String[] tokens = saveLevel(descriptor);
@@ -136,6 +137,7 @@ class AsyncContext {
   /* Tools */
   private native void loadLevel(long descriptor, String[] in_level);
   private native String[] saveLevel(long descriptor);
+  private native void setBonusBlocks(long descriptor, boolean flag);
   private native void drop(long descriptor);
   private native int getScore(long descriptor);
 }

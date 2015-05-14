@@ -2,6 +2,7 @@ package com.orcchg.arkanoid.surface;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
+import java.util.Arrays;
 
 import com.orcchg.arkanoid.surface.Database.DatabaseException;
 import com.orcchg.arkanoid.surface.Database.GameStat;
@@ -108,8 +109,12 @@ public class MainActivity extends FragmentActivity {
       setLives(INITIAL_LIVES);
       setLevel(INITIAL_LEVEL);
       setScore(INITIAL_SCORE);
+      mAsyncContext.fireJavaEvent_refreshLives();
+      mAsyncContext.fireJavaEvent_refreshLevel();
+      mAsyncContext.fireJavaEvent_refreshScore();
     }
     mAsyncContext.loadLevel(Levels.get(currentLevel, level_state));
+    setBonusBlocks();
     super.onResume();
   }
   
@@ -155,6 +160,7 @@ public class MainActivity extends FragmentActivity {
         mAsyncContext.fireJavaEvent_refreshLevel();
         mAsyncContext.fireJavaEvent_refreshScore();
         mAsyncContext.loadLevel(Levels.get(currentLevel));
+        setBonusBlocks();
         break;
     }
     return true;
@@ -167,6 +173,7 @@ public class MainActivity extends FragmentActivity {
     setLives(INITIAL_LIVES);
     mAsyncContext.fireJavaEvent_refreshLives();
     mAsyncContext.loadLevel(Levels.get(currentLevel, ""));
+    setBonusBlocks();
   }
   
   /* Support methods */
@@ -240,6 +247,14 @@ public class MainActivity extends FragmentActivity {
     mCardinalityTextView.setText(Integer.toString(new_cardinality));
   }
   
+  void setBonusBlocks() {
+    if (currentLevel == 16) {
+      mAsyncContext.setBonusBlocks(true);
+    } else {
+      mAsyncContext.setBonusBlocks(false);
+    }
+  }
+  
   /* Core event listeners */
   // --------------------------------------------------------------------------
   private static class CoreEventHandler implements AsyncContext.CoreEventListener {
@@ -297,7 +312,8 @@ public class MainActivity extends FragmentActivity {
           currentLevel = INITIAL_LEVEL;
         }
         activity.setLevel(currentLevel);
-        activity.mAsyncContext.loadLevel(Levels.get(currentLevel)); 
+        activity.mAsyncContext.loadLevel(Levels.get(currentLevel));
+        activity.setBonusBlocks();
       }
     }
     
@@ -370,6 +386,7 @@ public class MainActivity extends FragmentActivity {
           final MainActivity activity = activityRef.get();
           if (activity != null) {
             activity.mAsyncContext.loadLevel(Levels.get(currentLevel, ""));
+            activity.setBonusBlocks();
           }
           break;
         case JUMP:
