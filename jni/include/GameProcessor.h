@@ -150,6 +150,7 @@ private:
    * @{
    */
   constexpr static int internalTimerThreshold = 2700;
+  constexpr static int internalTimerForSpeedThreshold = 2700;
 
   Level::Ptr m_level;  //!< Game level at it's current state.
   GLfloat m_throw_angle;  //!< Initial throw level between ball's trajectory and X axis.
@@ -165,6 +166,7 @@ private:
   LevelDimens m_level_dimens;  //!< Measured level's dimensions.
   Prize m_prize_caught;  //!< Type of last caught prize.
   int m_internal_timer;  //!< Timer used for timed effects of prizes.
+  int m_internal_timer_for_speed;  //!< Timer used for ball speed changed.
   std::atomic<int> explosionID;
   std::atomic<int> prizeID;
   /** @} */  // end of LogicData group
@@ -298,10 +300,13 @@ private:
   int performBallEffectAtBlock(int row, int col);
   /// @brief Drops internal timer's value.
   inline void dropInternalTimer() { m_internal_timer = 0; }
+  inline void dropInternalTimerForSpeed() { m_internal_timer_for_speed = 0; }
   /// @brief Increments internal timer's value.
   inline void incrementInternalTimer() { ++m_internal_timer; }
+  inline void incrementInternalTimerForSpeed() { ++m_internal_timer_for_speed; }
   /// @brief Checks whether internal timer's value has reached specified value.
   inline bool checkInternalTimer(int value) { return m_internal_timer >= value; }
+  inline bool checkInternalTimerForSpeed(int value) { return m_internal_timer_for_speed >= value; }
   /// @brief Drops any of ball's timed effects if any.
   void dropTimedEffectForBall();
   /** @} */  // end of LogicFunc group

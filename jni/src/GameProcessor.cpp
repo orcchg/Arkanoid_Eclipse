@@ -31,6 +31,7 @@ GameProcessor::GameProcessor(JavaVM* jvm)
   , m_level_dimens(0, 0, 0.0f, 0.0f, 0.0f, 0.0f)
   , m_prize_caught(Prize::NONE)
   , m_internal_timer(0)
+  , m_internal_timer_for_speed(0)
   , explosionID(0)
   , prizeID(0)
   , m_generator(std::chrono::system_clock::now().time_since_epoch().count())
@@ -192,10 +193,15 @@ void GameProcessor::eventHandler() {
   if (m_ball_is_flying) {
     moveBall();
     incrementInternalTimer();
+    incrementInternalTimerForSpeed();
   }
   if (checkInternalTimer(GameProcessor::internalTimerThreshold)) {
     dropTimedEffectForBall();
     dropInternalTimer();
+  }
+  if (checkInternalTimerForSpeed(GameProcessor::internalTimerForSpeedThreshold)) {
+    m_ball.normalSpeed();
+    dropInternalTimerForSpeed();
   }
 }
 
@@ -275,6 +281,10 @@ void GameProcessor::process_prizeCaught() {
     case Prize::EXPLODE:
       m_ball.setEffect(BallEffect::EXPLODE);
       break;
+    case Prize::FAST:
+      m_ball.fastSpeed();
+      dropInternalTimerForSpeed();
+      break;
     case Prize::GOO:  // timed effect
       m_ball.setEffect(BallEffect::GOO);
       dropInternalTimer();
@@ -300,6 +310,10 @@ void GameProcessor::process_prizeCaught() {
       m_ball.setEffect(BallEffect::RANDOM);
       dropInternalTimer();
       // TODO: impl
+      break;
+    case Prize::SLOW:
+      m_ball.slowSpeed();
+      dropInternalTimerForSpeed();
       break;
     case Prize::UPGRADE:
       m_ball.setEffect(BallEffect::UPGRADE);

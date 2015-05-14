@@ -41,6 +41,9 @@ public:
   inline void setXPose(GLfloat x_pose) { m_pose.setX(x_pose); }
   inline void setYPose(GLfloat y_pose) { m_pose.setY(y_pose); }
   inline void setAngle(GLfloat angle) { m_angle = angle; }
+  inline void fastSpeed() { m_velocity = BallParams::ballFastSpeed; }
+  inline void normalSpeed() { m_velocity = BallParams::ballSpeed; }
+  inline void slowSpeed() { m_velocity = BallParams::ballSlowSpeed; }
   inline void setEffect(BallEffect effect) { m_effect = effect; }
 
  private:

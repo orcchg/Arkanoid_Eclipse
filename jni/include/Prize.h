@@ -16,7 +16,7 @@ enum class Prize : int {
   EVAPORATE = 7,  // transform all WATER to FOG              { level }
   EXPLODE = 8,    //! [ 1 ] explodes blocks nearest to ball   { ball }
   EXTEND = 9,     // [ t ] extends bite
-  FAST = 10,      // [ t ] speed-up ball
+  FAST = 10,      //! [ t ] speed-up ball
   FOG = 11,       // produces FOG blocks instead NONE (0 cardinality)   { level }
   GOO = 12,       // [ t ] glues ball and bite               { ball }
   HYPER = 13,     // teleports ball to random place
@@ -28,7 +28,7 @@ enum class Prize : int {
   PROTECT = 19,   // [ t ] add protection blocks                  { level }
   RANDOM = 20,    //! [ t ] random angle for any bite collision    { ball }
   SHORT = 21,     // [ t ] shortens bite
-  SLOW = 22,      // [ t ] slow down ball
+  SLOW = 22,      //! [ t ] slow down ball
   UPGRADE = 23,   //! improves collided ordinary blocks (+ cardinality)  { ball }
   DEGRADE = 24,   //! decreases collided ordinary blocks (- cardinality) { ball }
   VITALITY = 25,  //! additional live
