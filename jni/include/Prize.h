@@ -20,7 +20,7 @@ enum class Prize : int {
   FOG = 11,       // produces FOG blocks instead NONE (0 cardinality)   { level }
   GOO = 12,       // [ t ] glues ball and bite               { ball }
   HYPER = 13,     // teleports ball to random place
-  INIT = 14,      // reloads current level
+  INIT = 14,      //! reloads current level
   JUMP = 15,      // XXX:
   LASER = 16,     // [ t ] laser beam from bite
   MIRROR = 17,    // [ t ] all collisions from bite are mirrored  { ball }

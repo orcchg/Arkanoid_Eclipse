@@ -359,7 +359,14 @@ public class MainActivity extends FragmentActivity {
         case FOG:
         case GOO:
         case HYPER:
+          score += 35;
+          break;
         case INIT:
+          final MainActivity activity = activityRef.get();
+          if (activity != null) {
+            activity.mAsyncContext.loadLevel(Levels.get(currentLevel, ""));
+          }
+          break;
         case JUMP:
         case LASER:
         case MIRROR:
