@@ -205,6 +205,7 @@ void AsyncContext::callback_prizeCaught(PrizePackage package) {
 
   switch (package.getPrize()) {
     case Prize::EXPLODE:
+    case Prize::JUMP:
       setBallAppearance(BallEffect::EXPLODE);
       break;
     case Prize::UPGRADE:
@@ -557,6 +558,7 @@ bool AsyncContext::checkBlockPresense(int row, int col) {
 }
 
 void AsyncContext::setBallAppearance(BallEffect effect) {
+  // TODO: impl more effect appearances
   switch (effect) {
     default:
     case BallEffect::NONE:
@@ -573,6 +575,7 @@ void AsyncContext::setBallAppearance(BallEffect effect) {
 //
 //      break;
     case BallEffect::EXPLODE:
+    case BallEffect::JUMP:
       util::setColor(util::WATER_EDGE, &m_ball_color_buffer[0], 4);
       util::setColor(util::WATER, &m_ball_color_buffer[4], 16);
       util::setColor(util::ULTRA, &m_ball_color_buffer[20], 4);

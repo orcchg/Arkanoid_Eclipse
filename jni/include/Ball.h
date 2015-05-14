@@ -10,13 +10,13 @@ namespace game {
 enum class BallEffect : int {
   NONE = 0,     // !
   EASY = 1,
-  EASY_T = 2,
+  EASY_T = 2,   // timed effect
   EXPLODE = 3,  // !
-  GOO = 4,
-  JUMP = 5,
-  MIRROR = 6,
-  PIERCE = 7,
-  RANDOM = 8,
+  GOO = 4,      // timed effect
+  JUMP = 5,     // timed effect
+  MIRROR = 6,   // timed effect
+  PIERCE = 7,   // timed effect
+  RANDOM = 8,   // timed effect
   UPGRADE = 9,  // !
   DEGRADE = 10,  // !
   ZYGOTE = 11

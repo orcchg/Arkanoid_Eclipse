@@ -30,6 +30,7 @@ GameProcessor::GameProcessor(JavaVM* jvm)
   , m_bite_upper_border(-BiteParams::neg_biteElevation)
   , m_level_dimens(0, 0, 0.0f, 0.0f, 0.0f, 0.0f)
   , m_prize_caught(Prize::NONE)
+  , m_internal_timer(0)
   , explosionID(0)
   , prizeID(0)
   , m_generator(std::chrono::system_clock::now().time_since_epoch().count())
@@ -190,6 +191,11 @@ void GameProcessor::eventHandler() {
   }
   if (m_ball_is_flying) {
     moveBall();
+    incrementInternalTimer();
+  }
+  if (checkInternalTimer(GameProcessor::internalTimerThreshold)) {
+    dropTimedEffectForBall();
+    dropInternalTimer();
   }
 }
 
@@ -261,23 +267,39 @@ void GameProcessor::process_prizeCaught() {
     case Prize::EASY:
       m_ball.setEffect(BallEffect::EASY);
       break;
-    case Prize::EASY_T:
+    case Prize::EASY_T:  // timed effect
       m_ball.setEffect(BallEffect::EASY_T);
+      dropInternalTimer();
+      // TODO: impl
       break;
     case Prize::EXPLODE:
       m_ball.setEffect(BallEffect::EXPLODE);
       break;
-    case Prize::GOO:
+    case Prize::GOO:  // timed effect
       m_ball.setEffect(BallEffect::GOO);
+      dropInternalTimer();
+      // TODO: impl
       break;
-    case Prize::MIRROR:
+    case Prize::JUMP:  // timed effect
+      m_ball.setEffect(BallEffect::JUMP);
+      dropInternalTimer();
+      // TODO: impl
+      break;
+      break;
+    case Prize::MIRROR:  // timed effect
       m_ball.setEffect(BallEffect::MIRROR);
+      dropInternalTimer();
+      // TODO: impl
       break;
-    case Prize::PIERCE:
+    case Prize::PIERCE:  // timed effect
       m_ball.setEffect(BallEffect::PIERCE);
+      dropInternalTimer();
+      // TODO: impl
       break;
-    case Prize::RANDOM:
+    case Prize::RANDOM:  // timed effect
       m_ball.setEffect(BallEffect::RANDOM);
+      dropInternalTimer();
+      // TODO: impl
       break;
     case Prize::UPGRADE:
       m_ball.setEffect(BallEffect::UPGRADE);
@@ -433,6 +455,7 @@ int GameProcessor::performBallEffectAtBlock(int row, int col) {
   // TODO: add more ball effects
   switch (m_ball.getEffect()) {
     case BallEffect::EXPLODE:
+    case BallEffect::JUMP:
       score += m_level->destroyBlocksAround(row, col, &affected_blocks_effect);
       explodeBlock(row, col, BlockUtils::getBlockColor(Block::ULTRA), Kind::DIVERGE);
       for (auto& item : affected_blocks_effect) {
@@ -459,9 +482,28 @@ int GameProcessor::performBallEffectAtBlock(int row, int col) {
       break;
   }
 
-  m_ball.setEffect(BallEffect::NONE);
-  drop_ball_appearance_event.notifyListeners(true);
+  // JUMP is a timed effect and to be dropped by timer
+  if (m_ball.getEffect() != BallEffect::JUMP) {
+    m_ball.setEffect(BallEffect::NONE);
+    drop_ball_appearance_event.notifyListeners(true);
+  }
   return score;
+}
+
+void GameProcessor::dropTimedEffectForBall() {
+  switch (m_ball.getEffect()) {
+    case BallEffect::EASY_T:
+    case BallEffect::GOO:
+    case BallEffect::JUMP:
+    case BallEffect::MIRROR:
+    case BallEffect::PIERCE:
+    case BallEffect::RANDOM:
+      m_ball.setEffect(BallEffect::NONE);
+      drop_ball_appearance_event.notifyListeners(true);
+      break;
+    default:
+      break;
+  }
 }
 
 /* Collision group */
