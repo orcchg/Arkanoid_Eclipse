@@ -82,7 +82,7 @@ AsyncContext::AsyncContext(JavaVM* jvm)
 
   util::setColor(util::SALMON, &m_bite_color_buffer[0], 8);
   util::setColor(util::SIENNA_DARK, &m_bite_color_buffer[8], 8);
-  setStandardBallAppearance();
+  setBallAppearance(BallEffect::NONE);
 
   m_particle_buffer = new GLfloat[particleSize * particleSystemSize];
   m_particle_spiral_buffer = new GLfloat[particleSpiralSize * particleSpiralSystemSize];
@@ -202,10 +202,16 @@ void AsyncContext::callback_prizeCaught(PrizePackage package) {
 
   switch (package.getPrize()) {
     case Prize::EXPLODE:
-      setExplodeBallAppearance();
+      setBallAppearance(BallEffect::EXPLODE);
+      break;
+    case Prize::UPGRADE:
+      setBallAppearance(BallEffect::UPGRADE);
+      break;
+    case Prize::DEGRADE:
+      setBallAppearance(BallEffect::DEGRADE);
       break;
     default:
-      setStandardBallAppearance();
+      setBallAppearance(BallEffect::NONE);
       break;
   }
   interrupt();
@@ -468,7 +474,7 @@ void AsyncContext::process_prizeCaught() {
 
 void AsyncContext::process_dropBallAppearance() {
   std::unique_lock<std::mutex> lock(m_drop_ball_appearance_mutex);
-  setStandardBallAppearance();
+  setBallAppearance(BallEffect::NONE);
 }
 
 /* LogicFunc group */
@@ -484,7 +490,7 @@ void AsyncContext::initGame() {
   m_ball.setXPose(m_bite.getXPose());
   m_ball.setYPose(-BiteParams::neg_biteElevation + m_ball.getDimens().halfHeight());
   moveBall(m_ball.getPose().getX(), m_ball.getPose().getY());
-  setStandardBallAppearance();
+  setBallAppearance(BallEffect::NONE);
 
   init_ball_position_event.notifyListeners(m_ball);
   init_bite_event.notifyListeners(m_bite);
@@ -547,20 +553,53 @@ bool AsyncContext::checkBlockPresense(int row, int col) {
   return (row >= 0 && row < m_level->numRows()) && (col >= 0 && col < m_level->numCols());
 }
 
-void AsyncContext::setStandardBallAppearance() {
-  util::setColor(util::ORANGE, &m_ball_color_buffer[0], 4);
-  util::setColor(util::SIENNA_LIGHT, &m_ball_color_buffer[4], 16);
-  util::setColor(util::SIENNA, &m_ball_color_buffer[20], 4);
-  util::setColor(util::SIENNA_DARK, &m_ball_color_buffer[24], 12);
-  util::setColor(util::SIENNA, &m_ball_color_buffer[32], 4);
-}
-
-void AsyncContext::setExplodeBallAppearance() {
-  util::setColor(util::WATER_EDGE, &m_ball_color_buffer[0], 4);
-  util::setColor(util::WATER, &m_ball_color_buffer[4], 16);
-  util::setColor(util::ULTRA, &m_ball_color_buffer[20], 4);
-  util::setColor(util::ULTRA_EDGE, &m_ball_color_buffer[24], 12);
-  util::setColor(util::MAGENTA, &m_ball_color_buffer[32], 4);
+void AsyncContext::setBallAppearance(BallEffect effect) {
+  switch (effect) {
+    default:
+    case BallEffect::NONE:
+    case BallEffect::MIRROR:
+    case BallEffect::RANDOM:
+      util::setColor(util::ORANGE, &m_ball_color_buffer[0], 4);
+      util::setColor(util::SIENNA_LIGHT, &m_ball_color_buffer[4], 16);
+      util::setColor(util::SIENNA, &m_ball_color_buffer[20], 4);
+      util::setColor(util::SIENNA_DARK, &m_ball_color_buffer[24], 12);
+      util::setColor(util::SIENNA, &m_ball_color_buffer[32], 4);
+      break;
+//    case BallEffect::EASY:
+//    case BallEffect::EASY_T:
+//
+//      break;
+    case BallEffect::EXPLODE:
+      util::setColor(util::WATER_EDGE, &m_ball_color_buffer[0], 4);
+      util::setColor(util::WATER, &m_ball_color_buffer[4], 16);
+      util::setColor(util::ULTRA, &m_ball_color_buffer[20], 4);
+      util::setColor(util::ULTRA_EDGE, &m_ball_color_buffer[24], 12);
+      util::setColor(util::MAGENTA, &m_ball_color_buffer[32], 4);
+      break;
+//    case BallEffect::GOO:
+//
+//      break;
+//    case BallEffect::PIERCE:
+//
+//      break;
+    case BallEffect::UPGRADE:
+      util::setColor(util::GREEN, &m_ball_color_buffer[0], 4);
+      util::setColor(util::ZYGOTE_SPAWN, &m_ball_color_buffer[4], 16);
+      util::setColor(util::NETWORK, &m_ball_color_buffer[20], 4);
+      util::setColor(util::ZYGOTE_EDGE, &m_ball_color_buffer[24], 12);
+      util::setColor(util::NETWORK, &m_ball_color_buffer[32], 4);
+      break;
+    case BallEffect::DEGRADE:
+      util::setColor(util::RED, &m_ball_color_buffer[0], 4);
+      util::setColor(util::ORIGIN, &m_ball_color_buffer[4], 16);
+      util::setColor(util::BRICK, &m_ball_color_buffer[20], 4);
+      util::setColor(util::DESTROY_EDGE, &m_ball_color_buffer[24], 12);
+      util::setColor(util::BRICK, &m_ball_color_buffer[32], 4);
+      break;
+//    case BallEffect::ZYGOTE:
+//
+//      break;
+  }
 }
 
 /* GraphicsContext group */

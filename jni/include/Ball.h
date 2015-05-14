@@ -8,15 +8,17 @@
 namespace game {
 
 enum class BallEffect : int {
-  NONE = 0,
+  NONE = 0,     // !
   EASY = 1,
   EASY_T = 2,
-  EXPLODE = 3,
+  EXPLODE = 3,  // !
   GOO = 4,
   MIRROR = 5,
   PIERCE = 6,
   RANDOM = 7,
-  ZYGOTE = 8
+  UPGRADE = 8,  // !
+  DEGRADE = 9,  // !
+  ZYGOTE = 10
 };
 
 class Ball {

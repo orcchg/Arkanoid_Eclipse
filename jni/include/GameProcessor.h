@@ -280,6 +280,12 @@ private:
   /// @param col Column index of specified block.
   /// @param prize Type of prize to be spawned.
   void spawnPrizeAtBlock(int row, int col, Prize prize);
+  /// @brief Performs action according to current ball's effect
+  /// at specified block.
+  /// @param row Row index of specified block.
+  /// @param col Column index of specified block.
+  /// @return Score after effect.
+  int performBallEffectAtBlock(int row, int col);
   /** @} */  // end of LogicFunc group
 
   /** @defgroup Collision Functions to perform various collisions.

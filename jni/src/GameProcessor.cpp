@@ -265,6 +265,12 @@ void GameProcessor::process_prizeCaught() {
     case Prize::RANDOM:
       m_ball.setEffect(BallEffect::RANDOM);
       break;
+    case Prize::UPGRADE:
+      m_ball.setEffect(BallEffect::UPGRADE);
+      break;
+    case Prize::DEGRADE:
+      m_ball.setEffect(BallEffect::DEGRADE);
+      break;
     case Prize::ZYGOTE:
       m_ball.setEffect(BallEffect::ZYGOTE);
       break;
@@ -394,6 +400,45 @@ void GameProcessor::spawnPrizeAtBlock(int row, int col, Prize prize) {
     getCenterOfBlock(row, col, &x, &y);
     spawnPrize(x, y, prize);
   }
+}
+
+int GameProcessor::performBallEffectAtBlock(int row, int col) {
+  int score = 0;
+  Prize spawned_prize = Prize::NONE;
+  std::vector<RowCol> affected_blocks_effect;
+
+  // TODO: add more ball effects
+  switch (m_ball.getEffect()) {
+    case BallEffect::EXPLODE:
+      score += m_level->destroyBlocksAround(row, col, &affected_blocks_effect);
+      explodeBlock(row, col, BlockUtils::getBlockColor(Block::ULTRA), Kind::DIVERGE);
+      for (auto& item : affected_blocks_effect) {
+        spawned_prize = m_level->getPrizeGenerator().generatePrize();
+        spawnPrizeAtBlock(item.row, item.col, spawned_prize);
+        block_impact_event.notifyListeners(item);
+      }
+      break;
+    case BallEffect::UPGRADE:
+      score += m_level->changeBlocksAround(row, col, Mode::UPGRADE, &affected_blocks_effect);
+      explodeBlock(row, col, util::GREEN, Kind::DIVERGE);
+      for (auto& item : affected_blocks_effect) {
+        block_impact_event.notifyListeners(item);
+      }
+      break;
+    case BallEffect::DEGRADE:
+      score += m_level->changeBlocksAround(row, col, Mode::DEGRADE, &affected_blocks_effect);
+      explodeBlock(row, col, util::RED, Kind::DIVERGE);
+      for (auto& item : affected_blocks_effect) {
+        block_impact_event.notifyListeners(item);
+      }
+      break;
+    default:
+      break;
+  }
+
+  m_ball.setEffect(BallEffect::NONE);
+  drop_ball_appearance_event.notifyListeners(true);
+  return score;
 }
 
 /* Collision group */
@@ -692,21 +737,11 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
         external_collision = blockCollision(top_border, bottom_border, left_border, right_border, 100 /* elastic */);
         break;
     }
-    if (m_ball.getEffect() == BallEffect::EXPLODE) {
-      std::vector<RowCol> affected_blocks_effect;
-      score += m_level->destroyBlocksAround(row, col, &affected_blocks_effect);
-      explodeBlock(row, col, BlockUtils::getBlockColor(Block::ULTRA), Kind::DIVERGE);
-      for (auto& item : affected_blocks_effect) {
-        spawned_prize = m_level->getPrizeGenerator().generatePrize();
-        spawnPrizeAtBlock(item.row, item.col, spawned_prize);
-        block_impact_event.notifyListeners(item);
-      }
-      m_ball.setEffect(BallEffect::NONE);
-      drop_ball_appearance_event.notifyListeners(true);
-    }
 
+    score += performBallEffectAtBlock(row, col);
     block_impact_event.notifyListeners(RowCol(row, col, block));
     onScoreUpdated(score);
+
     return (external_collision &&
             block != Block::NONE &&
             block != Block::DESTROY &&

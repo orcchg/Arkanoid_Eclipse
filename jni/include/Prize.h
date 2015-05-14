@@ -29,8 +29,8 @@ enum class Prize : int {
   RANDOM = 20,    // [ t ] random angle for any bite collision    { ball }
   SHORT = 21,     // [ t ] shortens bite
   SLOW = 22,      // [ t ] slow down ball
-  UPGRADE = 23,   // improved all ordinary blocks (+ cardinality)  { level }
-  DEGRADE = 24,   // decreases all ordinary blocks (- cardinality) { level }
+  UPGRADE = 23,   //! improves collided ordinary blocks (+ cardinality)  { ball }
+  DEGRADE = 24,   //! decreases collided ordinary blocks (- cardinality) { ball }
   VITALITY = 25,  //! additional live
   ZYGOTE = 26,    // multiplies ball                              { ball }
   SCORE_1 = 27,

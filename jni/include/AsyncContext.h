@@ -367,10 +367,8 @@ private:
   /// block impact event, but it's processing is performed before the former's
   /// processing due to asynchronous event handling.
   bool checkBlockPresense(int row, int col);
-  /// @brief Sets standard ball's appearance.
-  void setStandardBallAppearance();
-  /// @brief Sets explode ball's appearance.
-  void setExplodeBallAppearance();
+  /// @brief Sets ball's appearance.
+  void setBallAppearance(BallEffect effect);
   /** @} */  // end of LogicFunc group
 
 private:
