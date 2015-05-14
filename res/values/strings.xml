@@ -7,6 +7,7 @@
     <string name="new_game_button">New game</string>
     <string name="about_game_button">About</string>
     <string name="quit_game_button">Quit game</string>
+    <string name="author_text">by Maxim Alov</string>
     
     <string name="action_throw">Throw</string>
     <string name="action_nextLevel">Next level</string>
