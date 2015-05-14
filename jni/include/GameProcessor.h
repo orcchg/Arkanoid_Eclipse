@@ -128,6 +128,8 @@ public:
   Event<PrizePackage> prize_event;
   /// @brief Notifies when to drop ball's appearance to standard.
   Event<bool> drop_ball_appearance_event;
+  /// @brief Notifies bite width has changed.
+  Event<BiteEffect> bite_width_changed_event;
   /** @} */  // end of Event group
 
 // ----------------------------------------------
@@ -151,6 +153,7 @@ private:
    */
   constexpr static int internalTimerThreshold = 2700;
   constexpr static int internalTimerForSpeedThreshold = 2700;
+  constexpr static int internalTimerForWidthThreshold = 2700;
 
   Level::Ptr m_level;  //!< Game level at it's current state.
   GLfloat m_throw_angle;  //!< Initial throw level between ball's trajectory and X axis.
@@ -167,6 +170,7 @@ private:
   Prize m_prize_caught;  //!< Type of last caught prize.
   int m_internal_timer;  //!< Timer used for timed effects of prizes.
   int m_internal_timer_for_speed;  //!< Timer used for ball speed changed.
+  int m_internal_timer_for_width;  //!< Timer used for bite width changed.
   std::atomic<int> explosionID;
   std::atomic<int> prizeID;
   /** @} */  // end of LogicData group
@@ -301,12 +305,15 @@ private:
   /// @brief Drops internal timer's value.
   inline void dropInternalTimer() { m_internal_timer = 0; }
   inline void dropInternalTimerForSpeed() { m_internal_timer_for_speed = 0; }
+  inline void dropInternalTimerForWidth() { m_internal_timer_for_width = 0; }
   /// @brief Increments internal timer's value.
   inline void incrementInternalTimer() { ++m_internal_timer; }
   inline void incrementInternalTimerForSpeed() { ++m_internal_timer_for_speed; }
+  inline void incrementInternalTimerForWidth() { ++m_internal_timer_for_width; }
   /// @brief Checks whether internal timer's value has reached specified value.
   inline bool checkInternalTimer(int value) { return m_internal_timer >= value; }
   inline bool checkInternalTimerForSpeed(int value) { return m_internal_timer_for_speed >= value; }
+  inline bool checkInternalTimerForWidth(int value) { return m_internal_timer_for_width >= value; }
   /// @brief Drops any of ball's timed effects if any.
   void dropTimedEffectForBall();
   /** @} */  // end of LogicFunc group

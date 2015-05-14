@@ -25,6 +25,7 @@ AsyncContext::AsyncContext(JavaVM* jvm)
   , m_num_configs(0), m_format(0)
   , m_position(0.0f)
   , m_bite()
+  , m_bite_effect(BiteEffect::NONE)
   , m_ball()
   , m_impact_queue()
   , m_bite_vertex_buffer(new GLfloat[16])
@@ -78,6 +79,7 @@ AsyncContext::AsyncContext(JavaVM* jvm)
   m_prize_received.store(false);
   m_prize_caught_received.store(false);
   m_drop_ball_appearance_received.store(false);
+  m_bite_width_changed_received.store(false);
   m_window_set = false;
   m_resources = nullptr;
 
@@ -213,6 +215,9 @@ void AsyncContext::callback_prizeCaught(PrizePackage package) {
     case Prize::MIRROR:
       setBiteBallAppearance(BallEffect::MIRROR);
       break;
+    case Prize::PROTECT:
+      setBiteBallAppearance(BallEffect::PROTECT);
+      break;
     case Prize::RANDOM:
       setBiteBallAppearance(BallEffect::RANDOM);
       break;
@@ -233,6 +238,13 @@ void AsyncContext::callback_prizeCaught(PrizePackage package) {
 void AsyncContext::callback_dropBallAppearance(bool /* dummy */) {
   std::unique_lock<std::mutex> lock(m_drop_ball_appearance_mutex);
   m_drop_ball_appearance_received.store(true);
+  interrupt();
+}
+
+void AsyncContext::callback_biteWidthChanged(BiteEffect effect) {
+  std::unique_lock<std::mutex> lock(m_bite_width_changed_mutex);
+  m_bite_width_changed_received.store(true);
+  m_bite_effect = effect;
   interrupt();
 }
 
@@ -288,7 +300,8 @@ bool AsyncContext::checkForWakeUp() {
       m_explosion_received.load() ||
       m_prize_received.load() ||
       m_prize_caught_received.load() ||
-      m_drop_ball_appearance_received.load();
+      m_drop_ball_appearance_received.load() ||
+      m_bite_width_changed_received.load();
 }
 
 void AsyncContext::eventHandler() {
@@ -346,6 +359,10 @@ void AsyncContext::eventHandler() {
     if (m_drop_ball_appearance_received.load()) {
       m_drop_ball_appearance_received.store(false);
       process_dropBallAppearance();
+    }
+    if (m_bite_width_changed_received.load()) {
+      m_bite_width_changed_received.store(false);
+      process_biteWidthChanged();
     }
     render();  // render frame to reflect changes occurred
   } else {
@@ -490,6 +507,27 @@ void AsyncContext::process_dropBallAppearance() {
   setBiteBallAppearance(BallEffect::NONE);
 }
 
+void AsyncContext::process_biteWidthChanged() {
+  std::unique_lock<std::mutex> lock(m_bite_width_changed_mutex);
+  switch (m_bite_effect) {
+    default:
+    case BiteEffect::NONE:
+      m_bite.normalWidth();
+      break;
+    case BiteEffect::EXTEND:
+      m_bite.extendWidth();
+      break;
+    case BiteEffect::SHORT:
+      m_bite.shortWidth();
+      break;
+    case BiteEffect::FULL:  // special case
+      m_bite.fullWidth();
+      moveBite(0.0f);
+      return;
+  }
+  moveBite(m_bite.getXPose());  // update bite appearance via moveBite() function
+}
+
 /* LogicFunc group */
 // ----------------------------------------------------------------------------
 void AsyncContext::initGame() {
@@ -524,7 +562,7 @@ void AsyncContext::moveBite(float position) {
 
   util::setRectangleVertices(
       &m_bite_vertex_buffer[0],
-      BiteParams::biteWidth, m_bite.getDimens().height(),
+      m_bite.getDimens().width(), m_bite.getDimens().height(),
       -m_bite.getDimens().halfWidth() + m_bite.getXPose(),
       -BiteParams::neg_biteElevation,
       1, 1);
@@ -615,6 +653,17 @@ void AsyncContext::setBiteBallAppearance(BallEffect effect) {
       // bite
       util::setColor(util::MIRROR, &m_bite_color_buffer[0], 8);
       util::setColor(util::MIRROR_EDGE, &m_bite_color_buffer[8], 8);
+      // ball
+      util::setColor(util::ORANGE, &m_ball_color_buffer[0], 4);
+      util::setColor(util::SIENNA_LIGHT, &m_ball_color_buffer[4], 16);
+      util::setColor(util::SIENNA, &m_ball_color_buffer[20], 4);
+      util::setColor(util::SIENNA_DARK, &m_ball_color_buffer[24], 12);
+      util::setColor(util::SIENNA, &m_ball_color_buffer[32], 4);
+      break;
+    case BallEffect::PROTECT:
+      // bite
+      util::setColor(util::TITAN, &m_bite_color_buffer[0], 8);
+      util::setColor(util::TITAN_EDGE, &m_bite_color_buffer[8], 8);
       // ball
       util::setColor(util::ORANGE, &m_ball_color_buffer[0], 4);
       util::setColor(util::SIENNA_LIGHT, &m_ball_color_buffer[4], 16);

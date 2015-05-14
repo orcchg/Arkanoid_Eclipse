@@ -34,6 +34,7 @@ JNIEXPORT jlong JNICALL Java_com_orcchg_arkanoid_surface_AsyncContext_init
   ptr->acontext->prize_listener = ptr->processor->prize_event.createListener(&game::AsyncContext::callback_prizeReceived, ptr->acontext);
   ptr->acontext->prize_caught_listener = ptr->prize_processor->prize_caught_event.createListener(&game::AsyncContext::callback_prizeCaught, ptr->acontext);
   ptr->acontext->drop_ball_appearance_listener = ptr->processor->drop_ball_appearance_event.createListener(&game::AsyncContext::callback_dropBallAppearance, ptr->acontext);
+  ptr->acontext->bite_width_changed_listener = ptr->processor->bite_width_changed_event.createListener(&game::AsyncContext::callback_biteWidthChanged, ptr->acontext);
 
   ptr->processor->aspect_ratio_listener = ptr->acontext->aspect_ratio_event.createListener(&game::GameProcessor::callback_aspectMeasured, ptr->processor);
   ptr->processor->load_level_listener = ptr->load_level_event.createListener(&game::GameProcessor::callback_loadLevel, ptr->processor);

@@ -8,6 +8,8 @@ namespace game {
 /// @brief Measured bite dimensions.
 class BiteDimens {
 public:
+  friend class Bite;
+
   BiteDimens(GLfloat w, GLfloat h)
     : m_width(w)
     , m_height(h) {

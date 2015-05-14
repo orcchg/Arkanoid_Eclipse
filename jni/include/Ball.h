@@ -16,10 +16,11 @@ enum class BallEffect : int {
   JUMP = 5,      //! timed effect
   MIRROR = 6,    //! timed effect
   PIERCE = 7,    // timed effect
-  RANDOM = 8,    //! timed effect
-  UPGRADE = 9,   // !
-  DEGRADE = 10,  // !
-  ZYGOTE = 11
+  PROTECT = 8,   //! timed effect, no-op for ball, only for bite
+  RANDOM = 9,    //! timed effect
+  UPGRADE = 10,   // !
+  DEGRADE = 11,  // !
+  ZYGOTE = 12
 };
 
 class Ball {

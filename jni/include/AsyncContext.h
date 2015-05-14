@@ -79,6 +79,8 @@ public:
   void callback_prizeCaught(PrizePackage package);
   /// @brief Called when drop ball's appearance to standard has been requested.
   void callback_dropBallAppearance(bool /* dummy */);
+  /// @brief Called when bite's width has changed.
+  void callback_biteWidthChanged(BiteEffect effect);
   /** @} */  // end of Callbacks group
 
   /** @defgroup GameStat Get game statistics
@@ -140,6 +142,8 @@ public:
   EventListener<PrizePackage> prize_caught_listener;
   /// @brief Listens for event which drop ball's appearance to standard has been requested.
   EventListener<bool> drop_ball_appearance_listener;
+  /// @brief Listens for event which changes bite's width.
+  EventListener<BiteEffect> bite_width_changed_listener;
 
   /// @brief Notifies for measured aspect ratio.
   Event<float> aspect_ratio_event;
@@ -196,6 +200,7 @@ private:
 
   GLfloat m_position;  //!< Last received position value of user's motion gesture.
   Bite m_bite;  //!< Physical bite's representation.
+  BiteEffect m_bite_effect;  //!< Changed width of bite due to prize.
   Ball m_ball;  //!< Physical ball's representation.
   std::queue<RowCol> m_impact_queue;  //!< Queue of impacted blocks' indices.
 
@@ -263,6 +268,7 @@ private:
   std::mutex m_prize_mutex;  //!< Sentinel for prize receiving.
   std::mutex m_prize_caught_mutex;  //!< Sentinel for prize has been caught.
   std::mutex m_drop_ball_appearance_mutex;
+  std::mutex m_bite_width_changed_mutex;
   std::atomic_bool m_surface_received;  //!< Window has been set.
   std::atomic_bool m_load_resources_received;  //!< Load resources requested.
   std::atomic_bool m_shift_gamepad_received;  //!< Shift gesture has occurred.
@@ -276,6 +282,7 @@ private:
   std::atomic_bool m_prize_received;  //!< Prize has been received.
   std::atomic_bool m_prize_caught_received;  //!< Prize has been caught received.
   std::atomic_bool m_drop_ball_appearance_received;
+  std::atomic_bool m_bite_width_changed_received;
   /** @} */  // end of Mutex group
 
   /** @defgroup SafetyFlag Logic-safety variables
@@ -339,6 +346,8 @@ private:
   void process_prizeCaught();
   /// @brief Drops ball's appearance to standard.
   void process_dropBallAppearance();
+  /// @brief Performs visual change of bite's width.
+  void process_biteWidthChanged();
   /** @} */  // end of Processors group
 
 private:

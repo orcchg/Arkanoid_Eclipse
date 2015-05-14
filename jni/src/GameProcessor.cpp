@@ -32,6 +32,7 @@ GameProcessor::GameProcessor(JavaVM* jvm)
   , m_prize_caught(Prize::NONE)
   , m_internal_timer(0)
   , m_internal_timer_for_speed(0)
+  , m_internal_timer_for_width(0)
   , explosionID(0)
   , prizeID(0)
   , m_generator(std::chrono::system_clock::now().time_since_epoch().count())
@@ -194,6 +195,7 @@ void GameProcessor::eventHandler() {
     moveBall();
     incrementInternalTimer();
     incrementInternalTimerForSpeed();
+    incrementInternalTimerForWidth();
   }
   if (checkInternalTimer(GameProcessor::internalTimerThreshold)) {
     dropTimedEffectForBall();
@@ -202,6 +204,10 @@ void GameProcessor::eventHandler() {
   if (checkInternalTimerForSpeed(GameProcessor::internalTimerForSpeedThreshold)) {
     m_ball.normalSpeed();
     dropInternalTimerForSpeed();
+  }
+  if (checkInternalTimerForWidth(GameProcessor::internalTimerForWidthThreshold)) {
+    bite_width_changed_event.notifyListeners(BiteEffect::NONE);
+    dropInternalTimerForWidth();
   }
 }
 
@@ -281,7 +287,11 @@ void GameProcessor::process_prizeCaught() {
     case Prize::EXPLODE:
       m_ball.setEffect(BallEffect::EXPLODE);
       break;
-    case Prize::FAST:
+    case Prize::EXTEND:  // timed effect
+      bite_width_changed_event.notifyListeners(BiteEffect::EXTEND);
+      dropInternalTimerForWidth();
+      break;
+    case Prize::FAST:  // timed effect
       m_ball.fastSpeed();
       dropInternalTimerForSpeed();
       break;
@@ -306,12 +316,20 @@ void GameProcessor::process_prizeCaught() {
       dropInternalTimer();
       // TODO: impl
       break;
+    case Prize::PROTECT:  // timed effect
+      bite_width_changed_event.notifyListeners(BiteEffect::FULL);
+      dropInternalTimerForWidth();
+      break;
     case Prize::RANDOM:  // timed effect
       m_ball.setEffect(BallEffect::RANDOM);
       dropInternalTimer();
       // TODO: impl
       break;
-    case Prize::SLOW:
+    case Prize::SHORT:  // timed effect
+      bite_width_changed_event.notifyListeners(BiteEffect::SHORT);
+      dropInternalTimerForWidth();
+      break;
+    case Prize::SLOW:  // timed effect
       m_ball.slowSpeed();
       dropInternalTimerForSpeed();
       break;

@@ -4,7 +4,10 @@
 namespace game {
 
 struct BiteParams {
+  constexpr static float extendBiteWidth = 0.8f;
   constexpr static float biteWidth = 0.5f;  //!< Normalized width of bite.
+  constexpr static float shortBiteWidth = 0.3f;
+  constexpr static float fullWidth = 2.0f;
   constexpr static float biteHeight = 0.08f;  //!< Normalized height of bite.
   constexpr static float biteTouchArea = 0.15f;  //!< Radius of touch area to affect bite.
   /// @brief Elevation of bite above the lower boundary of the playground.
