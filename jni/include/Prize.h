@@ -7,7 +7,7 @@ namespace game {
 
 enum class Prize : int {
   NONE = 0,
-  BLOCK = 1,      // produces BRICK block (0 cardinality)    { level }
+  BLOCK = 1,      //! produces BRICK block (0 cardinality)    { level }
   CLIMB = 2,      // [ t ] climbs up the bite
   DESTROY = 3,    //! lose ball
   DRAGON = 4,     // [ t ] summons dragon

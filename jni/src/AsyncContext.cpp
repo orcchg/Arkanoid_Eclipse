@@ -32,7 +32,8 @@ AsyncContext::AsyncContext(JavaVM* jvm)
   , m_ball_vertex_buffer(new GLfloat[36])
   , m_ball_color_buffer(new GLfloat[36])
   , m_bg_vertex_buffer(new GLfloat[16]{-1.0f, -1.0f, 0.0f, 1.0f, 1.0f, -1.0f, 0.0f, 1.0f, -1.0f, 1.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f})
-  , m_particle_buffer(nullptr)
+  , m_particle_diverge_buffer(nullptr)
+  , m_particle_converge_buffer(nullptr)
   , m_particle_spiral_buffer(nullptr)
   , m_rectangle_index_buffer(new GLushort[6]{0, 3, 2, 0, 1, 3})
   , m_octagon_index_buffer(new GLushort[24]{0, 1, 2, 0, 2, 3, 0, 3, 4, 0, 4, 5, 0, 5, 6, 0, 6, 7, 0, 7, 8, 0, 8, 1})
@@ -84,7 +85,8 @@ AsyncContext::AsyncContext(JavaVM* jvm)
   util::setColor(util::SIENNA_DARK, &m_bite_color_buffer[8], 8);
   setBallAppearance(BallEffect::NONE);
 
-  m_particle_buffer = new GLfloat[particleSize * particleSystemSize];
+  m_particle_diverge_buffer = new GLfloat[particleSize * particleSystemSize];
+  m_particle_converge_buffer = new GLfloat[particleSize * particleSystemSize];
   m_particle_spiral_buffer = new GLfloat[particleSpiralSize * particleSpiralSystemSize];
   DBG("exit AsyncContext ctor");
 }
@@ -100,7 +102,8 @@ AsyncContext::~AsyncContext() {
   delete [] m_ball_vertex_buffer; m_ball_vertex_buffer = nullptr;
   delete [] m_ball_color_buffer; m_ball_color_buffer = nullptr;
   delete [] m_bg_vertex_buffer; m_bg_vertex_buffer = nullptr;
-  delete [] m_particle_buffer; m_particle_buffer = nullptr;
+  delete [] m_particle_diverge_buffer; m_particle_diverge_buffer = nullptr;
+  delete [] m_particle_converge_buffer; m_particle_converge_buffer = nullptr;
   delete [] m_particle_spiral_buffer; m_particle_spiral_buffer = nullptr;
   delete [] m_rectangle_index_buffer; m_rectangle_index_buffer = nullptr;
   delete [] m_octagon_index_buffer; m_octagon_index_buffer = nullptr;
@@ -767,13 +770,18 @@ void AsyncContext::initParticleSystem() {
   for (int i = 0; i < particleSystemSize; ++i) {
     int index = i * particleSize;
     // Lifetime of particle
-    m_particle_buffer[index + 0] = m_particle_distribution(m_generator);
+    m_particle_diverge_buffer[index + 0] = m_particle_distribution(m_generator);
+    m_particle_converge_buffer[index + 0] = m_particle_distribution(m_generator);
     // Start position of particle
-    m_particle_buffer[index + 3] = m_particle_distribution(m_generator) * 0.25f - 0.125f;
-    m_particle_buffer[index + 4] = (m_particle_distribution(m_generator) * 0.25f - 0.125f) * m_aspect;
+    m_particle_diverge_buffer[index + 3] = m_particle_distribution(m_generator) * 0.25f - 0.125f;
+    m_particle_diverge_buffer[index + 4] = (m_particle_distribution(m_generator) * 0.25f - 0.125f) * m_aspect;
+    m_particle_converge_buffer[index + 3] = m_particle_distribution(m_generator) * 0.2f - 0.1f;
+    m_particle_converge_buffer[index + 4] = (m_particle_distribution(m_generator) * 0.1f - 0.05f) * m_aspect;
     // End position of particle
-    m_particle_buffer[index + 1] = m_particle_distribution(m_generator) * 2.0f - 1.0f;
-    m_particle_buffer[index + 2] = (m_particle_distribution(m_generator) * 2.0f - 1.0f) * m_aspect;
+    m_particle_diverge_buffer[index + 1] = m_particle_distribution(m_generator) * 2.0f - 1.0f;
+    m_particle_diverge_buffer[index + 2] = (m_particle_distribution(m_generator) * 2.0f - 1.0f) * m_aspect;
+    m_particle_converge_buffer[index + 1] = m_particle_distribution(m_generator) * 0.1f;
+    m_particle_converge_buffer[index + 2] = m_particle_distribution(m_generator) * 0.05f * m_aspect;
   }
 
   // --------------------------------------------
@@ -1014,9 +1022,28 @@ void AsyncContext::drawExplosion(GLfloat x, GLfloat y, const util::BGRA<GLfloat>
   GLint a_startPosition = glGetAttribLocation(m_explosion_shader->getProgram(), "a_startPosition");
   GLint a_endPosition = glGetAttribLocation(m_explosion_shader->getProgram(), "a_endPosition");
 
-  glVertexAttribPointer(a_lifetime, 1, GL_FLOAT, GL_FALSE, particleSize * sizeof(GLfloat), &m_particle_buffer[0]);
-  glVertexAttribPointer(a_startPosition, 2, GL_FLOAT, GL_FALSE, particleSize * sizeof(GLfloat), &m_particle_buffer[3]);
-  glVertexAttribPointer(a_endPosition, 2, GL_FLOAT, GL_FALSE, particleSize * sizeof(GLfloat), &m_particle_buffer[1]);
+  {
+    GLfloat* lifetime_buffer = nullptr;
+    GLfloat* start_points_buffer = nullptr;
+    GLfloat* end_points_buffer = nullptr;
+
+    switch (kind) {
+      default:
+      case Kind::DIVERGE:
+        lifetime_buffer = &m_particle_diverge_buffer[0];
+        start_points_buffer = &m_particle_diverge_buffer[3];
+        end_points_buffer = &m_particle_diverge_buffer[1];
+        break;
+      case Kind::CONVERGE:
+        lifetime_buffer = &m_particle_converge_buffer[0];
+        start_points_buffer = &m_particle_converge_buffer[3];
+        end_points_buffer = &m_particle_converge_buffer[1];
+        break;
+    }
+    glVertexAttribPointer(a_lifetime, 1, GL_FLOAT, GL_FALSE, particleSize * sizeof(GLfloat), lifetime_buffer);
+    glVertexAttribPointer(a_startPosition, 2, GL_FLOAT, GL_FALSE, particleSize * sizeof(GLfloat), start_points_buffer);
+    glVertexAttribPointer(a_endPosition, 2, GL_FLOAT, GL_FALSE, particleSize * sizeof(GLfloat), end_points_buffer);
+  }
 
   m_resources->getTexture("smoke.png")->apply();
   GLint sampler = glGetUniformLocation(m_explosion_shader->getProgram(), "s_texture");
