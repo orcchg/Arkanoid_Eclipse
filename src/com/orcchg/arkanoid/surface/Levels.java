@@ -668,7 +668,7 @@ public class Levels {
                                                     ""};
   
   private static final String[] L21 = new String[] {"NSSSSDOESN",
-                                                    "SSDOESSSSS",
+                                                    "SSODESSSSS",
                                                     "SSSSSSDOES",
                                                     "SDOESSSSSS",
                                                     "SESSSSSDOE",
