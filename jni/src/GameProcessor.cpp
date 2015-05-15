@@ -301,7 +301,9 @@ void GameProcessor::process_prizeCaught() {
       m_ball.setEffect(BallEffect::GOO);
       dropInternalTimer();
       break;
-    // TODO: HYPER
+    case Prize::HYPER:
+      teleportBallIntoRandomBlock();
+      break;
     case Prize::JUMP:  // timed effect
       m_ball.setEffect(BallEffect::JUMP);
       dropInternalTimer();
@@ -425,6 +427,16 @@ void GameProcessor::shiftBallIntoBlock(int row, int col) {
   GLfloat new_x = 0.f, new_y = 0.f;
   getCenterOfBlock(row, col, &new_x, &new_y);
   correctBallPosition(new_x, new_y);
+}
+
+void GameProcessor::teleportBallIntoRandomBlock() {
+  std::vector<RowCol> network_blocks;
+  network_blocks.reserve(12);
+  m_level->findBlocks(m_level->generatePresentBlock(), &network_blocks);
+  if (!network_blocks.empty()) {
+    int random_index = util::getRandomElement(network_blocks);
+    shiftBallIntoBlock(network_blocks[random_index].row, network_blocks[random_index].col);
+  }
 }
 
 void GameProcessor::onLostBall(bool /* dummy */) {
@@ -795,11 +807,7 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
       // --------------------
       case Block::HYPER:
         external_collision = blockCollision(top_border, bottom_border, left_border, right_border, 100 /* elastic */);
-        m_level->findBlocks(m_level->generatePresentBlock(), &network_blocks);
-        if (!network_blocks.empty()) {
-          random_index = util::getRandomElement(network_blocks);
-          shiftBallIntoBlock(network_blocks[random_index].row, network_blocks[random_index].col);
-        }
+        teleportBallIntoRandomBlock();
         break;
       case Block::ORIGIN:
         external_collision = blockCollision(top_border, bottom_border, left_border, right_border, 100 /* elastic */);

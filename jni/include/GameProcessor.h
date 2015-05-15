@@ -262,6 +262,8 @@ private:
   /// @param col Column index of specified block.
   /// @note Forces ball's movement with notification, only internal uses.
   void shiftBallIntoBlock(int row, int col);
+  /// @brief Teleports ball into random ordinary block if presents.
+  void teleportBallIntoRandomBlock();
   /// @brief Notifies Java layer the ball has been lost.
   void onLostBall(bool /* dummy */);
   /// @brief Notifies Java layer level has been successfully finished.
