@@ -543,6 +543,7 @@ void GameProcessor::dropTimedEffectForBall() {
     case BallEffect::JUMP:
     case BallEffect::MIRROR:
     case BallEffect::PIERCE:
+    case BallEffect::PROTECT:
     case BallEffect::RANDOM:
       m_ball.setEffect(BallEffect::NONE);
       drop_ball_appearance_event.notifyListeners(true);
