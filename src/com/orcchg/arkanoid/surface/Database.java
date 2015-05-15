@@ -10,7 +10,7 @@ import android.util.Log;
 class Database {
   private static final String TAG = "Arkanoid_Database";
   
-  private static final String databaseName = "ArkanoidDatabase.db";
+  static final String databaseName = "ArkanoidDatabase.db";
   private SQLiteDatabase mDbHandler;
   
   private static final String PlayersTable = "PlayersTable";
