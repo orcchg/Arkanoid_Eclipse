@@ -162,9 +162,15 @@ public:
   /// @param output Array of valid indices of influenced blocks.
   /// @return Score of affected blocks.
   int modifyBlocksBehind(int row, int col, Block type, bool ignoreNone, Direction direction, std::vector<RowCol>* output);
+  /// @brief Same as above, but modifies one block behind certain block.
+  /// @return Score of affected block.
+  int modifyOneBlockBehind(int row, int col, Block type, bool ignoreNone, Direction direction, RowCol* output);
   /// @brief Destroys blocks behind certain block.
   /// @return Score of affected blocks.
   int destroyBlocksBehind(int row, int col, Direction direction, std::vector<RowCol>* output);
+  /// @brief Destroys one block behind certain block.
+  /// @return Score of affected block.
+  int destroyOneBlockBehind(int row, int col, Direction direction, RowCol* output);
   /// @brief Modifies one block near certain block where possible.
   /// @param row Row index of certain block.
   /// @param col Column index of certain block.

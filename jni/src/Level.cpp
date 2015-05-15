@@ -541,8 +541,70 @@ int Level::modifyBlocksBehind(int row, int col, Block type, bool ignoreNone, Dir
   return score;
 }
 
+int Level::modifyOneBlockBehind(int row, int col, Block type, bool ignoreNone, Direction direction, RowCol* output) {
+  int score = 0;
+  switch (direction) {
+    case Direction::UP:
+      --row;
+      if (row >= 0) {
+        Block block = getBlock(row, col);
+        initial_cardinality -= BlockUtils::getCardinalityCost(block);
+        score += BlockUtils::getBlockScore(block);
+        setVulnerableBlock(row, col, type);
+        if (!(ignoreNone && (block == Block::NONE || block == Block::TITAN || block == Block::INVUL))) {
+          *output = RowCol(row, col);
+        }
+      }
+      break;
+    case Direction::DOWN:
+      ++row;
+      if (row < rows) {
+        Block block = getBlock(row, col);
+        initial_cardinality -= BlockUtils::getCardinalityCost(block);
+        score += BlockUtils::getBlockScore(block);
+        setVulnerableBlock(row, col, type);
+        if (!(ignoreNone && (block == Block::NONE || block == Block::TITAN || block == Block::INVUL))) {
+          *output = RowCol(row, col);
+        }
+      }
+      break;
+    case Direction::RIGHT:
+      ++col;
+      if (col < cols) {
+        Block block = getBlock(row, col);
+        initial_cardinality -= BlockUtils::getCardinalityCost(block);
+        score += BlockUtils::getBlockScore(block);
+        setVulnerableBlock(row, col, type);
+        if (!(ignoreNone && (block == Block::NONE || block == Block::TITAN || block == Block::INVUL))) {
+          *output = RowCol(row, col);
+        }
+      }
+      break;
+    case Direction::LEFT:
+      --col;
+      if (col >= 0) {
+        Block block = getBlock(row, col);
+        initial_cardinality -= BlockUtils::getCardinalityCost(block);
+        score += BlockUtils::getBlockScore(block);
+        setVulnerableBlock(row, col, type);
+        if (!(ignoreNone && (block == Block::NONE || block == Block::TITAN || block == Block::INVUL))) {
+          *output = RowCol(row, col);
+        }
+      }
+      break;
+    case Direction::NONE:
+    default:
+      break;
+  }
+  return score;
+}
+
 int Level::destroyBlocksBehind(int row, int col, Direction direction, std::vector<RowCol>* output) {
   return modifyBlocksBehind(row, col, Block::NONE, true, direction, output);
+}
+
+int Level::destroyOneBlockBehind(int row, int col, Direction direction, RowCol* output) {
+  return modifyOneBlockBehind(row, col, Block::NONE, true, direction, output);
 }
 
 bool Level::modifyBlockNear(int row, int col, Block type, RowCol* output) {

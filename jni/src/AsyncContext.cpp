@@ -222,7 +222,9 @@ void AsyncContext::callback_prizeCaught(PrizePackage package) {
     case Prize::MIRROR:
       setBiteBallAppearance(BallEffect::MIRROR);
       break;
-    // TODO: PIERCE
+    case Prize::PIERCE:
+      setBiteBallAppearance(BallEffect::PIERCE);
+      break;
     case Prize::PROTECT:
       setBiteBallAppearance(BallEffect::PROTECT);
       break;
@@ -611,7 +613,6 @@ bool AsyncContext::checkBlockPresense(int row, int col) {
 }
 
 void AsyncContext::setBiteBallAppearance(BallEffect effect) {
-  // TODO: impl more effect appearances
   switch (effect) {
     default:
     case BallEffect::NONE:
@@ -660,9 +661,17 @@ void AsyncContext::setBiteBallAppearance(BallEffect effect) {
       util::setColor(util::ZYGOTE_EDGE, &m_ball_color_buffer[24], 12);
       util::setColor(util::NETWORK, &m_ball_color_buffer[32], 4);
       break;
-//    case BallEffect::PIERCE:
-//
-//      break;
+    case BallEffect::PIERCE:
+      // bite
+      util::setColor(util::SALMON, &m_bite_color_buffer[0], 8);
+      util::setColor(util::SIENNA_DARK, &m_bite_color_buffer[8], 8);
+      // ball
+      util::setColor(util::BLACK, &m_ball_color_buffer[0], 4);
+      util::setColor(util::DESTROY, &m_ball_color_buffer[4], 16);
+      util::setColor(util::KNOCK_EDGE, &m_ball_color_buffer[20], 4);
+      util::setColor(util::ROLLING, &m_ball_color_buffer[24], 12);
+      util::setColor(util::ROLLING_EDGE, &m_ball_color_buffer[32], 4);
+      break;
     case BallEffect::MIRROR:
       // bite
       util::setColor(util::MIRROR, &m_bite_color_buffer[0], 8);
@@ -719,7 +728,7 @@ void AsyncContext::setBiteBallAppearance(BallEffect effect) {
       util::setColor(util::BRICK, &m_ball_color_buffer[32], 4);
       break;
 //    case BallEffect::ZYGOTE:
-//
+//      TODO
 //      break;
   }
 }

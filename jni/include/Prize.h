@@ -11,8 +11,8 @@ enum class Prize : int {
   CLIMB = 2,      // [ t ] climbs up the bite
   DESTROY = 3,    //! lose ball
   DRAGON = 4,     // [ t ] summons dragon
-  EASY = 5,       // [ 1 ] for all ordinary / action blocks  { ball }
-  EASY_T = 6,     // [ t ] same                              { ball }
+  EASY = 5,       //! [ 1 ] for all ordinary / action blocks  { ball }
+  EASY_T = 6,     //! [ t ] same                              { ball }
   EVAPORATE = 7,  // transform all WATER to FOG              { level }
   EXPLODE = 8,    //! [ 1 ] explodes blocks nearest to ball   { ball }
   EXTEND = 9,     //! [ t ] extends bite
@@ -24,7 +24,7 @@ enum class Prize : int {
   JUMP = 15,      //! [ t ] explodes blocks nearest to ball { ball }
   LASER = 16,     // [ t ] laser beam from bite
   MIRROR = 17,    //! [ t ] all collisions from bite are mirrored  { ball }
-  PIERCE = 18,    // [ t ] ball not disturbing                    { ball }
+  PIERCE = 18,    // [ 1 ] explodes blocks behind                  { ball }
   PROTECT = 19,   //! [ t ] add protection blocks                  { level }
   RANDOM = 20,    //! [ t ] random angle for any bite collision    { ball }
   SHORT = 21,     //! [ t ] shortens bite

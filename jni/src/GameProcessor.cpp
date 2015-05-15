@@ -311,9 +311,8 @@ void GameProcessor::process_prizeCaught() {
       m_ball.setEffect(BallEffect::MIRROR);
       dropInternalTimer();
       break;
-    case Prize::PIERCE:  // timed effect
+    case Prize::PIERCE:
       m_ball.setEffect(BallEffect::PIERCE);
-      dropInternalTimer();
       break;
     case Prize::PROTECT:  // timed effect
       bite_width_changed_event.notifyListeners(BiteEffect::FULL);
@@ -505,7 +504,25 @@ int GameProcessor::performBallEffectAtBlock(int row, int col) {
         block_impact_event.notifyListeners(item);
       }
       break;
-    // TODO: PIERCE
+    case BallEffect::PIERCE:
+      {
+        GLfloat top_border = 0.0f, bottom_border = 0.0f, left_border = 0.0f, right_border = 0.0f;
+        m_level_dimens.getBlockDimens(row, col, &top_border, &bottom_border, &left_border, &right_border);
+        Direction vertical_direction = Direction::NONE;
+        Direction horizontal_direction = Direction::NONE;
+        getCollisionDirection(top_border, bottom_border, left_border, right_border, &vertical_direction, &horizontal_direction);
+        Direction result_direction = (vertical_direction != Direction::NONE ? vertical_direction : (horizontal_direction != Direction::NONE ? horizontal_direction : Direction::UP));
+
+        RowCol rowcol(-1, -1);
+        score += m_level->destroyOneBlockBehind(row, col, result_direction, &rowcol);
+        explodeBlock(row, col, BlockUtils::getBlockColor(Block::ROLLING), Kind::DIVERGE);
+        if (rowcol.row != -1 && rowcol.col != -1) {
+          spawned_prize = m_level->getPrizeGenerator().generatePrize();
+          spawnPrizeAtBlock(rowcol.row, rowcol.col, spawned_prize);
+          block_impact_event.notifyListeners(rowcol);
+        }
+      }
+      break;
     case BallEffect::UPGRADE:
       score += m_level->changeBlocksAround(row, col, Mode::UPGRADE, &affected_blocks_effect);
       explodeBlock(row, col, util::GREEN, Kind::DIVERGE);
@@ -529,7 +546,6 @@ int GameProcessor::performBallEffectAtBlock(int row, int col) {
       m_ball.getEffect() != BallEffect::GOO &&
       m_ball.getEffect() != BallEffect::JUMP &&
       m_ball.getEffect() != BallEffect::MIRROR &&
-      m_ball.getEffect() != BallEffect::PIERCE &&
       m_ball.getEffect() != BallEffect::PROTECT &&
       m_ball.getEffect() != BallEffect::RANDOM) {
 
@@ -545,7 +561,6 @@ void GameProcessor::dropTimedEffectForBall() {
     case BallEffect::GOO:
     case BallEffect::JUMP:
     case BallEffect::MIRROR:
-    case BallEffect::PIERCE:
     case BallEffect::PROTECT:
     case BallEffect::RANDOM:
       m_ball.setEffect(BallEffect::NONE);
@@ -675,19 +690,8 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
 
     Direction vertical_direction = Direction::NONE;
     Direction horizontal_direction = Direction::NONE;
-    if (m_ball.getPose().getX() + 1.0f > left_border &&
-        m_ball.getPose().getX() + 1.0f < right_border) {
-      if (m_ball.getPose().getY() >= 1.0f - top_border) {
-        vertical_direction = Direction::DOWN;
-      } else if (m_ball.getPose().getY() <= 1.0f - bottom_border) {
-        vertical_direction = Direction::UP;
-      }
-    }
-    if (m_ball.getPose().getX() + 1.0f <= left_border) {
-      horizontal_direction = Direction::RIGHT;
-    } else if (m_ball.getPose().getX() + 1.0f >= right_border) {
-      horizontal_direction = Direction::LEFT;
-    }
+    getCollisionDirection(top_border, bottom_border, left_border, right_border, &vertical_direction, &horizontal_direction);
+
     std::vector<RowCol> affected_blocks;
     std::vector<RowCol> network_blocks;
     affected_blocks.reserve(12);
@@ -955,6 +959,31 @@ void GameProcessor::getCenterOfBlock(int row, int col, GLfloat* x, GLfloat* y) {
   m_level_dimens.getBlockDimens(row, col, &top_border, &bottom_border, &left_border, &right_border);
   *x = 0.5f * (right_border + left_border) - 1.0f;
   *y = -0.5f * (bottom_border + top_border) + 1.0f;
+}
+
+void GameProcessor::getCollisionDirection(
+    GLfloat top_border,
+    GLfloat bottom_border,
+    GLfloat left_border,
+    GLfloat right_border,
+    Direction* vertical_direction,
+    Direction* horizontal_direction) {
+
+  *vertical_direction = Direction::NONE;
+  *horizontal_direction = Direction::NONE;
+  if (m_ball.getPose().getX() + 1.0f > left_border &&
+      m_ball.getPose().getX() + 1.0f < right_border) {
+    if (m_ball.getPose().getY() >= 1.0f - top_border) {
+      *vertical_direction = Direction::DOWN;
+    } else if (m_ball.getPose().getY() <= 1.0f - bottom_border) {
+      *vertical_direction = Direction::UP;
+    }
+  }
+  if (m_ball.getPose().getX() + 1.0f <= left_border) {
+    *horizontal_direction = Direction::RIGHT;
+  } else if (m_ball.getPose().getX() + 1.0f >= right_border) {
+    *horizontal_direction = Direction::LEFT;
+  }
 }
 
 void GameProcessor::correctBallPosition(GLfloat new_x, GLfloat new_y) {

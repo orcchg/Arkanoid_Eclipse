@@ -367,6 +367,8 @@ private:
   /// @param x Output X coordinate of block's center.
   /// @param y Output Y coordinate of block's center.
   void getCenterOfBlock(int row, int col, GLfloat* x, GLfloat* y);
+  /// @brief Recognizes block's collision direction.
+  void getCollisionDirection(GLfloat top_border, GLfloat bottom_border, GLfloat left_border, GLfloat right_border, Direction* vertical_direction, Direction* horizontal_direction);
   /// @brief Corrects ball's visual position after collision and notifies
   /// rendering thread.
   /// @param new_x Corrected ball's center position along X axis.
