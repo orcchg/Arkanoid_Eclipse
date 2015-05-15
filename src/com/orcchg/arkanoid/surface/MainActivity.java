@@ -375,6 +375,8 @@ public class MainActivity extends FragmentActivity {
           updateLives();
           break;
         case DRAGON:
+          score += 90;
+          break;
         case EASY:
         case EASY_T:
         case EVAPORATE:
