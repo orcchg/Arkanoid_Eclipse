@@ -275,7 +275,8 @@ void GameProcessor::process_prizeCaught() {
         }
       }
       break;
-    // TODO: implement other prizes
+    // TODO: CLIMB
+    // TODO: DRAGON
     case Prize::EASY:
       m_ball.setEffect(BallEffect::EASY);
       break;
@@ -283,6 +284,7 @@ void GameProcessor::process_prizeCaught() {
       m_ball.setEffect(BallEffect::EASY_T);
       dropInternalTimer();
       break;
+    // TODO: EVAPORATE
     case Prize::EXPLODE:
       m_ball.setEffect(BallEffect::EXPLODE);
       break;
@@ -294,15 +296,17 @@ void GameProcessor::process_prizeCaught() {
       m_ball.fastSpeed();
       dropInternalTimerForSpeed();
       break;
+    // TODO: FOG
     case Prize::GOO:  // timed effect
       m_ball.setEffect(BallEffect::GOO);
       dropInternalTimer();
       break;
+    // TODO: HYPER
     case Prize::JUMP:  // timed effect
       m_ball.setEffect(BallEffect::JUMP);
       dropInternalTimer();
       break;
-      break;
+    // TODO: LASER
     case Prize::MIRROR:  // timed effect
       m_ball.setEffect(BallEffect::MIRROR);
       dropInternalTimer();
@@ -333,12 +337,16 @@ void GameProcessor::process_prizeCaught() {
     case Prize::DEGRADE:
       m_ball.setEffect(BallEffect::DEGRADE);
       break;
-    case Prize::WIN:
+    case Prize::WIN:  // processed in Java layer
       m_ball_is_flying = false;  // prevent block collision at new level
       break;
     case Prize::ZYGOTE:
       m_ball.setEffect(BallEffect::ZYGOTE);
       break;
+    case Prize::DESTROY:  // fully processed in Java layer
+    case Prize::INIT:     // fully processed in Java layer
+    case Prize::VITALITY: // fully processed in Java layer
+    // SCORE_* prizes are fully processed in Java layer
     default:
       break;
   }
@@ -481,8 +489,9 @@ int GameProcessor::performBallEffectAtBlock(int row, int col) {
   Prize spawned_prize = Prize::NONE;
   std::vector<RowCol> affected_blocks_effect;
 
-  // TODO: add more ball effects
   switch (m_ball.getEffect()) {
+    // TODO: EASY
+    // TODO: EASY_T
     case BallEffect::EXPLODE:
     case BallEffect::JUMP:
       score += m_level->destroyBlocksAround(row, col, &affected_blocks_effect);
@@ -493,6 +502,7 @@ int GameProcessor::performBallEffectAtBlock(int row, int col) {
         block_impact_event.notifyListeners(item);
       }
       break;
+    // TODO: PIERCE
     case BallEffect::UPGRADE:
       score += m_level->changeBlocksAround(row, col, Mode::UPGRADE, &affected_blocks_effect);
       explodeBlock(row, col, util::GREEN, Kind::DIVERGE);
@@ -511,12 +521,13 @@ int GameProcessor::performBallEffectAtBlock(int row, int col) {
       break;
   }
 
-  // JUMP is a timed effect and to be dropped by timer
+  // Timed effects will be dropped by timer, not by block collision
   if (m_ball.getEffect() != BallEffect::EASY_T &&
       m_ball.getEffect() != BallEffect::GOO &&
       m_ball.getEffect() != BallEffect::JUMP &&
       m_ball.getEffect() != BallEffect::MIRROR &&
       m_ball.getEffect() != BallEffect::PIERCE &&
+      m_ball.getEffect() != BallEffect::PROTECT &&
       m_ball.getEffect() != BallEffect::RANDOM) {
 
     m_ball.setEffect(BallEffect::NONE);

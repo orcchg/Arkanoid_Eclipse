@@ -203,9 +203,10 @@ void AsyncContext::callback_prizeCaught(PrizePackage package) {
   m_prize_packages.at(prize_id).setCaught(true);
   addPrizeToRemoved(prize_id);
 
-  // TODO: prize types for appearance
   switch (package.getPrize()) {
-    case Prize::EXPLODE:
+    // TODO: EASY  // not timed, but with special appearance
+    // TODO: EASY_T
+    case Prize::EXPLODE:  // not timed, but with special appearance
     case Prize::JUMP:
       setBiteBallAppearance(BallEffect::EXPLODE);
       break;
@@ -215,20 +216,22 @@ void AsyncContext::callback_prizeCaught(PrizePackage package) {
     case Prize::MIRROR:
       setBiteBallAppearance(BallEffect::MIRROR);
       break;
+    // TODO: PIERCE
     case Prize::PROTECT:
       setBiteBallAppearance(BallEffect::PROTECT);
       break;
     case Prize::RANDOM:
       setBiteBallAppearance(BallEffect::RANDOM);
       break;
-    case Prize::UPGRADE:
+    case Prize::UPGRADE:  // not timed, but with special appearance
       setBiteBallAppearance(BallEffect::UPGRADE);
       break;
-    case Prize::DEGRADE:
+    case Prize::DEGRADE:  // not timed, but with special appearance
       setBiteBallAppearance(BallEffect::DEGRADE);
       break;
     default:
-      // TODO: do not drop appearance for timed effects
+      // other - not timed effects - standard appearance
+      // FIXME: do not drop timed appearance in case of ordinary prizes
       setBiteBallAppearance(BallEffect::NONE);
       break;
   }

@@ -8,18 +8,18 @@
 namespace game {
 
 enum class BallEffect : int {
-  NONE = 0,      // !
-  EASY = 1,
-  EASY_T = 2,    // timed effect
-  EXPLODE = 3,   // !
+  NONE = 0,      //!
+  EASY = 1,      // block effect
+  EASY_T = 2,    // timed effect ; block effect
+  EXPLODE = 3,   //! block effect ; block effect
   GOO = 4,       // timed effect
-  JUMP = 5,      //! timed effect
+  JUMP = 5,      //! timed effect ; block effect
   MIRROR = 6,    //! timed effect
-  PIERCE = 7,    // timed effect
+  PIERCE = 7,    // timed effect ; block effect
   PROTECT = 8,   //! timed effect, no-op for ball, only for bite
   RANDOM = 9,    //! timed effect
-  UPGRADE = 10,  // !
-  DEGRADE = 11,  // !
+  UPGRADE = 10,  //! block effect
+  DEGRADE = 11,  //! block effect
   ZYGOTE = 12
 };
 
