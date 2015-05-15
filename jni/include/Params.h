@@ -24,6 +24,14 @@ struct BallParams {
   constexpr static float ballSlowSpeed = 0.001f;
 };
 
+struct LaserParams {
+  constexpr static float laserSpeed = 2.0f;
+  constexpr static float laserWidth = 0.3f;
+  constexpr static float laserHeight = 0.3f;
+  constexpr static float laserHalfWidth = 0.5f * laserWidth;
+  constexpr static float laserHalfHeight = 0.5f * laserHeight;
+};
+
 struct PrizeParams {
   constexpr static float prizeSpeed = 0.7f;
   constexpr static float prizeWidth = 0.1f;

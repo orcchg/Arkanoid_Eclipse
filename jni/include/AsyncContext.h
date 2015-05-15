@@ -237,6 +237,10 @@ private:
   float m_prize_catch_time;
   bool m_render_prize_catch;
   std::vector<GLfloat> m_caught_prizes_x_coords;
+
+  clock_t m_laser_last_time;
+  float m_laser_time;
+  bool m_render_laser;
   /** @} */  // end of LogicData group
 
   /** @defgroup Shaders Shaders for rendering game components.
@@ -249,6 +253,7 @@ private:
   shader::ShaderHelper::Ptr m_sample_shader;
   shader::ShaderHelper::Ptr m_prize_shader;
   shader::ShaderHelper::Ptr m_prize_catch_shader;
+  shader::ShaderHelper::Ptr m_laser_shader;
   /** @} */  // end of Shaders group
 
   /** @defgroup Mutex Thread-safety variables
@@ -423,6 +428,8 @@ private:
   void drawPrize(const PrizePackage& prize);
   /// @brief Draws prize catch animation.
   void drawPrizeCatch(GLfloat x, GLfloat y, const util::BGRA<GLfloat>& bgra);
+  /// @brief Draws laser sprite originated at specified point.
+  void drawLaser(GLfloat x, GLfloat y);
   /** @} */  // end of Drawings group
 };
 

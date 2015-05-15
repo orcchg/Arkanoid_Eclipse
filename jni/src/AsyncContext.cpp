@@ -57,13 +57,17 @@ AsyncContext::AsyncContext(JavaVM* jvm)
   , m_prize_catch_time(0.0f)
   , m_render_prize_catch(false)
   , m_caught_prizes_x_coords()
+  , m_laser_last_time(0)
+  , m_laser_time(0.0f)
+  , m_render_laser(false)
   , m_level_shader(nullptr)
   , m_bite_shader(nullptr)
   , m_ball_shader(nullptr)
   , m_explosion_shader(nullptr)
   , m_sample_shader(nullptr)
   , m_prize_shader(nullptr)
-  , m_prize_catch_shader(nullptr) {
+  , m_prize_catch_shader(nullptr)
+  , m_laser_shader(nullptr) {
 
   DBG("enter AsyncContext ctor");
   m_surface_received.store(false);
@@ -789,6 +793,7 @@ void AsyncContext::glOptionsConfig() {
   m_sample_shader = std::make_shared<shader::ShaderHelper>(shader::SimpleTextureShader());
   m_prize_shader = std::make_shared<shader::ShaderHelper>(shader::VerticalFallShader());
   m_prize_catch_shader = std::make_shared<shader::ShaderHelper>(shader::ParticleMoveShader());
+  m_laser_shader = std::make_shared<shader::ShaderHelper>(shader::VerticalClimbShader());
 }
 
 void AsyncContext::destroyDisplay() {
@@ -1323,6 +1328,75 @@ void AsyncContext::drawPrizeCatch(GLfloat x, GLfloat y, const util::BGRA<GLfloat
 
   glDisableVertexAttribArray(a_startPosition);
   glDisableVertexAttribArray(a_endPosition);
+}
+
+void AsyncContext::drawLaser(GLfloat x, GLfloat y) {
+  m_laser_shader->useProgram();
+
+  if (m_laser_last_time == 0) {
+    m_laser_last_time = clock();
+  }
+  {
+    clock_t currentTime = clock();
+    float delta_elapsed = static_cast<float>(currentTime - m_laser_last_time) / CLOCKS_PER_SEC;
+    m_laser_last_time = currentTime;
+    m_laser_time += delta_elapsed;
+    if (m_laser_time >= 3.0f) {
+      m_laser_time = 0.0f;
+      m_render_laser = false;
+      return;
+    }
+  }
+  int is_visible = 1;  /* true */
+  {
+    GLfloat Ypath = y - m_laser_time * LaserParams::laserSpeed;
+    if (Ypath <= 1.0f + LaserParams::laserHalfHeight) {
+      // TODO: moved laser beam
+    } else {
+      is_visible = 0;  /* false */
+      m_render_laser = false;
+    }
+  }
+
+  GLint u_time = glGetUniformLocation(m_laser_shader->getProgram(), "u_time");
+  GLint u_velocity = glGetUniformLocation(m_laser_shader->getProgram(), "u_velocity");
+  GLint u_visible = glGetUniformLocation(m_laser_shader->getProgram(), "u_visible");
+  glUniform1f(u_time, m_laser_time);
+  glUniform1f(u_velocity, LaserParams::laserSpeed);
+  glUniform1i(u_visible, is_visible);
+
+  GLint a_position = glGetAttribLocation(m_laser_shader->getProgram(), "a_position");
+  GLint a_texCoord = glGetAttribLocation(m_laser_shader->getProgram(), "a_texCoord");
+
+  GLfloat* laser_vertices = new GLfloat[16];
+  util::setRectangleVertices(
+      laser_vertices,
+      LaserParams::laserWidth,
+      LaserParams::laserHeight * m_aspect,
+      x - LaserParams::laserHalfWidth,
+      y - LaserParams::laserHalfHeight,
+      1, 1);
+
+  glVertexAttribPointer(a_position, 4, GL_FLOAT, GL_FALSE, 0, &laser_vertices[0]);
+  glVertexAttribPointer(a_texCoord, 2, GL_FLOAT, GL_FALSE, 0, &m_rectangle_texCoord_buffer[0]);
+
+  m_resources->getTexture("ef_laser.png")->apply();
+  GLint sampler = glGetUniformLocation(m_laser_shader->getProgram(), "s_texture");
+  glUniform1i(sampler, 0);
+
+  glEnableVertexAttribArray(a_position);
+  glEnableVertexAttribArray(a_texCoord);
+
+  glEnable(GL_TEXTURE_2D);
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+
+  glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+  delete [] laser_vertices;
+
+  glDisableVertexAttribArray(a_position);
+  glDisableVertexAttribArray(a_texCoord);
 }
 
 }  // namespace game
