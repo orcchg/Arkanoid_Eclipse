@@ -282,7 +282,6 @@ void GameProcessor::process_prizeCaught() {
     case Prize::EASY_T:  // timed effect
       m_ball.setEffect(BallEffect::EASY_T);
       dropInternalTimer();
-      // TODO: impl
       break;
     case Prize::EXPLODE:
       m_ball.setEffect(BallEffect::EXPLODE);
@@ -298,23 +297,19 @@ void GameProcessor::process_prizeCaught() {
     case Prize::GOO:  // timed effect
       m_ball.setEffect(BallEffect::GOO);
       dropInternalTimer();
-      // TODO: impl
       break;
     case Prize::JUMP:  // timed effect
       m_ball.setEffect(BallEffect::JUMP);
       dropInternalTimer();
-      // TODO: impl
       break;
       break;
     case Prize::MIRROR:  // timed effect
       m_ball.setEffect(BallEffect::MIRROR);
       dropInternalTimer();
-      // TODO: impl
       break;
     case Prize::PIERCE:  // timed effect
       m_ball.setEffect(BallEffect::PIERCE);
       dropInternalTimer();
-      // TODO: impl
       break;
     case Prize::PROTECT:  // timed effect
       bite_width_changed_event.notifyListeners(BiteEffect::FULL);
@@ -323,7 +318,6 @@ void GameProcessor::process_prizeCaught() {
     case Prize::RANDOM:  // timed effect
       m_ball.setEffect(BallEffect::RANDOM);
       dropInternalTimer();
-      // TODO: impl
       break;
     case Prize::SHORT:  // timed effect
       bite_width_changed_event.notifyListeners(BiteEffect::SHORT);
@@ -338,6 +332,9 @@ void GameProcessor::process_prizeCaught() {
       break;
     case Prize::DEGRADE:
       m_ball.setEffect(BallEffect::DEGRADE);
+      break;
+    case Prize::WIN:
+      m_ball_is_flying = false;  // prevent block collision at new level
       break;
     case Prize::ZYGOTE:
       m_ball.setEffect(BallEffect::ZYGOTE);

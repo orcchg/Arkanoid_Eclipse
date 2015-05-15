@@ -18,7 +18,7 @@ enum class BallEffect : int {
   PIERCE = 7,    // timed effect
   PROTECT = 8,   //! timed effect, no-op for ball, only for bite
   RANDOM = 9,    //! timed effect
-  UPGRADE = 10,   // !
+  UPGRADE = 10,  // !
   DEGRADE = 11,  // !
   ZYGOTE = 12
 };
