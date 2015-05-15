@@ -230,9 +230,6 @@ void AsyncContext::callback_prizeCaught(PrizePackage package) {
       setBiteBallAppearance(BallEffect::DEGRADE);
       break;
     default:
-      // other - not timed effects - standard appearance
-      // FIXME: do not drop timed appearance in case of ordinary prizes
-      setBiteBallAppearance(BallEffect::NONE);
       break;
   }
   interrupt();
