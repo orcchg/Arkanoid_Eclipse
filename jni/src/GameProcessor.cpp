@@ -490,8 +490,11 @@ int GameProcessor::performBallEffectAtBlock(int row, int col) {
   std::vector<RowCol> affected_blocks_effect;
 
   switch (m_ball.getEffect()) {
-    // TODO: EASY
-    // TODO: EASY_T
+    case BallEffect::EASY:
+    case BallEffect::EASY_T:
+      score += m_level->destroyVulnerableBlock(row, col);
+      explodeBlock(row, col, util::YELLOW, Kind::DIVERGE);
+      break;
     case BallEffect::EXPLODE:
     case BallEffect::JUMP:
       score += m_level->destroyBlocksAround(row, col, &affected_blocks_effect);

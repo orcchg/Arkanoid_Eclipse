@@ -116,6 +116,10 @@ public:
   /// in case it is vulnerable, according to the given mode.
   /// @note Re-calculates cardinality.
   void changeVulnerableBlock(Mode mode, int row, int col);
+  /// @brief Destroys vulnerable block.
+  /// @return Score of destroyed block.
+  /// @note Re-calculates cardinality.
+  int destroyVulnerableBlock(int row, int col);
   /// @brief Gets recorded cardinality.
   inline int getCardinality() const { return initial_cardinality; }
   /// @brief Forced way to drop cardinality for instant victory.

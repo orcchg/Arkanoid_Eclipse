@@ -208,8 +208,10 @@ void AsyncContext::callback_prizeCaught(PrizePackage package) {
   addPrizeToRemoved(prize_id);
 
   switch (package.getPrize()) {
-    // TODO: EASY  // not timed, but with special appearance
-    // TODO: EASY_T
+    case Prize::EASY:  // not timed, but with special appearance
+    case Prize::EASY_T:
+      setBiteBallAppearance(BallEffect::EASY);
+      break;
     case Prize::EXPLODE:  // not timed, but with special appearance
     case Prize::JUMP:
       setBiteBallAppearance(BallEffect::EXPLODE);
@@ -623,10 +625,18 @@ void AsyncContext::setBiteBallAppearance(BallEffect effect) {
       util::setColor(util::SIENNA_DARK, &m_ball_color_buffer[24], 12);
       util::setColor(util::SIENNA, &m_ball_color_buffer[32], 4);
       break;
-//    case BallEffect::EASY:
-//    case BallEffect::EASY_T:
-//
-//      break;
+    case BallEffect::EASY:
+    case BallEffect::EASY_T:
+      // bite
+      util::setColor(util::SALMON, &m_bite_color_buffer[0], 8);
+      util::setColor(util::SIENNA_DARK, &m_bite_color_buffer[8], 8);
+      // ball
+      util::setColor(util::YELLOW, &m_ball_color_buffer[0], 4);
+      util::setColor(util::TITAN, &m_ball_color_buffer[4], 16);
+      util::setColor(util::MIDAS, &m_ball_color_buffer[20], 4);
+      util::setColor(util::MIDAS_EDGE, &m_ball_color_buffer[24], 12);
+      util::setColor(util::TITAN_EDGE, &m_ball_color_buffer[32], 4);
+      break;
     case BallEffect::EXPLODE:
     case BallEffect::JUMP:
       // bite

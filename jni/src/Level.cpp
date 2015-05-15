@@ -166,6 +166,17 @@ void Level::changeVulnerableBlock(Mode mode, int row, int col) {
   }
 }
 
+int Level::destroyVulnerableBlock(int row, int col) {
+  int score = 0;
+  Block block = getBlock(row, col);
+  if (block != Block::TITAN && block != Block::INVUL) {
+    score += BlockUtils::getCardinalityCost(block);
+    initial_cardinality -= BlockUtils::getCardinalityCost(block);
+    setBlock(row, col, Block::NONE);
+  }
+  return score;
+}
+
 void Level::setBlockImpacted(int row, int col) {
   Block block = getBlock(row, col);
   switch (block) {

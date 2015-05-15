@@ -97,8 +97,8 @@ const native::Texture* const Resources::getPrizeTexture(const Prize& prize) cons
     case Prize::CLIMB:    return getTexture("pr_earth.png");
     case Prize::DESTROY:  return getTexture("pr_skull.png");
     case Prize::DRAGON:   return getTexture("pr_egg.png");
-    case Prize::EASY:
-    case Prize::EASY_T:     return getTexture("pr_fire.png");
+    case Prize::EASY:       return getTexture("pr_fire.png");
+    case Prize::EASY_T:     return getTexture("pr_fire_t.png");
     case Prize::EVAPORATE:  return getTexture("pr_waterdrop.png");
     case Prize::EXPLODE:    return getTexture("pr_explode.png");
     case Prize::EXTEND:   return getTexture("pr_extend.png");
