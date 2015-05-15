@@ -311,8 +311,9 @@ void GameProcessor::process_prizeCaught() {
       m_ball.setEffect(BallEffect::MIRROR);
       dropInternalTimer();
       break;
-    case Prize::PIERCE:
+    case Prize::PIERCE:  // timed effect
       m_ball.setEffect(BallEffect::PIERCE);
+      dropInternalTimer();
       break;
     case Prize::PROTECT:  // timed effect
       bite_width_changed_event.notifyListeners(BiteEffect::FULL);
@@ -546,6 +547,7 @@ int GameProcessor::performBallEffectAtBlock(int row, int col) {
       m_ball.getEffect() != BallEffect::GOO &&
       m_ball.getEffect() != BallEffect::JUMP &&
       m_ball.getEffect() != BallEffect::MIRROR &&
+      m_ball.getEffect() != BallEffect::PIERCE &&
       m_ball.getEffect() != BallEffect::PROTECT &&
       m_ball.getEffect() != BallEffect::RANDOM) {
 
@@ -561,6 +563,7 @@ void GameProcessor::dropTimedEffectForBall() {
     case BallEffect::GOO:
     case BallEffect::JUMP:
     case BallEffect::MIRROR:
+    case BallEffect::PIERCE:
     case BallEffect::PROTECT:
     case BallEffect::RANDOM:
       m_ball.setEffect(BallEffect::NONE);
