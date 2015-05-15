@@ -78,6 +78,13 @@ struct VerticalFallShader : public Shader {
   void bindTexCoordAttribLocation(GLuint program, GLuint texCoord_location) const override final;
 };
 
+struct VerticalClimbShader : public Shader {
+  VerticalClimbShader();
+
+  void bindColorAttribLocation(GLuint program, GLuint color_location) const override final;
+  void bindTexCoordAttribLocation(GLuint program, GLuint texCoord_location) const override final;
+};
+
 struct ParticleMoveShader : public Shader {
   ParticleMoveShader();
 

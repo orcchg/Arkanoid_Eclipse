@@ -254,6 +254,45 @@ void VerticalFallShader::bindTexCoordAttribLocation(GLuint program, GLuint texCo
   glBindAttribLocation(program, texCoord_location, "a_texCoord");
 }
 
+VerticalClimbShader::VerticalClimbShader()
+  : Shader(
+      "  uniform float u_time;                                                 \n"
+      "  uniform float u_velocity;                                             \n"
+      "  uniform int u_visible;                                                \n"
+      "                                                                        \n"
+      "  attribute vec4 a_position;                                            \n"
+      "  attribute vec2 a_texCoord;                                            \n"
+      "                                                                        \n"
+      "  varying vec2 v_texCoord;                                              \n"
+      "                                                                        \n"
+      "  void main() {                                                         \n"
+      "    if (u_visible != 0 && u_time <= 3.0) {                              \n"
+      "      gl_Position = a_position;                                         \n"
+      "      gl_Position.y += u_time * u_velocity;                             \n"
+      "    } else {                                                            \n"
+      "      gl_Position = vec4(-1000, -1000, 0, 0);                           \n"
+      "    }                                                                   \n"
+      "    v_texCoord = a_texCoord;                                            \n"
+      "  }                                                                     \n"
+      ,
+      "  precision mediump float;                                              \n"
+      "                                                                        \n"
+      "  varying vec2 v_texCoord;                                              \n"
+      "  uniform sampler2D s_texture;                                          \n"
+      "                                                                        \n"
+      "  void main() {                                                         \n"
+      "    gl_FragColor = texture2D(s_texture, v_texCoord);                    \n"
+      "  }                                                                     \n") {
+}
+
+void VerticalClimbShader::bindColorAttribLocation(GLuint program, GLuint color_location) const {
+  // no-op
+}
+
+void VerticalClimbShader::bindTexCoordAttribLocation(GLuint program, GLuint texCoord_location) const {
+  glBindAttribLocation(program, texCoord_location, "a_texCoord");
+}
+
 ParticleMoveShader::ParticleMoveShader()
   : Shader(
       "  uniform float u_time;                                                 \n"
