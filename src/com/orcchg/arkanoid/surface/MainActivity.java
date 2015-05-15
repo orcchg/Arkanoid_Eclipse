@@ -248,9 +248,11 @@ public class MainActivity extends FragmentActivity {
   }
   
   void setBonusBlocks() {
-    if (currentLevel == 16 ||
+    if (currentLevel == 3 ||
+        currentLevel == 16 ||
         currentLevel == 25 ||
-        currentLevel == 39) {
+        currentLevel == 39 ||
+        currentLevel == 51) {
       mAsyncContext.setBonusBlocks(true);
     } else {
       mAsyncContext.setBonusBlocks(false);
