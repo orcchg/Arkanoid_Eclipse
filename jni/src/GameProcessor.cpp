@@ -616,6 +616,11 @@ bool GameProcessor::collideBite(GLfloat new_x) {
       randomAngle();
       smallAngleAvoid();
 
+    } else if (m_ball.getEffect() == BallEffect::GOO) {
+      m_ball_is_flying = false;  // glues ball to bite
+      bite_impact_event.notifyListeners(true);
+      return true;
+
     } else {
       GLfloat distance = std::fabs(new_x - m_bite.getXPose());
       GLfloat beta = std::fabs(std::atan(distance / m_bite.getRadius()));

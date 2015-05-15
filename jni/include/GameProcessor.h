@@ -151,9 +151,9 @@ private:
   /** @defgroup LogicData Game logic related data members.
    * @{
    */
-  constexpr static int internalTimerThreshold = 2700;
-  constexpr static int internalTimerForSpeedThreshold = 2700;
-  constexpr static int internalTimerForWidthThreshold = 2700;
+  constexpr static int internalTimerThreshold = 1900;
+  constexpr static int internalTimerForSpeedThreshold = 2718;
+  constexpr static int internalTimerForWidthThreshold = 2718;
 
   Level::Ptr m_level;  //!< Game level at it's current state.
   GLfloat m_throw_angle;  //!< Initial throw level between ball's trajectory and X axis.
