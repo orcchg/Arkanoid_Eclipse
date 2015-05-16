@@ -141,6 +141,8 @@ public:
   Event<bool> laser_beam_visibility_event;
   /// @brief Notifies laser beam has faced block.
   Event<bool> laser_block_impact_event;
+  /// @brief Notifies ball effect occurred.
+  Event<BallEffect> ball_effect_event;
   /** @} */  // end of Event group
 
 // ----------------------------------------------

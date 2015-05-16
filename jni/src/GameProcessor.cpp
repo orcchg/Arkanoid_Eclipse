@@ -618,6 +618,7 @@ int GameProcessor::performBallEffectAtBlock(int row, int col) {
     m_ball.setEffect(BallEffect::NONE);
     drop_ball_appearance_event.notifyListeners(true);
   }
+  ball_effect_event.notifyListeners(m_ball.getEffect());
   return score;
 }
 

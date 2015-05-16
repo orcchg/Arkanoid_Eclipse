@@ -9,6 +9,7 @@
 #include <SLES/OpenSLES_Android.h>
 
 #include "ActiveObject.h"
+#include "Ball.h"
 #include "Block.h"
 #include "Event.h"
 #include "EventListener.h"
@@ -57,6 +58,8 @@ public:
   void callback_laserBlockImpact(bool /* dummy */);
   /// @brief Called when laser pulse has emerged.
   void callback_laserPulse(bool /* dummy */);
+  /// @brief Called when ball effect has occurred.
+  void callback_ballEffect(game::BallEffect effect);
   /** @} */  // end of Callbacks group
 
   /** @defgroup Resources Bind with external resources.
@@ -115,6 +118,8 @@ public:
   EventListener<bool> laser_block_impact_listener;
   /// @brief Listens for laser pulse has emerged.
   EventListener<bool> laser_pulse_listener;
+  /// @brief Listens for ball effect occurred.
+  EventListener<game::BallEffect> ball_effect_listener;
   /** @} */  // end of Event group
 
 // ----------------------------------------------
@@ -147,6 +152,7 @@ private:
    */
   game::Block m_impacted_block;  //!< Last received impacted block.
   game::Prize m_prize;  //!< Last received prize.
+  game::BallEffect m_ball_effect;  //!< Last received ball effect.
   /** @} */  // end of LogicData group
 
   /** @defgroup Mutex Thread-safety variables
@@ -164,6 +170,7 @@ private:
   std::mutex m_laser_beam_visibility_mutex;
   std::mutex m_laser_block_impact_mutex;
   std::mutex m_laser_pulse_mutex;
+  std::mutex m_ball_effect_mutex;
   std::atomic_bool m_load_resources_received;  //!< Load resources requested.
   std::atomic_bool m_lost_ball_received;  //!< Ball has been lost received.
   std::atomic_bool m_bite_impact_received;
@@ -175,6 +182,7 @@ private:
   std::atomic_bool m_laser_beam_visibility_received;
   std::atomic_bool m_laser_block_impact_received;
   std::atomic_bool m_laser_pulse_received;
+  std::atomic_bool m_ball_effect_received;
   /** @} */  // end of Mutex group
 
   /** @addtogroup Resources
@@ -226,6 +234,8 @@ private:
   void process_laserBlockImpact();
   /// @brief Plays sound when laser pulse emerges.
   void process_laserPulse();
+  /// @brief Plays sound for ball effect.
+  void process_ballEffect();
   /** @} */  // end of Processors group
 
   /** @defgroup CoreFunc Core-related internal functionality.

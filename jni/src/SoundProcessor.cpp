@@ -18,7 +18,8 @@ SoundProcessor::SoundProcessor(JavaVM* jvm)
   , m_player_interface(nullptr)
   , m_player_queue(nullptr)
   , m_impacted_block(game::Block::NONE)
-  , m_prize(game::Prize::NONE) {
+  , m_prize(game::Prize::NONE)
+  , m_ball_effect(game::BallEffect::NONE) {
 
   DBG("enter SoundProcessor ctor");
   if (!init()) {
@@ -38,6 +39,7 @@ SoundProcessor::SoundProcessor(JavaVM* jvm)
   m_laser_beam_visibility_received.store(false);
   m_laser_block_impact_received.store(false);
   m_laser_pulse_received.store(false);
+  m_ball_effect_received.store(false);
   DBG("exit SoundProcessor ctor");
 }
 
@@ -91,7 +93,6 @@ void SoundProcessor::callback_levelFinished(bool is_finished) {
 void SoundProcessor::callback_explosion(game::ExplosionPackage package) {
   std::unique_lock<std::mutex> lock(m_explosion_mutex);
   m_explosion_received.store(true);
-  // TODO: distinguish block type
   interrupt();
 }
 
@@ -117,6 +118,13 @@ void SoundProcessor::callback_laserBlockImpact(bool /* dummy */) {
 void SoundProcessor::callback_laserPulse(bool /* dummy */) {
   std::unique_lock<std::mutex> lock(m_laser_pulse_mutex);
   m_laser_pulse_received.store(true);
+  interrupt();
+}
+
+void SoundProcessor::callback_ballEffect(game::BallEffect effect) {
+  std::unique_lock<std::mutex> lock(m_ball_effect_mutex);
+  m_ball_effect_received.store(true);
+  m_ball_effect = effect;
   interrupt();
 }
 
@@ -163,7 +171,8 @@ bool SoundProcessor::checkForWakeUp() {
       m_prize_caught_received.load() ||
       m_laser_beam_visibility_received.load() ||
       m_laser_block_impact_received.load() ||
-      m_laser_pulse_received.load();
+      m_laser_pulse_received.load() ||
+      m_ball_effect_received.load();
 }
 
 void SoundProcessor::eventHandler() {
@@ -210,6 +219,10 @@ void SoundProcessor::eventHandler() {
   if (m_laser_pulse_received.load()) {
     m_laser_pulse_received.store(false);
     process_laserPulse();
+  }
+  if (m_ball_effect_received.load()) {
+    m_ball_effect_received.store(false);
+    process_ballEffect();
   }
 }
 
@@ -264,6 +277,11 @@ void SoundProcessor::process_blockImpact() {
     case game::Block::GLASS_1:
       sound_prefix = "stone_";
       break;
+    case game::Block::ELECTRO:
+    case game::Block::KNOCK_VERTICAL:
+    case game::Block::KNOCK_HORIZONTAL:
+      sound_prefix = "explode_";
+      break;
     case game::Block::MAGIC:
       sound_prefix = "magic_";
       break;
@@ -308,9 +326,6 @@ void SoundProcessor::process_blockImpact() {
 
       // TODO: implement sounds
     case game::Block::DESTROY:
-    case game::Block::ELECTRO:
-    case game::Block::KNOCK_VERTICAL:
-    case game::Block::KNOCK_HORIZONTAL:
     case game::Block::MIDAS:
     case game::Block::NETWORK:
       break;
@@ -336,7 +351,7 @@ void SoundProcessor::process_levelFinished() {
 
 void SoundProcessor::process_explosion() {
   std::unique_lock<std::mutex> lock(m_explosion_mutex);
-  // XXX:
+  // no-op
 }
 
 void SoundProcessor::process_prizeCaught() {
@@ -344,6 +359,9 @@ void SoundProcessor::process_prizeCaught() {
   std::string sound_prefix = "";
 
   switch (m_prize) {
+    case game::Prize::BLOCK:
+      sound_prefix = "magic_";
+      break;
     case game::Prize::HYPER:
       sound_prefix = "teleport_";
       break;
@@ -369,6 +387,31 @@ void SoundProcessor::process_laserBlockImpact() {
 void SoundProcessor::process_laserPulse() {
   std::unique_lock<std::mutex> lock(m_laser_pulse_mutex);
   auto sound = m_resources->getSound("laser.wav");
+  playSound(sound);
+}
+
+void SoundProcessor::process_ballEffect() {
+  std::unique_lock<std::mutex> lock(m_ball_effect_mutex);
+  std::string sound_prefix = "";
+
+  switch (m_ball_effect) {
+    case game::BallEffect::EASY:
+    case game::BallEffect::EASY_T:
+    case game::BallEffect::EXPLODE:
+    case game::BallEffect::JUMP:
+    case game::BallEffect::PIERCE:
+      sound_prefix = "explode_";
+      break;
+    case game::BallEffect::UPGRADE:
+      sound_prefix = "upgrade_";
+      break;
+    case game::BallEffect::DEGRADE:
+      sound_prefix = "degrade_";
+      break;
+    default:
+      return;  // no sound to play
+  }
+  auto sound = m_resources->getRandomSound(sound_prefix);
   playSound(sound);
 }
 
