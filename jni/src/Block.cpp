@@ -584,6 +584,25 @@ std::string BlockUtils::getBlockTexture(Block block) {
   return "";
 }
 
+bool BlockUtils::cardinalityAffectingBlock(Block block) {
+  return block != Block::ARTIFICAL &&
+      block != Block::NONE &&
+      block != Block::DESTROY &&
+      block != Block::MIDAS &&
+      block != Block::TITAN &&
+      block != Block::INVUL &&
+      block != Block::EXTRA;
+}
+
+bool BlockUtils::cardinalityNotAffectingVisibleBlock(Block block) {
+  return block == Block::ARTIFICAL ||
+      block == Block::DESTROY ||
+      block == Block::MIDAS ||
+      block == Block::TITAN ||
+      block == Block::INVUL ||
+      block == Block::EXTRA;
+}
+
 BlockGenerator::BlockGenerator()
   : m_generator(std::chrono::system_clock::now().time_since_epoch().count())
   , m_distribution(0, BlockUtils::totalOrdinaryBlocks - 1) {

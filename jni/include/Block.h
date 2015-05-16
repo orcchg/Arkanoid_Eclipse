@@ -66,6 +66,8 @@ public:
   static util::BGRA<GLfloat> getBlockColor(Block block);
   static util::BGRA<GLfloat> getBlockEdgeColor(Block block);
   static std::string getBlockTexture(Block block);
+  static bool cardinalityAffectingBlock(Block block);
+  static bool cardinalityNotAffectingVisibleBlock(Block block);
 };
 
 class BlockGenerator {

@@ -60,6 +60,7 @@ AsyncContext::AsyncContext(JavaVM* jvm)
   , m_laser_last_time(0)
   , m_laser_time(0.0f)
   , m_render_laser(false)
+  , m_laser_interruption(false)
   , m_level_shader(nullptr)
   , m_bite_shader(nullptr)
   , m_ball_shader(nullptr)
@@ -77,6 +78,7 @@ AsyncContext::AsyncContext(JavaVM* jvm)
   m_load_level_received.store(false);
   m_move_ball_received.store(false);
   m_lost_ball_received.store(false);
+  m_stop_ball_received.store(false);
   m_block_impact_received.store(false);
   m_level_finished_received.store(false);
   m_explosion_received.store(false);
@@ -85,6 +87,7 @@ AsyncContext::AsyncContext(JavaVM* jvm)
   m_drop_ball_appearance_received.store(false);
   m_bite_width_changed_received.store(false);
   m_laser_beam_visibility_received.store(false);
+  m_laser_block_impact_received.store(false);
   m_window_set = false;
   m_resources = nullptr;
 
@@ -168,6 +171,12 @@ void AsyncContext::callback_moveBall(Ball moved_ball) {
 void AsyncContext::callback_lostBall(float is_lost) {
   std::unique_lock<std::mutex> lock(m_lost_ball_mutex);
   m_lost_ball_received.store(true);
+  interrupt();
+}
+
+void AsyncContext::callback_stopBall(bool /* dummy */) {
+  std::unique_lock<std::mutex> lock(m_stop_ball_mutex);
+  m_stop_ball_received.store(true);
   interrupt();
 }
 
@@ -264,6 +273,12 @@ void AsyncContext::callback_laserBeamVisibility(bool is_visible) {
   interrupt();
 }
 
+void AsyncContext::callback_laserBlockImpact(bool /* dummy */) {
+  std::unique_lock<std::mutex> lock(m_laser_block_impact_mutex);
+  m_laser_block_impact_received.store(true);
+  interrupt();
+}
+
 // ----------------------------------------------
 Level::Ptr AsyncContext::getCurrentLevelState() {
   std::unique_lock<std::mutex> lock(m_load_level_mutex);
@@ -311,6 +326,7 @@ bool AsyncContext::checkForWakeUp() {
       m_load_level_received.load() ||
       m_move_ball_received.load() ||
       m_lost_ball_received.load() ||
+      m_stop_ball_received.load() ||
       m_block_impact_received.load() ||
       m_level_finished_received.load() ||
       m_explosion_received.load() ||
@@ -318,7 +334,8 @@ bool AsyncContext::checkForWakeUp() {
       m_prize_caught_received.load() ||
       m_drop_ball_appearance_received.load() ||
       m_bite_width_changed_received.load() ||
-      m_laser_beam_visibility_received.load();
+      m_laser_beam_visibility_received.load() ||
+      m_laser_block_impact_received.load();
 }
 
 void AsyncContext::eventHandler() {
@@ -348,6 +365,10 @@ void AsyncContext::eventHandler() {
       m_prize_caught_received.store(false);
       process_prizeCaught();
     }
+    if (m_laser_block_impact_received.load()) {
+      m_laser_block_impact_received.store(false);
+      process_laserBlockImpact();
+    }
     if (m_block_impact_received.load()) {
       m_block_impact_received.store(false);
       process_blockImpact();
@@ -368,6 +389,10 @@ void AsyncContext::eventHandler() {
     if (m_lost_ball_received.load()) {
       m_lost_ball_received.store(false);
       process_lostBall();
+    }
+    if (m_stop_ball_received.load()) {
+      m_stop_ball_received.store(false);
+      process_stopBall();
     }
     if (m_level_finished_received.load()) {
       m_level_finished_received.store(false);
@@ -481,6 +506,11 @@ void AsyncContext::process_lostBall() {
   initGame();
 }
 
+void AsyncContext::process_stopBall() {
+  std::unique_lock<std::mutex> lock(m_stop_ball_mutex);
+  m_render_laser = false;
+}
+
 void AsyncContext::process_blockImpact() {
   std::unique_lock<std::mutex> lock(m_block_impact_mutex);
   while (!m_impact_queue.empty()) {
@@ -552,6 +582,11 @@ void AsyncContext::process_biteWidthChanged() {
 void AsyncContext::process_laserBeamVisibility() {
   std::unique_lock<std::mutex> lock(m_laser_beam_visibility_mutex);
   // no-op
+}
+
+void AsyncContext::process_laserBlockImpact() {
+  std::unique_lock<std::mutex> lock(m_laser_block_impact_mutex);
+  m_laser_interruption = true;
 }
 
 /* LogicFunc group */
@@ -1384,6 +1419,7 @@ void AsyncContext::drawLaser(GLfloat x, GLfloat y) {
     m_laser_time += delta_elapsed;
     if (m_laser_time >= 1.0f) {
       m_laser_time = 0.0f;
+      m_laser_interruption = false;
       return;
     }
   }
@@ -1391,7 +1427,9 @@ void AsyncContext::drawLaser(GLfloat x, GLfloat y) {
   {
     GLfloat Ypath = y + m_laser_time * LaserParams::laserSpeed;
     if (Ypath <= 1.0f + LaserParams::laserHalfHeight) {
-      laser_beam_event.notifyListeners(LaserPackage(x, Ypath));
+      if (!m_laser_interruption) {
+        laser_beam_event.notifyListeners(LaserPackage(x, Ypath));
+      }
     } else {
       is_visible = 0;  /* false */
     }

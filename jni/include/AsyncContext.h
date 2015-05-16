@@ -68,6 +68,8 @@ public:
   void callback_moveBall(Ball moved_ball);
   /// @brief Called when ball has been lost.
   void callback_lostBall(float is_lost);
+  /// @brief Called when ball has been stopped.
+  void callback_stopBall(bool /* dummy */);
   /// @brief Called when block has been impacted.
   void callback_blockImpact(RowCol block);
   /// @brief Called when level has been successfully finished.
@@ -84,6 +86,8 @@ public:
   void callback_biteWidthChanged(BiteEffect effect);
   /// @brief Called when laser beam changed visibility.
   void callback_laserBeamVisibility(bool is_visible);
+  /// @brief Called when laser beam impacts block.
+  void callback_laserBlockImpact(bool /* dummy */);
   /** @} */  // end of Callbacks group
 
   /** @defgroup GameStat Get game statistics
@@ -133,6 +137,8 @@ public:
   EventListener<Ball> move_ball_listener;
   /// @brief Listens for event which occurs when ball has been lost.
   EventListener<bool> lost_ball_listener;
+  /// @brief Listens for event which occurs when ball has been stopped.
+  EventListener<bool> stop_ball_listener;
   /// @brief Listens for event which occurs when block has been impacted.
   EventListener<RowCol> block_impact_listener;
   /// @brief Listens for event which occurs when level has been successfully finished.
@@ -149,6 +155,8 @@ public:
   EventListener<BiteEffect> bite_width_changed_listener;
   /// @brief Listens for laser beam visibility.
   EventListener<bool> laser_beam_visibility_listener;
+  /// @brief Listens for laser block impact.
+  EventListener<bool> laser_block_impact_listener;
 
   /// @brief Notifies for measured aspect ratio.
   Event<float> aspect_ratio_event;
@@ -248,6 +256,7 @@ private:
   clock_t m_laser_last_time;
   float m_laser_time;
   bool m_render_laser;
+  bool m_laser_interruption;
   /** @} */  // end of LogicData group
 
   /** @defgroup Shaders Shaders for rendering game components.
@@ -274,6 +283,7 @@ private:
   std::mutex m_load_level_mutex;  //!< Sentinel for load level user request.
   std::mutex m_move_ball_mutex;  //!< Sentinel for move ball to a new position.
   std::mutex m_lost_ball_mutex;  //!< Sentinel for lost ball flag.
+  std::mutex m_stop_ball_mutex;
   std::mutex m_block_impact_mutex;  //!< Sentinel for block impact event.
   std::mutex m_level_finished_mutex;  //!< Sentinel for level has been successfully finished.
   std::mutex m_explosion_mutex;  //!< Sentinel for particle system explosion.
@@ -282,6 +292,7 @@ private:
   std::mutex m_drop_ball_appearance_mutex;
   std::mutex m_bite_width_changed_mutex;
   std::mutex m_laser_beam_visibility_mutex;
+  std::mutex m_laser_block_impact_mutex;
   std::atomic_bool m_surface_received;  //!< Window has been set.
   std::atomic_bool m_load_resources_received;  //!< Load resources requested.
   std::atomic_bool m_shift_gamepad_received;  //!< Shift gesture has occurred.
@@ -289,6 +300,7 @@ private:
   std::atomic_bool m_load_level_received;  //!< Load level request has been received.
   std::atomic_bool m_move_ball_received;  //!< Move ball event has been received.
   std::atomic_bool m_lost_ball_received;  //!< Ball has been lost received.
+  std::atomic_bool m_stop_ball_received;
   std::atomic_bool m_block_impact_received;  //!< Block impact has been received.
   std::atomic_bool m_level_finished_received;  //!< Level has been successfully finished.
   std::atomic_bool m_explosion_received;  //!< Request for explosion received.
@@ -297,6 +309,7 @@ private:
   std::atomic_bool m_drop_ball_appearance_received;
   std::atomic_bool m_bite_width_changed_received;
   std::atomic_bool m_laser_beam_visibility_received;
+  std::atomic_bool m_laser_block_impact_received;
   /** @} */  // end of Mutex group
 
   /** @defgroup SafetyFlag Logic-safety variables
@@ -348,6 +361,8 @@ private:
   void process_moveBall();
   /// @brief Processing when ball has been lost.
   void process_lostBall();
+  /// @brief Processing when ball has been stopped.
+  void process_stopBall();
   /// @brief Performs visual block impact.
   void process_blockImpact();
   /// @brief Performs visual level finalization.
@@ -364,6 +379,8 @@ private:
   void process_biteWidthChanged();
   /// @brief Performs laser beam visibility changes.
   void process_laserBeamVisibility();
+  /// @brief Processing laser block impact.
+  void process_laserBlockImpact();
   /** @} */  // end of Processors group
 
 private:

@@ -261,7 +261,7 @@ void GameProcessor::process_throwBall() {
 
 void GameProcessor::process_initBall() {
   std::unique_lock<std::mutex> lock(m_init_ball_position_mutex);
-  m_ball_is_flying = false;
+  stopBall();
 }
 
 void GameProcessor::process_initBite() {
@@ -365,7 +365,7 @@ void GameProcessor::process_prizeCaught() {
       m_ball.setEffect(BallEffect::DEGRADE);
       break;
     case Prize::WIN:  // processed in Java layer
-      m_ball_is_flying = false;  // prevent block collision at new level
+      stopBall();  // prevent block collision at new level
       break;
     case Prize::ZYGOTE:
       m_ball.setEffect(BallEffect::ZYGOTE);
@@ -386,10 +386,17 @@ void GameProcessor::process_laserBeam() {
     return;  // laser beam has left level boundaries
   }
   Block block = m_level->getBlock(row, col);
-  m_level->setBlockImpacted(row, col);
-  int score = BlockUtils::getBlockScore(block);
-  block_impact_event.notifyListeners(RowCol(row, col, block));
-  onScoreUpdated(score);
+  if (block != Block::NONE) {
+    if (BlockUtils::cardinalityAffectingBlock(block)) {
+      m_level->setBlockImpacted(row, col);
+      int score = BlockUtils::getBlockScore(block);
+      m_level_finished = (m_level->blockImpact() == 0);
+      onCardinalityChanged(m_level->getCardinality());
+      block_impact_event.notifyListeners(RowCol(row, col, block));
+      onScoreUpdated(score);
+    }
+    laser_block_impact_event.notifyListeners(true);
+  }
 }
 
 /* LogicFunc group */
@@ -407,7 +414,7 @@ void GameProcessor::moveBall() {
   m_ball_pose_corrected = false;
 
   if (m_level_finished) {
-    m_ball_is_flying = false;  // stop flying before notify to avoid bugs
+    stopBall();  // stop flying before notify to avoid bugs
     level_finished_event.notifyListeners(true);
     onLevelFinished(true);
     return;
@@ -420,7 +427,7 @@ void GameProcessor::moveBall() {
   GLfloat new_y = m_ball.getPose().getY() + m_ball.getVelocity() * sin(m_ball.getAngle());
 
   if ((m_is_ball_lost && new_y <= -1.0f) || m_is_ball_death) {
-    m_ball_is_flying = false;  // stop flying before notify to avoid bugs
+    stopBall();  // stop flying before notify to avoid bugs
     lost_ball_event.notifyListeners(true);
     onLostBall(true);
     onCardinalityChanged(m_level->getCardinality());
@@ -475,6 +482,11 @@ void GameProcessor::teleportBallIntoRandomBlock() {
     int random_index = util::getRandomElement(network_blocks);
     shiftBallIntoBlock(network_blocks[random_index].row, network_blocks[random_index].col);
   }
+}
+
+void GameProcessor::stopBall() {
+  m_ball_is_flying = false;
+  stop_ball_event.notifyListeners(true);
 }
 
 void GameProcessor::onLostBall(bool /* dummy */) {
@@ -667,7 +679,7 @@ bool GameProcessor::collideBite(GLfloat new_x) {
       smallAngleAvoid();
 
     } else if (m_ball.getEffect() == BallEffect::GOO) {
-      m_ball_is_flying = false;  // glues ball to bite
+      stopBall();  // glues ball to bite
       bite_impact_event.notifyListeners(true);
       return true;
 
@@ -849,7 +861,7 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
         break;
       case Block::ORIGIN:
         external_collision = blockCollision(top_border, bottom_border, left_border, right_border, 100 /* elastic */);
-        m_ball_is_flying = false;
+        stopBall();
         correctBallPosition(m_bite.getXPose(), m_bite_upper_border + m_ball.getDimens().halfHeight());
         break;
       // --------------------
@@ -924,15 +936,7 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
     score += performBallEffectAtBlock(row, col);
     block_impact_event.notifyListeners(RowCol(row, col, block));
     onScoreUpdated(score);
-
-    return (external_collision &&
-            block != Block::ARTIFICAL &&
-            block != Block::NONE &&
-            block != Block::DESTROY &&
-            block != Block::MIDAS &&
-            block != Block::TITAN &&
-            block != Block::INVUL &&
-            block != Block::EXTRA);
+    return (external_collision && BlockUtils::cardinalityAffectingBlock(block));
 
   } else if (new_y >= 1.0f - m_ball.getDimens().halfHeight()) {  // upper ceil
     collideHorizontalSurface();

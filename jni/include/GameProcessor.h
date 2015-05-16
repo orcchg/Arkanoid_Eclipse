@@ -119,6 +119,8 @@ public:
   Event<Ball> move_ball_event;
   /// @brief Notifies whether the ball has been lost.
   Event<bool> lost_ball_event;
+  /// @brief Notifies whether the ball has been stopped.
+  Event<bool> stop_ball_event;
   /// @brief Notifies bite has been impacted.
   Event<bool> bite_impact_event;
   /// @brief Notifies block has been impacted.
@@ -137,6 +139,8 @@ public:
   Event<BiteEffect> bite_width_changed_event;
   /// @brief Notifies laser beam has emerged (TRUE) or disappeared (FALSE).
   Event<bool> laser_beam_visibility_event;
+  /// @brief Notifies laser beam has faced block.
+  Event<bool> laser_block_impact_event;
   /** @} */  // end of Event group
 
 // ----------------------------------------------
@@ -278,6 +282,8 @@ private:
   void shiftBallIntoBlock(int row, int col);
   /// @brief Teleports ball into random ordinary block if presents.
   void teleportBallIntoRandomBlock();
+  /// @brief Stops ball flying, notify listeners.
+  void stopBall();
   /// @brief Notifies Java layer the ball has been lost.
   void onLostBall(bool /* dummy */);
   /// @brief Notifies Java layer level has been successfully finished.
@@ -323,6 +329,12 @@ private:
   inline void dropInternalTimerForSpeed() { m_internal_timer_for_speed = 0; }
   inline void dropInternalTimerForWidth() { m_internal_timer_for_width = 0; }
   inline void dropInternalTimerForLaser() { m_internal_timer_for_laser = 0; }
+  inline void dropAllInternalTimers() {
+    dropInternalTimer();
+    dropInternalTimerForSpeed();
+    dropInternalTimerForWidth();
+    dropInternalTimerForLaser();
+  }
   /// @brief Increments internal timer's value.
   inline void incrementInternalTimer() { ++m_internal_timer; }
   inline void incrementInternalTimerForSpeed() { ++m_internal_timer_for_speed; }

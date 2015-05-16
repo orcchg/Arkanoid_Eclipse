@@ -28,6 +28,7 @@ JNIEXPORT jlong JNICALL Java_com_orcchg_arkanoid_surface_AsyncContext_init
   ptr->acontext->load_level_listener = ptr->load_level_event.createListener(&game::AsyncContext::callback_loadLevel, ptr->acontext);
   ptr->acontext->move_ball_listener = ptr->processor->move_ball_event.createListener(&game::AsyncContext::callback_moveBall, ptr->acontext);
   ptr->acontext->lost_ball_listener = ptr->processor->lost_ball_event.createListener(&game::AsyncContext::callback_lostBall, ptr->acontext);
+  ptr->acontext->stop_ball_listener = ptr->processor->stop_ball_event.createListener(&game::AsyncContext::callback_stopBall, ptr->acontext);
   ptr->acontext->block_impact_listener = ptr->processor->block_impact_event.createListener(&game::AsyncContext::callback_blockImpact, ptr->acontext);
   ptr->acontext->level_finished_listener = ptr->processor->level_finished_event.createListener(&game::AsyncContext::callback_levelFinished, ptr->acontext);
   ptr->acontext->explosion_listener = ptr->processor->explosion_event.createListener(&game::AsyncContext::callback_explosion, ptr->acontext);
@@ -36,6 +37,7 @@ JNIEXPORT jlong JNICALL Java_com_orcchg_arkanoid_surface_AsyncContext_init
   ptr->acontext->drop_ball_appearance_listener = ptr->processor->drop_ball_appearance_event.createListener(&game::AsyncContext::callback_dropBallAppearance, ptr->acontext);
   ptr->acontext->bite_width_changed_listener = ptr->processor->bite_width_changed_event.createListener(&game::AsyncContext::callback_biteWidthChanged, ptr->acontext);
   ptr->acontext->laser_beam_visibility_listener = ptr->processor->laser_beam_visibility_event.createListener(&game::AsyncContext::callback_laserBeamVisibility, ptr->acontext);
+  ptr->acontext->laser_block_impact_listener = ptr->processor->laser_block_impact_event.createListener(&game::AsyncContext::callback_laserBlockImpact, ptr->acontext);
 
   ptr->processor->aspect_ratio_listener = ptr->acontext->aspect_ratio_event.createListener(&game::GameProcessor::callback_aspectMeasured, ptr->processor);
   ptr->processor->load_level_listener = ptr->load_level_event.createListener(&game::GameProcessor::callback_loadLevel, ptr->processor);
