@@ -7,7 +7,7 @@
     <dimen name="life_image_size">40dp</dimen>
     <dimen name="info_textview_width">142dp</dimen>
     <dimen name="space_textview_width">20dp</dimen>
-    <dimen name="space_textimage_width">60dp</dimen>
+    <dimen name="space_textimage_width">40dp</dimen>
     <dimen name="space_imagetext_width">10dp</dimen>
     <dimen name="text_size">40sp</dimen>
 
