@@ -17,6 +17,7 @@ SoundProcessor::SoundProcessor(JavaVM* jvm)
   , m_player(nullptr)
   , m_player_interface(nullptr)
   , m_player_queue(nullptr)
+  , m_queue_size(0)
   , m_impacted_block(game::Block::NONE)
   , m_prize(game::Prize::NONE)
   , m_ball_effect(game::BallEffect::NONE) {
@@ -444,7 +445,7 @@ bool SoundProcessor::init() {
 bool SoundProcessor::initPlayerQueue() {
   SLDataLocator_AndroidSimpleBufferQueue data_locator_in {
     SL_DATALOCATOR_ANDROIDSIMPLEBUFFERQUEUE,
-    1  // no more than one sound buffer in queue at any moment
+    SoundProcessor::queueMaxSize  // no more than 'queueMaxSize' sound buffer in queue at any moment
   };
 
   SLDataFormat_PCM data_format {
@@ -500,13 +501,18 @@ bool SoundProcessor::playSound(const SoundBuffer* sound) {
   (*m_player)->GetState(m_player, &player_state);
 
   if (player_state == SL_OBJECT_STATE_REALIZED) {
+    SLresult result = SL_RESULT_SUCCESS;
+    if (m_queue_size >= SoundProcessor::queueMaxSize) {
+      // stop all sounds in queue before playing a new one
+      result = (*m_player_queue)->Clear(m_player_queue);
+      if (result != SL_RESULT_SUCCESS) { error_code = 11; goto ERROR_PLAY; }
+      m_queue_size = 0;
+    }
     int16_t* buffer = reinterpret_cast<int16_t*>(sound->getData());
     off_t length = sound->getLength();
-    // stop all sounds in queue before playing a new one
-    SLresult result = (*m_player_queue)->Clear(m_player_queue);
-    if (result != SL_RESULT_SUCCESS) { error_code = 11; goto ERROR_PLAY; }
     result = (*m_player_queue)->Enqueue(m_player_queue, buffer, length);
     if (result != SL_RESULT_SUCCESS) { error_code = 12; goto ERROR_PLAY; }
+    ++m_queue_size;
   }
   return true;
 

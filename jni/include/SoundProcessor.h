@@ -145,6 +145,9 @@ private:
   SLObjectItf m_player;
   SLPlayItf m_player_interface;
   SLBufferQueueItf m_player_queue;
+  int m_queue_size;
+
+  constexpr static int queueMaxSize = 1;
   /** @} */  // end of Core group
 
   /** @defgroup LogicData Game Logic related data members.
