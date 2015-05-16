@@ -382,7 +382,7 @@ void GameProcessor::process_prizeCaught() {
 void GameProcessor::process_laserBeam() {
   std::unique_lock<std::mutex> lock(m_laser_beam_mutex);
   int row = 0, col = 0;
-  if (!getImpactedBlock(m_laser_beam.getX(), m_laser_beam.getY(), &row, &col)) {
+  if (!getImpactedBlock(m_laser_beam.getX(), m_laser_beam.getY() - LaserParams::laserHalfHeight, &row, &col)) {
     return;  // laser beam has left level boundaries
   }
   Block block = m_level->getBlock(row, col);
@@ -391,8 +391,10 @@ void GameProcessor::process_laserBeam() {
       m_level->setBlockImpacted(row, col);
       int score = BlockUtils::getBlockScore(block);
       m_level_finished = (m_level->blockImpact() == 0);
-      onCardinalityChanged(m_level->getCardinality());
+      Prize spawned_prize = m_level->getPrizeGenerator().generatePrize();
+      spawnPrizeAtBlock(row, col, spawned_prize);
       block_impact_event.notifyListeners(RowCol(row, col, block));
+      onCardinalityChanged(m_level->getCardinality());
       onScoreUpdated(score);
     }
     laser_block_impact_event.notifyListeners(true);
