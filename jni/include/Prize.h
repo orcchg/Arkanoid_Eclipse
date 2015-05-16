@@ -45,7 +45,7 @@ class PrizeUtils {
 public:
   constexpr static int totalPrizes = 32;  // WIN not included
   constexpr static double prizeProbability = 0.415;
-  constexpr static double winProbability = 0.002;
+  constexpr static double winProbability = 0.0025;
 };
 
 class PrizeGenerator {
