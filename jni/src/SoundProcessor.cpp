@@ -245,7 +245,7 @@ void SoundProcessor::process_loadResources() {
 
 void SoundProcessor::process_lostBall() {
   std::unique_lock<std::mutex> lock(m_lost_ball_mutex);
-  // XXX:
+  // TODO: play lost ball sound
 }
 
 void SoundProcessor::process_biteImpact() {
@@ -346,7 +346,7 @@ void SoundProcessor::process_wallImpact() {
 
 void SoundProcessor::process_levelFinished() {
   std::unique_lock<std::mutex> lock(m_level_finished_mutex);
-  // XXX:
+  // TODO: play win level sound
 }
 
 void SoundProcessor::process_explosion() {
@@ -391,6 +391,7 @@ void SoundProcessor::process_ballEffect() {
   std::unique_lock<std::mutex> lock(m_ball_effect_mutex);
   std::string sound_prefix = "";
 
+  // TODO: more accurate sounds
   switch (m_ball_effect) {
     case game::BallEffect::EASY:
     case game::BallEffect::EASY_T:
