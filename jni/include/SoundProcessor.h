@@ -54,6 +54,8 @@ public:
   void callback_laserBeamVisibility(bool is_visible);
   /// @brief Called when laser beam impacts block.
   void callback_laserBlockImpact(bool /* dummy */);
+  /// @brief Called when laser pulse has emerged.
+  void callback_laserPulse(bool /* dummy */);
   /** @} */  // end of Callbacks group
 
   /** @defgroup Resources Bind with external resources.
@@ -89,6 +91,8 @@ public:
   EventListener<bool> laser_beam_visibility_listener;
   /// @brief Listens for laser block impact.
   EventListener<bool> laser_block_impact_listener;
+  /// @brief Listens for laser pulse has emerged.
+  EventListener<bool> laser_pulse_listener;
   /** @} */  // end of Event group
 
 // ----------------------------------------------
@@ -126,6 +130,7 @@ private:
   std::mutex m_prize_caught_mutex;  //!< Sentinel for prize has been caught.
   std::mutex m_laser_beam_visibility_mutex;
   std::mutex m_laser_block_impact_mutex;
+  std::mutex m_laser_pulse_mutex;
   std::atomic_bool m_load_resources_received;  //!< Load resources requested.
   std::atomic_bool m_lost_ball_received;  //!< Ball has been lost received.
   std::atomic_bool m_bite_impact_received;
@@ -136,6 +141,7 @@ private:
   std::atomic_bool m_prize_caught_received;  //!< Prize has been caught received.
   std::atomic_bool m_laser_beam_visibility_received;
   std::atomic_bool m_laser_block_impact_received;
+  std::atomic_bool m_laser_pulse_received;
   /** @} */  // end of Mutex group
 
   /** @addtogroup Resources
@@ -185,6 +191,8 @@ private:
   void process_laserBeamVisibility();
   /// @brief Plays sound when laser impacts a block.
   void process_laserBlockImpact();
+  /// @brief Plays sound when laser pulse emerges.
+  void process_laserPulse();
   /** @} */  // end of Processors group
 
   /** @defgroup CoreFunc Core-related internal functionality.

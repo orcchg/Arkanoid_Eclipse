@@ -174,6 +174,8 @@ public:
   Event<int> prize_gone_event;
   /// @brief Notifies laser beam has changed it's position.
   Event<LaserPackage> laser_beam_event;
+  /// @brief Notifies laser beam pulse has emerged.
+  Event<bool> laser_pulse_event;
   /** @} */  // end of Event group
 
 // ----------------------------------------------

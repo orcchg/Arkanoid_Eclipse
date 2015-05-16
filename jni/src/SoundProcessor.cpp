@@ -34,6 +34,7 @@ SoundProcessor::SoundProcessor()
   m_prize_caught_received.store(false);
   m_laser_beam_visibility_received.store(false);
   m_laser_block_impact_received.store(false);
+  m_laser_pulse_received.store(false);
   DBG("exit SoundProcessor ctor");
 }
 
@@ -109,6 +110,12 @@ void SoundProcessor::callback_laserBlockImpact(bool /* dummy */) {
   interrupt();
 }
 
+void SoundProcessor::callback_laserPulse(bool /* dummy */) {
+  std::unique_lock<std::mutex> lock(m_laser_pulse_mutex);
+  m_laser_pulse_received.store(true);
+  interrupt();
+}
+
 // ----------------------------------------------
 void SoundProcessor::setResourcesPtr(game::Resources* resources) {
   m_resources = resources;
@@ -134,7 +141,8 @@ bool SoundProcessor::checkForWakeUp() {
       m_explosion_received.load() ||
       m_prize_caught_received.load() ||
       m_laser_beam_visibility_received.load() ||
-      m_laser_block_impact_received.load();
+      m_laser_block_impact_received.load() ||
+      m_laser_pulse_received.load();
 }
 
 void SoundProcessor::eventHandler() {
@@ -177,6 +185,10 @@ void SoundProcessor::eventHandler() {
   if (m_laser_block_impact_received.load()) {
     m_laser_block_impact_received.store(false);
     process_laserBlockImpact();
+  }
+  if (m_laser_pulse_received.load()) {
+    m_laser_pulse_received.store(false);
+    process_laserPulse();
   }
 }
 
@@ -305,12 +317,17 @@ void SoundProcessor::process_prizeCaught() {
 
 void SoundProcessor::process_laserBeamVisibility() {
   std::unique_lock<std::mutex> lock(m_laser_beam_visibility_mutex);
-  // TODO: play periodically laser sound
+  // no-op
 }
 
 void SoundProcessor::process_laserBlockImpact() {
   std::unique_lock<std::mutex> lock(m_laser_block_impact_mutex);
   // no-op
+}
+
+void SoundProcessor::process_laserPulse() {
+  std::unique_lock<std::mutex> lock(m_laser_pulse_mutex);
+  // TODO: play laser pulse sound
 }
 
 /* CoreFunc group */
