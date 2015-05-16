@@ -327,7 +327,8 @@ void SoundProcessor::process_laserBlockImpact() {
 
 void SoundProcessor::process_laserPulse() {
   std::unique_lock<std::mutex> lock(m_laser_pulse_mutex);
-  // TODO: play laser pulse sound
+  auto sound = m_resources->getSound("laser.wav");
+  playSound(sound);
 }
 
 /* CoreFunc group */

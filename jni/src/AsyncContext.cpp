@@ -270,6 +270,9 @@ void AsyncContext::callback_laserBeamVisibility(bool is_visible) {
   std::unique_lock<std::mutex> lock(m_laser_beam_visibility_mutex);
   m_laser_beam_visibility_received.store(true);
   m_render_laser = is_visible;
+  if (is_visible) {
+    laser_pulse_event.notifyListeners(true);  // first laser pulse
+  }
   interrupt();
 }
 
@@ -1420,6 +1423,7 @@ void AsyncContext::drawLaser(GLfloat x, GLfloat y) {
     if (m_laser_time >= 1.0f) {
       m_laser_time = 0.0f;
       m_laser_interruption = false;
+      laser_pulse_event.notifyListeners(true);
       return;
     }
   }
