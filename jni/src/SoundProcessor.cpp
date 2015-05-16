@@ -15,7 +15,8 @@ SoundProcessor::SoundProcessor()
   , m_player(nullptr)
   , m_player_interface(nullptr)
   , m_player_queue(nullptr)
-  , m_impacted_block(game::Block::NONE) {
+  , m_impacted_block(game::Block::NONE)
+  , m_prize(game::Prize::NONE) {
 
   DBG("enter SoundProcessor ctor");
   if (!init()) {
@@ -94,7 +95,7 @@ void SoundProcessor::callback_explosion(game::ExplosionPackage package) {
 void SoundProcessor::callback_prizeCaught(game::PrizePackage package) {
   std::unique_lock<std::mutex> lock(m_prize_caught_mutex);
   m_prize_caught_received.store(true);
-  // TODO: distinguish prize type
+  m_prize = package.getPrize();
   interrupt();
 }
 
@@ -228,11 +229,14 @@ void SoundProcessor::process_blockImpact() {
     case game::Block::ROLLING:
       sound_prefix = "block_";
       break;
+    case game::Block::ARTIFICAL:
     case game::Block::CLAY:
     case game::Block::SIMPLE:
       sound_prefix = "simple_";
       break;
     case game::Block::FOG:
+      sound_prefix = "fog_";
+      break;
     case game::Block::GLASS:
     case game::Block::GLASS_1:
       sound_prefix = "stone_";
@@ -245,6 +249,10 @@ void SoundProcessor::process_blockImpact() {
     case game::Block::PLUMBUM:
       sound_prefix = "iron_";
       break;
+    case game::Block::HYPER:
+    case game::Block::ORIGIN:
+      sound_prefix = "teleport_";
+      break;
     case game::Block::ULTRA:
     case game::Block::ULTRA_4:
     case game::Block::ULTRA_3:
@@ -256,6 +264,11 @@ void SoundProcessor::process_blockImpact() {
     case game::Block::INVUL:
     case game::Block::EXTRA:
       sound_prefix = "invul_";
+      break;
+    case game::Block::QUICK:
+    case game::Block::QUICK_2:
+    case game::Block::QUICK_1:
+      sound_prefix = "quick_";
       break;
     case game::Block::WATER:
       sound_prefix = "water_";
@@ -273,16 +286,10 @@ void SoundProcessor::process_blockImpact() {
       // TODO: implement sounds
     case game::Block::DESTROY:
     case game::Block::ELECTRO:
-    case game::Block::HYPER:
     case game::Block::KNOCK_VERTICAL:
     case game::Block::KNOCK_HORIZONTAL:
     case game::Block::MIDAS:
     case game::Block::NETWORK:
-    case game::Block::ORIGIN:
-    case game::Block::QUICK:
-    case game::Block::ARTIFICAL:
-    case game::Block::QUICK_2:
-    case game::Block::QUICK_1:
       break;
     case game::Block::NONE:
     default:
@@ -311,7 +318,18 @@ void SoundProcessor::process_explosion() {
 
 void SoundProcessor::process_prizeCaught() {
   std::unique_lock<std::mutex> lock(m_prize_caught_mutex);
-  auto sound = m_resources->getRandomSound("prize_");
+  std::string sound_prefix = "";
+
+  switch (m_prize) {
+    case game::Prize::HYPER:
+      sound_prefix = "teleport_";
+      break;
+      // TODO: other special prizes
+    default:
+      sound_prefix = "prize_";
+      break;
+  }
+  auto sound = m_resources->getRandomSound(sound_prefix);
   playSound(sound);
 }
 

@@ -13,6 +13,7 @@
 #include "Event.h"
 #include "EventListener.h"
 #include "ExplosionPackage.h"
+#include "Prize.h"
 #include "PrizePackage.h"
 #include "Resources.h"
 #include "RowCol.h"
@@ -115,6 +116,7 @@ private:
    * @{
    */
   game::Block m_impacted_block;  //!< Last received impacted block.
+  game::Prize m_prize;  //!< Last received prize.
   /** @} */  // end of LogicData group
 
   /** @defgroup Mutex Thread-safety variables
