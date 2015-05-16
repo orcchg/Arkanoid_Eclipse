@@ -2,7 +2,6 @@ package com.orcchg.arkanoid.surface;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
-import java.util.Arrays;
 
 import com.orcchg.arkanoid.surface.Database.DatabaseException;
 import com.orcchg.arkanoid.surface.Database.GameStat;
@@ -367,23 +366,23 @@ public class MainActivity extends FragmentActivity {
       int score = 0;
       switch (prize) {
         case BLOCK:
-        case CLIMB:
+        case CLIMB:  // effect not implemented
           score += 35;
           break;
         case DESTROY:
           --currentLives;
           updateLives();
           break;
-        case DRAGON:
+        case DRAGON:  // effect not implemented
           score += 90;
           break;
         case EASY:
         case EASY_T:
-        case EVAPORATE:
+        case EVAPORATE:  // effect not implemented
         case EXPLODE:
         case EXTEND:
         case FAST:
-        case FOG:
+        case FOG:  // effect not implemented
         case GOO:
         case HYPER:
           score += 35;
@@ -416,7 +415,8 @@ public class MainActivity extends FragmentActivity {
           score += 400;
           onLevelFinished();
           break;
-        case ZYGOTE:
+        case ZYGOTE:  // effect not implemented
+          score += 15;
           break;
         case SCORE_5:
           score += 95;
