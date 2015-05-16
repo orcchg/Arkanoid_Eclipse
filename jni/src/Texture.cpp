@@ -87,7 +87,7 @@ const char* Texture::getName() const {
 bool Texture::load() {
   const uint8_t* image_buffer = loadImage();
   if (image_buffer == nullptr) {
-    ERR("Internal error during loading texture!");
+    ERR("Internal error during loading texture! Code: %i", m_error_code);
     return false;
   }
 

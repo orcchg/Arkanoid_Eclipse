@@ -51,7 +51,7 @@ off_t SoundBuffer::getLength() const { return m_length; }
 bool SoundBuffer::load() {
   m_data = loadSound();
   if (m_data == nullptr) {
-    ERR("Internal error during loading sound!");
+    ERR("Internal error during loading sound! Code: %i", m_error_code);
     return false;
   }
   return true;

@@ -283,15 +283,16 @@ public class MainActivity extends FragmentActivity {
   }
   
   private void warningDialog() {
-    new AlertDialog.Builder(this)
-        .setTitle(mAlertDialogTitle)
-        .setMessage(mWarningMessage)
-        .setPositiveButton(mCloseButtonLabel, new DialogInterface.OnClickListener() {
-          @Override
-          public void onClick(DialogInterface dialog, int which) {
-            finish();
-          }
-        }).show();
+//    new AlertDialog.Builder(this)
+//        .setTitle(mAlertDialogTitle)
+//        .setMessage(mWarningMessage)
+//        .setPositiveButton(mCloseButtonLabel, new DialogInterface.OnClickListener() {
+//          @Override
+//          public void onClick(DialogInterface dialog, int which) {
+//            finish();
+//          }
+//        }).show();
+    finish();
   }
   
   /* Core event listeners */
