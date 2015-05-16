@@ -16,6 +16,7 @@ namespace game {
 // ----------------------------------------------------------------------------
 AsyncContext::AsyncContext(JavaVM* jvm)
   : m_jvm(jvm), m_jenv(nullptr)
+  , master_object(nullptr)
   , m_window(nullptr)
   , m_egl_display(EGL_NO_DISPLAY)
   , m_egl_surface(EGL_NO_SURFACE)
@@ -101,7 +102,7 @@ AsyncContext::AsyncContext(JavaVM* jvm)
 
 AsyncContext::~AsyncContext() {
   DBG("enter AsyncContext ~dtor");
-  m_jvm = nullptr;  m_jenv = nullptr;
+  m_jvm = nullptr;  m_jenv = nullptr;  master_object = nullptr;
   m_window = nullptr;
   destroyDisplay();
 
@@ -443,8 +444,11 @@ void AsyncContext::process_loadResources() {
   std::unique_lock<std::mutex> lock(m_load_resources_mutex);
   if (m_resources != nullptr) {
     for (auto it = m_resources->beginTexture(); it != m_resources->endTexture(); ++it) {
-      DBG("Loading resources: %s %p", it->first.c_str(), it->second);
-      it->second->load();
+      DBG("Loading texture resources: %s %p", it->first.c_str(), it->second);
+      if (!it->second->load()) {
+        // notify Java layer about internal problem
+        m_jenv->CallVoidMethod(master_object, fireJavaEvent_errorTextureLoad_id);
+      }
     }
   } else {
     ERR("Resources pointer was not set !");

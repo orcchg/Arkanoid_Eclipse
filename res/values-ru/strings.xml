@@ -11,10 +11,14 @@
     
     <string name="ok_button">ОК</string>
     <string name="cancel_button">Отмена</string>
-    <string name="warning_message">Текущее состояние игры будет потеряно. Начать новую игру?</string>
+    <string name="warning_message">Текущее состояние игры будет потеряно. Начать новую игру ?</string>
     
     <string name="action_throw">Бросок</string>
     <string name="action_nextLevel">Дальше</string>
     <string name="action_dropStat">Сброс</string>
 
+    <string name="internal_error">Произошла ошибка !</string>
+    <string name="internal_error_message">Рекомендуется перезапустить приложение.</string>
+    <string name="close_button">Завершить</string>
+    
 </resources>

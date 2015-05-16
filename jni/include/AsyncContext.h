@@ -117,6 +117,14 @@ private:
   void detachFromJVM();
   /** @} */  // end of JNIEnvironment group
 
+public:
+  /** @addtogroup JNIEnvironment
+   * @{
+   */
+  inline void setMasterObject(jobject object) { master_object = object; }
+  inline void setOnErrorTextureLoadMethodID(jmethodID id) { fireJavaEvent_errorTextureLoad_id = id; }
+  /** @} */  // end of JNIEnvironment group
+
 // ----------------------------------------------
 /* Public data-members */
 public:
@@ -186,6 +194,8 @@ private:
    */
   JavaVM* m_jvm;  //!< Pointer to Java Virtual Machine in current session.
   JNIEnv* m_jenv;  //!< Pointer to environment local within this thread.
+  jobject master_object;
+  jmethodID fireJavaEvent_errorTextureLoad_id;
   /** @} */  // end of JNIEnvironment group
 
   /** @defgroup WindowSurface Rendering surface stuff.

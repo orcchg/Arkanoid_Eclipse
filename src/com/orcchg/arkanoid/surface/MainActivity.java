@@ -7,6 +7,10 @@ import com.orcchg.arkanoid.surface.Database.DatabaseException;
 import com.orcchg.arkanoid.surface.Database.GameStat;
 import com.orcchg.arkanoid.surface.R;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -27,6 +31,9 @@ public class MainActivity extends FragmentActivity {
   private int currentLevel = INITIAL_LEVEL;
   private int currentScore = INITIAL_SCORE;
   
+  private static String mAlertDialogTitle;
+  private static String mCloseButtonLabel;
+  private static String mWarningMessage;
   private boolean dropStatFlag = false;
   
   static {
@@ -45,6 +52,11 @@ public class MainActivity extends FragmentActivity {
     super.onCreate(savedInstanceState);
     Log.d(TAG, "onCreate");
     setContentView(R.layout.activity_main);
+    
+    Resources res = getResources();
+    mAlertDialogTitle = res.getString(R.string.internal_error);
+    mCloseButtonLabel = res.getString(R.string.close_button);
+    mWarningMessage = res.getString(R.string.internal_error_message);
     
     dropStatFlag = getIntent().getBooleanExtra(InitActivity.bundleKey_dropStat, false);
     
@@ -270,6 +282,18 @@ public class MainActivity extends FragmentActivity {
     }
   }
   
+  private void warningDialog() {
+    new AlertDialog.Builder(this)
+        .setTitle(mAlertDialogTitle)
+        .setMessage(mWarningMessage)
+        .setPositiveButton(mCloseButtonLabel, new DialogInterface.OnClickListener() {
+          @Override
+          public void onClick(DialogInterface dialog, int which) {
+            finish();
+          }
+        }).show();
+  }
+  
   /* Core event listeners */
   // --------------------------------------------------------------------------
   private static class CoreEventHandler implements AsyncContext.CoreEventListener {
@@ -446,6 +470,16 @@ public class MainActivity extends FragmentActivity {
       onScoreUpdated(score);
     }
     
+    @Override
+    public void onErrorTextureLoad() {
+      warningDialog();
+    }
+    
+    @Override
+    public void onErrorSoundLoad() {
+      warningDialog();
+    }
+    
     // ------------------------------------------
     private void updateLives() {
       final MainActivity activity = activityRef.get();
@@ -458,5 +492,17 @@ public class MainActivity extends FragmentActivity {
         });
       }
     }
-  }
+    
+    private void warningDialog() {
+      final MainActivity activity = activityRef.get();
+      if (activity != null) {
+        activity.runOnUiThread(new Runnable() {
+          @Override
+          public void run() {
+            activity.warningDialog();
+          }
+        });
+      }
+    }
+  }  // end of inner class
 }

@@ -211,7 +211,7 @@ AsyncContextHelper::AsyncContextHelper(JNIEnv* jenv, jobject object)
   acontext = new game::AsyncContext(jvm);
   processor = new game::GameProcessor(jvm);
   prize_processor = new game::PrizeProcessor(jvm);
-  sound_processor = new native::sound::SoundProcessor();
+  sound_processor = new native::sound::SoundProcessor(jvm);
 
   global_object = jenv->NewGlobalRef(object);
   jclass clazz = jenv->FindClass("java/lang/String");
@@ -224,6 +224,11 @@ AsyncContextHelper::AsyncContextHelper(JNIEnv* jenv, jobject object)
   fireJavaEvent_angleChanged_id = jenv->GetMethodID(class_id, "fireJavaEvent_angleChanged", "(I)V");
   fireJavaEvent_cardinalityChanged_id = jenv->GetMethodID(class_id, "fireJavaEvent_cardinalityChanged", "(I)V");
   fireJavaEvent_prizeCatch_id = jenv->GetMethodID(class_id, "fireJavaEvent_prizeCatch", "(I)V");
+  fireJavaEvent_errorTextureLoad_id = jenv->GetMethodID(class_id, "fireJavaEvent_errorTextureLoad", "()V");
+  fireJavaEvent_errorSoundLoad_id = jenv->GetMethodID(class_id, "fireJavaEvent_errorSoundLoad", "()V");
+
+  acontext->setMasterObject(global_object);
+  acontext->setOnErrorTextureLoadMethodID(fireJavaEvent_errorTextureLoad_id);
 
   processor->setMasterObject(global_object);
   processor->setOnLostBallMethodID(fireJavaEvent_lostBall_id);
@@ -234,6 +239,9 @@ AsyncContextHelper::AsyncContextHelper(JNIEnv* jenv, jobject object)
 
   prize_processor->setMasterObject(global_object);
   prize_processor->setOnPrizeCatchMethodID(fireJavaEvent_prizeCatch_id);
+
+  sound_processor->setMasterObject(global_object);
+  sound_processor->setOnErrorSoundLoadMethodID(fireJavaEvent_errorSoundLoad_id);
   DBG("exit AsyncContextHelper ctor");
 }
 

@@ -28,7 +28,7 @@ class SoundProcessor : public ActiveObject {
 public:
   typedef SoundProcessor* Ptr;
 
-  SoundProcessor();
+  SoundProcessor(JavaVM* jvm);
   virtual ~SoundProcessor() noexcept;
 
   /** @defgroup Callbacks These methods are responses of incoming events
@@ -67,6 +67,27 @@ public:
   /** @} */  // end of Resources group
 
 // ----------------------------------------------
+/* Private member-functions */
+private:
+  /** @defgroup JNIEnvironment Native glue between core and GUI.
+   * @{
+   */
+  /// @brief Attaches this thread to an existing JVM.
+  void attachToJVM();
+  /// @brief Detaches this thread from an existing JVM it had been
+  /// previously attached.
+  void detachFromJVM();
+  /** @} */  // end of JNIEnvironment group
+
+public:
+  /** @addtogroup JNIEnvironment
+   * @{
+   */
+  inline void setMasterObject(jobject object) { master_object = object; }
+  inline void setOnErrorSoundLoadMethodID(jmethodID id) { fireJavaEvent_errorSoundLoad_id = id; }
+  /** @} */  // end of JNIEnvironment group
+
+// ----------------------------------------------
 /* Public data-members */
 public:
   /** @defgroup Event Outcoming events and listeners for incoming events.
@@ -99,6 +120,15 @@ public:
 // ----------------------------------------------
 /* Private data-members */
 private:
+  /** @addtogroup JNIEnvironment
+   * @{
+   */
+  JavaVM* m_jvm;  //!< Pointer to Java Virtual Machine in current session.
+  JNIEnv* m_jenv;  //!< Pointer to environment local within this thread.
+  jobject master_object;
+  jmethodID fireJavaEvent_errorSoundLoad_id;
+  /** @} */  // end of JNIEnvironment group
+
   /** @defgroup Core Core data-structures for sound playback.
    * @{
    */
@@ -122,6 +152,7 @@ private:
   /** @defgroup Mutex Thread-safety variables
    * @{
    */
+  std::mutex m_jnienvironment_mutex;  //!< Sentinel for thread attach to JVM.
   std::mutex m_load_resources_mutex;  //!< Sentinel for load resources.
   std::mutex m_lost_ball_mutex;  //!< Sentinel for lost ball flag.
   std::mutex m_bite_impact_mutex;

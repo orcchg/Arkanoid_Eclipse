@@ -11,10 +11,14 @@
     
     <string name="ok_button">OK</string>
     <string name="cancel_button">Cancel</string>
-    <string name="warning_message">You will lose stored game state, are you sure want to start new game?</string>
+    <string name="warning_message">You will lose stored game state, are you sure want to start new game ?</string>
     
     <string name="action_throw">Throw</string>
     <string name="action_nextLevel">Next level</string>
     <string name="action_dropStat">Drop stat</string>
-
+    
+    <string name="internal_error">Internal error !</string>
+    <string name="internal_error_message">It is recommended to restart application.</string>
+    <string name="close_button">Close</string>
+    
 </resources>

@@ -7,8 +7,10 @@
 namespace native {
 namespace sound {
 
-SoundProcessor::SoundProcessor()
-  : m_error_code(0)
+SoundProcessor::SoundProcessor(JavaVM* jvm)
+  : m_jvm(jvm), m_jenv(nullptr)
+  , master_object(nullptr)
+  , m_error_code(0)
   , m_engine(nullptr)
   , m_mixer(nullptr)
   , m_interface(nullptr)
@@ -41,6 +43,7 @@ SoundProcessor::SoundProcessor()
 
 SoundProcessor::~SoundProcessor() {
   DBG("enter SoundProcessor ~dtor");
+  m_jvm = nullptr;  m_jenv = nullptr;  master_object = nullptr;
   destroy();
   m_resources = nullptr;
   DBG("exit SoundProcessor ~dtor");
@@ -122,6 +125,23 @@ void SoundProcessor::setResourcesPtr(game::Resources* resources) {
   m_resources = resources;
 }
 
+/* *** Private methods *** */
+/* JNIEnvironment group */
+// ----------------------------------------------------------------------------
+void SoundProcessor::attachToJVM() {
+  std::unique_lock<std::mutex> lock(m_jnienvironment_mutex);
+  auto result = m_jvm->AttachCurrentThread(&m_jenv, nullptr /* thread args */);
+  if (result != JNI_OK) {
+    ERR("SoundProcessor thread was not attached to JVM !");
+    throw JNI_exception();
+  }
+}
+
+void SoundProcessor::detachFromJVM() {
+  std::unique_lock<std::mutex> lock(m_jnienvironment_mutex);
+  m_jvm->DetachCurrentThread();
+}
+
 /* ActiveObject group */
 // ----------------------------------------------------------------------------
 void SoundProcessor::onStart() {
@@ -199,8 +219,11 @@ void SoundProcessor::process_loadResources() {
   std::unique_lock<std::mutex> lock(m_load_resources_mutex);
   if (m_resources != nullptr) {
     for (auto it = m_resources->beginSound(); it != m_resources->endSound(); ++it) {
-      DBG("Loading resources: %s %p", it->first.c_str(), it->second);
-      it->second->load();
+      DBG("Loading sound resources: %s %p", it->first.c_str(), it->second);
+      if (!it->second->load()) {
+        // notify Java layer about internal problem
+        m_jenv->CallVoidMethod(master_object, fireJavaEvent_errorSoundLoad_id);
+      }
     }
   } else {
     ERR("Resources pointer was not set !");

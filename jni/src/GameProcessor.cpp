@@ -57,7 +57,7 @@ GameProcessor::GameProcessor(JavaVM* jvm)
 
 GameProcessor::~GameProcessor() {
   DBG("enter GameProcessor ~dtor");
-  m_jvm = nullptr;  m_jenv = nullptr;
+  m_jvm = nullptr;  m_jenv = nullptr;  master_object = nullptr;
   DBG("exit GameProcessor ~dtor");
 }
 

@@ -18,6 +18,8 @@ class AsyncContext {
     void onAngleChanged(int angle);
     void onCardinalityChanged(int new_cardinality);
     void onPrizeCatch(Prize prize);
+    void onErrorTextureLoad();
+    void onErrorSoundLoad();
   }
   
   private CoreEventListener mListener;
@@ -117,6 +119,18 @@ class AsyncContext {
   void fireJavaEvent_prizeCatch(int prize) {
     if (mListener != null) {
       mListener.onPrizeCatch(Prize.fromInt(prize));
+    }
+  }
+  
+  void fireJavaEvent_errorTextureLoad() {
+    if (mListener != null) {
+      mListener.onErrorTextureLoad();
+    }
+  }
+  
+  void fireJavaEvent_errorSoundLoad() {
+    if (mListener != null) {
+      mListener.onErrorSoundLoad();
     }
   }
   
