@@ -12,7 +12,7 @@ enum class BallEffect : int {
   EASY = 1,      //! block effect
   EASY_T = 2,    //! timed effect ; block effect
   EXPLODE = 3,   //! block effect
-  GOO = 4,       // timed effect
+  GOO = 4,       //! timed effect
   JUMP = 5,      //! timed effect ; block effect
   MIRROR = 6,    //! timed effect
   PIERCE = 7,    //! timed effect ; block effect

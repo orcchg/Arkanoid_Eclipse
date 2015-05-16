@@ -18,13 +18,13 @@ enum class Prize : int {
   EXTEND = 9,     //! [ t ] extends bite
   FAST = 10,      //! [ t ] speed-up ball
   FOG = 11,       // produces FOG blocks instead NONE (0 cardinality)   { level }
-  GOO = 12,       // [ t ] glues ball and bite               { ball }
-  HYPER = 13,     // teleports ball to random place
+  GOO = 12,       //! [ t ] glues ball and bite               { ball }
+  HYPER = 13,     //! teleports ball to random place
   INIT = 14,      //! reloads current level
   JUMP = 15,      //! [ t ] explodes blocks nearest to ball { ball }
-  LASER = 16,     // [ t ] laser beam from bite
+  LASER = 16,     //! [ t ] laser beam from bite
   MIRROR = 17,    //! [ t ] all collisions from bite are mirrored  { ball }
-  PIERCE = 18,    // [ 1 ] explodes blocks behind                  { ball }
+  PIERCE = 18,    //! [ 1 ] explodes blocks behind                  { ball }
   PROTECT = 19,   //! [ t ] add protection blocks                  { level }
   RANDOM = 20,    //! [ t ] random angle for any bite collision    { ball }
   SHORT = 21,     //! [ t ] shortens bite
