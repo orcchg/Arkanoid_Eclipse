@@ -372,9 +372,9 @@ private:
    * @{
    */
   /// @brief Calculates row- and column- index of block which is impacted
-  /// with the ball at given location.
-  /// @param ball_x Position of ball's center along X axis.
-  /// @param ball_y Position of ball's center along Y axis.
+  /// with the ball / laser-beam at given location.
+  /// @param ball_x Position of ball's (laser beam's) center along X axis.
+  /// @param ball_y Position of ball's (laser beam's) center along Y axis.
   /// @param row Output row index of impacted block of current level.
   /// @param col Output column index of impacted block of current level.
   /// @return TRUE is some block has been impacted, FALSE if ball has left level's boundaries

@@ -381,7 +381,15 @@ void GameProcessor::process_prizeCaught() {
 
 void GameProcessor::process_laserBeam() {
   std::unique_lock<std::mutex> lock(m_laser_beam_mutex);
-  // XXX
+  int row = 0, col = 0;
+  if (!getImpactedBlock(m_laser_beam.getX(), m_laser_beam.getY(), &row, &col)) {
+    return;  // laser beam has left level boundaries
+  }
+  Block block = m_level->getBlock(row, col);
+  m_level->setBlockImpacted(row, col);
+  int score = BlockUtils::getBlockScore(block);
+  block_impact_event.notifyListeners(RowCol(row, col, block));
+  onScoreUpdated(score);
 }
 
 /* LogicFunc group */
