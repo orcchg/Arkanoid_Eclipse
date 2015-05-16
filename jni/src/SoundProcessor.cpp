@@ -265,7 +265,6 @@ void SoundProcessor::process_blockImpact() {
     case game::Block::ROLLING:
       sound_prefix = "block_";
       break;
-    case game::Block::ARTIFICAL:
     case game::Block::CLAY:
     case game::Block::SIMPLE:
       sound_prefix = "simple_";
@@ -282,6 +281,7 @@ void SoundProcessor::process_blockImpact() {
     case game::Block::KNOCK_HORIZONTAL:
       sound_prefix = "explode_";
       break;
+    case game::Block::ARTIFICAL:
     case game::Block::MAGIC:
       sound_prefix = "magic_";
       break;
@@ -359,9 +359,6 @@ void SoundProcessor::process_prizeCaught() {
   std::string sound_prefix = "";
 
   switch (m_prize) {
-    case game::Prize::BLOCK:
-      sound_prefix = "magic_";
-      break;
     case game::Prize::HYPER:
       sound_prefix = "teleport_";
       break;
