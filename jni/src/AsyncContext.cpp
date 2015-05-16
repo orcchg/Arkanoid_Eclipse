@@ -1384,7 +1384,6 @@ void AsyncContext::drawLaser(GLfloat x, GLfloat y) {
     m_laser_time += delta_elapsed;
     if (m_laser_time >= 1.0f) {
       m_laser_time = 0.0f;
-//      m_render_laser = false;
       return;
     }
   }
@@ -1395,7 +1394,6 @@ void AsyncContext::drawLaser(GLfloat x, GLfloat y) {
       laser_beam_event.notifyListeners(LaserPackage(x, Ypath));
     } else {
       is_visible = 0;  /* false */
-//      m_render_laser = false;
     }
   }
 
