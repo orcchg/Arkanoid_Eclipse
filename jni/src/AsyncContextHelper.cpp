@@ -64,6 +64,8 @@ JNIEXPORT jlong JNICALL Java_com_orcchg_arkanoid_surface_AsyncContext_init
   ptr->sound_processor->level_finished_listener = ptr->processor->level_finished_event.createListener(&native::sound::SoundProcessor::callback_levelFinished, ptr->sound_processor);
   ptr->sound_processor->explosion_listener = ptr->processor->explosion_event.createListener(&native::sound::SoundProcessor::callback_explosion, ptr->sound_processor);
   ptr->sound_processor->prize_caught_listener = ptr->prize_processor->prize_caught_event.createListener(&native::sound::SoundProcessor::callback_prizeCaught, ptr->sound_processor);
+  ptr->sound_processor->laser_beam_visibility_listener = ptr->processor->laser_beam_visibility_event.createListener(&native::sound::SoundProcessor::callback_laserBeamVisibility, ptr->sound_processor);
+  ptr->sound_processor->laser_block_impact_listener = ptr->processor->laser_block_impact_event.createListener(&native::sound::SoundProcessor::callback_laserBlockImpact, ptr->sound_processor);
 
   return descriptor;
 }

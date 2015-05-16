@@ -50,6 +50,10 @@ public:
   void callback_explosion(game::ExplosionPackage package);
   /// @brief Called when prize has been caught.
   void callback_prizeCaught(game::PrizePackage package);
+  /// @brief Called when laser beam changed visibility.
+  void callback_laserBeamVisibility(bool is_visible);
+  /// @brief Called when laser beam impacts block.
+  void callback_laserBlockImpact(bool /* dummy */);
   /** @} */  // end of Callbacks group
 
   /** @defgroup Resources Bind with external resources.
@@ -81,6 +85,10 @@ public:
   EventListener<game::ExplosionPackage> explosion_listener;
   /// @brief Listens for event which occurs when prize has been caught.
   EventListener<game::PrizePackage> prize_caught_listener;
+  /// @brief Listens for laser beam visibility.
+  EventListener<bool> laser_beam_visibility_listener;
+  /// @brief Listens for laser block impact.
+  EventListener<bool> laser_block_impact_listener;
   /** @} */  // end of Event group
 
 // ----------------------------------------------
@@ -116,6 +124,8 @@ private:
   std::mutex m_level_finished_mutex;  //!< Sentinel for level has been successfully finished.
   std::mutex m_explosion_mutex;  //!< Sentinel for particle system explosion.
   std::mutex m_prize_caught_mutex;  //!< Sentinel for prize has been caught.
+  std::mutex m_laser_beam_visibility_mutex;
+  std::mutex m_laser_block_impact_mutex;
   std::atomic_bool m_load_resources_received;  //!< Load resources requested.
   std::atomic_bool m_lost_ball_received;  //!< Ball has been lost received.
   std::atomic_bool m_bite_impact_received;
@@ -124,6 +134,8 @@ private:
   std::atomic_bool m_level_finished_received;  //!< Level has been successfully finished.
   std::atomic_bool m_explosion_received;  //!< Request for explosion received.
   std::atomic_bool m_prize_caught_received;  //!< Prize has been caught received.
+  std::atomic_bool m_laser_beam_visibility_received;
+  std::atomic_bool m_laser_block_impact_received;
   /** @} */  // end of Mutex group
 
   /** @addtogroup Resources
@@ -169,6 +181,10 @@ private:
   void process_explosion();
   /// @brief Plays sound for prize catching.
   void process_prizeCaught();
+  /// @brief Plays sound when laser beam visibility changes.
+  void process_laserBeamVisibility();
+  /// @brief Plays sound when laser impacts a block.
+  void process_laserBlockImpact();
   /** @} */  // end of Processors group
 
   /** @defgroup CoreFunc Core-related internal functionality.

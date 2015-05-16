@@ -32,6 +32,8 @@ SoundProcessor::SoundProcessor()
   m_level_finished_received.store(false);
   m_explosion_received.store(false);
   m_prize_caught_received.store(false);
+  m_laser_beam_visibility_received.store(false);
+  m_laser_block_impact_received.store(false);
   DBG("exit SoundProcessor ctor");
 }
 
@@ -95,6 +97,18 @@ void SoundProcessor::callback_prizeCaught(game::PrizePackage package) {
   interrupt();
 }
 
+void SoundProcessor::callback_laserBeamVisibility(bool is_visible) {
+  std::unique_lock<std::mutex> lock(m_laser_beam_visibility_mutex);
+  m_laser_beam_visibility_received.store(true);
+  interrupt();
+}
+
+void SoundProcessor::callback_laserBlockImpact(bool /* dummy */) {
+  std::unique_lock<std::mutex> lock(m_laser_block_impact_mutex);
+  m_laser_block_impact_received.store(true);
+  interrupt();
+}
+
 // ----------------------------------------------
 void SoundProcessor::setResourcesPtr(game::Resources* resources) {
   m_resources = resources;
@@ -118,7 +132,9 @@ bool SoundProcessor::checkForWakeUp() {
       m_wall_impact_received.load() ||
       m_level_finished_received.load() ||
       m_explosion_received.load() ||
-      m_prize_caught_received.load();
+      m_prize_caught_received.load() ||
+      m_laser_beam_visibility_received.load() ||
+      m_laser_block_impact_received.load();
 }
 
 void SoundProcessor::eventHandler() {
@@ -153,6 +169,14 @@ void SoundProcessor::eventHandler() {
   if (m_level_finished_received.load()) {
     m_level_finished_received.store(false);
     process_levelFinished();
+  }
+  if (m_laser_beam_visibility_received.load()) {
+    m_laser_beam_visibility_received.store(false);
+    process_laserBeamVisibility();
+  }
+  if (m_laser_block_impact_received.load()) {
+    m_laser_block_impact_received.store(false);
+    process_laserBlockImpact();
   }
 }
 
@@ -277,6 +301,16 @@ void SoundProcessor::process_prizeCaught() {
   std::unique_lock<std::mutex> lock(m_prize_caught_mutex);
   auto sound = m_resources->getRandomSound("prize_");
   playSound(sound);
+}
+
+void SoundProcessor::process_laserBeamVisibility() {
+  std::unique_lock<std::mutex> lock(m_laser_beam_visibility_mutex);
+  // TODO: play periodically laser sound
+}
+
+void SoundProcessor::process_laserBlockImpact() {
+  std::unique_lock<std::mutex> lock(m_laser_block_impact_mutex);
+  // no-op
 }
 
 /* CoreFunc group */
