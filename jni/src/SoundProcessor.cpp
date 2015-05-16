@@ -247,9 +247,10 @@ void SoundProcessor::process_blockImpact() {
     case game::Block::ARTIFICAL:
     case game::Block::QUICK_2:
     case game::Block::QUICK_1:
+      break;
     case game::Block::NONE:
     default:
-      break;
+      return;
   }
 
   auto sound = m_resources->getRandomSound(sound_prefix);
