@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Арканоид</string>
+    
+    <string name="continue_game_button">Продолжить</string>
+    <string name="new_game_button">Новая игра</string>
+    <string name="about_game_button">О программе</string>
+    <string name="quit_game_button">Выйти</string>
+    <string name="author_text">автор Maxim Alov</string>
+    
+    <string name="action_throw">Бросок</string>
+    <string name="action_nextLevel">Дальше</string>
+    <string name="action_dropStat">Сброс</string>
+
+</resources>
