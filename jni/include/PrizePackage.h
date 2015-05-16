@@ -1,7 +1,6 @@
 #ifndef __ARKANOID_PRIZE_PACKAGE__H__
 #define __ARKANOID_PRIZE_PACKAGE__H__
 
-#include <atomic>
 #include <GLES/gl.h>
 
 #include "Prize.h"

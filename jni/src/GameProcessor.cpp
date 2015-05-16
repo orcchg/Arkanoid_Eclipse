@@ -27,12 +27,14 @@ GameProcessor::GameProcessor(JavaVM* jvm)
   , m_ball_pose_corrected(false)
   , m_ball()
   , m_bite()
+  , m_laser_beam(0.0f, 0.0f)
   , m_bite_upper_border(-BiteParams::neg_biteElevation)
   , m_level_dimens(0, 0, 0.0f, 0.0f, 0.0f, 0.0f)
   , m_prize_caught(Prize::NONE)
   , m_internal_timer(0)
   , m_internal_timer_for_speed(0)
   , m_internal_timer_for_width(0)
+  , m_internal_timer_for_laser(0)
   , explosionID(0)
   , prizeID(0)
   , m_generator(std::chrono::system_clock::now().time_since_epoch().count())
@@ -49,6 +51,7 @@ GameProcessor::GameProcessor(JavaVM* jvm)
   m_level_dimens_received.store(false);
   m_bite_location_received.store(false);
   m_prize_caught_received.store(false);
+  m_laser_beam_received.store(false);
   DBG("exit GameProcessor ctor");
 }
 
@@ -117,6 +120,13 @@ void GameProcessor::callback_prizeCaught(PrizePackage package) {
   interrupt();
 }
 
+void GameProcessor::callback_laserBeam(LaserPackage laser) {
+  std::unique_lock<std::mutex> lock(m_laser_beam_mutex);
+  m_laser_beam_received.store(true);
+  m_laser_beam = laser;
+  interrupt();
+}
+
 /* *** Private methods *** */
 /* JNIEnvironment group */
 // ----------------------------------------------------------------------------
@@ -155,7 +165,8 @@ bool GameProcessor::checkForWakeUp() {
       m_init_bite_received.load() ||
       m_level_dimens_received.load() ||
       m_bite_location_received.load() ||
-      m_prize_caught_received.load();
+      m_prize_caught_received.load() ||
+      m_laser_beam_received.load();
 }
 
 void GameProcessor::eventHandler() {
@@ -191,11 +202,18 @@ void GameProcessor::eventHandler() {
     m_prize_caught_received.store(false);
     process_prizeCaught();
   }
+  if (m_laser_beam_received.load()) {
+    m_laser_beam_received.store(false);
+    process_laserBeam();
+  }
+
+  // internal events
   if (m_ball_is_flying) {
     moveBall();
     incrementInternalTimer();
     incrementInternalTimerForSpeed();
     incrementInternalTimerForWidth();
+    incrementInternalTimerForLaser();
   }
   if (checkInternalTimer(GameProcessor::internalTimerThreshold)) {
     dropTimedEffectForBall();
@@ -208,6 +226,10 @@ void GameProcessor::eventHandler() {
   if (checkInternalTimerForWidth(GameProcessor::internalTimerForWidthThreshold)) {
     bite_width_changed_event.notifyListeners(BiteEffect::NONE);
     dropInternalTimerForWidth();
+  }
+  if (checkInternalTimerForLaser(GameProcessor::internalTimerForLaserThreshold)) {
+    laser_beam_visibility_event.notifyListeners(false);
+    dropInternalTimerForLaser();
   }
 }
 
@@ -308,7 +330,10 @@ void GameProcessor::process_prizeCaught() {
       m_ball.setEffect(BallEffect::JUMP);
       dropInternalTimer();
       break;
-    // TODO: LASER
+    case Prize::LASER:
+      laser_beam_visibility_event.notifyListeners(true);
+      dropInternalTimerForLaser();
+      break;
     case Prize::MIRROR:  // timed effect
       m_ball.setEffect(BallEffect::MIRROR);
       dropInternalTimer();
@@ -352,6 +377,11 @@ void GameProcessor::process_prizeCaught() {
     default:
       break;
   }
+}
+
+void GameProcessor::process_laserBeam() {
+  std::unique_lock<std::mutex> lock(m_laser_beam_mutex);
+  // XXX
 }
 
 /* LogicFunc group */

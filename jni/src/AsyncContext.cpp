@@ -84,6 +84,7 @@ AsyncContext::AsyncContext(JavaVM* jvm)
   m_prize_caught_received.store(false);
   m_drop_ball_appearance_received.store(false);
   m_bite_width_changed_received.store(false);
+  m_laser_beam_visibility_received.store(false);
   m_window_set = false;
   m_resources = nullptr;
 
@@ -256,6 +257,13 @@ void AsyncContext::callback_biteWidthChanged(BiteEffect effect) {
   interrupt();
 }
 
+void AsyncContext::callback_laserBeamVisibility(bool is_visible) {
+  std::unique_lock<std::mutex> lock(m_laser_beam_visibility_mutex);
+  m_laser_beam_visibility_received.store(true);
+  m_render_laser = is_visible;
+  interrupt();
+}
+
 // ----------------------------------------------
 Level::Ptr AsyncContext::getCurrentLevelState() {
   std::unique_lock<std::mutex> lock(m_load_level_mutex);
@@ -309,7 +317,8 @@ bool AsyncContext::checkForWakeUp() {
       m_prize_received.load() ||
       m_prize_caught_received.load() ||
       m_drop_ball_appearance_received.load() ||
-      m_bite_width_changed_received.load();
+      m_bite_width_changed_received.load() ||
+      m_laser_beam_visibility_received.load();
 }
 
 void AsyncContext::eventHandler() {
@@ -371,6 +380,10 @@ void AsyncContext::eventHandler() {
     if (m_bite_width_changed_received.load()) {
       m_bite_width_changed_received.store(false);
       process_biteWidthChanged();
+    }
+    if (m_laser_beam_visibility_received.load()) {
+      m_laser_beam_visibility_received.store(false);
+      process_laserBeamVisibility();
     }
     render();  // render frame to reflect changes occurred
   } else {
@@ -534,6 +547,11 @@ void AsyncContext::process_biteWidthChanged() {
       return;
   }
   moveBite(m_bite.getXPose());  // update bite appearance via moveBite() function
+}
+
+void AsyncContext::process_laserBeamVisibility() {
+  std::unique_lock<std::mutex> lock(m_laser_beam_visibility_mutex);
+  // no-op
 }
 
 /* LogicFunc group */
@@ -870,6 +888,10 @@ void AsyncContext::render() {
             item.getColor(),
             item.getKind());
       }
+    }
+
+    if (m_render_laser) {
+      drawLaser(m_bite.getXPose(), -BiteParams::neg_biteElevation);
     }
 
     clearRemovedPrizes();
@@ -1360,20 +1382,20 @@ void AsyncContext::drawLaser(GLfloat x, GLfloat y) {
     float delta_elapsed = static_cast<float>(currentTime - m_laser_last_time) / CLOCKS_PER_SEC;
     m_laser_last_time = currentTime;
     m_laser_time += delta_elapsed;
-    if (m_laser_time >= 3.0f) {
+    if (m_laser_time >= 1.0f) {
       m_laser_time = 0.0f;
-      m_render_laser = false;
+//      m_render_laser = false;
       return;
     }
   }
   int is_visible = 1;  /* true */
   {
-    GLfloat Ypath = y - m_laser_time * LaserParams::laserSpeed;
+    GLfloat Ypath = y + m_laser_time * LaserParams::laserSpeed;
     if (Ypath <= 1.0f + LaserParams::laserHalfHeight) {
-      // TODO: moved laser beam
+      laser_beam_event.notifyListeners(LaserPackage(x, Ypath));
     } else {
       is_visible = 0;  /* false */
-      m_render_laser = false;
+//      m_render_laser = false;
     }
   }
 

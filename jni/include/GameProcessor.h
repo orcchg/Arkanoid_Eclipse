@@ -15,6 +15,7 @@
 #include "Event.h"
 #include "EventListener.h"
 #include "ExplosionPackage.h"
+#include "LaserPackage.h"
 #include "Level.h"
 #include "LevelDimens.h"
 #include "Prize.h"
@@ -53,6 +54,8 @@ public:
   void callback_biteMoved(Bite moved_bite);
   /// @brief Called when prize has been caught.
   void callback_prizeCaught(PrizePackage package);
+  /// @brief Called when laser beam has moved.
+  void callback_laserBeam(LaserPackage laser);
   /** @} */  // end of Callbacks group
 
 // ----------------------------------------------
@@ -109,6 +112,8 @@ public:
   EventListener<Bite> bite_location_listener;
   /// @brief Listens for event which occurs when prize has been caught.
   EventListener<PrizePackage> prize_caught_listener;
+  /// @brief Listens for laser beam movement.
+  EventListener<LaserPackage> laser_beam_listener;
 
   /// @brief Notifies ball has moved to a new position.
   Event<Ball> move_ball_event;
@@ -130,6 +135,8 @@ public:
   Event<bool> drop_ball_appearance_event;
   /// @brief Notifies bite width has changed.
   Event<BiteEffect> bite_width_changed_event;
+  /// @brief Notifies laser beam has emerged (TRUE) or disappeared (FALSE).
+  Event<bool> laser_beam_visibility_event;
   /** @} */  // end of Event group
 
 // ----------------------------------------------
@@ -154,6 +161,7 @@ private:
   constexpr static int internalTimerThreshold = 1900;
   constexpr static int internalTimerForSpeedThreshold = 2718;
   constexpr static int internalTimerForWidthThreshold = 2718;
+  constexpr static int internalTimerForLaserThreshold = 3600;
 
   Level::Ptr m_level;  //!< Game level at it's current state.
   GLfloat m_throw_angle;  //!< Initial throw level between ball's trajectory and X axis.
@@ -165,12 +173,14 @@ private:
   bool m_ball_pose_corrected;  //!< Auxiliary flag for corrected ball's pose.
   Ball m_ball;  //!< Physical ball's representation.
   Bite m_bite;  //!< Physical bite's representation.
+  LaserPackage m_laser_beam;  //!< Laser beam package.
   GLfloat m_bite_upper_border;  //!< Upper border of bite.
   LevelDimens m_level_dimens;  //!< Measured level's dimensions.
   Prize m_prize_caught;  //!< Type of last caught prize.
   int m_internal_timer;  //!< Timer used for timed effects of prizes.
   int m_internal_timer_for_speed;  //!< Timer used for ball speed changed.
   int m_internal_timer_for_width;  //!< Timer used for bite width changed.
+  int m_internal_timer_for_laser;  //!< Timer used for laser beam visibility.
   std::atomic<int> explosionID;
   std::atomic<int> prizeID;
   /** @} */  // end of LogicData group
@@ -196,6 +206,7 @@ private:
   std::mutex m_level_dimens_mutex;  //!< Sentinel for loaded level dimensions.
   std::mutex m_bite_location_mutex;  //!< Sentinel for bite's center location changes.
   std::mutex m_prize_caught_mutex;  //!< Sentinel for prize has been caught.
+  std::mutex m_laser_beam_mutex;
   std::atomic_bool m_aspect_ratio_received;  //!< Aspect ratio has been measured.
   std::atomic_bool m_load_level_received;  //!< Load level request has been received.
   std::atomic_bool m_throw_ball_received;  //!< Throw ball command has been received.
@@ -204,6 +215,7 @@ private:
   std::atomic_bool m_level_dimens_received;  //!< Level has been loaded and it's dimens received.
   std::atomic_bool m_bite_location_received;  //!< New bite's center location has been received.
   std::atomic_bool m_prize_caught_received;  //!< Prize has been caught received.
+  std::atomic_bool m_laser_beam_received;
   /** @} */  // end of Mutex group
 
 // ----------------------------------------------
@@ -243,6 +255,8 @@ private:
   void process_biteMoved();
   /// @brief Sets effect supplied with prize.
   void process_prizeCaught();
+  /// @brief Processing laser beam movement.
+  void process_laserBeam();
   /** @} */  // end of Processors group
 
   /** @defgroup LogicFunc Game logic related member functions.
@@ -308,14 +322,17 @@ private:
   inline void dropInternalTimer() { m_internal_timer = 0; }
   inline void dropInternalTimerForSpeed() { m_internal_timer_for_speed = 0; }
   inline void dropInternalTimerForWidth() { m_internal_timer_for_width = 0; }
+  inline void dropInternalTimerForLaser() { m_internal_timer_for_laser = 0; }
   /// @brief Increments internal timer's value.
   inline void incrementInternalTimer() { ++m_internal_timer; }
   inline void incrementInternalTimerForSpeed() { ++m_internal_timer_for_speed; }
   inline void incrementInternalTimerForWidth() { ++m_internal_timer_for_width; }
+  inline void incrementInternalTimerForLaser() { ++m_internal_timer_for_laser; }
   /// @brief Checks whether internal timer's value has reached specified value.
   inline bool checkInternalTimer(int value) { return m_internal_timer >= value; }
   inline bool checkInternalTimerForSpeed(int value) { return m_internal_timer_for_speed >= value; }
   inline bool checkInternalTimerForWidth(int value) { return m_internal_timer_for_width >= value; }
+  inline bool checkInternalTimerForLaser(int value) { return m_internal_timer_for_laser >= value; }
   /// @brief Drops any of ball's timed effects if any.
   void dropTimedEffectForBall();
   /** @} */  // end of LogicFunc group

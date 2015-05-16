@@ -35,6 +35,7 @@ JNIEXPORT jlong JNICALL Java_com_orcchg_arkanoid_surface_AsyncContext_init
   ptr->acontext->prize_caught_listener = ptr->prize_processor->prize_caught_event.createListener(&game::AsyncContext::callback_prizeCaught, ptr->acontext);
   ptr->acontext->drop_ball_appearance_listener = ptr->processor->drop_ball_appearance_event.createListener(&game::AsyncContext::callback_dropBallAppearance, ptr->acontext);
   ptr->acontext->bite_width_changed_listener = ptr->processor->bite_width_changed_event.createListener(&game::AsyncContext::callback_biteWidthChanged, ptr->acontext);
+  ptr->acontext->laser_beam_visibility_listener = ptr->processor->laser_beam_visibility_event.createListener(&game::AsyncContext::callback_laserBeamVisibility, ptr->acontext);
 
   ptr->processor->aspect_ratio_listener = ptr->acontext->aspect_ratio_event.createListener(&game::GameProcessor::callback_aspectMeasured, ptr->processor);
   ptr->processor->load_level_listener = ptr->load_level_event.createListener(&game::GameProcessor::callback_loadLevel, ptr->processor);
@@ -44,6 +45,7 @@ JNIEXPORT jlong JNICALL Java_com_orcchg_arkanoid_surface_AsyncContext_init
   ptr->processor->level_dimens_listener = ptr->acontext->level_dimens_event.createListener(&game::GameProcessor::callback_levelDimens, ptr->processor);
   ptr->processor->bite_location_listener = ptr->acontext->bite_location_event.createListener(&game::GameProcessor::callback_biteMoved, ptr->processor);
   ptr->processor->prize_caught_listener = ptr->prize_processor->prize_caught_event.createListener(&game::GameProcessor::callback_prizeCaught, ptr->processor);
+  ptr->processor->laser_beam_listener = ptr->acontext->laser_beam_event.createListener(&game::GameProcessor::callback_laserBeam, ptr->processor);
 
   ptr->prize_processor->aspect_ratio_listener = ptr->acontext->aspect_ratio_event.createListener(&game::PrizeProcessor::callback_aspectMeasured, ptr->prize_processor);
   ptr->prize_processor->bite_location_listener = ptr->acontext->bite_location_event.createListener(&game::PrizeProcessor::callback_biteMoved, ptr->prize_processor);
