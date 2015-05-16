@@ -9,6 +9,10 @@
     <string name="quit_game_button">Quit game</string>
     <string name="author_text">by Maxim Alov</string>
     
+    <string name="ok_button">OK</string>
+    <string name="cancel_button">Cancel</string>
+    <string name="warning_message">You will lose stored game state, are you sure want to start new game?</string>
+    
     <string name="action_throw">Throw</string>
     <string name="action_nextLevel">Next level</string>
     <string name="action_dropStat">Drop stat</string>

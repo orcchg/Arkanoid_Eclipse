@@ -11,6 +11,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -131,6 +132,17 @@ public class MainActivity extends FragmentActivity {
     mAsyncContext.destroy();
     mNativeResources.release();
     super.onDestroy();
+  }
+  
+  @Override
+  public boolean onKeyDown(int keyCode, KeyEvent event) {
+    switch (keyCode) {
+      case KeyEvent.KEYCODE_BACK:
+        Log.d(TAG, "onKeyDown( back )");
+        finish();
+        break;
+    }
+    return super.onKeyDown(keyCode, event);
   }
   
   @Override

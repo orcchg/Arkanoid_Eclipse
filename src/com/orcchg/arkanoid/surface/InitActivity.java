@@ -3,6 +3,7 @@ package com.orcchg.arkanoid.surface;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.os.Bundle;
@@ -15,6 +16,10 @@ public class InitActivity extends FragmentActivity {
   private static final String TAG = "Arkanoid_InitActivity";
   static final String bundleKey_dropStat = "bundleKey_dropStat";
   
+  private static String mAlertDialogTitle;
+  private static String mOKButtonLabel;
+  private static String mCancelButtonLabel;
+  private static String mWarningMessage;
   private boolean databaseExists = false;
   
   private Button mContinueGameButton;
@@ -27,6 +32,12 @@ public class InitActivity extends FragmentActivity {
     super.onCreate(savedInstanceState);
     Log.d(TAG, "onCreate");
     setContentView(R.layout.activity_init);
+    
+    Resources res = getResources();
+    mAlertDialogTitle = res.getString(R.string.new_game_button);
+    mOKButtonLabel = res.getString(R.string.ok_button);
+    mCancelButtonLabel = res.getString(R.string.cancel_button);
+    mWarningMessage = res.getString(R.string.warning_message);
     
     mContinueGameButton = (Button) findViewById(R.id.continue_game_button);
 //    mNewGameButton = (Button) findViewById(R.id.new_game_button);
@@ -42,7 +53,7 @@ public class InitActivity extends FragmentActivity {
     intent.putExtra(bundleKey_dropStat, false);
     startActivity(intent);
   }
-  
+
   public void onClickNewGame(View view) {
     if (databaseExists) {
       warningDialog();
@@ -76,12 +87,11 @@ public class InitActivity extends FragmentActivity {
   }
   
   private void warningDialog() {
-    // TODO: localization strings
     final FragmentActivity activity = this;
     new AlertDialog.Builder(activity)
-        .setTitle("New game")
-        .setMessage("You will lose stored game state, are you sure want to start new game?")
-        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+        .setTitle(mAlertDialogTitle)
+        .setMessage(mWarningMessage)
+        .setPositiveButton(mOKButtonLabel, new DialogInterface.OnClickListener() {
           @Override
           public void onClick(DialogInterface dialog, int which) {
             Intent intent = new Intent(activity, MainActivity.class);
@@ -89,7 +99,7 @@ public class InitActivity extends FragmentActivity {
             startActivity(intent);
           }
         })
-        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+        .setNegativeButton(mCancelButtonLabel, new DialogInterface.OnClickListener() {
           @Override
           public void onClick(DialogInterface dialog, int which) {
             // no-op
