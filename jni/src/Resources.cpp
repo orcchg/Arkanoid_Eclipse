@@ -93,26 +93,26 @@ const native::Texture* const Resources::getRandomTexture(const std::string& pref
 
 const native::Texture* const Resources::getPrizeTexture(const Prize& prize) const {
   switch (prize) {
-    case Prize::BLOCK:    return getTexture("pr_brick.png");
-    case Prize::CLIMB:    return getTexture("pr_earth.png");
-    case Prize::DESTROY:  return getTexture("pr_skull.png");
-    case Prize::DRAGON:   return getTexture("pr_egg.png");
-    case Prize::EASY:       return getTexture("pr_fire.png");
-    case Prize::EASY_T:     return getTexture("pr_fire_t.png");
-    case Prize::EVAPORATE:  return getTexture("pr_waterdrop.png");
-    case Prize::EXPLODE:    return getTexture("pr_explode.png");
-    case Prize::EXTEND:   return getTexture("pr_extend.png");
-    case Prize::FAST:     return getTexture("pr_clock.png");
-    case Prize::FOG:      return getTexture("pr_fog.png");
-    case Prize::GOO:      return getTexture("pr_glue.png");
-    case Prize::HYPER:    return getTexture("pr_hyper.png");
-    case Prize::INIT:     return getTexture("pr_radar.png");
-    case Prize::JUMP:     return getTexture("pr_jump.png");
-    case Prize::LASER:    return getTexture("pr_laser.png");
-    case Prize::MIRROR:   return getTexture("pr_mirror.png");
-    case Prize::PIERCE:   return getTexture("pr_pierce.png");
-    case Prize::PROTECT:  return getTexture("pr_protect.png");
-    case Prize::RANDOM:   return getTexture("pr_dice.png");
+    case Prize::BLOCK:     return getTexture("pr_brick.png");
+    case Prize::CLIMB:     return getTexture("pr_earth.png");
+    case Prize::DESTROY:   return getTexture("pr_skull.png");
+    case Prize::DRAGON:    return getTexture("pr_egg.png");
+    case Prize::EASY:      return getTexture("pr_fire.png");
+    case Prize::EASY_T:    return getTexture("pr_fire_t.png");
+    case Prize::EVAPORATE: return getTexture("pr_waterdrop.png");
+    case Prize::EXPLODE:   return getTexture("pr_explode.png");
+    case Prize::EXTEND:    return getTexture("pr_extend.png");
+    case Prize::FAST:      return getTexture("pr_clock.png");
+    case Prize::FOG:       return getTexture("pr_fog.png");
+    case Prize::GOO:       return getTexture("pr_glue.png");
+    case Prize::HYPER:     return getTexture("pr_hyper.png");
+    case Prize::INIT:      return getTexture("pr_radar.png");
+    case Prize::JUMP:      return getTexture("pr_jump.png");
+    case Prize::LASER:     return getTexture("pr_laser.png");
+    case Prize::MIRROR:    return getTexture("pr_mirror.png");
+    case Prize::PIERCE:    return getTexture("pr_pierce.png");
+    case Prize::PROTECT:   return getTexture("pr_protect.png");
+    case Prize::RANDOM:    return getTexture("pr_dice.png");
     case Prize::SHORT:     return getTexture("pr_short.png");
     case Prize::SLOW:      return getTexture("pr_frozen_clock.png");
     case Prize::UPGRADE:   return getTexture("pr_arrow.png");

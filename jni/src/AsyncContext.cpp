@@ -784,7 +784,7 @@ void AsyncContext::setBiteBallAppearance(BallEffect effect) {
       util::setColor(util::BRICK, &m_ball_color_buffer[32], 4);
       break;
 //    case BallEffect::ZYGOTE:
-//      TODO
+//      TODO ZYGOTE
 //      break;
   }
 }
