@@ -1426,10 +1426,8 @@ void AsyncContext::drawLaser(GLfloat x, GLfloat y) {
   int is_visible = 1;  /* true */
   {
     GLfloat Ypath = y + m_laser_time * LaserParams::laserSpeed;
-    if (Ypath <= 1.0f + LaserParams::laserHalfHeight) {
-      if (!m_laser_interruption) {
-        laser_beam_event.notifyListeners(LaserPackage(x, Ypath));
-      }
+    if (!m_laser_interruption && Ypath <= 1.0f + LaserParams::laserHalfHeight) {
+      laser_beam_event.notifyListeners(LaserPackage(x, Ypath));
     } else {
       is_visible = 0;  /* false */
     }
