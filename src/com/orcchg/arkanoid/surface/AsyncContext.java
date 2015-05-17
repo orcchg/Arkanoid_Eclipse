@@ -20,6 +20,7 @@ class AsyncContext {
     void onPrizeCatch(Prize prize);
     void onErrorTextureLoad();
     void onErrorSoundLoad();
+    void onDebugMessage(String message);
   }
   
   private CoreEventListener mListener;
@@ -131,6 +132,12 @@ class AsyncContext {
   void fireJavaEvent_errorSoundLoad() {
     if (mListener != null) {
       mListener.onErrorSoundLoad();
+    }
+  }
+  
+  void fireJavaEvent_debugMessage(String message) {
+    if (mListener != null) {
+      mListener.onDebugMessage(message);
     }
   }
   

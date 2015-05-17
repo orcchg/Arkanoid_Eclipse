@@ -226,6 +226,7 @@ AsyncContextHelper::AsyncContextHelper(JNIEnv* jenv, jobject object)
   fireJavaEvent_prizeCatch_id = jenv->GetMethodID(class_id, "fireJavaEvent_prizeCatch", "(I)V");
   fireJavaEvent_errorTextureLoad_id = jenv->GetMethodID(class_id, "fireJavaEvent_errorTextureLoad", "()V");
   fireJavaEvent_errorSoundLoad_id = jenv->GetMethodID(class_id, "fireJavaEvent_errorSoundLoad", "()V");
+  fireJavaEvent_debugMessage_id = jenv->GetMethodID(class_id, "fireJavaEvent_debugMessage", "(Ljava/lang/String;)V");
 
   acontext->setMasterObject(global_object);
   acontext->setOnErrorTextureLoadMethodID(fireJavaEvent_errorTextureLoad_id);
@@ -236,6 +237,7 @@ AsyncContextHelper::AsyncContextHelper(JNIEnv* jenv, jobject object)
   processor->setOnScoreUpdatedMethodID(fireJavaEvent_scoreUpdated_id);
   processor->setOnAngleChangedMethodID(fireJavaEvent_angleChanged_id);
   processor->setOnCardinalityChangedMethodID(fireJavaEvent_cardinalityChanged_id);
+  processor->setOnDebugMessageMethodID(fireJavaEvent_debugMessage_id);
 
   prize_processor->setMasterObject(global_object);
   prize_processor->setOnPrizeCatchMethodID(fireJavaEvent_prizeCatch_id);

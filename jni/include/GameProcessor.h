@@ -18,6 +18,7 @@
 #include "LaserPackage.h"
 #include "Level.h"
 #include "LevelDimens.h"
+#include "Macro.h"
 #include "Prize.h"
 #include "PrizePackage.h"
 #include "RowCol.h"
@@ -81,6 +82,7 @@ public:
   inline void setOnScoreUpdatedMethodID(jmethodID id) { fireJavaEvent_scoreUpdated_id = id; }
   inline void setOnAngleChangedMethodID(jmethodID id) { fireJavaEvent_angleChanged_id = id; }
   inline void setOnCardinalityChangedMethodID(jmethodID id) { fireJavaEvent_cardinalityChanged_id = id; }
+  inline void setOnDebugMessageMethodID(jmethodID id) { fireJavaEvent_debugMessage_id = id; }
   /** @} */  // end of JNIEnvironment group
 
   /** @addtogroup LogicFunc
@@ -159,6 +161,7 @@ private:
   jmethodID fireJavaEvent_scoreUpdated_id;
   jmethodID fireJavaEvent_angleChanged_id;
   jmethodID fireJavaEvent_cardinalityChanged_id;
+  jmethodID fireJavaEvent_debugMessage_id;
   /** @} */  // end of JNIEnvironment group
 
   /** @defgroup LogicData Game logic related data members.
@@ -380,6 +383,8 @@ private:
   /// @return TRUE if block has actually been collided, FALSE otherwise.
   /// @details 0 viscosity - no disturbance, 100 - elastic collision
   bool blockCollision(GLfloat top_border, GLfloat bottom_border, GLfloat left_border, GLfloat right_border, int viscosity);
+  /// @brief For debug purposes.
+  void debugCollision(GLfloat new_x, GLfloat new_y, int row, int col, Block block);
   /** @} */  // end of Collision group
 
   /** @addtogroup Maths

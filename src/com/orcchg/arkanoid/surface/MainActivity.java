@@ -295,6 +295,18 @@ public class MainActivity extends FragmentActivity {
     finish();
   }
   
+  private void debugDialog(String message) {
+    new AlertDialog.Builder(this)
+        .setTitle("Debug")
+        .setMessage(message)
+        .setPositiveButton("Close", new DialogInterface.OnClickListener() {
+          @Override
+          public void onClick(DialogInterface dialog, int which) {
+            // no-op
+          }
+        }).show();
+  }
+  
   /* Core event listeners */
   // --------------------------------------------------------------------------
   private static class CoreEventHandler implements AsyncContext.CoreEventListener {
@@ -481,6 +493,11 @@ public class MainActivity extends FragmentActivity {
       warningDialog();
     }
     
+    @Override
+    public void onDebugMessage(String message) {
+      debugDialog(message);
+    }
+    
     // ------------------------------------------
     private void updateLives() {
       final MainActivity activity = activityRef.get();
@@ -501,6 +518,18 @@ public class MainActivity extends FragmentActivity {
           @Override
           public void run() {
             activity.warningDialog();
+          }
+        });
+      }
+    }
+    
+    private void debugDialog(final String message) {
+      final MainActivity activity = activityRef.get();
+      if (activity != null) {
+        activity.runOnUiThread(new Runnable() {
+          @Override
+          public void run() {
+            activity.debugDialog(message);
           }
         });
       }

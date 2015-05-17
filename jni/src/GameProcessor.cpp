@@ -1,3 +1,4 @@
+#include <sstream>
 #include <cassert>
 #include <chrono>
 #include <cmath>
@@ -937,6 +938,9 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
     }
 
     score += performBallEffectAtBlock(row, col);
+#if DEBUG
+    debugCollision(new_x, new_y, row, col, block);
+#endif
     block_impact_event.notifyListeners(RowCol(row, col, block));
     onScoreUpdated(score);
     return (external_collision && BlockUtils::cardinalityAffectingBlock(block));
@@ -986,6 +990,78 @@ bool GameProcessor::blockCollision(
   INF("Corner collision");
   randomAngle();
   return true;
+}
+
+void GameProcessor::debugCollision(GLfloat new_x, GLfloat new_y, int row, int col, Block block) {
+  GLfloat top_border = 0.0f, bottom_border = 0.0f, left_border = 0.0f, right_border = 0.0f;
+  m_level_dimens.getBlockDimens(row, col, &top_border, &bottom_border, &left_border, &right_border);
+
+  bool collided = false;
+  switch (block) {
+    case Block::BRICK:
+      INF("DEBUG: block BRICK (%i, %i)", row, col);
+      collided = true;
+      break;
+    case Block::CLAY:
+      INF("DEBUG: block CLAY (%i, %i)", row, col);
+      collided = true;
+      break;
+    case Block::IRON:
+      INF("DEBUG: block IRON (%i, %i)", row, col);
+      collided = true;
+      break;
+    case Block::JELLY:
+      INF("DEBUG: block JELLY (%i, %i)", row, col);
+      collided = true;
+      break;
+    case Block::PLUMBUM:
+      INF("DEBUG: block PLUMBUM (%i, %i)", row, col);
+      collided = true;
+      break;
+    case Block::ROLLING:
+      INF("DEBUG: block ROLLING (%i, %i)", row, col);
+      collided = true;
+      break;
+    case Block::STEEL:
+      INF("DEBUG: block STEEL (%i, %i)", row, col);
+      collided = true;
+      break;
+    case Block::SIMPLE:
+      INF("DEBUG: block SIMPLE (%i, %i)", row, col);
+      collided = true;
+      break;
+    case Block::WATER:
+      INF("DEBUG: block WATER (%i, %i)", row, col);
+      collided = true;
+      break;
+    default:
+      DBG("DEBUG: block TITAN (%i, %i)", row, col);
+      collided = false;
+      break;
+  }
+
+
+  DBG("DEBUG: Ball pose (%lf, %lf) ; Next pose (%lf, %lf) ; W2=%lf, H2=%lf ; Border t=%lf/%lf, b=%lf/%lf, l=%lf/%lf, r=%lf/%lf",
+      m_ball.getPose().getX() + 1.0f, m_ball.getPose().getY() + 1.0f, new_x + 1.0f, new_y + 1.0f,
+      m_ball.getDimens().halfWidth(), m_ball.getDimens().halfHeight(),
+      top_border, 2.0f - top_border - m_ball.getDimens().halfWidth(),
+      bottom_border, 2.0f - bottom_border + m_ball.getDimens().halfWidth(),
+      left_border, left_border - m_ball.getDimens().halfWidth(),
+      right_border, right_border + m_ball.getDimens().halfWidth());
+
+  if (collided) {
+    std::ostringstream oss;
+    oss << "Ball pose (" << m_ball.getPose().getX() + 1.0f << ", " << m_ball.getPose().getY() + 1.0f << ") ; Next pose ("
+        << new_x + 1.0f << ", " << new_y + 1.0f << ") ; W2=" << m_ball.getDimens().halfWidth() << ", H2=" << m_ball.getDimens().halfHeight()
+        << " ; Border t=" << top_border << "/" << 2.0f - top_border - m_ball.getDimens().halfWidth()
+        << ", b=" << bottom_border << "/" << 2.0f - bottom_border + m_ball.getDimens().halfWidth()
+        << ", l=" << left_border << "/" << left_border - m_ball.getDimens().halfWidth()
+        << ", r=" << right_border << "/" << right_border + m_ball.getDimens().halfWidth();
+    jstring message = m_jenv->NewStringUTF(oss.str().c_str());
+    m_jenv->CallVoidMethod(master_object, fireJavaEvent_debugMessage_id, message);
+    oss.str("");
+    oss.flush();
+  }
 }
 
 /* Maths group */

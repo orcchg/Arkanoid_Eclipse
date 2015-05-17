@@ -186,6 +186,7 @@ struct AsyncContextHelper {
   jmethodID fireJavaEvent_prizeCatch_id;
   jmethodID fireJavaEvent_errorTextureLoad_id;
   jmethodID fireJavaEvent_errorSoundLoad_id;
+  jmethodID fireJavaEvent_debugMessage_id;
 
   AsyncContextHelper(JNIEnv* jenv, jobject master_object);
   virtual ~AsyncContextHelper();
