@@ -340,9 +340,9 @@ void SoundProcessor::process_blockImpact() {
 }
 
 void SoundProcessor::process_wallImpact() {
-  std::unique_lock<std::mutex> lock(m_wall_impact_mutex);
-  auto sound = m_resources->getRandomSound("wall_");
-  playSound(sound);
+//  std::unique_lock<std::mutex> lock(m_wall_impact_mutex);
+//  auto sound = m_resources->getRandomSound("wall_");
+//  playSound(sound);
 }
 
 void SoundProcessor::process_levelFinished() {
