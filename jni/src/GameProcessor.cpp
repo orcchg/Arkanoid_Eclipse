@@ -763,27 +763,58 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
     m_level_dimens.getBlockDimens(row, col, &top_border, &bottom_border, &left_border, &right_border);
 
     // inner block collision correction
-    if (m_level->isInner(row, col)) {
-      if (m_ball.getPose().getX() + 1.0f > left_border - m_ball.getDimens().halfWidth() &&
-          m_ball.getPose().getX() + 1.0f < right_border + m_ball.getDimens().halfWidth()) {
-        if (m_ball.getPose().getY() + 1.0f >= 2.0f - top_border - m_ball.getDimens().halfWidth()) {
-          if (row - 1 >= 0) {
+    if (m_ball.getPose().getY() + 1.0f >= 2.0f - top_border - m_ball.getDimens().halfWidth()) {
+      if (m_ball.getPose().getX() + 1.0f <= left_border - m_ball.getDimens().halfWidth()) {
+        // upper left quadrant
+        Block top = row - 1 >= 0 ? m_level->getBlock(row - 1, col) : Block::TITAN;
+        Block left = col - 1 >= 0 ? m_level->getBlock(row, col - 1) : Block::TITAN;
+        if (top != Block::NONE && left != Block::NONE) {
+          auto top_distance = std::fabs(1.0f - top_border - m_ball.getPose().getY());
+          auto left_distance = std::fabs(left_border - m_ball.getPose().getX() - 1.0f);
+          if (top_distance <= left_distance && row - 1 >= 0) {
             row -= 1;
+          } else if (top_distance > left_distance && col - 1 >= 0) {
+            col -= 1;
           }
-        } else if (m_ball.getPose().getY() + 1.0f <= 2.0f - bottom_border + m_ball.getDimens().halfWidth()) {
-          if (row + 1 < m_level->numRows()) {
-            row += 1;
+        }
+      } else if (m_ball.getPose().getX() + 1.0f >= right_border + m_ball.getDimens().halfWidth()) {
+        // upper right quadrant
+        Block top = row - 1 >= 0 ? m_level->getBlock(row - 1, col) : Block::TITAN;
+        Block right = col + 1 < m_level->numCols() ? m_level->getBlock(row, col + 1) : Block::TITAN;
+        if (top != Block::NONE && right != Block::NONE) {
+          auto top_distance = std::fabs(1.0f - top_border - m_ball.getPose().getY());
+          auto right_distance = std::fabs(right_border - m_ball.getPose().getX() - 1.0f);
+          if (top_distance <= right_distance && row - 1 >= 0) {
+            row -= 1;
+          } else if (top_distance > right_distance && col + 1 < m_level->numCols()) {
+            col += 1;
           }
         }
       }
-      if (m_ball.getPose().getY() + 1.0f < 2.0f - top_border - m_ball.getDimens().halfWidth() &&
-          m_ball.getPose().getY() + 1.0f > 2.0f - bottom_border + m_ball.getDimens().halfWidth()) {
-        if (m_ball.getPose().getX() + 1.0f <= left_border - m_ball.getDimens().halfWidth()) {
-          if (col - 1 >= 0) {
+    } else if (m_ball.getPose().getY() + 1.0f <= 2.0f - bottom_border + m_ball.getDimens().halfWidth()) {
+      if (m_ball.getPose().getX() + 1.0f <= left_border - m_ball.getDimens().halfWidth()) {
+        // lower left quadrant
+        Block bottom = row + 1 < m_level->numRows() ? m_level->getBlock(row + 1, col) : Block::TITAN;
+        Block left = col - 1 >= 0 ? m_level->getBlock(row, col - 1) : Block::TITAN;
+        if (bottom != Block::NONE && left != Block::NONE) {
+          auto bottom_distance = std::fabs(1.0f - bottom_border - m_ball.getPose().getY());
+          auto left_distance = std::fabs(left_border - m_ball.getPose().getX() - 1.0f);
+          if (bottom_distance <= left_distance && row + 1 < m_level->numRows()) {
+            row += 1;
+          } else if (bottom_distance > left_distance && col - 1 >= 0) {
             col -= 1;
           }
-        } else if (m_ball.getPose().getX() + 1.0f >= right_border + m_ball.getDimens().halfWidth()) {
-          if (col + 1 < m_level->numCols()) {
+        }
+      } else if (m_ball.getPose().getX() + 1.0f >= right_border + m_ball.getDimens().halfWidth()) {
+        // lower right quadrant
+        Block bottom = row + 1 < m_level->numRows() ? m_level->getBlock(row + 1, col) : Block::TITAN;
+        Block right = col + 1 < m_level->numCols() ? m_level->getBlock(row, col + 1) : Block::TITAN;
+        if (bottom != Block::NONE && right != Block::NONE) {
+          auto bottom_distance = std::fabs(1.0f - bottom_border - m_ball.getPose().getY());
+          auto right_distance = std::fabs(right_border - m_ball.getPose().getX() - 1.0f);
+          if (bottom_distance <= right_distance && row + 1 < m_level->numRows()) {
+            row += 1;
+          } else if (bottom_distance > right_distance && col + 1 < m_level->numCols()) {
             col += 1;
           }
         }
