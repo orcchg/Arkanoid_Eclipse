@@ -177,6 +177,47 @@ int Level::destroyVulnerableBlock(int row, int col) {
   return score;
 }
 
+bool Level::isInner(int row, int col) const {
+  Block top = Block::NONE;
+  Block bottom = Block::NONE;
+  Block left = Block::NONE;
+  Block right = Block::NONE;
+
+  bool top_result = false;
+  if (row - 1 >= 0) {
+    top = getBlock(row - 1, col);
+    top_result = top != Block::NONE;
+  } else {
+    top_result = true;
+  }
+
+  bool bottom_result = false;
+  if (row + 1 < rows) {
+    bottom = getBlock(row + 1, col);
+    bottom_result = bottom != Block::NONE;
+  } else {
+    bottom_result = true;
+  }
+
+  bool left_result = false;
+  if (col - 1 >= 0) {
+    left = getBlock(row, col - 1);
+    left_result = left != Block::NONE;
+  } else {
+    left_result = true;
+  }
+
+  bool right_result = false;
+  if (col + 1 < cols) {
+    right = getBlock(row, col + 1);
+    right_result = right != Block::NONE;
+  } else {
+    right_result = true;
+  }
+
+  return top_result && bottom_result && left_result && right_result;
+}
+
 void Level::setBlockImpacted(int row, int col) {
   Block block = getBlock(row, col);
   switch (block) {

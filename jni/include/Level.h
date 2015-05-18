@@ -127,6 +127,8 @@ public:
   /// @brief Decrements recorded cardinality due to impact of some block.
   /// @return Updated cardinality.
   inline int blockImpact() { return --initial_cardinality; }
+  /// @brief Checks whether specified block is surrounded with 4 other blocks.
+  bool isInner(int row, int col) const;
 
   /** @defgroup Modifiers Functions modifying blocks.
    * @{

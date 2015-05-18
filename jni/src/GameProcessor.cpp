@@ -762,6 +762,34 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
     GLfloat top_border = 0.0f, bottom_border = 0.0f, left_border = 0.0f, right_border = 0.0f;
     m_level_dimens.getBlockDimens(row, col, &top_border, &bottom_border, &left_border, &right_border);
 
+    // inner block collision correction
+    if (m_level->isInner(row, col)) {
+      if (m_ball.getPose().getX() + 1.0f > left_border - m_ball.getDimens().halfWidth() &&
+          m_ball.getPose().getX() + 1.0f < right_border + m_ball.getDimens().halfWidth()) {
+        if (m_ball.getPose().getY() + 1.0f >= 2.0f - top_border - m_ball.getDimens().halfWidth()) {
+          if (row - 1 >= 0) {
+            row -= 1;
+          }
+        } else if (m_ball.getPose().getY() + 1.0f <= 2.0f - bottom_border + m_ball.getDimens().halfWidth()) {
+          if (row + 1 < m_level->numRows()) {
+            row += 1;
+          }
+        }
+      }
+      if (m_ball.getPose().getY() + 1.0f < 2.0f - top_border - m_ball.getDimens().halfWidth() &&
+          m_ball.getPose().getY() + 1.0f > 2.0f - bottom_border + m_ball.getDimens().halfWidth()) {
+        if (m_ball.getPose().getX() + 1.0f <= left_border - m_ball.getDimens().halfWidth()) {
+          if (col - 1 >= 0) {
+            col -= 1;
+          }
+        } else if (m_ball.getPose().getX() + 1.0f >= right_border + m_ball.getDimens().halfWidth()) {
+          if (col + 1 < m_level->numCols()) {
+            col += 1;
+          }
+        }
+      }
+    }
+
     Direction vertical_direction = Direction::NONE;
     Direction horizontal_direction = Direction::NONE;
     getCollisionDirection(top_border, bottom_border, left_border, right_border, &vertical_direction, &horizontal_direction);
