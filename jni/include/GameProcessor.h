@@ -192,6 +192,8 @@ private:
   int m_internal_timer_for_laser;  //!< Timer used for laser beam visibility.
   std::atomic<int> explosionID;
   std::atomic<int> prizeID;
+  long long m_next_move_iteration;
+  long long m_prev_move_iteration;
   /** @} */  // end of LogicData group
 
   /** @defgroup Maths Maths auxiliary members.
@@ -352,6 +354,14 @@ private:
   inline bool checkInternalTimerForLaser(int value) { return m_internal_timer_for_laser >= value; }
   /// @brief Drops any of ball's timed effects if any.
   void dropTimedEffectForBall();
+  /// @brief Increments move iteration value.
+  inline void incrementMoveIteration() { ++m_next_move_iteration; }
+  inline void dropMoveIteration() {
+    m_next_move_iteration = 0;
+    m_prev_move_iteration = 0;
+  }
+  inline void preserveMoveIteration() { m_prev_move_iteration = m_next_move_iteration; }
+  inline int diffMoveIterations() const { return m_next_move_iteration - m_prev_move_iteration; }
   /** @} */  // end of LogicFunc group
 
   /** @defgroup Collision Functions to perform various collisions.

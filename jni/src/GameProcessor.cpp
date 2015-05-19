@@ -38,6 +38,8 @@ GameProcessor::GameProcessor(JavaVM* jvm)
   , m_internal_timer_for_laser(0)
   , explosionID(0)
   , prizeID(0)
+  , m_next_move_iteration(0)
+  , m_prev_move_iteration(0)
   , m_generator(std::chrono::system_clock::now().time_since_epoch().count())
   , m_angle_distribution(util::PI12, util::PI30)
   , m_direction_distribution(0.25f)
@@ -819,7 +821,7 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
           }
         }
       }
-    }
+    }  // end of inner block collision correction
 
     Direction vertical_direction = Direction::NONE;
     Direction horizontal_direction = Direction::NONE;
@@ -842,6 +844,7 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
     m_level->setBlockImpacted(row, col);
     int score = BlockUtils::getBlockScore(block);
 
+    // block collision effect
     switch (block) {
       case Block::NONE:
         // no impact and disturbance
@@ -994,12 +997,12 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
       case Block::INVUL:
         external_collision = blockCollision(top_border, bottom_border, left_border, right_border, 100 /* elastic */);
         break;
-    }
+    }  // end of block collision effect
 
     score += performBallEffectAtBlock(row, col);
 #if DEBUG
     debugCollision(new_x, new_y, row, col, block);
-#endif
+#endif  // DEBUG
     block_impact_event.notifyListeners(RowCol(row, col, block));
     onScoreUpdated(score);
     return (external_collision && BlockUtils::cardinalityAffectingBlock(block));
@@ -1028,6 +1031,7 @@ bool GameProcessor::blockCollision(
 //    return false;
 //  }
 
+  // surface collision
   if (m_ball.getPose().getX() + 1.0f > left_border - m_ball.getDimens().halfWidth() &&
       m_ball.getPose().getX() + 1.0f < right_border + m_ball.getDimens().halfWidth() &&
       (m_ball.getPose().getY() + 1.0f >= 2.0f - top_border - m_ball.getDimens().halfWidth() ||
@@ -1036,11 +1040,13 @@ bool GameProcessor::blockCollision(
     viscousAngleDisturbance(viscosity);
     return true;
   }
+  // right border collision from left direction
   if (m_ball.getPose().getX() + 1.0f <= left_border - m_ball.getDimens().halfWidth()) {
     collideRightBorder();
     viscousAngleDisturbance(viscosity);
     return true;
   }
+  // left border collision from right direction
   if (m_ball.getPose().getX() + 1.0f >= right_border + m_ball.getDimens().halfWidth()) {
     collideLeftBorder();
     viscousAngleDisturbance(viscosity);
@@ -1052,6 +1058,7 @@ bool GameProcessor::blockCollision(
 }
 
 void GameProcessor::debugCollision(GLfloat new_x, GLfloat new_y, int row, int col, Block block) {
+#if DEBUG
   GLfloat top_border = 0.0f, bottom_border = 0.0f, left_border = 0.0f, right_border = 0.0f;
   m_level_dimens.getBlockDimens(row, col, &top_border, &bottom_border, &left_border, &right_border);
 
@@ -1121,6 +1128,7 @@ void GameProcessor::debugCollision(GLfloat new_x, GLfloat new_y, int row, int co
     oss.str("");
     oss.flush();
   }
+#endif  // DEBUG
 }
 
 /* Maths group */
