@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Arkanoid</string>
+    
+    <string name="continue_game_button">Continuar</string>
+    <string name="new_game_button">Nuevo</string>
+    <string name="about_game_button">Información</string>
+    <string name="quit_game_button">Salir</string>
+    <string name="author_text">El juego de Maxim Alov</string>
+    
+    <string name="ok_button">Listo</string>
+    <string name="cancel_button">Salir</string>
+    <string name="warning_message">¿Seguro que quiere empezar nuevo partido?</string>
+    
+    <string name="action_throw">Perdió</string>
+    <string name="action_nextLevel">Próximo nivel</string>
+    <string name="action_dropStat">Borrar estadística</string>
+
+    <string name="internal_error">Error  !</string>
+    <string name="internal_error_message">Se recomienda reiniciar la aplicación.</string>
+    <string name="close_button">Salir</string>
+    
+</resources>
