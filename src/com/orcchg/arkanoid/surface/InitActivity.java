@@ -16,10 +16,9 @@ public class InitActivity extends FragmentActivity {
   private static final String TAG = "Arkanoid_InitActivity";
   static final String bundleKey_dropStat = "bundleKey_dropStat";
   
-  private static String mAlertDialogTitle;
-  private static String mOKButtonLabel;
-  private static String mCancelButtonLabel;
-  private static String mWarningMessage;
+  private static String mAlertDialogTitle, mAboutDialogTitle;
+  private static String mOKButtonLabel, mCancelButtonLabel, mCloseButtonLabel;
+  private static String mWarningMessage, mAboutMessage;
   private boolean databaseExists = false;
   
   private Button mContinueGameButton;
@@ -35,9 +34,12 @@ public class InitActivity extends FragmentActivity {
     
     Resources res = getResources();
     mAlertDialogTitle = res.getString(R.string.new_game_button);
+    mAboutDialogTitle = res.getString(R.string.about_title);
     mOKButtonLabel = res.getString(R.string.ok_button);
     mCancelButtonLabel = res.getString(R.string.cancel_button);
+    mCloseButtonLabel = res.getString(R.string.close_button);
     mWarningMessage = res.getString(R.string.warning_message);
+    mAboutMessage = res.getString(R.string.about_message);
     
     mContinueGameButton = (Button) findViewById(R.id.continue_game_button);
 //    mNewGameButton = (Button) findViewById(R.id.new_game_button);
@@ -65,11 +67,18 @@ public class InitActivity extends FragmentActivity {
   }
   
   public void onClickAboutGame(View view) {
-    // TODO: about
+    aboutDialog();
   }
   
   public void onClickQuitGame(View view) {
     finish();
+  }
+  
+  @Override
+  protected void onDestroy() {
+    mContinueGameButton = null;
+    System.gc();
+    super.onDestroy();
   }
   
   /* Private methods */
@@ -100,6 +109,18 @@ public class InitActivity extends FragmentActivity {
           }
         })
         .setNegativeButton(mCancelButtonLabel, new DialogInterface.OnClickListener() {
+          @Override
+          public void onClick(DialogInterface dialog, int which) {
+            // no-op
+          }
+        }).show();
+  }
+  
+  private void aboutDialog() {
+    new AlertDialog.Builder(this)
+        .setTitle(mAboutDialogTitle)
+        .setMessage(mAboutMessage)
+        .setPositiveButton(mCloseButtonLabel, new DialogInterface.OnClickListener() {
           @Override
           public void onClick(DialogInterface dialog, int which) {
             // no-op

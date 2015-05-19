@@ -9,7 +9,6 @@ import com.orcchg.arkanoid.surface.R;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -143,6 +142,8 @@ public class MainActivity extends FragmentActivity {
     Log.d(TAG, "onDestroy");
     mAsyncContext.destroy();
     mNativeResources.release();
+    releaseAllViews();
+    System.gc();
     super.onDestroy();
   }
   
@@ -308,6 +309,17 @@ public class MainActivity extends FragmentActivity {
             // no-op
           }
         }).show();
+  }
+  
+  private void releaseAllViews() {
+    mSurface = null;
+    mInfoTextView = null;
+    mAddInfoTextView = null;
+    mLifeMultiplierTextView = null;
+    mCardinalityTextView = null;
+    for (int i = 0; i < mLifeViews.length; ++i) {
+      mLifeViews[i] = null;
+    }
   }
   
   /* Core event listeners */

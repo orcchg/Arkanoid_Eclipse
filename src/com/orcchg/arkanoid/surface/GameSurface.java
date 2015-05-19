@@ -9,7 +9,6 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.view.View;
 
 public class GameSurface extends SurfaceView implements SurfaceHolder.Callback {
   private static final String TAG = "Arkanoid_GameSurface";
