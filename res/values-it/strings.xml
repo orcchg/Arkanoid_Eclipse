@@ -17,6 +17,9 @@
     <string name="action_nextLevel">Inoltre</string>
     <string name="action_dropStat">Aggiorna</string>
     
+    <string name="about_title">Circa l\'applicazione</string>
+    <string name="about_message">Autore: Maxim Alov alovmax@yandex.ru\nVersione: 1.0.0, 31.05.2015\nVedere: http://orcchg.blogspot.ru/</string>
+    
     <string name="internal_error">Errore !</string>
     <string name="internal_error_message">Si consiglia di riavviare l\'applicazione.</string>
     <string name="close_button">Vicino</string>
