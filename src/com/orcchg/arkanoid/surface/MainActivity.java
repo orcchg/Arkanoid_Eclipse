@@ -297,9 +297,9 @@ public class MainActivity extends FragmentActivity {
   }
   
   private void debugDialog(String message) {
-//    if (currentLevel != 0) {
-//      return;
-//    }
+    if (currentLevel != 0) {
+      return;
+    }
     new AlertDialog.Builder(this)
         .setTitle("Debug")
         .setMessage(message)
