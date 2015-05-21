@@ -1,5 +1,5 @@
 APP_MODULE              := Arkanoid
-APP_OPTIM								:= release
+APP_OPTIM				:= release
 NDK_TOOLCHAIN_VERSION   := 4.8
 APP_STL                 := gnustl_static
 APP_CFLAGS              := -pthread -frtti -fexceptions -O3 -mfloat-abi=softfp -mfpu=neon -ftemplate-backtrace-limit=0 -w
