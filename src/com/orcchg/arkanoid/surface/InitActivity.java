@@ -16,6 +16,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.Toast;
 
 public class InitActivity extends FragmentActivity {
   private static final String TAG = "Arkanoid_InitActivity";
@@ -46,13 +47,9 @@ public class InitActivity extends FragmentActivity {
     mWarningMessage = res.getString(R.string.warning_message);
     mAboutMessage = res.getString(R.string.about_message);
     
-    mContinueGameButton = (Button) findViewById(R.id.continue_game_button);
 //    mNewGameButton = (Button) findViewById(R.id.new_game_button);
 //    mAboutGameButton = (Button) findViewById(R.id.about_game_button);
 //    mQuitGameButton = (Button) findViewById(R.id.quit_game_button);
-    
-    databaseExists = checkDatabase();
-    mContinueGameButton.setEnabled(databaseExists);
   }
   
   public void onClickContinueGame(View view) {
@@ -77,6 +74,28 @@ public class InitActivity extends FragmentActivity {
   
   public void onClickQuitGame(View view) {
     finish();
+  }
+  
+  @Override
+  protected void onResume() {
+    super.onResume();
+    try {
+      mContinueGameButton = (Button) findViewById(R.id.continue_game_button);
+    } catch (Exception e) {
+      // Button was not found
+      // It means, your button doesn't exist on the "current" view
+      // It was freed from the memory, therefore stop of activity was performed
+      // In this case application to be restarted
+      Intent i = new Intent();
+      i.setClass(getApplicationContext(), InitActivity.class);
+      i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+      startActivity(i);
+      // Show toast to the user
+      Toast.makeText(getApplicationContext(), "Data lost due to excess use of other apps", Toast.LENGTH_LONG).show();
+      return;
+    }
+    databaseExists = checkDatabase();
+    mContinueGameButton.setEnabled(databaseExists);
   }
   
   @Override
