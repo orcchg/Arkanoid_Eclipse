@@ -1,6 +1,10 @@
 package com.orcchg.arkanoid.surface;
 
+import java.lang.ref.WeakReference;
+
 import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -10,6 +14,7 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 
 public class InitActivity extends FragmentActivity {
@@ -96,35 +101,97 @@ public class InitActivity extends FragmentActivity {
   }
   
   private void warningDialog() {
-    final FragmentActivity activity = this;
-    new AlertDialog.Builder(activity)
-        .setTitle(mAlertDialogTitle)
-        .setMessage(mWarningMessage)
-        .setPositiveButton(mOKButtonLabel, new DialogInterface.OnClickListener() {
-          @Override
-          public void onClick(DialogInterface dialog, int which) {
-            Intent intent = new Intent(activity, MainActivity.class);
-            intent.putExtra(bundleKey_dropStat, true);
-            startActivity(intent);
-          }
-        })
-        .setNegativeButton(mCancelButtonLabel, new DialogInterface.OnClickListener() {
-          @Override
-          public void onClick(DialogInterface dialog, int which) {
-            // no-op
-          }
-        }).show();
+//    final FragmentActivity activity = this;
+//    new AlertDialog.Builder(activity)
+//        .setTitle(mAlertDialogTitle)
+//        .setMessage(mWarningMessage)
+//        .setPositiveButton(mOKButtonLabel, new DialogInterface.OnClickListener() {
+//          @Override
+//          public void onClick(DialogInterface dialog, int which) {
+//            Intent intent = new Intent(activity, MainActivity.class);
+//            intent.putExtra(bundleKey_dropStat, true);
+//            startActivity(intent);
+//          }
+//        })
+//        .setNegativeButton(mCancelButtonLabel, new DialogInterface.OnClickListener() {
+//          @Override
+//          public void onClick(DialogInterface dialog, int which) {
+//            // no-op
+//          }
+//        }).show();
+    new WarningDialog(this).show();
   }
   
   private void aboutDialog() {
-    new AlertDialog.Builder(this)
-        .setTitle(mAboutDialogTitle)
-        .setMessage(mAboutMessage)
-        .setPositiveButton(mCloseButtonLabel, new DialogInterface.OnClickListener() {
-          @Override
-          public void onClick(DialogInterface dialog, int which) {
-            // no-op
+//    new AlertDialog.Builder(this)
+//        .setTitle(mAboutDialogTitle)
+//        .setMessage(mAboutMessage)
+//        .setPositiveButton(mCloseButtonLabel, new DialogInterface.OnClickListener() {
+//          @Override
+//          public void onClick(DialogInterface dialog, int which) {
+//            // no-op
+//          }
+//        }).show();
+    new AboutDialog(this).show();
+  }
+  
+  /* Dialogs */
+  // --------------------------------------------------------------------------
+  private static class AboutDialog extends Dialog implements android.view.View.OnClickListener {
+    public AboutDialog(Context context) {
+      super(context);
+    }
+    
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+      super.onCreate(savedInstanceState);
+      requestWindowFeature(Window.FEATURE_NO_TITLE);
+      setContentView(R.layout.dialog_one_button);
+      Button close_button = (Button) findViewById(R.id.dialog_one_button_button);
+      close_button.setOnClickListener(this);
+    }
+
+    @Override
+    public void onClick(View v) {
+      dismiss();
+    }
+  }
+  
+  private static class WarningDialog extends Dialog implements android.view.View.OnClickListener {
+    private WeakReference<InitActivity> activityRef;
+    
+    public WarningDialog(InitActivity activity) {
+      super(activity);
+      activityRef = new WeakReference<InitActivity>(activity);
+    }
+    
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+      super.onCreate(savedInstanceState);
+      requestWindowFeature(Window.FEATURE_NO_TITLE);
+      setContentView(R.layout.dialog_two_buttons);
+      Button ok_button = (Button) findViewById(R.id.dialog_two_buttons_first_button);
+      Button cancel_button = (Button) findViewById(R.id.dialog_two_buttons_second_button);
+      ok_button.setOnClickListener(this);
+      cancel_button.setOnClickListener(this);
+    }
+
+    @Override
+    public void onClick(View v) {
+      switch (v.getId()) {
+        case R.id.dialog_two_buttons_first_button:
+          InitActivity activity = activityRef.get();
+          if (activity != null) {
+            Intent intent = new Intent(activity, MainActivity.class);
+            intent.putExtra(bundleKey_dropStat, true);
+            activity.startActivity(intent);
           }
-        }).show();
+          break;
+        case R.id.dialog_two_buttons_second_button:
+          // no-op
+          break;
+      }
+      dismiss();
+    }
   }
 }

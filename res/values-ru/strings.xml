@@ -11,6 +11,7 @@
     
     <string name="ok_button">ОК</string>
     <string name="cancel_button">Отмена</string>
+    <string name="warning_title">Новая игра</string>
     <string name="warning_message">Текущее состояние игры будет потеряно. Начать новую игру ?</string>
     
     <string name="action_throw">Бросок</string>
@@ -18,7 +19,7 @@
     <string name="action_dropStat">Сброс</string>
     
     <string name="about_title">О программе</string>
-    <string name="about_message">Автор: Maxim Alov alovmax@yandex.ru\nВерсия: 1.0.0, 31.05.2015\nСайт: http://orcchg.blogspot.ru/</string>
+    <string name="about_message">Автор: Maxim Alov alovmax@yandex.ru\nВерсия: 1.0.0, 31.05.2015\nСайт: orcchg.blogspot.ru\nЗвуки от diforb.com</string>
 
     <string name="internal_error">Произошла ошибка !</string>
     <string name="internal_error_message">Рекомендуется перезапустить приложение.</string>

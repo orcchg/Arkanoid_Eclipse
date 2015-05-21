@@ -11,6 +11,7 @@
     
     <string name="ok_button">OK</string>
     <string name="cancel_button">Salir</string>
+    <string name="warning_title">Nuevo juego</string>
     <string name="warning_message">Usted perderá estado del juego. ¿Seguro que quiere empezar nuevo partido ?</string>
     
     <string name="action_throw">Lanzar</string>
@@ -18,7 +19,7 @@
     <string name="action_dropStat">Borrar</string>
     
     <string name="about_title">Información del aplicación</string>
-    <string name="about_message">Autor: Maxim Alov alovmax@yandex.ru\nVersión: 1.0.0, 31.05.2015\nVer: http://orcchg.blogspot.ru/</string>
+    <string name="about_message">Autor: Maxim Alov alovmax@yandex.ru\nVersión: 1.0.0, 31.05.2015\nVer: orcchg.blogspot.ru\nSonidos de diforb.com</string>
 
     <string name="internal_error">Error !</string>
     <string name="internal_error_message">Se recomienda reiniciar la aplicación.</string>
