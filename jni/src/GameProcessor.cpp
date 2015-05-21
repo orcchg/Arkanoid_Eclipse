@@ -1139,16 +1139,49 @@ bool GameProcessor::getImpactedBlock(
     int* row,
     int* col) {
 
+  Direction vertical_direction = Direction::NONE;
+  Direction horizontal_direction = Direction::NONE;
+
   if (m_ball.getPose().getX() >= ball_x) {  // from right
     *col = static_cast<int>(std::floor((ball_x - m_ball.getDimens().halfWidth() + 1.0f) / m_level_dimens.getBlockWidth()));
+    horizontal_direction = Direction::RIGHT;
   } else {  // from left
     *col = static_cast<int>(std::floor((ball_x + m_ball.getDimens().halfWidth() + 1.0f) / m_level_dimens.getBlockWidth()));
+    horizontal_direction = Direction::LEFT;
   }
 
   if (m_ball.getPose().getY() >= ball_y) {  // from top
     *row = static_cast<int>(std::floor((1.0f + m_ball.getDimens().halfHeight() - ball_y) / m_level_dimens.getBlockHeight()));
+    vertical_direction = Direction::UP;
   } else {  // from bottom
     *row = static_cast<int>(std::floor((1.0f - m_ball.getDimens().halfHeight() - ball_y) / m_level_dimens.getBlockHeight()));
+    vertical_direction = Direction::DOWN;
+  }
+
+  Block block = m_level->getBlock(*row, *col);
+  switch (horizontal_direction) {
+    case Direction::LEFT:
+      if (block == Block::NONE) {
+        *col = static_cast<int>(std::floor((ball_x - m_ball.getDimens().halfWidth() + 1.0f) / m_level_dimens.getBlockWidth()));
+      }
+      break;
+    case Direction::RIGHT:
+      if (block == Block::NONE) {
+        *col = static_cast<int>(std::floor((ball_x + m_ball.getDimens().halfWidth() + 1.0f) / m_level_dimens.getBlockWidth()));
+      }
+      break;
+  }
+  switch (vertical_direction) {
+    case Direction::DOWN:
+      if (block == Block::NONE) {
+        *row = static_cast<int>(std::floor((1.0f + m_ball.getDimens().halfHeight() - ball_y) / m_level_dimens.getBlockHeight()));
+      }
+      break;
+    case Direction::UP:
+      if (block == Block::NONE) {
+        *row = static_cast<int>(std::floor((1.0f - m_ball.getDimens().halfHeight() - ball_y) / m_level_dimens.getBlockHeight()));
+      }
+      break;
   }
 
   if (*row < 0 || *row >= m_level->numRows() ||
