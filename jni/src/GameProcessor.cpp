@@ -758,11 +758,13 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
       new_y < 1.0f - m_ball.getDimens().halfHeight()) {
     int row = 0, col = 0;
     if (!getImpactedBlock(new_x, new_y, &row, &col)) {
+//      DBG("Ball has left level boundaries: %i %i", row, col);
       return false;  // ball has left level boundaries
     }
 
     GLfloat top_border = 0.0f, bottom_border = 0.0f, left_border = 0.0f, right_border = 0.0f;
     m_level_dimens.getBlockDimens(row, col, &top_border, &bottom_border, &left_border, &right_border);
+//    DBG("Impacted block: %i %i t=%lf b=%lf l=%lf r=%lf", row, col, top_border, bottom_border, left_border, right_border);
 
     // inner block collision correction
     if (m_ball.getPose().getY() + 1.0f >= 2.0f - top_border - m_ball.getDimens().halfWidth()) {
@@ -822,10 +824,12 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
         }
       }
     }  // end of inner block collision correction
+//    DBG("Inner block collision correction result: %i %i", row, col);
 
     Direction vertical_direction = Direction::NONE;
     Direction horizontal_direction = Direction::NONE;
     getCollisionDirection(top_border, bottom_border, left_border, right_border, &vertical_direction, &horizontal_direction);
+//    DBG("Collision direction: v=%i h=%i", static_cast<int>(vertical_direction), static_cast<int>(horizontal_direction));
 
     std::vector<RowCol> affected_blocks;
     std::vector<RowCol> network_blocks;
@@ -841,6 +845,7 @@ bool GameProcessor::collideBlock(GLfloat new_x, GLfloat new_y) {
     Prize spawned_prize = m_level->getPrizeGenerator().generatePrize();
 
     Block block = m_level->getBlock(row, col);
+//    DBG("Block to be impacted: %i %i block [%i]", row, col, block);
     m_level->setBlockImpacted(row, col);
     int score = BlockUtils::getBlockScore(block);
 
@@ -1158,6 +1163,11 @@ bool GameProcessor::getImpactedBlock(
     vertical_direction = Direction::DOWN;
   }
 
+  if (*row < 0 || *row >= m_level->numRows() ||
+      *col < 0 || *col >= m_level->numCols()) {
+    return false;
+  }
+
   Block block = m_level->getBlock(*row, *col);
   switch (horizontal_direction) {
     case Direction::LEFT:
@@ -1170,6 +1180,8 @@ bool GameProcessor::getImpactedBlock(
         *col = static_cast<int>(std::floor((ball_x + m_ball.getDimens().halfWidth() + 1.0f) / m_level_dimens.getBlockWidth()));
       }
       break;
+    default:
+      break;
   }
   switch (vertical_direction) {
     case Direction::DOWN:
@@ -1181,6 +1193,8 @@ bool GameProcessor::getImpactedBlock(
       if (block == Block::NONE) {
         *row = static_cast<int>(std::floor((1.0f - m_ball.getDimens().halfHeight() - ball_y) / m_level_dimens.getBlockHeight()));
       }
+      break;
+    default:
       break;
   }
 
