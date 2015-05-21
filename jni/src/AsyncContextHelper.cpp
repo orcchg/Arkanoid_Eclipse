@@ -249,13 +249,13 @@ AsyncContextHelper::AsyncContextHelper(JNIEnv* jenv, jobject object)
 
 AsyncContextHelper::~AsyncContextHelper() {
   DBG("enter AsyncContextHelper ~dtor");
-  jenv->DeleteGlobalRef(global_object);
-  global_object = nullptr;
-  jenv->DeleteGlobalRef(String_clazz);
-  String_clazz = nullptr;
   delete acontext; acontext = nullptr;
   delete processor; processor = nullptr;
   delete prize_processor; prize_processor = nullptr;
   delete sound_processor; sound_processor = nullptr;
+  jenv->DeleteGlobalRef(global_object);
+  global_object = nullptr;
+  jenv->DeleteGlobalRef(String_clazz);
+  String_clazz = nullptr;
   DBG("exit AsyncContextHelper ~dtor");
 }
