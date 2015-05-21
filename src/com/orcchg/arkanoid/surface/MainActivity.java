@@ -79,10 +79,12 @@ public class MainActivity extends FragmentActivity {
     try {
       String[] texture_resources = getAssets().list("texture");
       for (String texture : texture_resources) {
+//        Log.d(TAG, "Texture asset: " + texture);
         mNativeResources.readTexture(texture);
       }
       String[] sound_resources = getAssets().list("sound");
       for (String sound : sound_resources) {
+//        Log.d(TAG, "Sound asset: " + sound);
         mNativeResources.readSound(sound);
       }
     } catch (IOException e) {
@@ -134,6 +136,7 @@ public class MainActivity extends FragmentActivity {
     Log.d(TAG, "onPause");
     setStat(PLAYER_ID, currentLives, currentLevel, currentScore);
     mAsyncContext.stop();
+    finish();
     super.onPause();
   }
   

@@ -104,7 +104,8 @@ bool Texture::load() {
 
   GLenum glerror = glGetError();
   if (glerror != GL_NO_ERROR) {
-    ERR("Error loading texture %s into OpenGL, gl error %zu", m_filename, glerror);
+    ERR("Error loading texture %s into OpenGL, gl error %zu, Details: fmt=%i, w=%zu h=%zu, type=%i",
+        m_filename, glerror, m_format, m_width, m_height, m_type);
     unload();
     return false;
   }
@@ -177,7 +178,13 @@ const uint8_t* PNGTexture::loadImage() {
       png_set_read_fn(png_ptr, file_descriptor, callback_read_file);
       break;
   }
-  if (setjmp(png_jmpbuf(png_ptr))) { error_code = 6; goto ERROR_PNG; }
+  {
+    int jump_code = 0;
+    if ( (jump_code = setjmp(png_jmpbuf(png_ptr))) != 0) {
+      ERR("PNGTexture: setjump() returned code %i", jump_code);
+      error_code = 6; goto ERROR_PNG;
+    }
+  }
 
   png_set_sig_bytes(png_ptr, 8);
   png_read_info(png_ptr, info_ptr);
