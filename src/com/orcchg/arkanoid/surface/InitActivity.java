@@ -2,14 +2,13 @@ package com.orcchg.arkanoid.surface;
 
 import java.lang.ref.WeakReference;
 
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
@@ -32,6 +31,8 @@ public class InitActivity extends FragmentActivity {
 //  private Button mAboutGameButton;
 //  private Button mQuitGameButton;
   
+  private MediaPlayer mMediaPlayer;
+  
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -50,15 +51,19 @@ public class InitActivity extends FragmentActivity {
 //    mNewGameButton = (Button) findViewById(R.id.new_game_button);
 //    mAboutGameButton = (Button) findViewById(R.id.about_game_button);
 //    mQuitGameButton = (Button) findViewById(R.id.quit_game_button);
+    
+    mMediaPlayer = MediaPlayer.create(this, R.raw.button_click);
   }
   
   public void onClickContinueGame(View view) {
+    mMediaPlayer.start();
     Intent intent = new Intent(this, MainActivity.class);
     intent.putExtra(bundleKey_dropStat, false);
     startActivity(intent);
   }
 
   public void onClickNewGame(View view) {
+    mMediaPlayer.start();
     if (databaseExists) {
       warningDialog();
     } else {
@@ -69,10 +74,12 @@ public class InitActivity extends FragmentActivity {
   }
   
   public void onClickAboutGame(View view) {
+    mMediaPlayer.start();
     aboutDialog();
   }
   
   public void onClickQuitGame(View view) {
+    mMediaPlayer.start();
     finish();
   }
   
@@ -101,6 +108,8 @@ public class InitActivity extends FragmentActivity {
   @Override
   protected void onDestroy() {
     mContinueGameButton = null;
+    mMediaPlayer.release();
+    mMediaPlayer = null;
     System.gc();
     super.onDestroy();
   }
@@ -108,15 +117,18 @@ public class InitActivity extends FragmentActivity {
   /* Private methods */
   // --------------------------------------------------------------------------
   private boolean checkDatabase() {
-    SQLiteDatabase checkDB = null;
-    try {
-      String path = getDatabasePath(Database.databaseName).getAbsolutePath();
-      Log.i(TAG, "Checking database existence: " + path);
-      checkDB = SQLiteDatabase.openDatabase(path, null, SQLiteDatabase.OPEN_READONLY);
-    } catch (SQLiteException e) {
-      // database doesn't exist yet
-    }
-    return checkDB != null;
+//    SQLiteDatabase checkDB = null;
+//    try {
+//      String path = getDatabasePath(Database.databaseName).getAbsolutePath();
+//      Log.i(TAG, "Checking database existence: " + path);
+//      checkDB = SQLiteDatabase.openDatabase(path, null, SQLiteDatabase.OPEN_READONLY);
+//    } catch (SQLiteException e) {
+//      // database doesn't exist yet
+//      Log.w(TAG, "Database doesn't exist yet");
+//    }
+//    return checkDB != null;
+    ArkanoidApplication app = (ArkanoidApplication) getApplication();
+    return (app.DATABASE.totalPlayers() + app.DATABASE.totalStatRecords()) != 0;
   }
   
   private void warningDialog() {
@@ -157,8 +169,11 @@ public class InitActivity extends FragmentActivity {
   /* Dialogs */
   // --------------------------------------------------------------------------
   private static class AboutDialog extends Dialog implements android.view.View.OnClickListener {
-    public AboutDialog(Context context) {
-      super(context);
+    private WeakReference<InitActivity> activityRef;
+    
+    public AboutDialog(InitActivity activity) {
+      super(activity);
+      activityRef = new WeakReference<InitActivity>(activity);
     }
     
     @Override
@@ -172,6 +187,10 @@ public class InitActivity extends FragmentActivity {
 
     @Override
     public void onClick(View v) {
+      InitActivity activity = activityRef.get();
+      if (activity != null) {
+        activity.mMediaPlayer.start();
+      }
       dismiss();
     }
   }
@@ -197,9 +216,12 @@ public class InitActivity extends FragmentActivity {
 
     @Override
     public void onClick(View v) {
+      InitActivity activity = activityRef.get();
+      if (activity != null) {
+        activity.mMediaPlayer.start();
+      }
       switch (v.getId()) {
         case R.id.dialog_two_buttons_first_button:
-          InitActivity activity = activityRef.get();
           if (activity != null) {
             Intent intent = new Intent(activity, MainActivity.class);
             intent.putExtra(bundleKey_dropStat, true);

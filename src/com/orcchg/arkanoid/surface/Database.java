@@ -80,6 +80,10 @@ class Database {
     }
   }
   
+  long totalPlayers() {
+    return totalRows(PlayersTable);
+  }
+  
   /* Stat table */
   // --------------------------------------------
   static class GameStat {
@@ -146,6 +150,10 @@ class Database {
       Log.w(TAG, "Table " + StatTable + " has no GameStat with requested PlayerID: " + player_id);
       return null;
     }
+  }
+  
+  long totalStatRecords() {
+    return totalRows(StatTable);
   }
   
   /* Clean up database */
