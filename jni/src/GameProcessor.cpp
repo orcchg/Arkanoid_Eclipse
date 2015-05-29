@@ -1037,8 +1037,8 @@ bool GameProcessor::blockCollision(
 //  }
 
   // surface collision
-  if (/*m_ball.getPose().getX() + 1.0f > left_border - m_ball.getDimens().halfWidth() &&
-      m_ball.getPose().getX() + 1.0f < right_border + m_ball.getDimens().halfWidth() &&*/
+  if (m_ball.getPose().getX() + 1.0f > left_border - m_ball.getDimens().halfWidth() &&
+      m_ball.getPose().getX() + 1.0f < right_border + m_ball.getDimens().halfWidth() &&
       (m_ball.getPose().getY() + 1.0f >= 2.0f - top_border - m_ball.getDimens().halfWidth() ||
        m_ball.getPose().getY() + 1.0f <= 2.0f - bottom_border + m_ball.getDimens().halfWidth())) {
     collideHorizontalSurface();
@@ -1046,17 +1046,17 @@ bool GameProcessor::blockCollision(
     return true;
   }
   // right border collision from left direction
-  if (m_ball.getPose().getX() + 1.0f <= left_border - m_ball.getDimens().halfWidth() &&
+  if (m_ball.getPose().getX() + 1.0f <= left_border - m_ball.getDimens().halfWidth()/* &&
       m_ball.getPose().getY() + 1.0f < 2.0f - top_border - m_ball.getDimens().halfWidth() &&
-      m_ball.getPose().getY() + 1.0f > 2.0f - bottom_border + m_ball.getDimens().halfWidth()) {
+      m_ball.getPose().getY() + 1.0f > 2.0f - bottom_border + m_ball.getDimens().halfWidth()*/) {
     collideRightBorder();
     viscousAngleDisturbance(viscosity);
     return true;
   }
   // left border collision from right direction
-  if (m_ball.getPose().getX() + 1.0f >= right_border + m_ball.getDimens().halfWidth() &&
+  if (m_ball.getPose().getX() + 1.0f >= right_border + m_ball.getDimens().halfWidth()/* &&
       m_ball.getPose().getY() + 1.0f < 2.0f - top_border - m_ball.getDimens().halfWidth() &&
-      m_ball.getPose().getY() + 1.0f > 2.0f - bottom_border + m_ball.getDimens().halfWidth()) {
+      m_ball.getPose().getY() + 1.0f > 2.0f - bottom_border + m_ball.getDimens().halfWidth()*/) {
     collideLeftBorder();
     viscousAngleDisturbance(viscosity);
     return true;
