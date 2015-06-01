@@ -1424,7 +1424,7 @@ void AsyncContext::drawLaser(GLfloat x, GLfloat y) {
     float delta_elapsed = static_cast<float>(currentTime - m_laser_last_time) / CLOCKS_PER_SEC;
     m_laser_last_time = currentTime;
     m_laser_time += delta_elapsed;
-    if (m_laser_time >= 1.0f) {
+    if (m_laser_time >= 0.6f) {
       m_laser_time = 0.0f;
       m_laser_interruption = false;
       laser_pulse_event.notifyListeners(true);
