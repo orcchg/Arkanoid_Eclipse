@@ -3,11 +3,7 @@ package com.orcchg.arkanoid.surface;
 import java.lang.ref.WeakReference;
 
 import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteException;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -21,9 +17,9 @@ public class InitActivity extends FragmentActivity {
   private static final String TAG = "Arkanoid_InitActivity";
   static final String bundleKey_dropStat = "bundleKey_dropStat";
   
-  private static String mAlertDialogTitle, mAboutDialogTitle;
-  private static String mOKButtonLabel, mCancelButtonLabel, mCloseButtonLabel;
-  private static String mWarningMessage, mAboutMessage;
+//  private static String mAlertDialogTitle, mAboutDialogTitle;
+//  private static String mOKButtonLabel, mCancelButtonLabel, mCloseButtonLabel;
+//  private static String mWarningMessage, mAboutMessage;
   private boolean databaseExists = false;
   
   private Button mContinueGameButton;
@@ -39,14 +35,14 @@ public class InitActivity extends FragmentActivity {
     Log.d(TAG, "onCreate");
     setContentView(R.layout.activity_init);
     
-    Resources res = getResources();
-    mAlertDialogTitle = res.getString(R.string.new_game_button);
-    mAboutDialogTitle = res.getString(R.string.about_title);
-    mOKButtonLabel = res.getString(R.string.ok_button);
-    mCancelButtonLabel = res.getString(R.string.cancel_button);
-    mCloseButtonLabel = res.getString(R.string.close_button);
-    mWarningMessage = res.getString(R.string.warning_message);
-    mAboutMessage = res.getString(R.string.about_message);
+//    Resources res = getResources();
+//    mAlertDialogTitle = res.getString(R.string.new_game_button);
+//    mAboutDialogTitle = res.getString(R.string.about_title);
+//    mOKButtonLabel = res.getString(R.string.ok_button);
+//    mCancelButtonLabel = res.getString(R.string.cancel_button);
+//    mCloseButtonLabel = res.getString(R.string.close_button);
+//    mWarningMessage = res.getString(R.string.warning_message);
+//    mAboutMessage = res.getString(R.string.about_message);
     
 //    mNewGameButton = (Button) findViewById(R.id.new_game_button);
 //    mAboutGameButton = (Button) findViewById(R.id.about_game_button);

@@ -9,7 +9,6 @@ import com.orcchg.arkanoid.surface.R;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -30,9 +29,9 @@ public class MainActivity extends FragmentActivity {
   private int currentLevel = INITIAL_LEVEL;
   private int currentScore = INITIAL_SCORE;
   
-  private static String mAlertDialogTitle;
-  private static String mCloseButtonLabel;
-  private static String mWarningMessage;
+//  private static String mAlertDialogTitle;
+//  private static String mCloseButtonLabel;
+//  private static String mWarningMessage;
   private boolean dropStatFlag = false;
   
   static {
@@ -52,10 +51,10 @@ public class MainActivity extends FragmentActivity {
     Log.d(TAG, "onCreate");
     setContentView(R.layout.activity_main);
     
-    Resources res = getResources();
-    mAlertDialogTitle = res.getString(R.string.internal_error);
-    mCloseButtonLabel = res.getString(R.string.close_button);
-    mWarningMessage = res.getString(R.string.internal_error_message);
+//    Resources res = getResources();
+//    mAlertDialogTitle = res.getString(R.string.internal_error);
+//    mCloseButtonLabel = res.getString(R.string.close_button);
+//    mWarningMessage = res.getString(R.string.internal_error_message);
     
     dropStatFlag = getIntent().getBooleanExtra(InitActivity.bundleKey_dropStat, false);
     
@@ -286,6 +285,10 @@ public class MainActivity extends FragmentActivity {
     }
   }
   
+  void levelFinishedAdditional() {
+    setStat(PLAYER_ID, currentLives, currentLevel, currentScore);
+  }
+  
   private void warningDialog() {
 //    new AlertDialog.Builder(this)
 //        .setTitle(mAlertDialogTitle)
@@ -384,6 +387,7 @@ public class MainActivity extends FragmentActivity {
         activity.setLevel(currentLevel);
         activity.mAsyncContext.loadLevel(Levels.get(currentLevel));
         activity.setBonusBlocks();
+        activity.levelFinishedAdditional();
       }
     }
     
