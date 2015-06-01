@@ -92,8 +92,9 @@ public class GameSurface extends SurfaceView implements SurfaceHolder.Callback {
         float pointerTwoTouchXdiff = event.getX() * event.getXPrecision() - touchCurrentX;
         float pointerTwoTouchYdiff = Math.abs(event.getY() * event.getYPrecision() - touchCurrentY);
         if (pointerTwoTouchYdiff >= VERTICAL_SWIPE_THRESHOLD) {
-          float angle = (float) Math.atan(pointerTwoTouchYdiff / pointerTwoTouchXdiff);
-          angle = angle >= 0 ? angle : (float) (Math.PI - angle);
+          float ratio = pointerTwoTouchYdiff / pointerTwoTouchXdiff;
+          float angle = (float) Math.atan(Math.abs(ratio));
+          angle = ratio >= 0 ? angle : (float) (Math.PI - angle);
           if (mAsyncContextRef != null) {
             AsyncContext acontext = mAsyncContextRef.get();
             if (acontext != null) {
