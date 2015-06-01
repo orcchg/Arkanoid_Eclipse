@@ -368,7 +368,7 @@ void GameProcessor::process_prizeCaught() {
       m_ball.setEffect(BallEffect::DEGRADE);
       break;
     case Prize::WIN:  // processed in Java layer
-      stopBall();  // prevent block collision at new level
+      m_level_finished = true;
       break;
     case Prize::ZYGOTE:
       m_ball.setEffect(BallEffect::ZYGOTE);

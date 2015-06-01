@@ -484,7 +484,6 @@ public class MainActivity extends FragmentActivity {
           break;
         case WIN:
           score += 400;
-          onLevelFinished();
           break;
         case ZYGOTE:  // effect not implemented
           score += 15;
