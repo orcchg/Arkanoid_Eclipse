@@ -15,7 +15,7 @@
         android:textStyle="bold"
         android:text="@string/about_title" />
     
-    <FrameLayout
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
     
@@ -25,12 +25,12 @@
 	        android:layout_height="wrap_content"
 	        android:layout_gravity="center"
 	        android:layout_margin="@dimen/dialog_message_margin"
-	        android:lines="4"
+	        android:lines="5"
 	        android:textColor="@android:color/white"
 	        android:textSize="@dimen/dialog_message_textsize"
 	        android:textStyle="normal"
 	        android:text="@string/about_message" />
-	</FrameLayout>
+	</ScrollView>
 	
     <FrameLayout
         android:layout_width="match_parent"

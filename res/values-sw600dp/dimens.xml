@@ -10,7 +10,7 @@
     <dimen name="space_textimage_width">40dp</dimen>
     <dimen name="space_imagetext_width">10dp</dimen>
     <dimen name="text_size">40sp</dimen>
-    <dimen name="text_title_size">80sp</dimen>
+    <dimen name="text_title_size">60sp</dimen>
     <dimen name="title_margin_top">60dp</dimen>
     
     <dimen name="dialog_title_textsize">40sp</dimen>

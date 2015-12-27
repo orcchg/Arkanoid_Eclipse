@@ -830,7 +830,7 @@ bool AsyncContext::displayConfig() {
 
   {
     const EGLint attributes[] = {
-          EGL_CONTEXT_CLIENT_VERSION, 3,
+          EGL_CONTEXT_CLIENT_VERSION, 2,
           EGL_NONE
       };
     if (!(m_egl_context = eglCreateContext(m_egl_display, m_config, 0, attributes))) {
