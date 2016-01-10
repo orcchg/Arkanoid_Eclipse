@@ -324,9 +324,10 @@ void SoundProcessor::process_blockImpact() {
     case game::Block::ZYGOTE_SPAWN:
       sound_prefix = "zygote_";
       break;
-
-      // TODO: implement sounds
     case game::Block::DESTROY:
+      sound_prefix = "destroy_";
+      break;
+    // TODO: implement sounds
     case game::Block::MIDAS:
     case game::Block::NETWORK:
       break;
@@ -360,10 +361,18 @@ void SoundProcessor::process_prizeCaught() {
   std::string sound_prefix = "";
 
   switch (m_prize) {
+    case game::Prize::DESTROY:
+      sound_prefix = "destroy_";
+      break;
     case game::Prize::HYPER:
       sound_prefix = "teleport_";
       break;
-      // TODO: other special prizes
+    case game::Prize::VITALITY:
+      sound_prefix = "vitality_";
+      break;
+    case game::Prize::WIN:
+      sound_prefix = "win_";
+      break;
     default:
       sound_prefix = "prize_";
       break;
