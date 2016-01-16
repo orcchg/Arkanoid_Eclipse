@@ -246,7 +246,8 @@ void SoundProcessor::process_loadResources() {
 
 void SoundProcessor::process_lostBall() {
   std::unique_lock<std::mutex> lock(m_lost_ball_mutex);
-  // TODO: play lost ball sound
+  auto sound = m_resources->getRandomSound("lose_");
+  playSound(sound);
 }
 
 void SoundProcessor::process_biteImpact() {
@@ -262,20 +263,18 @@ void SoundProcessor::process_blockImpact() {
   switch (m_impacted_block) {
     case game::Block::ALUMINIUM:
     case game::Block::BRICK:
+    case game::Block::CLAY:
     case game::Block::JELLY:
     case game::Block::ROLLING:
-      sound_prefix = "block_";
-      break;
-    case game::Block::CLAY:
     case game::Block::SIMPLE:
-      sound_prefix = "simple_";
+      sound_prefix = "block_";
       break;
     case game::Block::FOG:
       sound_prefix = "fog_";
       break;
     case game::Block::GLASS:
     case game::Block::GLASS_1:
-      sound_prefix = "stone_";
+      sound_prefix = "glass_";
       break;
     case game::Block::ELECTRO:
     case game::Block::KNOCK_VERTICAL:
@@ -283,8 +282,10 @@ void SoundProcessor::process_blockImpact() {
       sound_prefix = "explode_";
       break;
     case game::Block::ARTIFICAL:
-    case game::Block::MAGIC:
       sound_prefix = "magic_";
+      break;
+    case game::Block::MAGIC:
+      // TODO: magic explosion
       break;
     case game::Block::IRON:
     case game::Block::STEEL:
@@ -309,15 +310,15 @@ void SoundProcessor::process_blockImpact() {
       break;
     case game::Block::QUICK:
     case game::Block::QUICK_2:
+      sound_prefix = "block_";
+      break;
     case game::Block::QUICK_1:
-      sound_prefix = "quick_";
+      // TODO: quick impack
       break;
     case game::Block::WATER:
-      sound_prefix = "water_";
-      break;
     case game::Block::YOGURT:
     case game::Block::YOGURT_1:
-      sound_prefix = "yogurt_";
+      sound_prefix = "water_";
       break;
     case game::Block::ZYGOTE:
     case game::Block::ZYGOTE_1:
@@ -342,17 +343,17 @@ void SoundProcessor::process_blockImpact() {
 
 void SoundProcessor::process_wallImpact() {
 //  std::unique_lock<std::mutex> lock(m_wall_impact_mutex);
-//  auto sound = m_resources->getRandomSound("wall_");
-//  playSound(sound);
+  // no-op
 }
 
 void SoundProcessor::process_levelFinished() {
   std::unique_lock<std::mutex> lock(m_level_finished_mutex);
-  // TODO: play win level sound
+  auto sound = m_resources->getRandomSound("finish_");
+  playSound(sound);
 }
 
 void SoundProcessor::process_explosion() {
-  std::unique_lock<std::mutex> lock(m_explosion_mutex);
+//  std::unique_lock<std::mutex> lock(m_explosion_mutex);
   // no-op
 }
 
@@ -362,10 +363,10 @@ void SoundProcessor::process_prizeCaught() {
 
   switch (m_prize) {
     case game::Prize::DESTROY:
-      sound_prefix = "destroy_";
+      sound_prefix = "skull_";
       break;
     case game::Prize::HYPER:
-      sound_prefix = "teleport_";
+      sound_prefix = "hyper_";
       break;
     case game::Prize::VITALITY:
       sound_prefix = "vitality_";
@@ -382,7 +383,7 @@ void SoundProcessor::process_prizeCaught() {
 }
 
 void SoundProcessor::process_laserBeamVisibility() {
-  std::unique_lock<std::mutex> lock(m_laser_beam_visibility_mutex);
+//  std::unique_lock<std::mutex> lock(m_laser_beam_visibility_mutex);
   // no-op
 }
 
@@ -393,7 +394,7 @@ void SoundProcessor::process_laserBlockImpact() {
 
 void SoundProcessor::process_laserPulse() {
   std::unique_lock<std::mutex> lock(m_laser_pulse_mutex);
-  auto sound = m_resources->getSound("laser.wav");
+  auto sound = m_resources->getRandomSound("laser_");
   playSound(sound);
 }
 
