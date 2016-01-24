@@ -14,10 +14,9 @@ SoundProcessor::SoundProcessor(JavaVM* jvm)
   , m_engine(nullptr)
   , m_mixer(nullptr)
   , m_interface(nullptr)
-  , m_player(nullptr)
-  , m_player_interface(nullptr)
-  , m_player_queue(nullptr)
+  , m_players(new SoundPlayer[playersCount])
   , m_queue_size(0)
+  , m_selected_player(0)
   , m_impacted_block(game::Block::NONE)
   , m_prize(game::Prize::NONE)
   , m_ball_effect(game::BallEffect::NONE) {
@@ -431,6 +430,7 @@ bool SoundProcessor::init() {
   const SLboolean required[1] {SL_BOOLEAN_TRUE};
   const SLInterfaceID mix_ids[] {};
   const SLboolean mix_required[] {};
+  bool queue_init_result = true;
   int error_code = 0;
 
   SLresult result = slCreateEngine(&m_engine, 0, nullptr, 1, ids, required);
@@ -443,7 +443,11 @@ bool SoundProcessor::init() {
   if (result != SL_RESULT_SUCCESS) { error_code = 4; goto ERROR_SOUND; }
   result = (*m_mixer)->Realize(m_mixer, SL_BOOLEAN_FALSE);
   if (result != SL_RESULT_SUCCESS) { error_code = 5; goto ERROR_SOUND; }
-  return initPlayerQueue();
+
+  for (int i = 0; i < SoundProcessor::playersCount; ++i) {
+    queue_init_result &= initPlayerQueue(i);
+  }
+  return queue_init_result;
 
   ERROR_SOUND:
     m_error_code = 2000 + error_code;
@@ -452,7 +456,7 @@ bool SoundProcessor::init() {
     return false;
 }
 
-bool SoundProcessor::initPlayerQueue() {
+bool SoundProcessor::initPlayerQueue(int player_id) {
   SLDataLocator_AndroidSimpleBufferQueue data_locator_in {
     SL_DATALOCATOR_ANDROIDSIMPLEBUFFERQUEUE,
     SoundProcessor::queueMaxSize  // no more than 'queueMaxSize' sound buffer in queue at any moment
@@ -487,15 +491,15 @@ bool SoundProcessor::initPlayerQueue() {
   const SLboolean player_required[2] { SL_BOOLEAN_TRUE, SL_BOOLEAN_TRUE };
 
   int error_code = 0;
-  SLresult result = (*m_interface)->CreateAudioPlayer(m_interface, &m_player, &data_source, &data_sink, 2, player_ids, player_required);
+  SLresult result = (*m_interface)->CreateAudioPlayer(m_interface, &m_players[player_id].m_player, &data_source, &data_sink, 2, player_ids, player_required);
   if (result != SL_RESULT_SUCCESS) { error_code = 6; goto ERROR_PLAYER; }
-  result = (*m_player)->Realize(m_player, SL_BOOLEAN_FALSE);
+  result = (*m_players[player_id].m_player)->Realize(m_players[player_id].m_player, SL_BOOLEAN_FALSE);
   if (result != SL_RESULT_SUCCESS) { error_code = 7; goto ERROR_PLAYER; }
-  result = (*m_player)->GetInterface(m_player, SL_IID_PLAY, &m_player_interface);
+  result = (*m_players[player_id].m_player)->GetInterface(m_players[player_id].m_player, SL_IID_PLAY, &m_players[player_id].m_player_interface);
   if (result != SL_RESULT_SUCCESS) { error_code = 8; goto ERROR_PLAYER; }
-  result = (*m_player)->GetInterface(m_player, SL_IID_BUFFERQUEUE, &m_player_queue);
+  result = (*m_players[player_id].m_player)->GetInterface(m_players[player_id].m_player, SL_IID_BUFFERQUEUE, &m_players[player_id].m_player_queue);
   if (result != SL_RESULT_SUCCESS) { error_code = 9; goto ERROR_PLAYER; }
-  result = (*m_player_interface)->SetPlayState(m_player_interface, SL_PLAYSTATE_PLAYING);
+  result = (*m_players[player_id].m_player_interface)->SetPlayState(m_players[player_id].m_player_interface, SL_PLAYSTATE_PLAYING);
   if (result != SL_RESULT_SUCCESS) { error_code = 10; goto ERROR_PLAYER; }
   return true;
 
@@ -506,23 +510,28 @@ bool SoundProcessor::initPlayerQueue() {
 }
 
 bool SoundProcessor::playSound(const SoundBuffer* sound) {
+  if (m_selected_player >= SoundProcessor::playersCount) {
+    m_selected_player = 0;
+  }
+
   int error_code = 0;
   SLuint32 player_state = 0;
-  (*m_player)->GetState(m_player, &player_state);
+  (*m_players[m_selected_player].m_player)->GetState(m_players[m_selected_player].m_player, &player_state);
 
   if (player_state == SL_OBJECT_STATE_REALIZED) {
     SLresult result = SL_RESULT_SUCCESS;
     if (m_queue_size >= SoundProcessor::queueMaxSize) {
       // stop all sounds in queue before playing a new one
-      result = (*m_player_queue)->Clear(m_player_queue);
+      result = (*m_players[m_selected_player].m_player_queue)->Clear(m_players[m_selected_player].m_player_queue);
       if (result != SL_RESULT_SUCCESS) { error_code = 11; goto ERROR_PLAY; }
       m_queue_size = 0;
     }
     int16_t* buffer = reinterpret_cast<int16_t*>(sound->getData());
     off_t length = sound->getLength();
-    result = (*m_player_queue)->Enqueue(m_player_queue, buffer, length);
+    result = (*m_players[m_selected_player].m_player_queue)->Enqueue(m_players[m_selected_player].m_player_queue, buffer, length);
     if (result != SL_RESULT_SUCCESS) { error_code = 12; goto ERROR_PLAY; }
     ++m_queue_size;
+    ++m_selected_player;
   }
   return true;
 
@@ -533,11 +542,9 @@ bool SoundProcessor::playSound(const SoundBuffer* sound) {
 }
 
 void SoundProcessor::destroy() {
-  if (m_player != nullptr) {
-    (*m_player)->Destroy(m_player);
-    m_player = nullptr;
-    m_player_interface = nullptr;
-    m_player_queue = nullptr;
+  if (m_players != nullptr) {
+    delete [] m_players;
+    m_players = nullptr;
   }
   if (m_mixer != nullptr) {
     (*m_mixer)->Destroy(m_mixer);

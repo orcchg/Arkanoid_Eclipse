@@ -18,6 +18,7 @@
 #include "PrizePackage.h"
 #include "Resources.h"
 #include "RowCol.h"
+#include "SoundPlayer.h"
 
 namespace native {
 namespace sound {
@@ -142,12 +143,12 @@ private:
   SLObjectItf m_mixer;
   SLEngineItf m_interface;
 
-  SLObjectItf m_player;
-  SLPlayItf m_player_interface;
-  SLBufferQueueItf m_player_queue;
+  SoundPlayer* m_players;
   int m_queue_size;
+  int m_selected_player;
 
   constexpr static int queueMaxSize = 1;
+  constexpr static int playersCount = 12;
   /** @} */  // end of Core group
 
   /** @defgroup LogicData Game Logic related data members.
@@ -245,7 +246,7 @@ private:
    * @{
    */
   bool init();  //!< Initializes sound processor stuff.
-  bool initPlayerQueue();  //!< Initializes queue for sound buffers.
+  bool initPlayerQueue(int player_id);  //!< Initializes queue for sound buffers.
   bool playSound(const SoundBuffer* sound);  //!< Plays new sound, stopping any previous one.
   void destroy();  //!< Releases sound processor stuff.
   /** @} */  // end of CoreFunc group
