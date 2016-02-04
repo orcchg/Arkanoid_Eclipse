@@ -148,7 +148,7 @@ private:
   int m_selected_player;
 
   constexpr static int queueMaxSize = 1;
-  constexpr static int playersCount = 12;
+  constexpr static int playersCount = 8;
   /** @} */  // end of Core group
 
   /** @defgroup LogicData Game Logic related data members.

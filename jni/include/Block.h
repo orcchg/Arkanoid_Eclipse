@@ -61,6 +61,7 @@ public:
 
   static Block charToBlock(char ch);
   static char blockToChar(Block block);
+  static bool isOrdinaryBlock(Block block);
   static int getCardinalityCost(Block block);
   static int getBlockScore(Block block);
   static util::BGRA<GLfloat> getBlockColor(Block block);

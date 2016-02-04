@@ -201,6 +201,8 @@ private:
 
   /// @brief Calculates current cardinality of this Level instance.
   int calculateCardinality() const;
+  /// @brief Checks whether there are any of ordinary blocks in current level.
+  bool checkOrdinaryBlocksPresent() const;
 
   int rows, cols;
   int initial_cardinality;

@@ -207,6 +207,22 @@ char BlockUtils::blockToChar(Block block) {
   }
 }
 
+bool BlockUtils::isOrdinaryBlock(Block block) {
+  return block == Block::ALUMINIUM ||
+      block == Block::BRICK ||
+      block == Block::CLAY ||
+      block == Block::FOG ||
+      block == Block::GLASS ||
+      block == Block::IRON ||
+      block == Block::JELLY ||
+      block == Block::STEEL ||
+      block == Block::PLUMBUM ||
+      block == Block::ROLLING ||
+      block == Block::SIMPLE ||
+      block == Block::WATER ||
+      block == Block::ZYGOTE_SPAWN;
+}
+
 int BlockUtils::getCardinalityCost(Block block) {
   switch (block) {
     case Block::ULTRA:

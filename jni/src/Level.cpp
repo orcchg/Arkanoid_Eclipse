@@ -754,6 +754,10 @@ void Level::findBlocksBackwardAllowNone(Block type, std::vector<RowCol>* output)
 
 Block Level::generatePresentBlock() {
   Block block = Block::NONE;
+  if (!checkOrdinaryBlocksPresent()) {
+    return block;
+  }
+
   bool is_present = false;
   do {
     block = generator.generateBlock();
@@ -808,6 +812,17 @@ int Level::calculateCardinality() const {
     }
   }
   return cardinality;
+}
+
+bool Level::checkOrdinaryBlocksPresent() const {
+  for (int r = 0; r < rows; ++r) {
+    for (int c = 0; c < cols; ++c) {
+      if (BlockUtils::isOrdinaryBlock(blocks[r][c])) {
+        return true;
+      }
+    }
+  }
+  return false;
 }
 
 }  // namespace game

@@ -293,7 +293,8 @@ void SoundProcessor::process_blockImpact() {
       break;
     case game::Block::HYPER:
     case game::Block::ORIGIN:
-      sound_prefix = "teleport_";
+    case game::Block::NETWORK:
+      sound_prefix = "hyper_";
       break;
     case game::Block::ULTRA:
     case game::Block::ULTRA_4:
@@ -312,7 +313,7 @@ void SoundProcessor::process_blockImpact() {
       sound_prefix = "block_";
       break;
     case game::Block::QUICK_1:
-      // TODO: quick impack
+      // TODO: quick impact
       break;
     case game::Block::WATER:
     case game::Block::YOGURT:
@@ -325,11 +326,8 @@ void SoundProcessor::process_blockImpact() {
       sound_prefix = "zygote_";
       break;
     case game::Block::DESTROY:
-      sound_prefix = "destroy_";
-      break;
-    // TODO: implement sounds
     case game::Block::MIDAS:
-    case game::Block::NETWORK:
+      sound_prefix = "destroy_";
       break;
     case game::Block::NONE:
     default:
@@ -347,7 +345,7 @@ void SoundProcessor::process_wallImpact() {
 
 void SoundProcessor::process_levelFinished() {
   std::unique_lock<std::mutex> lock(m_level_finished_mutex);
-  auto sound = m_resources->getRandomSound("finish_");
+  auto sound = m_resources->getRandomSound("win_");
   playSound(sound);
 }
 
