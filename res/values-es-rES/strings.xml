@@ -19,7 +19,7 @@
     <string name="action_dropStat">Borrar</string>
     
     <string name="about_title">Información del aplicación</string>
-    <string name="about_message">Autor: Maxim Alov alovmax@yandex.ru\nVersión: 1.0.0, 31.05.2015\nVer: orcchg.blogspot.ru\nSonidos de diforb.com</string>
+    <string name="about_message">Autor: Maxim Alov alovmax@yandex.ru\nVersión: 1.0.0, 31.05.2015\nVer: orcchg.blogspot.ru\nSonidos de diforb.com, freesound.org</string>
 
     <string name="internal_error">Error !</string>
     <string name="internal_error_message">Se recomienda reiniciar la aplicación.</string>
